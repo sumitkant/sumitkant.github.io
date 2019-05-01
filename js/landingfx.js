@@ -148,7 +148,9 @@
                 opacity: 1
             }, 0.04, 0.2);
     };
-    firstPageContent.title.addEventListener('mouseenter', onEnterHoverFn);
+    setInterval(onEnterHoverFn,5000);
+
+//    firstPageContent.title.addEventListener('mouseenter', onEnterHoverFn);
 
 
     // Typewriter Effect

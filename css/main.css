@@ -141,8 +141,8 @@ a:visited {
     transition: all 0.2s ease-in-out;
 }
 
-a.blog{
-    color:  var(--color-text-selected);
+a.blog {
+    color: var(--color-text-selected);
     background-color: var(--color-bg-highlight);
 }
 
@@ -241,7 +241,7 @@ h6,
     letter-spacing: .2rem;
 }
 
-p img{
+p img {
     padding-left: 60px;
 }
 
@@ -257,8 +257,8 @@ p.lead {
     p.lead {
         font-size: 2.1rem;
     }
-    
-    p img{
+
+    p img {
         padding-left: 0px;
     }
 }
@@ -1229,14 +1229,15 @@ input::-moz-focus-inner {
 }
 
 .bricks-wrapper .entry-text {
-    border: 2px solid black;
+    /*    border: 2px solid black;*/
+
 
 }
 
 .bricks-wrapper .entry-thumb,
 .bricks-wrapper .entry-text {
-    /*    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);*/
-    border: 2px solid black;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.05);
+    /*    border: 2px solid black;*/
 }
 
 .bricks-wrapper .entry-thumb {
@@ -1371,6 +1372,7 @@ input::-moz-focus-inner {
 .featured-grid,
 .featured-post-slide {
     height: 600px;
+
 }
 
 .featured-post-slide {
@@ -1380,6 +1382,7 @@ input::-moz-focus-inner {
     padding: 6rem 15% 3rem 15%;
     text-align: center;
     display: table;
+
 }
 
 .featured-post-slide .post-background {
@@ -1391,6 +1394,9 @@ input::-moz-focus-inner {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    border-radius: 1em;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.10);
+
 }
 
 .featured-post-slide .overlay {
@@ -1405,10 +1411,12 @@ input::-moz-focus-inner {
     -webkit-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+    border-radius: 1em;
 }
 
 .featured-post-slide:hover .overlay {
     background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 1em;
 }
 
 .featured-post-slide .post-content {
@@ -1420,8 +1428,9 @@ input::-moz-focus-inner {
 
 .featured-post-slide .entry-meta {
     font-family: "muli-regular", sans-serif;
+    font-size: 1.5em;
     margin: -3rem 0 0.9rem 0;
-    color: rgba(255, 255, 255, 0.6);
+    color: white;
     line-height: 1.412;
 }
 
@@ -1433,12 +1442,17 @@ input::-moz-focus-inner {
 
 .featured-post-slide .entry-meta li a {
     color: rgba(255, 255, 255, 0.6);
+    border-radius: 1em;
+
 }
 
 .featured-post-slide .entry-meta li a:hover,
 .featured-post-slide .entry-meta li a:focus {
     color: white;
     border-color: rgba(255, 255, 255, 0.2);
+    border-radius: 1em;
+
+
 }
 
 .featured-post-slide .slide-title {
@@ -1457,6 +1471,7 @@ input::-moz-focus-inner {
 .featured-post-slide .slide-title a:focus {
     color: white;
     border-color: rgba(255, 255, 255, 0.2);
+    border-radius: 1em;
 }
 
 /* featured-post-slider direction nav
@@ -1469,6 +1484,7 @@ input::-moz-focus-inner {
     height: 60px;
     width: 60px;
     z-index: 500;
+    border-radius: 1em;
 }
 
 #featured-post-slider .flex-direction-nav li a {
@@ -1487,6 +1503,7 @@ input::-moz-focus-inner {
     -webkit-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+    border-radius: 1em;
 }
 
 #featured-post-slider .flex-direction-nav li a.flex-prev {
@@ -1514,7 +1531,7 @@ input::-moz-focus-inner {
 /* ------------------------------------------------------------------- */
 @media only screen and (max-width:1024px) {
     .featured-post-slide .slide-title {
-        font-size: 3.7rem;
+        font-size: 4.7rem;
     }
 
 }
@@ -1525,7 +1542,7 @@ input::-moz-focus-inner {
     }
 
     .featured-post-slide .entry-meta {
-        font-size: 1.5rem;
+        font-size: 2.5rem;
     }
 
     .featured-post-slide .slide-title {
@@ -2540,9 +2557,14 @@ header .logo a:hover {}
     width: 25%;
 }
 
+
 .bricks-wrapper .brick {
     float: left;
     padding: 0 20px;
+}
+
+article.brick {
+    border-radius: 20px;
 }
 
 .bricks-wrapper .featured-grid {
@@ -2552,6 +2574,19 @@ header .logo a:hover {}
 .bricks-wrapper .featured-grid .entry-content {
     width: 100%;
     background: #151515;
+
+}
+
+div.entry-thumb {
+    border-radius: 1em 1em 0 0;
+}
+
+.format-quote .entry-thumb{
+    border-radius: 1em;
+}
+
+div.entry-text {
+    border-radius: 0 0 1em 1em;
 }
 
 /* responsive: 
@@ -3584,13 +3619,13 @@ p.typewrite {
 
 
 
-.mesh__container{
+.mesh__container {
     width: 100%;
     height: 100%;
     position: absolute;
-    top:0;
-    left:0;
-/*    background-image: url(https://i.gifer.com/1Fvo.gif) center;*/
+    top: 0;
+    left: 0;
+    /*    background-image: url(https://i.gifer.com/1Fvo.gif) center;*/
     opacity: 0.2;
     filter: invert(100%);
     background-position: center;
