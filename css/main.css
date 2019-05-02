@@ -351,6 +351,8 @@ pre {
     padding: 2.4rem 3rem 3rem;
     background: #EAEAEA;
     margin: 4.2rem 0;
+    border-radius: 1em;
+    
 }
 
 code {
@@ -1180,6 +1182,7 @@ input::-moz-focus-inner {
     margin-bottom: 9px;
     color: var(--color-text-normal);
     border: 2px solid black;
+    border-radius:0.5em;
     background-color: var(--color-bg-normal);
     -moz-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
@@ -1511,7 +1514,7 @@ input::-moz-focus-inner {
 }
 
 #featured-post-slider .flex-direction-nav li a.flex-next {
-    background-image: url(../images/arrow-right.png);
+    background-image: url(../images/arrow-right.png) ;
 }
 
 #featured-post-slider .flex-direction-nav li a:hover {
@@ -1632,7 +1635,7 @@ input::-moz-focus-inner {
 
 .format-quote blockquote p,
 .format-link .link-wrap p {
-    font-family: "BodoniFLF-Roman", sans-serif;
+    font-family: var(--font-headings);
     padding: 6rem 0 0 0;
     font-size: 2.2rem;
     line-height: 1.636;

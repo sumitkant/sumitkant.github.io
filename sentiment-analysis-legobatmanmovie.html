@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html class="no-js oldie ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>
+<html class="no-js oldie ie9" lang="en">
+<![endif]-->
+<!--[if (gte IE 9)|!(IE)]>
+<!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+
+    <!--- basic page needs
+   ================================================== -->
+    <meta charset="utf-8">
+    <title>Automating Amazon Wishlist Tracking</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- mobile specific metas
+   ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+   ================================================== -->
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/vendor.css">
+    <link rel="stylesheet" href="css/main.css">
+
+
+    <!-- script
+   ================================================== -->
+    <script src="js/modernizr.js"></script>
+    <script src="js/pace.min.js"></script>
+
+    <!-- favicons
+	================================================== -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+</head>
+
+<body id="top">
+
+    <!-- header 
+   ================================================== -->
+    <header class="short-header">
+
+        <div class="gradient-block"></div>
+
+        <div class="row header-content">
+
+            <div class="logo">
+                <a href="index.html">Author</a>
+            </div>
+
+            <nav id="main-nav-wrap">
+                <ul class="main-navigation sf-menu">
+                    <li><a href="index.html" title="">Home</a></li>
+                    <!--
+					<li class="has-children">
+						<a href="category.html" title="">Categories</a>
+						<ul class="sub-menu">
+			            <li><a href="category.html">Wordpress</a></li>
+			            <li><a href="category.html">HTML</a></li>
+			            <li><a href="category.html">Photography</a></li>
+			            <li><a href="category.html">UI</a></li>
+			            <li><a href="category.html">Mockups</a></li>
+			            <li><a href="category.html">Branding</a></li>
+			         </ul>
+					</li>
+-->
+                    <li class="has-children current">
+                        <a href="blog.html" title="">Blog</a>
+                    </li>
+                    <li><a href="style-guide.html" title="">Books</a></li>
+                    <li><a href="about.html" title="">About</a></li>
+                    <li><a href="contact.html" title="">Contact</a></li>
+                </ul>
+            </nav> <!-- end main-nav-wrap -->
+
+            <div class="search-wrap">
+
+                <form role="search" method="get" class="search-form" action="#">
+                    <label>
+                        <span class="hide-content">Search for:</span>
+                        <input type="search" class="search-field" placeholder="Type Your Keywords" value="" name="s" title="Search for:" autocomplete="off">
+                    </label>
+                    <input type="submit" class="search-submit" value="Search">
+                </form>
+
+                <a href="#" id="close-search" class="close-btn">Close</a>
+
+            </div> <!-- end search wrap -->
+
+            <div class="triggers">
+                <a class="search-trigger" href="#"><i class="fa fa-search"></i></a>
+                <a class="menu-toggle" href="#"><span>Menu</span></a>
+            </div> <!-- end triggers -->
+
+        </div>
+
+    </header> <!-- end header -->
+
+
+    <!-- content
+   ================================================== -->
+    <section id="content-wrap" class="blog-single">
+        <div class="row">
+            <div class="col-twelve">
+
+                <article class="format-standard">
+
+                    <div class="content-media">
+                        <div class="post-thumb">
+                            <img src="images/Blogs/2.sentimentanalysisLBM/main.png">
+                        </div>
+                    </div>
+
+                    <div class="primary-content">
+
+                        <h1 class="page-title">Sentiment Analysis using R – Lego Batman Movie</h1>
+
+                        <ul class="entry-meta">
+                            <li class="date">April 29, 2017</li>
+                            <li class="cat"><a href="">R</a><a href="">Twitter</a></li>
+                        </ul>
+
+                        <p>The Lego Batman Movie is a 3D computer-animated superhero comedy film released in 2017. The movie had 430,000+ followers on Facebook (as on Apr 2017). The movie was released on 17 Feb 2017 so we would like to analyse the sentiment of this movie post release.</p>
+
+
+                        <p>I will be using two kind of approaches for text-mining tweets</p>
+                        <ul>
+                            <li>Approach 1: <b>Using ‘tm’ package</b> – this is a basic text -mining framework package available in R</li>
+                            <li>Approach 2: Using <b>‘syuzhet‘</b> package – this package is built on top of core NLP package that comes with advanced sentiment extraction tools</li>
+                        </ul>
+
+
+                        <h2>Tweet Extraction</h2>
+
+                        <p>The tweets were read through Twitter API directly in R. You can refer to great tutorial by <a href="https://www.credera.com/blog/business-intelligence/twitter-analytics-using-r-part-1-extract-tweets/">'Credera: Twitter Analytics Using R Part 1: Extract Tweets'</a> for extracting tweets.</p>
+
+
+                        <h2>Tweet Pre-processing</h2>
+
+                        <h3>Loading Libraries</h3>
+
+
+                        <p>You'll need the following libraries to pre process the tweets.</p>
+
+                        <ul>
+                            <li><b>stringr</b> - gives access to chararcter manipulation, whitespace tools, pattern matching and case transformation functions</li>
+                            <li><b>readr</b> - for reading rectangular datasets</li>
+                            <li><b>wordcloud</b> - to generate a beautiful wordcloud.</li>
+                            <li><b>tm</b> - the weighlifting text mining package</li>
+                            <li><b>SnowballC</b> - to implement Porter’s word stemming. Stemming refers to find a common root the words like, running, run are have run as their root</li>
+                            <li><b>RSentiment</b> - reads sentence sentiments in English in five categories namely Positive, Negative, very Positive, very negative, Neutral</li>
+                        </ul>
+
+                        <pre><code>library('stringr')
+library('readr')
+library('wordcloud')
+library('tm')
+library('SnowballC')
+library('RWeka')
+library('RSentiment')
+library(DT)
+library(ggplot2)
+
+</code></pre>
+                        <h2>Loading Dataset</h2>
+
+
+                        <p>The scraped tweets were saved as .csv file. Each tweet items has features like name, retweet, tweet text, URL etc. For the purpose of sentiment analysis, we will use tweet text only.</p>
+
+                        <pre><code>tweets = read_csv("tweets.csv")
+tweets_text = as.character(tweets$text)</code></pre>
+
+                        <h2>Pre-Processing</h2>
+
+                        <p>The tweet text contains links, numbers, punctuation, emojis, white space, and related words that can be stemmed. The operations are done in the following code.</p>
+
+                        <pre><code>sample = sample(tweets_text, (length(tweets_text)))
+corpus = Corpus(VectorSource(list(sample)))
+corpus = tm_map(corpus, removePunctuation)
+corpus = tm_map(corpus, content_transformer(tolower))
+corpus = tm_map(corpus, removeNumbers)
+corpus = tm_map(corpus, stripWhitespace)
+corpus = tm_map(corpus, removeWords, stopwords('english'))
+corpus = tm_map(corpus, stemDocument)
+dtm_up = DocumentTermMatrix(VCorpus(VectorSource(corpus[[1]]$content)))
+freq_up =
+                        </code></pre>
+
+
+
+                        <h2>Computing Sentiments</h2>
+
+
+                        <pre><code>sentiments_up = calculate_sentiment(names(freq_up))
+sentiments_up = cbind(sentiments_up, as.data.frame(freq_up))
+sent_pos_up = sentiments_up[sentiments_up$sentiment == 'Positive',]
+sent_neg_up = sentiments_up[sentiments_up$sentiment == 'Negative',]
+</code></pre>
+
+                        <h2>Plotting Positive Sentiments</h2>
+
+                        <p>For aesthetics I used a Windows font</p>
+
+                        <pre><code>windowsFonts(Lato.Regular = windowsFont('Lato Regular'))
+ 
+ # PLotting the positive sentiments
+ ggplot(aes(x = freq_up, y = text, label = freq_up, color=freq_up), 
+ data = sent_pos_up[sent_pos_up$freq_up>5,]) + 
+ geom_point(size=4) +
+ geom_text(size=3, 
+           position = position_nudge(x = 4), 
+           family = "Lato.Regular") +
+ theme_gray(base_family = "Lato.Regular") +
+ ylab("Positive Sentiments") +
+ xlab("Frequencies")
+</code></pre>
+
+                        <p>The output shows that win is the most frequent word. The words in the graph below are limited by their frequencies. Words that appear more than 5 times in the term-document matrix are plotted here.</p>
+
+                        <p><img src="images/Blogs/2.sentimentanalysisLBM/positive-sentiments-with-freq-more-than-5.jpeg"></p>
+
+
+                        <h2>Word Cloud</h2>
+
+                        <pre><code>## Wordcloud positive sentiments
+layout(matrix(c(1, 2), nrow=2), heights=c(1, 4))
+par(mar=rep(0, 4))
+plot.new()
+wordcloud(sent_pos_up$text,sent_pos_up$freq,min.freq=5,colors=brewer.pal(6,"Dark2"))</code></pre>
+
+
+                        <p><img src="images/Blogs/2.sentimentanalysisLBM/positive-sentiments-wordcloud.jpeg"></p>
+
+                        <h2>Plotting Negative Sentiments</h2>
+
+                        <pre><code>ggplot(aes(x = freq_up, y = text, label = freq_up, color=freq_up), 
+       data = sent_neg_up[sent_neg_up$freq_up>5,]) + 
+  geom_point(size=4) +
+  geom_text(size=3, position = position_nudge(x = 4), family = "Lato.Regular") +
+  theme_gray(base_family = "Lato.Regular") +
+  ylab("Negative Sentiments") +
+  xlab("Frequencies")</code></pre>
+
+
+
+                        <p><img src="images/Blogs/2.sentimentanalysisLBM/negative-sentiments-with-freq-more-than-5.jpeg"></p>
+
+                        <h2>Wordcloud of Negative Sentiments</h2>
+
+                        <pre><code>layout(matrix(c(1, 2), nrow=2), heights=c(1, 4))
+par(mar=rep(0, 4))
+plot.new()
+set.seed(100)
+wordcloud(sent_neg_up$text,sent_neg_up$freq, min.freq=5,colors=brewer.pal(6 ,"Dark2"))</code></pre>
+
+
+                        <p><img src="images/Blogs/2.sentimentanalysisLBM/negative-sentiments-wordcloud-joeg.jpg"></p>
+
+                        <h2>Approach 2: Using 'syuzhet' package</h2>
+                        
+                        <p>‘Syuzhet’ essentially means the manner in which the elements of the story are organised. The package in R does so by revealing the latent structure using sentiment analysis. It considers 9 emotional expressions excluding positive and negative sentiments.</p>
+                        
+                        <p>So start we need to first load the .csv file and extract the text only.</p>
+                        
+                        <pre><code>text = as.character(tweets$text)</code></pre>
+                        
+                        <h3>Data Pre-processing</h3>
+                        
+                        <p>Now the data is loaded we need to take care of HTML tags, punctuations, username, retweets and numbers. Let’s remove them one by one.</p>
+
+                        <pre><code>##removing Retweets
+some_txt = gsub("(RT|via)((?:\\b\\w*@\\w+)+)","",text)
+##let's clean html links
+some_txt = gsub("http[^[:blank:]]+","",some_txt)
+##let's remove people names
+some_txt = gsub("@\\w+","",some_txt)
+##let's remove punctuations
+some_txt = gsub("[[:punct:]]"," ",some_txt)
+##let's remove number (alphanumeric)
+some_txt = gsub("[^[:alnum:]]"," ",some_txt)</code></pre>
+                        
+                        <h3>Calculating Sentiment score</h3>
+                        
+                        <p>Once the data is cleaned, we are ready to calculate sentiment score for each emotion</p>
+                        
+                        
+                        <pre><code>library(syuzhet)
+mysentiment = get_nrc_sentiment((some_txt))
+mysentiment.positive =sum(mysentiment$positive)
+mysentiment.anger =sum(mysentiment$anger)
+mysentiment.anticipation =sum(mysentiment$anticipation)
+mysentiment.disgust =sum(mysentiment$disgust)
+mysentiment.fear =sum(mysentiment$fear)
+mysentiment.joy =sum(mysentiment$joy)
+mysentiment.sadness =sum(mysentiment$sadness)
+mysentiment.surprise =sum(mysentiment$surprise)
+mysentiment.trust =sum(mysentiment$trust)
+mysentiment.negative =sum(mysentiment$negative)
+</code></pre>
+
+                       <h3>Sentiment Plot</h3>
+                       
+                       <p>In the plot, there are a higher number of positive sentiments forllowed by anticipation, owing the the fact that the tweets were taken just a few days after the movie was released and hence people were anticipating the movie would be good. The movie was intented to be funny, which is reflected in the chart as 'Joy' being the third leading sentiment.</p>
+                       
+                       <p><img src="images/Blogs/2.sentimentanalysisLBM/sentiments.jpg" alt=""></p>
+                       
+                       <h2>Conclusion</h2>
+                       
+                       <p>Using both ‘tm’ and ‘syuzhet’ package it turns out that lego batman movie had a higher number of positive sentiments than the negative ones. This means that movie was well received by the audience. Also one could also notice that most negative sentiments were also related to the joker</p>
+                       
+                       <p>As it turns out that movie is not looking for positive sentiments only, one can define the success of the movie by scoring the negative sentiments too. Because in the end, that is what lego batman movie wanted to achieve. The higher number of negative sentiments on joker is a true indicator of the success of the movie.</p>
+                       
+                       
+                       
+                       
+                        <!-- END OF BLOG -->
+
+                    </div> <!-- end entry-primary -->
+
+                    <div class="pagenav group">
+                        <div class="prev-nav">
+                            <a href="#" rel="prev">
+                                <span>Previous</span>
+                                Tips on Minimalist Design
+                            </a>
+                        </div>
+                        <div class="next-nav">
+                            <a href="#" rel="next">
+                                <span>Next</span>
+                                Less Is More
+                            </a>
+                        </div>
+                    </div>
+
+                </article>
+
+
+            </div> <!-- end col-twelve -->
+        </div> <!-- end row -->
+
+    </section> <!-- end content -->
+
+
+    <!-- footer
+   ================================================== -->
+    <footer>
+
+
+        <div class="footer-bottom">
+            <div class="row">
+
+                <div class="col-twelve">
+                    <div class="copyright">
+                        <span>© Copyright 2019</span>
+                        <span>By <a href="index.html">Sumit Kant</a></span>
+                    </div>
+
+                    <div id="go-top">
+                        <a class="smoothscroll" title="Back to Top" href="#top"><i class="icon icon-arrow-up"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div> <!-- end footer-bottom -->
+
+    </footer>
+
+    <div id="preloader">
+        <div id="loader"></div>
+    </div>
+
+    <!-- Java Script
+   ================================================== -->
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+
+</body></html>
