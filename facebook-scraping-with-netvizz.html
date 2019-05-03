@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html class="no-js oldie ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>
+<html class="no-js oldie ie9" lang="en">
+<![endif]-->
+<!--[if (gte IE 9)|!(IE)]>
+<!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+
+    <!--- basic page needs
+   ================================================== -->
+    <meta charset="utf-8">
+    <title>Automating Amazon Wishlist Tracking</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- mobile specific metas
+   ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+   ================================================== -->
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/vendor.css">
+    <link rel="stylesheet" href="css/main.css">
+
+
+    <!-- script
+   ================================================== -->
+    <script src="js/modernizr.js"></script>
+    <script src="js/pace.min.js"></script>
+
+    <!-- favicons
+	================================================== -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+</head>
+
+<body id="top">
+
+    <!-- header 
+   ================================================== -->
+    <header class="short-header">
+
+        <div class="gradient-block"></div>
+
+        <div class="row header-content">
+
+            <div class="logo">
+                <a href="index.html">Author</a>
+            </div>
+
+            <nav id="main-nav-wrap">
+                <ul class="main-navigation sf-menu">
+                    <li><a href="index.html" title="">Home</a></li>
+                    <!--
+					<li class="has-children">
+						<a href="category.html" title="">Categories</a>
+						<ul class="sub-menu">
+			            <li><a href="category.html">Wordpress</a></li>
+			            <li><a href="category.html">HTML</a></li>
+			            <li><a href="category.html">Photography</a></li>
+			            <li><a href="category.html">UI</a></li>
+			            <li><a href="category.html">Mockups</a></li>
+			            <li><a href="category.html">Branding</a></li>
+			         </ul>
+					</li>
+-->
+                    <li class="has-children current">
+                        <a href="blog.html" title="">Blog</a>
+                    </li>
+                    <li><a href="style-guide.html" title="">Books</a></li>
+                    <li><a href="about.html" title="">About</a></li>
+                    <li><a href="contact.html" title="">Contact</a></li>
+                </ul>
+            </nav> <!-- end main-nav-wrap -->
+
+            <div class="search-wrap">
+
+                <form role="search" method="get" class="search-form" action="#">
+                    <label>
+                        <span class="hide-content">Search for:</span>
+                        <input type="search" class="search-field" placeholder="Type Your Keywords" value="" name="s" title="Search for:" autocomplete="off">
+                    </label>
+                    <input type="submit" class="search-submit" value="Search">
+                </form>
+
+                <a href="#" id="close-search" class="close-btn">Close</a>
+
+            </div> <!-- end search wrap -->
+
+            <div class="triggers">
+                <a class="search-trigger" href="#"><i class="fa fa-search"></i></a>
+                <a class="menu-toggle" href="#"><span>Menu</span></a>
+            </div> <!-- end triggers -->
+
+        </div>
+
+    </header> <!-- end header -->
+
+
+    <!-- content
+   ================================================== -->
+    <section id="content-wrap" class="blog-single">
+        <div class="row">
+            <div class="col-twelve">
+
+                <article class="format-standard">
+
+                    <div class="content-media">
+                        <div class="post-thumb">
+                            <img src="images/Blogs/3.facebooknetvizzscraping/main.png">
+                        </div>
+                    </div>
+
+                    <div class="primary-content">
+
+                        <h1 class="page-title">Scraping Facebook with Netvizz API</h1>
+
+                        <ul class="entry-meta">
+                            <li class="date">April 30, 2017</li>
+                            <li class="cat"><a href="">Web Scraping</a></li>
+                        </ul>
+
+                        <p>Customer engagement is a key driver in the success of any product or service. Social media enables customer engagement and Facebook is one such platform. To measure the effectiveness of customer engagement, one must try to listen to what end users have to say (also termed as social listening). </p>
+
+
+                        <p>Netvizz is a Facebook tool that can be used to scrape comments and posts, which can be used to text mine and generate valuable insights. The application allows us to export data in standard file formats. The limitation to this approach is that the app works for pages and public groups only.</p>
+                        
+                        <p>Here is a step by step guide</p>
+                        
+                        <h2>Step 1: Search the bar</h2>
+                        
+                        <p>Go to Facebook search bar and type ‘Netvizz’. The app home page opens with various moule information.</p>
+
+                        <p><img src="images/Blogs/3.facebooknetvizzscraping/1.jpg" alt="Search the Facebook Bar"></p>
+
+                        <h2>Step 2: Select a Module</h2>
+                        
+                        
+                        <p>For the purpose of demonstration, I have selected 'The Lego Batman Movie's page. Page selection module calls for <i>page id</i>. </p>
+                        
+                        <img src="images/Blogs/3.facebooknetvizzscraping/3.jpg" alt="Lookup ID page">
+                        
+                        <p>The page id can be accessed from the link provided. The link redirects to <i>https://lookup-id.com/</i>, takes page url as the input.</p>
+                        
+                        
+                        <img src="images/Blogs/3.facebooknetvizzscraping/2.jpg" alt="Netvizz Page ID Module">
+                        
+                        
+                        <h2>Step 3: Select data types &amp; extract</h2>
+                        
+                        <p>Select any number of posts for data scope. You can also get top comments or the entire post with comments. Submit request and let it brew!</p>
+                        
+                        <p>This can take quite time for some pages depending on the granularity of selection and the length of pages.</p>
+                        
+                        <img src="images/Blogs/3.facebooknetvizzscraping/4.jpg" alt="">
+                        
+                        <h2>Conclusion</h2>
+                        
+                        <p>In this case, there were only 372 posts and 480540 users liking and commenting posts. The output comes as a zip archive of fans per country, full statistics, comments with users and their corresponding posts, stats per day and  .gdf file which can be used to conduct social network analysis as done in this post <a href="sentiment-analysis-legobatmanmovie.html">(Sentiment analysis using R - Lego Batman Movie)</a>.</p>
+                        
+                        
+                        
+
+
+                        
+                       
+                       
+                       
+                       
+                        <!-- END OF BLOG -->
+
+                    </div> <!-- end entry-primary -->
+
+                    <div class="pagenav group">
+                        <div class="prev-nav">
+                            <a href="sentiment-analysis-legobatmanmovie.html" rel="prev">
+                                <span>Previous</span>
+                                Sentiment Analysis using R - Lego Batman Movie
+                            </a>
+                        </div>
+                        <div class="next-nav">
+                            <a href="amazon-wishlist-tracking.html" rel="next">
+                                <span>Next</span>
+                                Amazon Wishlist Tracking
+                            </a>
+                        </div>
+                    </div>
+
+                </article>
+
+
+            </div> <!-- end col-twelve -->
+        </div> <!-- end row -->
+
+    </section> <!-- end content -->
+
+
+    <!-- footer
+   ================================================== -->
+    <footer>
+
+
+        <div class="footer-bottom">
+            <div class="row">
+
+                <div class="col-twelve">
+                    <div class="copyright">
+                        <span>© Copyright 2019</span>
+                        <span>By <a href="index.html">Sumit Kant</a></span>
+                    </div>
+
+                    <div id="go-top">
+                        <a class="smoothscroll" title="Back to Top" href="#top"><i class="icon icon-arrow-up"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div> <!-- end footer-bottom -->
+
+    </footer>
+
+    <div id="preloader">
+        <div id="loader"></div>
+    </div>
+
+    <!-- Java Script
+   ================================================== -->
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+
+</body></html>
