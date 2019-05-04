@@ -726,14 +726,13 @@ button.content-switch::before {
 .book-container {
     position: relative;
     border-radius: 1em;
-    /*    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);*/
     text-align: center;
-    top: 10%;
-    text-align: center;
+    align-content: center;
+    top: 10vh;
     bottom: 10%;
-    left: 27.5%;
-    width: 45%;
+    width: calc(45vh + 15vw);
     background-color: white;
-    padding: 1% 5% 1% 5%;
+    margin: auto;
+/*    padding: 1% 5% 1% 5%;*/
     overflow: hidden;
 }
