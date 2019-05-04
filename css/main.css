@@ -1595,12 +1595,13 @@ input::-moz-focus-inner {
 .format-quote,
 .format-link {
     text-align: center;
+    color: var(--color-text-selected);
 }
 
 .format-quote .entry-thumb,
 .format-link .entry-thumb {
     display: table;
-    background: #FFFFFF;
+    background: var(--color-bg-highlight);
     padding: 1.8rem 2.8rem 3rem;
     min-height: 324px;
     width: 100%;
@@ -1612,7 +1613,7 @@ input::-moz-focus-inner {
     content: "\e920";
     font-family: "icomoon";
     font-size: 3rem;
-    color: #ccc;
+    color: var(--color-text-selected);
     position: absolute;
     top: 3.3rem;
     left: 50%;
@@ -1648,7 +1649,7 @@ input::-moz-focus-inner {
     font-size: 1.5rem;
     font-style: normal;
     line-height: 1.4;
-    color: #999999;
+    color: var(--color-text-selected);
 }
 
 .format-quote cite::before,
@@ -1658,7 +1659,7 @@ input::-moz-focus-inner {
 
 .format-quote cite a,
 .format-quote cite a:visited {
-    color: #999999;
+    color: var(--color-text-visited);
     border: none;
 }
 

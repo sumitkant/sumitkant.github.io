@@ -1,3 +1,36 @@
+@import url("fonts.css");
+@import url("font-awesome/css/font-awesome.min.css");
+@import url("micons/micons.css");
+
+:root {
+    --color-text-normal: #000;
+    --color-text-visited: #f3f3f3;
+    --color-text-focus-hover: #000;
+    --color-text-inactive: #727272;
+    --color-text-selected: #fff;
+    --color-bg-normal: #fff;
+    --color-bg-highlight: #000;
+    --font-headings: "PlayfairDisplay-Black", serif;
+    --font-text: "muli-regular", sans-serif;
+}
+
+
+::-moz-selection {
+    /* Code for Firefox */
+    color: var(--color-text-selected);
+    background: var(--color-bg-highlight);
+}
+
+::selection {
+    color: var(--color-text-selected);
+    background: var(--color-bg-highlight);
+    padding: 4px;
+}
+
+
+
+
+
 .dragdealer {
     position: relative;
     height: 30px;
@@ -47,11 +80,11 @@
 
 
 body {
-	background: #151515;
-	color: #FFF;
-	font-weight: 400;
-	font-size: 1em;
-	font-family: 'Lato', Arial, sans-serif;
+    background: var(--color-bg-highlight);
+    color: #FFF;
+    font-weight: 400;
+    font-size: 1em;
+    font-family: var(--font-text);
 }
 
 a {
@@ -68,6 +101,7 @@ a:focus {
 .js .codrops-header,
 .js .codrops-top {
     position: fixed;
+    align-content: center;
     z-index: 1000;
 }
 
@@ -77,9 +111,10 @@ a:focus {
     width: 70%;
     left: 15%;
     top: 3.5em;
+    text-align: center;
     pointer-events: none;
-    -webkit-transition: opacity 0.3s;
-    transition: opacity 0.3s;
+    -webkit-transition: opacity 0.2s;
+    transition: opacity 0.2s;
 }
 
 .message {
@@ -103,7 +138,7 @@ a:focus {
     position: fixed;
     width: 100%;
     height: 100%;
-    background-color: rgba(41, 51, 60, 0.93);
+    background-color: rgba(0, 0, 0, 0.9);
     z-index: 10000;
 }
 
@@ -144,15 +179,21 @@ a:focus {
 
 .info span.info-drag {
     background-image: url('https://goo.gl/FFqo8k');
+    border: 1px dashed white;
+    border-radius: 1em;
 }
 
 .info span.info-keys {
     background-image: url('https://goo.gl/XbFDk3');
+    border: 1px dashed white;
+    border-radius: 1em;
 }
 
 .info span.info-switch {
     background-image: url('https://goo.gl/AkxE9Z');
     background-size: 65%;
+    border: 1px dashed white;
+    border-radius: 1em;
 }
 
 .info button {
@@ -231,8 +272,8 @@ html.js,
 }
 
 .dragslider h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 8em;
+    font-family: var(--font-headings);
+    font-size: 10vh;
     font-weight: 700;
     margin: 0 auto;
     line-height: 1;
@@ -245,8 +286,8 @@ html.js,
 
 .dragslider h2 span {
     display: block;
-    font-size: 27%;
-    font-family: 'Lato', sans-serif;
+    font-size: 40%;
+    font-family: var(--font-text);
     font-weight: 300;
     padding-top: 0.2em;
 }
@@ -332,7 +373,7 @@ button.slider-switch:hover {
     display: inline-block;
     position: relative;
     height: 100%;
-    background: #567076;
+    background: #000;
     font-size: 16px;
     white-space: normal;
     cursor: -webkit-grab;
@@ -365,16 +406,29 @@ button.slider-switch:hover {
 }
 
 .img-wrap img {
-    position: absolute;
+    object-fit: cover;
     display: block;
-    height: calc(100% + 0.2px);
-    opacity: 0.35;
+    height: 100%;
+    width: 100%;
+    /*    width: auto;*/
+    /*    height: auto;*/
+    opacity: 0.8;
+}
+
+.slide {
+    opacity: 0.4;
+    -webkit-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+}
+
+.slide.current {
+    opacity: 1;
 }
 
 @media screen and (min-aspect-ratio: 1280/850) {
     .img-dragger .img-wrap img {
-        width: calc(100% + 0.2px);
-        height: auto;
+        object-fit: cover;
+        opacity: 0.8;
     }
 }
 
@@ -394,12 +448,12 @@ button.slider-switch:hover {
 }
 
 .img-dragger-small .slide h2 {
-    font-size: 2.5em;
+    font-size: 2.0em;
     padding-top: 1em;
     top: 100%;
     width: 100%;
     text-align: center;
-    color: #34495e;
+    color: var(--color-text-selected);
     -webkit-animation: slideUpFade 0.4s 0.1s;
 }
 
@@ -416,15 +470,16 @@ button.slider-switch:hover {
 }
 
 .img-dragger-small .slide h2 span {
-    font-size: 0.35em;
+    font-size: 0.5em;
 }
 
 .img-dragger-small .slide.current h2 {
-    color: #08C;
+    color: var(--color-text-highlight);
     -webkit-animation-delay: 0s;
     animation-delay: 0s;
     -webkit-transition: color 0.3s, opacity 0.3s;
     transition: color 0.3s, opacity 0.3s;
+    opacity: 1.0;
 }
 
 .slide h2 i {
@@ -433,15 +488,16 @@ button.slider-switch:hover {
 }
 
 button.content-switch {
-    border: 2px solid #fff;
+    border: 2px dashed #fff;
+    border-radius: 1em;
     width: 160px;
     text-indent: 200%;
     overflow: hidden;
     white-space: nowrap;
     background: transparent;
     color: #fff;
-    font-family: 'Lato', sans-serif;
-    position: absolute;
+    font-family: var(--font-text);
+    position: relative;
     cursor: pointer;
     top: 100%;
     left: 50%;
@@ -484,7 +540,7 @@ button.content-switch::before {
 }
 
 .show-content .current button.content-switch {
-    border-color: #c5d3d6;
+    border-color: var(--color-text-normal);
     color: #c5d3d6;
     -webkit-transform: translate3d(-50%, 100%, 0);
     transform: translate3d(-50%, 100%, 0);
@@ -492,15 +548,17 @@ button.content-switch::before {
 
 .show-content .current button.content-switch::before {
     content: "\f102";
+    color: var(--color-text-normal)
 }
 
 /* Content */
 .js .pages {
     position: absolute;
     top: 100%;
-    height: 0;
+    height: 100%;
+    background: white;
     width: 100%;
-    overflow-y: scroll;
+    /*    overflow-y: scroll;*/
     -webkit-overflow-scrolling: touch;
     -webkit-transition: height 0s 0.6s;
     transition: height 0s 0.6s;
@@ -515,8 +573,8 @@ button.content-switch::before {
 .pages .content {
     background: #FFF;
     text-align: center;
-    color: #888;
-    font-size: 1.5em;
+    color: var(--color-text-normal);
+    font-size: 2em;
 }
 
 .js .pages .content {
@@ -531,7 +589,7 @@ button.content-switch::before {
 }
 
 .pages .content.show {
-    height: auto;
+    height: 100%;
     -webkit-transition: none;
     transition: none;
 }
@@ -539,7 +597,7 @@ button.content-switch::before {
 .pages .content h2 {
     font-size: 5em;
     max-width: 70%;
-    color: #34495e;
+    color: var(--color-text-normal);
     padding: 2.25em 10px 1em;
 }
 
@@ -548,7 +606,8 @@ button.content-switch::before {
 }
 
 .pages .content h2 span {
-    color: #95a5a6;
+    color: var(--color-text-normal);
+    opacity: 0.7;
 }
 
 .pages .content p {
@@ -557,7 +616,7 @@ button.content-switch::before {
     padding: 0.5em 2em;
     line-height: 1.5;
     text-align: left;
-    font-family: 'Book Antiqua', Palatino, 'Palatino Linotype', 'Palatino LT STD', Georgia, serif;
+    font-family: var(--font-text);
 }
 
 .pages .content p:last-child {
@@ -594,7 +653,7 @@ button.content-switch::before {
 }
 
 .pages .content a {
-    color: #3c89d5;
+    color: var(--color-text-visited);
     display: block;
 }
 
@@ -639,11 +698,15 @@ button.content-switch::before {
     }
 
     .pages .content {
-        font-size: 100%;
+        font-size: 200%;
     }
 
     .pages .content h2 {
         font-size: 3em;
+    }
+
+    .book-container {
+        width: 50%;
     }
 }
 
@@ -651,4 +714,26 @@ button.content-switch::before {
     button.slider-switch {
         display: none;
     }
+
+
+}
+
+
+
+
+
+
+.book-container {
+    position: relative;
+    border-radius: 1em;
+    /*    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);*/
+    text-align: center;
+    top: 10%;
+    text-align: center;
+    bottom: 10%;
+    left: 27.5%;
+    width: 45%;
+    background-color: white;
+    padding: 1% 5% 1% 5%;
+    overflow: hidden;
 }
