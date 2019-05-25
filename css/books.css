@@ -595,10 +595,10 @@ button.content-switch::before {
 }
 
 .pages .content h2 {
-    font-size: 5em;
+    font-size: 2em;
     max-width: 70%;
     color: var(--color-text-normal);
-    padding: 2.25em 10px 1em;
+    padding-top: 2em;
 }
 
 .no-js .pages .content h2 {
@@ -728,11 +728,12 @@ button.content-switch::before {
     border-radius: 1em;
     text-align: center;
     align-content: center;
-    top: 10vh;
+    top: -2vh;
     bottom: 10%;
-    width: calc(45vh + 15vw);
-    background-color: white;
+    width: calc(45vh + 12vw);
+    background-color: transparent;
     margin: auto;
     padding: 1% 1% 1% 1%;
     overflow: hidden;
+    z-index: 1;
 }
