@@ -715,11 +715,7 @@ button.content-switch::before {
         display: none;
     }
 
-
 }
-
-
-
 
 
 
@@ -728,7 +724,7 @@ button.content-switch::before {
     border-radius: 1em;
     text-align: center;
     align-content: center;
-    top: -2vh;
+    top: calc(0.5vh + 0.5vw);
     bottom: 10%;
     width: calc(45vh + 12vw);
     background-color: transparent;
@@ -736,4 +732,18 @@ button.content-switch::before {
     padding: 1% 1% 1% 1%;
     overflow: hidden;
     z-index: 1;
+}
+
+
+.medium_content_loader{
+    position: relative;
+    display: block;
+    width: calc(45vh + 12vw);
+    background-color: greenyellow;
+    border-radius: 1em;
+    margin: auto;
+    top: calc(0.5vh + 0.5vw);
+    padding: 1% 1% 1% 1%;
+    bottom: 10%;
+
 }
