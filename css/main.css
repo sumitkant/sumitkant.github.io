@@ -77,13 +77,17 @@ body::-webkit-scrollbar-track {
 
 }
 
-body::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: 15px;
+    height: 8px;
 }
 
-body::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background-color: var(--color-bg-highlight);
+    border-radius: 1em;
 }
+
+
 
 
 /* ===================================================================
@@ -249,7 +253,7 @@ h6,
 }
 
 p img {
-    padding-left: 60px;
+/*    padding-left: 60px;*/
 }
 
 p.lead {
@@ -360,6 +364,7 @@ pre {
     padding: 1.5em;
     margin: 4.2rem 0;
     border-radius: 1em;
+/*    overflow-x: hidden;*/
 }
 
 code {
@@ -2437,8 +2442,10 @@ header .logo a:hover {}
 }
 
 #content-wrap .primary-content img {
-    max-width: 910px;
-    margin: 3rem 0 3rem -6rem;
+    width: 100%;
+    border-radius: 0.5em;
+/*    max-width: 910px;*/
+/*    margin: 3rem 0 3rem -6rem;*/
 }
 
 #content-wrap .primary-content img.pull-right {
@@ -2472,8 +2479,9 @@ header .logo a:hover {}
     }
 
     #content-wrap .primary-content img {
-        max-width: 844px;
-        margin: 3rem 0 3rem -5rem;
+        width: 100%;
+/*        max-width: 844px;*/
+/*        margin: 3rem 0 3rem -5rem;*/
     }
 
 }
@@ -2489,8 +2497,9 @@ header .logo a:hover {}
     }
 
     #content-wrap .primary-content img {
+        width: 100%;
         max-width: 100%;
-        margin: 3rem 0 3rem 0;
+/*        margin: 3rem 0 3rem 0;*/
     }
 
 }
