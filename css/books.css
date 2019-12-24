@@ -445,6 +445,7 @@ button.slider-switch:hover {
     top: 50%;
     -webkit-transform: translate3d(0, -50%, 0);
     transform: translate3d(0, -50%, 0);
+    text-shadow: 0px 0px 10px #000000ad;
 }
 
 .img-dragger-small .slide h2 {
@@ -694,7 +695,7 @@ button.content-switch::before {
 
 @media screen and (max-width: 63.125em) {
     .dragslider h2 {
-        font-size: 2.8em;
+        font-size: calc(6vw + 2vh);
     }
 
     .pages .content {
@@ -702,7 +703,8 @@ button.content-switch::before {
     }
 
     .pages .content h2 {
-        font-size: 3em;
+        font-size: 2em;
+        margin-top: 0.5em;
     }
 
     .book-container {
