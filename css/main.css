@@ -1271,9 +1271,9 @@ input::-moz-focus-inner {
 }
 
 .bricks-wrapper .entry-thumb .thumb-link::before {
-    content: "";
+/*    content: "";*/
     display: block;
-    background: rgba(0, 0, 0, 0.8);
+/*    background: rgba(0, 0, 0, 0.3);*/
     opacity: 0;
     visibility: hidden;
     position: absolute;
@@ -1290,7 +1290,7 @@ input::-moz-focus-inner {
 }
 
 .bricks-wrapper .entry-thumb .thumb-link::after {
-    content: "...";
+/*    content: "...";*/
     font-family: georgia, serif;
     font-size: 4.5rem;
     z-index: 1;
