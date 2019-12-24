@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html class="no-js oldie ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>
+<html class="no-js oldie ie9" lang="en">
+<![endif]-->
+<!--[if (gte IE 9)|!(IE)]>
+<!--><html class="no-js" lang="en"> <!--<![endif]-->
+
+<head>
+
+    <!--- basic page needs
+   ================================================== -->
+    <meta charset="utf-8">
+    <title>XGBoost Grid Search multiprocessing</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- mobile specific metas
+   ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+   ================================================== -->
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/vendor.css">
+    <link rel="stylesheet" href="css/main.css">
+
+
+    <!-- script
+   ================================================== -->
+    <script src="js/modernizr.js"></script>
+    <script src="js/pace.min.js"></script>
+
+    <!-- favicons
+	================================================== -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+</head>
+
+<body id="top">
+
+    <!-- header 
+   ================================================== -->
+    <header class="short-header">
+
+        <div class="gradient-block"></div>
+
+        <div class="row header-content">
+
+            <div class="logo">
+                <a href="index.html">Sumit Kant</a>
+            </div>
+
+            <nav id="main-nav-wrap">
+                <ul class="main-navigation sf-menu">
+                    <li><a href="index.html" title="">Home</a></li>
+                    <!--
+                    <li class="has-children">
+                        <a href="category.html" title="">Categories</a>
+                        <ul class="sub-menu">
+                            <li><a href="category.html">Wordpress</a></li>
+                            <li><a href="category.html">HTML</a></li>
+                            <li><a href="category.html">Photography</a></li>
+                            <li><a href="category.html">UI</a></li>
+                            <li><a href="category.html">Mockups</a></li>
+                            <li><a href="category.html">Branding</a></li>
+                        </ul>
+                    </li>
+-->
+                    <li class="has-children current">
+                        <a href="blog.html" title="">Blog</a>
+                        <!--
+                        <ul class="sub-menu">
+                            <li><a href="single-video.html">Video Post</a></li>
+                            <li><a href="single-audio.html">Audio Post</a></li>
+                            <li><a href="single-gallery.html">Gallery Post</a></li>
+                            <li><a href="single-standard.html">Standard Post</a></li>
+                        </ul>
+-->
+                    </li>
+                    <li><a href="books.html" title="">Books</a></li>
+                    <!--                    <li><a href="style-guide.html" title="">Styles</a></li>-->
+                    <li><a href="about.html" title="">About</a></li>
+                    <!-- <li><a href="contact.html" title="">Contact</a></li> -->
+                </ul>
+            </nav> <!-- end main-nav-wrap -->
+
+            <div class="search-wrap">
+
+                <form role="search" method="get" class="search-form" action="#">
+                    <label>
+                        <span class="hide-content">Search for:</span>
+                        <input type="search" class="search-field" placeholder="Type Your Keywords" value="" name="s" title="Search for:" autocomplete="off">
+                    </label>
+                    <input type="submit" class="search-submit" value="Search">
+                </form>
+
+                <a href="#" id="close-search" class="close-btn">Close</a>
+
+            </div> <!-- end search wrap -->
+
+            <div class="triggers">
+                <a class="search-trigger" href="#"><i class="fa fa-search"></i></a>
+                <a class="menu-toggle" href="#"><span>Menu</span></a>
+            </div> <!-- end triggers -->
+
+        </div>
+
+    </header> <!-- end header -->
+
+
+    <!-- content
+   ================================================== -->
+    <section id="content-wrap" class="blog-single">
+        <div class="row">
+            <div class="col-twelve">
+
+                <article class="format-standard">
+
+                    <div class="content-media">
+                        <div class="post-thumb">
+                            <img src="https://keyboardinterrupt.org/wp-content/uploads/2018/09/python-multiprocessing.png">
+                        </div>
+                    </div>
+
+                    <div class="primary-content">
+
+                        <h1 class="page-title">Parallel XGBoost Grid Search Using Multiprocessing</h1>
+
+                        <ul class="entry-meta">
+                            <li class="date">October 10, 2019</li>
+                            <li class="cat"><a href="">Automation</a><a href="">Python</a></li>
+                        </ul>
+
+                        <blockquote>
+                            <p>Redesigning your application to run multithreaded on a multicore machine is a little like learning to swim by jumping into the deep end. -- Herb Sutter</p>
+                        </blockquote>
+
+                        <p>XGBoost is one the most widely used and accurate algorithms for different machine learning applications. Part of success of this algorithm depends on choosing the right hyperparameters which can take quite a while if you are doing it manually. A way out is to automate and parallelize the whole process and identify the best parameters in least possible time. Enter multiprocessing...</p>
+
+                        <p>Multiprocessing is a python package that supports spawning processes using an API similar to the threading module. The multiprocessing package offers both local and remote concurrency, effectively side-stepping the Global Interpreter Lock (this is important when running codes in interactive environment) by using subprocesses instead of threads. Due to this, the multiprocessing module allows the programmer to fully leverage multiple processors on a given machine.
+                        </p>
+
+
+                        <h2>Overview</h2>
+
+                        <p>I have a wish-list of 100+ items mostly electronics and books. I wish to buy them at the lowest price possible. To do this, I.</p>
+
+                        <ol>
+                            <li>Made my Amazon wishlist public (so that it won’t require a login to work with).</li>
+                            <li>Wrote a python script using selenium which will open up a browser and scrape product prices.</li>
+                            <li>Uploaded the prices on Google spreadsheet after every run of the script.</li>
+                            <li>Created a task in Windows Task Scheduler to schedule the python script to run every 3 hours.</li>
+                            <li>Used Tableau to read the Google spreadsheet and notify price trends.</li>
+                        </ol>
+
+
+
+                        <h2>Scraping from Wishlist Item</h2>
+
+
+                        <p>Below is an example of an Amazon wish-list item. The fields available here are product name, price, rating and a bunch relevant-but-not-required-for-this-purpose information. Here is the link to my wish-list.</p>
+
+                        <p><img src="images/Blogs/1.AmazonWishlistTracking/item_sample.png" alt="Item Sample"></p>
+
+                        <p>There were two approaches to fetching prices. One was to dig through the HTML, find relevant elements and capture text inside those elements. Another, is to read the entire text in a wishlist item and use regular expressions to extract details. I chose the latter since it provides me with some insurance against change element classes as long as the overall site structure remains the same.</p>
+
+                        <h2>Capturing Prices using Selenium in python</h2>
+                        <h3>Fetching Text</h3>
+
+                        <p><i>Selenium automates browsers!</i>. That’s right and that’s what their webpage says. The best way to getting started with selenium in python is to read the <a href="http://selenium-python.readthedocs.io/getting-started.html">documentation.</a></p>
+
+                        <p>I used selenium to automate Google Chrome through chrome web-driver. The python script runs selenium which opens Google Chrome window, fetches the wishlist page and scrapes entire text for each wishlist item.</p>
+
+                        <h2>Extracted Relevant Information</h2>
+
+                        <p>I used regex to extract item names and prices and save those prices in a data frame. In the next step, I created a python dictionary from that dataframe to upload items to the spreadsheet.</p>
+
+                        <h2>Uploading to Google Spreadsheet</h2>
+
+                        <p>Uploading to Google spreadsheet requires quite a bit of setup. To get around this, I referred to this <a href="https://www.youtube.com/watch?v=7I2s81TsCnc&t=915s&list=LLNu5gIHa8ddVuSqKvIhJGXw&index=4">youtube video</a>. This setup essentially requires access to Google Sheets and Google Drive APIs. They will generate credentials which will help authorize python to make changes in the spreadsheet.</p>
+
+                        <p>I took help of the <b>gspread library</b> in python to upload entries row-by-row.</p>
+
+                        <h2>Scheduling Script Runs</h2>
+
+                        <p>In order to automate the entire process of fetching prices and storing them remotely in a spreadsheet, I turned to windows’ inbuilt Task Scheduler. As the name suggests, it schedules a task to run based on a trigger. In this case, the trigger was time. I set it to run at 7:00 in the morning and then in every 3 hours. However, you can practically schedule it to run it as soon as every 5 minutes. The result is this console!</p>
+
+                        <p><img src="images/Blogs/1.AmazonWishlistTracking/console.png"></p>
+
+                        <p>I referred to this <a href="https://www.youtube.com/watch?v=n2Cr_YRQk7o">youtube video</a> for scheduling python scripts</p>
+
+
+                        <h2>Analyzing prices in Tableau</h2>
+
+                        <p>To make use of the scraped data, I used Tableau (public version) to read the online spreadsheet and created a dashboard listing minimum prices for today and trend along with some filters. Here the link for Tableau dashboard.</p>
+
+                        <p><img src="images/Blogs/1.AmazonWishlistTracking/tableau.png"></p>
+
+                        <p>I used this dashboard to compare prices over a period of time and get the best deals.</p>
+
+                        <h2>Next Steps</h2>
+
+                        <p>There are a lot of improvements that can be done to this project at various levels. For instance, prices from other sources can be included to improve the chances of getting a bang for the buck. Although there are price comparison apps all around the web, they happen to work well for tracking a few items.</p>
+
+                        <p>Also, the trend can be studied by the time of the day, weeks and months to find which time of the day most deals occur (this will be done as the dataset grows). For now, the model works for me and gives me what I need.</p>
+
+
+                        <!-- END OF BLOG -->
+
+                    </div> <!-- end entry-primary -->
+
+                    <div class="pagenav group">
+                        <div class="prev-nav">
+                            <a href="#" rel="prev">
+                                <span>Previous</span>
+                                Tips on Minimalist Design
+                            </a>
+                        </div>
+                        <div class="next-nav">
+                            <a href="#" rel="next">
+                                <span>Next</span>
+                                Less Is More
+                            </a>
+                        </div>
+                    </div>
+
+                </article>
+
+
+            </div> <!-- end col-twelve -->
+        </div> <!-- end row -->
+
+    </section> <!-- end content -->
+
+
+    <!-- footer
+   ================================================== -->
+    <footer>
+
+
+        <div class="footer-bottom">
+            <div class="row">
+
+                <div class="col-twelve">
+                    <div class="copyright">
+                        <span>© Copyright 2019</span>
+                        <span>By <a href="index.html">Sumit Kant</a></span>
+                    </div>
+
+                    <div id="go-top">
+                        <a class="smoothscroll" title="Back to Top" href="#top"><i class="icon icon-arrow-up"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div> <!-- end footer-bottom -->
+
+    </footer>
+
+    <div id="preloader">
+        <div id="loader"></div>
+    </div>
+
+    <!-- Java Script
+   ================================================== -->
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+
+</body></html>

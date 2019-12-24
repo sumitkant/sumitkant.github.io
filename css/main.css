@@ -357,11 +357,9 @@ pre {
 }
 
 pre {
-    padding: 2.4rem 3rem 3rem;
-    background: #EAEAEA;
+    padding: 1.5em;
     margin: 4.2rem 0;
     border-radius: 1em;
-
 }
 
 code {
@@ -2530,7 +2528,7 @@ header .logo a:hover {}
  * ------------------------------------------------------------------- */
 #bricks {
     /*    padding-top: 4.2rem;*/
-    margin-top: -1em;
+    margin-top: -11em;
 }
 
 #bricks .masonry {
