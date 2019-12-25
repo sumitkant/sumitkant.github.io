@@ -175,7 +175,7 @@
             this.txt = fullTxt.substring(0, this.txt.length + 1);
         }
 
-        this.el.innerHTML = '<span class="wrap">' + this.txt + '</span>';
+        this.el.innerHTML = '<span class="wrap"> I am ' + this.txt + '</span>';
 
         var that = this;
         var delta = 100 - Math.random() * 100;
@@ -210,7 +210,7 @@
         // INJECT CSS
         var css = document.createElement("style");
         css.type = "text/css";
-        css.innerHTML = ".typewrite > .wrap { border-right: 0.08em solid #000}";
+        css.innerHTML = ".typewrite > .wrap {}";
         document.body.appendChild(css);
     };
 
