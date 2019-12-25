@@ -1348,7 +1348,7 @@ input::-moz-focus-inner {
 
 .bricks-wrapper .entry-header .entry-title a,
 .bricks-wrapper .entry-header .entry-title a:visited {
-    color: var(--color-text-inactive);
+    color: var(--color-text-normal);
 }
 
 .bricks-wrapper .entry-header .entry-title a:hover,
@@ -1365,7 +1365,7 @@ input::-moz-focus-inner {
 
 .bricks-wrapper .entry-header .entry-meta a,
 .bricks-wrapper .entry-header .entry-meta a:visited {
-    color: var(--color-text-inactive);
+    color: var(--color-text-normal);
 }
 
 .bricks-wrapper .entry-header .cat-links a::after {
