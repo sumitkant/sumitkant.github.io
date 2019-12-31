@@ -21,21 +21,25 @@
 
 
 .intro {
-    background-color: black;
+    background-color: rgba(0,0,0,1);
     color: white;
     height: 52vh;
     /*    border-top-left-radius: 3em;*/
     border: 5px solid transparent;
+    border-radius: 1em 0 0 1em;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 }
 
 
 
+
 .nav-links {
-    background-color: white;
+    background-color: rgba(255,255,255,1);
     height: 52vh;
     /*    border-bottom-right-radius: 3em;*/
     border: 5px solid transparent;
-
+    border-radius: 0 1em 1em 0;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 }
 
 /*
@@ -144,10 +148,12 @@ div.nav-link-child:hover {
 
     .intro {
         height: 30vh;
+        border-radius: 1em 1em 0 0;
     }
 
     .nav-links {
         height: 40vh;
+        border-radius: 0em 0em 1em 1em;
     }
 
 
@@ -191,12 +197,16 @@ div.nav-link-child:hover {
 
 @media screen and (max-width:500px),
 screen and (max-height:640px) {
+    
+    .col-twelve{
+        margin-top: -4vh;
+    }
     p.typewrite {
         font-size: 0.6em;
     }
 
     .intro {
-        height: 25vh;
+        height: 30vh;
     }
 
     #logo a {
@@ -210,11 +220,12 @@ screen and (max-height:640px) {
     }
 
     .intro_inner {
-        top: 6vh;
+        top: 8.5vh;
     }
 
     .intro__title {
         font-size: 1.5em;
+        margin-bottom: 0;
     }
 
     .nav-links p {
@@ -249,8 +260,6 @@ screen and (max-height:640px) {
     width: 100%;
     height: 100%;
     z-index: -100000;
-
-    /*    background-color: #fff;*/
     background: url(../images/homepage/main_bg.jpg) no-repeat left top;
     background-size: cover;
     -webkit-transition: all 0.15s ease-in-out;

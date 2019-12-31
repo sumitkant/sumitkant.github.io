@@ -175,7 +175,7 @@
             this.txt = fullTxt.substring(0, this.txt.length + 1);
         }
 
-        this.el.innerHTML = 'I\'m Sumit Kant & I\'m a <br> <span class="wrap"> ' + this.txt + '</span>';
+        this.el.innerHTML = 'I\'m Sumit & I\'m a <br> <span class="wrap"> ' + this.txt + '</span>';
 
         var that = this;
         var delta = 100 - Math.random() * 100;
