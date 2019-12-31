@@ -1,0 +1,239 @@
+/***** STRUCTURE OF HOMEPAGE *******/
+
+#logo a {
+    display: block;
+    padding: 0;
+    margin: 7vh 0 0 0;
+    outline: 0;
+    border: none;
+    width: 100%;
+    height: 100px;
+    background: url("../images/logo.png") no-repeat center;
+    filter: invert(100%);
+    background-size: 92.3px 100px;
+    color: transparent;
+    -moz-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    -webkit-transition: all 0.15s ease-in-out;
+    -ms-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+}
+
+
+.intro {
+    background-color: black;
+    color: white;
+    height: 52vh;
+/*    border-top-left-radius: 3em;*/
+    border: 5px solid transparent;
+}
+
+
+
+.nav-links {
+    background-color: white;
+    height: 52vh;
+/*    border-bottom-right-radius: 3em;*/
+    border: 5px solid transparent;
+
+}
+
+/*
+
+.nav-links:hover {
+    border: 5px solid black;
+}
+
+.intro:hover {
+    border: 5px solid white;
+}
+*/
+
+
+/******** INTRO BLOCK ********/
+
+.intro_inner {
+    text-align: center;
+    position: relative;
+    top: 15vh;
+}
+
+.intro__title {
+    color: white;
+    font-size: 2.5em;
+}
+
+.intro__title span {
+    will-change: transform;
+    display: inline-block;
+    /*    white-space: pre;*/
+}
+
+
+p.typewrite {
+    font-size: 0.4em;
+    color: white;
+    font-family: var(--font-text);
+}
+
+p.typewrite .wrap {
+    border-bottom: 2px solid white;
+    font-family: var(--font-text);
+}
+
+
+
+
+/********* NAV LINKS ***********/
+
+
+.nav-links a {
+    border: 0;
+}
+
+
+.nav-link-child {
+    line-height: 14.5vh;
+    font-family: var(--font-display);
+    font-size: 1.8em;
+    transition: all 0.15s ease-in-out;
+    
+}
+
+.nav-links p {
+    width: max-content;
+    margin-top: -4.5vh;
+    font-weight: bold;
+    line-height: 1.8em;
+    border-bottom: 2px solid black;
+}
+
+div.nav-link-child:hover {
+    color: var(--color-text-normal);
+    border: 0;
+    padding-left: 0.35em;
+    transition: all 0.15s ease-in-out;
+}
+
+#particle_sphere {
+    position: fixed;
+    right: 5%;
+    top: 0;
+    z-index: -1000;
+    overflow-y: hidden;
+}
+
+#top {
+    overflow: hidden;
+}
+
+
+/*STRUCTURE FOR SMALL SCREENS*/
+
+@media only screen and (max-width:768px) {
+
+    .intro {
+        height: 30vh;
+    }
+
+    .nav-links {
+        height: 40vh;
+    }
+
+
+    #logo a {
+        margin: 3vh 0 0 0;
+        height: 65px;
+        background-size: 60px 65px;
+    }
+
+    .intro_inner {
+        top: 8vh;
+    }
+
+    p.typewrite {
+        font-size: 0.4em;
+    }
+
+    .nav-links a {
+        text-align: center;
+    }
+
+    .nav-links p {
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: -2vh;
+    }
+
+    .nav-link-child {
+        line-height: 8vh;
+    }
+}
+
+@media only screen and (max-width:600px) {
+    p.typewrite {
+        font-size: 0.7em;
+    }
+
+}
+
+.copyright {
+    position: absolute;
+    bottom: 1vh;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 0.7em;
+}
+
+.copyright span {
+    color: white;
+
+}
+
+
+.bg_transition {
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: -100000;
+    
+    /*    background-color: #fff;*/
+    background: url(../images/homepage/main_bg.jpg) no-repeat left top;
+    background-size: cover;
+    -webkit-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+
+}
+
+.blogs:hover ~ .bg_transition {
+    background: url(../images/homepage/blogs_bg.jpg) no-repeat right top;
+    background-size: cover;
+    -webkit-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+
+}
+
+.books:hover ~ .bg_transition {
+    background: url(../images/homepage/bookshelf_bg.jpg) no-repeat center center;
+    background-size: cover;
+    -webkit-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+
+}
+
+.about:hover ~ .bg_transition {
+    background: url(../images/homepage/about_bg.jpg) no-repeat center bottom;
+    background-size: cover;
+    -webkit-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+
+}
