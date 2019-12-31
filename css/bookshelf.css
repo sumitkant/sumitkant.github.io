@@ -1,0 +1,330 @@
+.bookshelf-intro {
+    font-size: 2.5em;
+    text-align: center;
+    margin: 1em 0;
+}
+
+
+.subtitle {
+    text-align: center;
+    font-size: 1.2em;
+}
+
+/* masonry entries - (_common-styles.scss) 
+ * ------------------------------------------------------------------- */
+.bricks-wrapper .entry {
+    margin-bottom: 40px;
+}
+
+.bricks-wrapper .entry-text {
+    /*    border: 2px solid black;*/
+
+
+}
+
+.bricks-wrapper .entry-thumb,
+.bricks-wrapper .entry-text {
+    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.9);
+    /*    border: 2px solid black;*/
+}
+
+.bricks-wrapper .entry-thumb {
+    position: relative;
+    overflow: hidden;
+}
+
+.bricks-wrapper .entry-thumb .thumb-link img {
+    vertical-align: bottom;
+    opacity: 0.6;
+    transform: scale(1.01);
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+.bricks-wrapper .entry-thumb .thumb-link::before {
+    /*    content: "";*/
+    display: block;
+    /*        background: rgba(0, 0, 0, 0.3);*/
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    z-index: 1;
+}
+
+.bricks-wrapper .entry-thumb .thumb-link::after {
+    /*    content: "...";*/
+    font-family: georgia, serif;
+    font-size: 4.5rem;
+    z-index: 1;
+    display: block;
+    height: 90px;
+    width: 90px;
+    letter-spacing: -2.6px;
+    line-height: 90px;
+    margin-left: -45px;
+    margin-top: -45px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    text-align: center;
+    color: #FFFFFF;
+    opacity: 0;
+    visibility: hidden;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
+}
+
+.bricks-wrapper .entry-thumb:hover .thumb-link::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+.bricks-wrapper .entry-thumb:hover .thumb-link::after {
+    opacity: 1;
+    visibility: visible;
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+}
+
+.bricks-wrapper .entry-thumb:hover .thumb-link img {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    -webkit-transform: scale(1.01);
+    -ms-transform: scale(1.01);
+    transform: scale(1.01);
+}
+
+.bricks-wrapper .entry-text {
+    padding: 1.8rem 2.8rem 3.6rem;
+    background-color: white;
+}
+
+.bricks-wrapper .entry-header .entry-title {
+    font-size: 2.5rem;
+    line-height: 1.32;
+    margin-bottom: 1.8rem;
+}
+
+.bricks-wrapper .entry-header .entry-title a,
+.bricks-wrapper .entry-header .entry-title a:visited {
+    color: var(--color-text-normal);
+}
+
+.bricks-wrapper .entry-header .entry-title a:hover,
+.bricks-wrapper .entry-header .entry-title a:focus {
+    color: var(--color-text-normal);
+}
+
+
+.bricks-wrapper .entry-header .entry-meta {
+    font-family: var(--font-text);
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.bricks-wrapper .entry-header .entry-meta a,
+.bricks-wrapper .entry-header .entry-meta a:visited {
+    color: var(--color-text-normal);
+}
+
+.bricks-wrapper .entry-header .cat-links a::after {
+    content: ", ";
+}
+
+.bricks-wrapper .entry-header .cat-links a:last-child::after {
+    display: none;
+}
+
+.bricks-wrapper .entry-excerpt {
+    font-size: 1.5rem;
+    line-height: 2.7rem;
+    color: #6b6b6b;
+}
+
+
+
+
+/* ===================================================================
+ *  12. bricks masonry - (_layout.scss)
+ *
+ * ------------------------------------------------------------------- */
+#bricks {
+    /*    padding-top: 4.2rem;*/
+    margin-top: 0;
+}
+
+#bricks .masonry {
+    max-width: 1440px;
+}
+
+#bricks .pagination {
+    margin-top: 6rem;
+}
+
+#bricks.with-top-sep {
+    position: relative;
+}
+
+#bricks.with-top-sep::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    margin-left: -100px;
+    width: 200px;
+    height: 1px;
+    background-color: #D1D1D1;
+}
+
+.bricks-wrapper:before,
+.bricks-wrapper:after {
+    content: "";
+    display: table;
+}
+
+.bricks-wrapper:after {
+    clear: both;
+}
+
+.bricks-wrapper .grid-sizer,
+.bricks-wrapper .brick {
+    width: 14%;
+}
+
+
+.bricks-wrapper .brick {
+    float: left;
+    padding: 0 20px;
+}
+
+article.brick {
+    border-radius: 20px;
+}
+
+.bricks-wrapper .featured-grid {
+    width: 50%;
+}
+
+.bricks-wrapper .featured-grid .entry-content {
+    width: 100%;
+    background: #151515;
+
+}
+
+div.entry-thumb {
+    border-radius: 0em;
+    border: 1px solid #ccc;
+}
+
+div.entry-thumb.recommended {
+    border: 3px solid white;
+    outline: 3px solid #1289A7;
+/*    box-shadow: 0 0 5px #B33771;*/
+}
+
+div.entry-thumb.recommended .thumb-link img{
+    opacity: 1;
+}
+
+
+.format-quote .entry-thumb {
+    border-radius: 1em;
+}
+
+div.entry-text {
+    border-radius: 0 0 1em 1em;
+}
+
+/* responsive: 
+/* bricks masonry
+ * ------------------------------------------------------------------- */
+@media only screen and (max-width:1280px) {
+
+    .bricks-wrapper .grid-sizer,
+    .bricks-wrapper .brick {
+        width: 20%;
+    }
+
+    .bricks-wrapper .featured-grid {
+        width: 20%;
+    }
+}
+
+@media only screen and (max-width:1024px) {
+    .bricks-wrapper .brick {
+        padding: 0 18px;
+    }
+
+}
+
+@media only screen and (max-width:960px) {
+
+    .bricks-wrapper .grid-sizer,
+    .bricks-wrapper .brick {
+        width: 25%;
+    }
+
+    .bricks-wrapper .featured-grid {
+        width: 25%;
+    }
+}
+
+@media only screen and (max-width:768px) {
+    .bricks-wrapper .brick {
+        padding: 0 15px;
+    }
+
+}
+
+@media only screen and (max-width:600px) {
+    #bricks .row {
+        max-width: 460px;
+    }
+
+    .bricks-wrapper .grid-sizer,
+    .bricks-wrapper .brick {
+        width: 50%;
+        padding: 0 10px;
+        clear: both;
+    }
+}
+
+@media only screen and (max-width:400px) {
+    .bookshelf-intro {
+        font-size: 1.8em;
+    }
+
+    .bricks-wrapper .grid-sizer {
+        width: 50%;
+    }
+
+    .bricks-wrapper .brick {
+        width: 46% !important;
+        float: none !important;
+        clear: both !important;
+        margin-left: 2%;
+        margin-right: 0%;
+        padding: 1%;
+        margin-bottom: 3%;
+    }
+
+}
