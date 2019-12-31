@@ -196,21 +196,21 @@ screen and (max-height:640px) {
     }
 
     .intro {
-        height: 30vh;
+        height: 25vh;
     }
 
     #logo a {
         margin: 0 0 0 0;
         height: 50px;
-        background-size: 44px 50px;
+        background-size: 46px 50px;
     }
 
     .nav-links {
-        height: 40vh;
+        height: 39vh; 
     }
 
     .intro_inner {
-        top: 7vh;
+        top: 6vh;
     }
 
     .intro__title {
@@ -222,8 +222,8 @@ screen and (max-height:640px) {
     }
     
     .nav-link-child {
-        line-height: 7vh;
-        font-size: 1.2em;
+        line-height: 6.5vh;
+        font-size: 1em;
     }
 
     .copyright {
