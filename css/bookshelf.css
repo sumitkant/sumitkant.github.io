@@ -116,7 +116,7 @@
 }
 
 .bricks-wrapper .entry-thumb.recommended:hover {
-    box-shadow: 0 0 0 4pt #1289A7;
+    box-shadow: 0 0 0 4pt black;
     -webkit-transition: all 0.15s ease-in-out;
     -o-transition: all 0.15s ease-in-out;
     transition: all 0.15s ease-in-out;
@@ -254,7 +254,7 @@ div.entry-thumb.recommended {
     border-radius: 0.6em;
     border: 3px solid white;
 
-    box-shadow: 0 0 0 2pt #1289A7;
+    box-shadow: 0 0 0 2pt black;
     -webkit-transition: all 0.15s ease-in-out;
     -o-transition: all 0.15s ease-in-out;
     transition: all 0.15s ease-in-out;
