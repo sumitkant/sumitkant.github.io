@@ -37,12 +37,14 @@
     vertical-align: bottom;
     opacity: 0.6;
     transform: scale(1.01);
-    -moz-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    -webkit-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    -webkit-transition: all 0.15s ease-in-out;
+    -ms-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
 }
+
+
 
 .bricks-wrapper .entry-thumb .thumb-link::before {
     /*    content: "";*/
@@ -55,11 +57,11 @@
     left: 0;
     width: 100%;
     height: 100%;
-    -moz-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    -webkit-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    -webkit-transition: all 0.15s ease-in-out;
+    -ms-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
     z-index: 1;
 }
 
@@ -82,11 +84,11 @@
     color: #FFFFFF;
     opacity: 0;
     visibility: hidden;
-    -moz-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    -webkit-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    -webkit-transition: all 0.15s ease-in-out;
+    -ms-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
     -webkit-transform: scale(0.5);
     -ms-transform: scale(0.5);
     transform: scale(0.5);
@@ -106,10 +108,23 @@
 }
 
 .bricks-wrapper .entry-thumb:hover .thumb-link img {
+    opacity: 1;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     -webkit-transform: scale(1.01);
     -ms-transform: scale(1.01);
     transform: scale(1.01);
+}
+
+.bricks-wrapper .entry-thumb.recommended:hover {
+    box-shadow: 0 0 0 4pt #1289A7;
+    -webkit-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+    /*
+    -webkit-transform: scale(1.01);
+    -ms-transform: scale(1.01);
+    transform: scale(1.01);
+*/
 }
 
 .bricks-wrapper .entry-text {
@@ -231,17 +246,22 @@ article.brick {
 }
 
 div.entry-thumb {
-    border-radius: 0em;
+    border-radius: 0.6em;
     border: 1px solid #ccc;
 }
 
 div.entry-thumb.recommended {
+    border-radius: 0.6em;
     border: 3px solid white;
-    outline: 3px solid #1289A7;
-/*    box-shadow: 0 0 5px #B33771;*/
+
+    box-shadow: 0 0 0 2pt #1289A7;
+    -webkit-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+    /*    box-shadow: 0 0 5px #B33771;*/
 }
 
-div.entry-thumb.recommended .thumb-link img{
+div.entry-thumb.recommended .thumb-link img {
     opacity: 1;
 }
 
