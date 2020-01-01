@@ -8,9 +8,9 @@
     border: none;
     width: 100%;
     height: 100px;
-    background: url("../images/logo.png") no-repeat center;
-    filter: invert(100%);
-    background-size: 92.3px 100px;
+    background: url("../images/Main_Logo.svg") no-repeat center;
+/*    filter: invert(100%);*/
+    background-size: 100% 100px;
     color: transparent;
     -moz-transition: all 0.15s ease-in-out;
     -o-transition: all 0.15s ease-in-out;
@@ -59,7 +59,7 @@
 .intro_inner {
     text-align: center;
     position: relative;
-    top: 15vh;
+    top: 17vh;
 }
 
 .intro__title {
@@ -159,9 +159,9 @@ div.nav-link-child:hover {
 
 
     #logo a {
-        margin: 3vh 0 0 0;
-        height: 65px;
-        background-size: 60px 65px;
+        margin: 2.5vh 0 0 0;
+        height: 80px;
+        background-size: 100% 80px;
     }
 
     .intro_inner {
@@ -212,8 +212,8 @@ screen and (max-height:640px) {
 
     #logo a {
         margin: 0 0 0 0;
-        height: 50px;
-        background-size: 46px 50px;
+        height: 70px;
+        background-size: 100% 70px;
     }
 
     .nav-links {
@@ -270,10 +270,13 @@ screen and (max-height:640px) {
     transition: all 0.15s ease-in-out;
 
 }
+/*
 
 .blogs:hover ~ .bg_transition {
     background: url(../images/homepage/blogs_bg.jpg) no-repeat right top;
     background-size: cover;
+    background-color: #aaa;
+    background-blend-mode: color-burn;
     -webkit-transition: all 0.15s ease-in-out;
     -o-transition: all 0.15s ease-in-out;
     transition: all 0.15s ease-in-out;
@@ -297,3 +300,4 @@ screen and (max-height:640px) {
     transition: all 0.15s ease-in-out;
 
 }
+*/
