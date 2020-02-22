@@ -97,7 +97,7 @@ p.typewrite .wrap {
 
 
 .nav-link-child {
-    line-height: 14.5vh;
+    line-height: 12.5vh;
     font-family: var(--font-display);
     font-size: 1.8em;
     transition: all 0.15s ease-in-out;
@@ -235,7 +235,8 @@ screen and (max-height:640px) {
     }
     
     .nav-link-child {
-        line-height: 6.5vh;
+        line-height: 8vh;
+        margin-bottom: 1vh;
         font-size: 1em;
     }
 

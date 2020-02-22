@@ -1,0 +1,39 @@
+body {
+    background: url(../images/musiclab/wallpaper_4k.png) center center;
+    background-size: cover;
+}
+
+.copyright {
+    position: absolute;
+    bottom: 1vh;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 0.8em;
+}
+
+.copyright a {
+    color: white;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    margin-top: 10vh;
+}
+
+a,
+a:visited {
+    color: white;
+
+}
+
+
+h3 {
+    
+    text-align: center;
+    width: 80px;
+    margin: auto;
+    margin-top: 55vh;
+    height: 20px;
+}
