@@ -9,7 +9,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     color: white;
-    font-size: 0.8em;
+    font-size: 0.7em;
 }
 
 .copyright a {
@@ -25,15 +25,14 @@ h1 {
 a,
 a:visited {
     color: white;
-
+    text-decoration: underline;
 }
 
 
 h3 {
     
     text-align: center;
-    width: 80px;
     margin: auto;
-    margin-top: 55vh;
+    margin-top: 50vh;
     height: 20px;
 }
