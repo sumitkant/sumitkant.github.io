@@ -10,440 +10,660 @@
 
 <head>
 
-    <!--- basic page needs
+  <!--- basic page needs
    ================================================== -->
-    <meta charset="utf-8">
-    <title>Bookshelf | Sumit Kant</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <meta charset="utf-8">
+  <title>Bookshelf | Sumit Kant</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <!-- mobile specific metas
+  <!-- mobile specific metas
    ================================================== -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <!-- CSS
+  <!-- CSS
    ================================================== -->
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/vendor.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/bookshelf.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/vendor.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/bookshelf.css">
 
 
-    <!-- script
+  <!-- script
    ================================================== -->
-    <script src="js/modernizr.js"></script>
-    <script src="js/pace.min.js"></script>
+  <script src="js/modernizr.js"></script>
+  <script src="js/pace.min.js"></script>
 
-    <!-- favicons
+  <!-- favicons
 	================================================== -->
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
 
-    <style>
+  <style>
 
 
-    </style>
+  </style>
 
 </head>
 
 <body id="top">
-    <!--    <div class="mesh__container" id="mesh__container"></div>-->
+  <!--    <div class="mesh__container" id="mesh__container"></div>-->
 
 
 
-    <!-- header 
+  <!-- header 
    ================================================== -->
-    <header class="short-header">
+  <header class="short-header">
 
-        <!-- The cursor elements -->
-        <main class="page">
-            <div class="page__innter">
-                <div class="cursor cursor--small"></div>
-                <canvas class="cursor cursor--canvas" resize></canvas>
-            </div>
-        </main>
+    <!-- The cursor elements -->
+    <!--
+    <main class="page">
+      <div class="page__innter">
+        <div class="cursor cursor--small"></div>
+        <canvas class="cursor cursor--canvas" resize></canvas>
+      </div>
+    </main>
+-->
 
 
 
 
-        <div class="gradient-block"></div>
+    <!--    <div class="gradient-block"></div>-->
 
-        <div class="row header-content">
+    <div class="row header-content">
 
-            <div class="logo">
-                <a href="index.html">Author</a>
-            </div>
+      <div class="logo">
+        <a href="index.html">Author</a>
+      </div>
 
-            <nav id="main-nav-wrap">
-                <ul class="main-navigation sf-menu">
-                    <li><a href="index.html" title="">Home</a></li>
-                    <li class=""><a href="blog.html" title="">Blog</a></li>
-                    <li class="has-children current">
-                        <a href="bookshelf.html" title="">BookShelf</a>
-                    </li>
-                    <li><a href="about.html" title="">About</a></li>
-                </ul>
-            </nav> <!-- end main-nav-wrap -->
+      <nav id="main-nav-wrap">
+        <ul class="main-navigation sf-menu">
+          <li><a href="index.html" title="">Home</a></li>
+          <li><a href="blog.html" title="">Blog</a></li>
+          <li class="current"><a href="bookshelf.html" title="">BookShelf</a></li>
+          <li><a href="about.html" title="">About</a></li>
+        </ul>
+      </nav> <!-- end main-nav-wrap -->
 
-            <div class="search-wrap">
+      <div class="search-wrap">
 
-                <form role="search" method="get" class="search-form" action="#">
-                    <label>
-                        <span class="hide-content">Search for:</span>
-                        <input type="search" class="search-field" placeholder="Type Your Keywords" value="" name="s" title="Search for:" autocomplete="off">
-                    </label>
-                    <input type="submit" class="search-submit" value="Search">
-                </form>
+        <form role="search" method="get" class="search-form" action="#">
+          <label>
+            <span class="hide-content">Search for:</span>
+            <input type="search" class="search-field" placeholder="Type Your Keywords" value="" name="s" title="Search for:" autocomplete="off">
+          </label>
+          <input type="submit" class="search-submit" value="Search">
+        </form>
 
-                <a href="#" id="close-search" class="close-btn">Close</a>
+        <a href="#" id="close-search" class="close-btn">Close</a>
 
-            </div> <!-- end search wrap -->
+      </div> <!-- end search wrap -->
 
-            <div class="triggers">
-                <a class="search-trigger" href="#"><i class="fa fa-search"></i></a>
-                <a class="menu-toggle" href="#"><span>Menu</span></a>
-            </div> <!-- end triggers -->
+      <div class="triggers">
+        <a class="search-trigger" href="#"><i class="fa fa-search"></i></a>
+        <a class="menu-toggle" href="#"><span>Menu</span></a>
+      </div> <!-- end triggers -->
+
+    </div>
+
+  </header> <!-- end header -->
+
+
+
+  <!--
+  <div class="row">
+    <div id="myBtnContainer">
+      <button class="btn active" onclick="filterSelection('all')">All</button>
+      <button class="btn" onclick="filterSelection('recommended')">Recommended</button>
+      <button class="btn" onclick="filterSelection('notes')"> Notes</button>
+      <button class="btn" onclick="filterSelection('2020')"> 2020</button>
+      <button class="btn" onclick="filterSelection('2019')"> 2019</button>
+      <button class="btn" onclick="filterSelection('2018')"> 2018</button>
+    </div>
+  </div>
+-->
+
+
+  <div class="content content--first">
+
+    <section id="bricks">
+
+      <div class="row masonry">
+
+        <!-- brick-wrapper -->
+        <div class="row">
+
+          <h2 class='bookshelf-intro'>GoodReads</h2>
+
+          <!--                    <p class="subtitle">Highlighted books are recommended reads</p>-->
+
 
         </div>
 
-    </header> <!-- end header -->
 
+        <br>
 
 
+        <div class="bricks-wrapper">
 
-    <div class="content content--first">
+          <div class="grid-sizer"></div>
 
-        <section id="bricks">
+          <article class="brick entry format-standard animate-this">
 
-            <div class="row masonry">
-
-                <!-- brick-wrapper -->
-                <div class="row">
-
-                    <h2 class='bookshelf-intro'>GoodReads of 2019</h2>
-
-                    <p class="subtitle">Highlighted books are recommended reads</p>
-
-                </div>
-
-                <div class="bricks-wrapper">
-
-                    <div class="grid-sizer"></div>
-
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://images-na.ssl-images-amazon.com/images/I/715fIqHjtjL.jpg" alt="Mossad cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1404580714l/18290401.jpg" alt="Show Your Work Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1404576602l/13099738.jpg" alt="Steal like an Artist Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1454839763l/28951784._SX318_.jpg" alt="Why Fonts Matter Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1394311090l/21063341.jpg" alt="Contagious Book Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1468760805l/31138556._SY475_.jpg" alt="Homo Dues Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1461500831l/24275197._SY475_.jpg" alt="Being Mortal Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1311282216l/324748.jpg" alt="The Dip Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1541816726l/41551710._SY475_.jpg" alt="Stepher Hawking Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386573716l/19306508.jpg" alt="Man's Search for Meaning Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1463951925l/26245270._SX318_.jpg" alt="Benjamin Franklin Autobiography Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479737643l/29358247.jpg" alt="Oliver sacks the last interview Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1490567231l/30736658._SY475_.jpg" alt="Never Split the difference Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1387714555l/142292.jpg" alt="My Stroke of Insight Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347563905l/905654.jpg" alt="Fooled by Randomness Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1539931467l/42390797._SY475_.jpg" alt="Quick and Easy wy to effective speaking">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1444690744l/26535513._SX318_.jpg" alt="Story telling with Data Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1476262211l/32594756._SY475_.jpg" alt="The Talent Sutra Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1447618400l/26246256.jpg" alt="The graphic design Idea Book Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1349005586l/2318174.jpg" alt="Detail in Typography Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1530121509l/34847065._SY475_.jpg" alt="The Innocent Man Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1322313779l/4656126.jpg" alt="Predictably Irrational">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1419671833l/18332143.jpg" alt="The everything store cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1390506811l/20561643.jpg" alt="The Rosie Project cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479633570l/33017355._SY475_.jpg" alt="marketing 4.0 cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1467159999l/30807394._SY475_.jpg" alt="devlok cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1391026083l/28815.jpg" alt="Influence cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1428689248l/1486976.jpg" alt="Myth = Mithya cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1349068826l/234843.jpg" alt="The art of War cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                </div>
+            <div class="entry-thumb recommended notes">
+              <a href="https://www.canva.com/design/DAD3YXBFl8I/GEZvsYllUjxghfYt_A1Cdw/view" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1400881733l/16144853.jpg" alt="Leaders Eat Last cover">
+              </a>
             </div>
-        </section> <!-- end bricks -->
+
+          </article> <!-- end article -->
+
+          <article class="brick entry format-standard animate-this">
+
+            <div class="entry-thumb recommended notes">
+              <a href="https://www.canva.com/design/DAD3PdisP2s/W8tUapGU9VIYoSgmVcGbsQ/view" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1329749895l/870848.jpg" alt="Emotional Intelligence cover">
+              </a>
+            </div>
+
+          </article> <!-- end article -->
 
 
 
-<!--
+          <article class="brick entry format-standard animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://images-na.ssl-images-amazon.com/images/I/715fIqHjtjL.jpg" alt="Mossad cover">
+              </a>
+            </div>
+
+          </article> <!-- end article -->
+
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1404580714l/18290401.jpg" alt="Show Your Work Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1404576602l/13099738.jpg" alt="Steal like an Artist Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1454839763l/28951784._SX318_.jpg" alt="Why Fonts Matter Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1394311090l/21063341.jpg" alt="Contagious Book Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1468760805l/31138556._SY475_.jpg" alt="Homo Dues Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1461500831l/24275197._SY475_.jpg" alt="Being Mortal Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1311282216l/324748.jpg" alt="The Dip Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1541816726l/41551710._SY475_.jpg" alt="Stepher Hawking Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386573716l/19306508.jpg" alt="Man's Search for Meaning Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1463951925l/26245270._SX318_.jpg" alt="Benjamin Franklin Autobiography Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479737643l/29358247.jpg" alt="Oliver sacks the last interview Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1490567231l/30736658._SY475_.jpg" alt="Never Split the difference Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1387714555l/142292.jpg" alt="My Stroke of Insight Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347563905l/905654.jpg" alt="Fooled by Randomness Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1539931467l/42390797._SY475_.jpg" alt="Quick and Easy wy to effective speaking">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1444690744l/26535513._SX318_.jpg" alt="Story telling with Data Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1476262211l/32594756._SY475_.jpg" alt="The Talent Sutra Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1447618400l/26246256.jpg" alt="The graphic design Idea Book Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1349005586l/2318174.jpg" alt="Detail in Typography Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1530121509l/34847065._SY475_.jpg" alt="The Innocent Man Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1322313779l/4656126.jpg" alt="Predictably Irrational">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1419671833l/18332143.jpg" alt="The everything store cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1390506811l/20561643.jpg" alt="The Rosie Project cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479633570l/33017355._SY475_.jpg" alt="marketing 4.0 cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1467159999l/30807394._SY475_.jpg" alt="devlok cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1391026083l/28815.jpg" alt="Influence cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1428689248l/1486976.jpg" alt="Myth = Mithya cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1349068826l/234843.jpg" alt="The art of War cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended notes">
+              <a href="https://www.canva.com/design/DAD3P3Yb4zA/5uIAi6LOX-8vq1YmAG9g6w/view" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1518667202l/38587103._SY475_.jpg" alt="Catalyst Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1375414895l/17851885.jpg" alt="I am Malala Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1559563270l/16256798._SX318_.jpg" alt="I am Malala Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1442823028l/25817524.jpg" alt="Alibaba Cover">
+              </a>
+            </div>
+
+          </article>
+
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1320558363l/8520362.jpg" alt="The Grand Design Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1493998427l/32938155._SY475_.jpg" alt="Option B Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1473282681l/31869077._SY475_.jpg" alt="The Internet of Money Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1360936414l/7108725.jpg" alt="Start with Why Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1384777320l/8273417.jpg" alt="the upside of irrationality Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1443982085l/26864936.jpg" alt="What If irrationality Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended notes">
+              <a href="https://www.canva.com/design/DADQYGxc-H0/IZ1WXJwH8O7UCfkRNVN87w/view" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1356136579l/16158498.jpg" alt="Give &amp; Take Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1415265430l/703032.jpg" alt="Theory of Everything Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1485273206l/30317414.jpg" alt="Awkward Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1433930311l/20873740._SY475_.jpg" alt="Sapiens Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1333576876l/10127019.jpg" alt="The Lean Startup Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1471237286l/31448659._SY475_.jpg" alt="Black Holes: The BBC Reith Lectures Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1446562076l/27420086._SY475_.jpg" alt="Rebooting India Cover">
+              </a>
+            </div>
+
+          </article>
+
+          <article class="brick entry animate-this">
+
+            <div class="entry-thumb recommended">
+              <a href="#" class="thumb-link" target="_blank">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1428687805l/24833211.jpg" alt="Warren Buffett: The Life and Business Lessons of Warren Buffett Cover">
+              </a>
+            </div>
+
+          </article>
+
+        </div>
+      </div>
+    </section> <!-- end bricks -->
+
+
+
+    <!--
         <section id="bricks">
 
             <div class="row masonry">
@@ -479,31 +699,33 @@
 
 
 
-    </div>
+  </div>
 
-    <!-- END OF Rotation Revealer Effect -->
-
-
+  <!-- END OF Rotation Revealer Effect -->
 
 
 
 
 
-    <div id="preloader">
-        <div id="loader"></div>
-    </div>
 
-    <!-- Java Script
+
+  <div id="preloader">
+    <div id="loader"></div>
+  </div>
+
+  <!-- Java Script
    ================================================== -->
-    <script src="js/jquery-2.1.3.min.js"></script>
-    <script src="js/plugins.js"></script>
-    <script src="js/jquery.appear.js"></script>
-    
-    <script src="js/main.js"></script>
-    <script src="js/imagesloaded.pkgd.min.js"></script>
-    <script src="js/charming.min.js"></script>
-    <script src="js/TweenMax.min.js"></script>
-    <script src="js/landingfx.js"></script>
+  <script src="js/jquery-2.1.3.min.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/jquery.appear.js"></script>
+
+  <script src="js/main.js"></script>
+  <script src="js/imagesloaded.pkgd.min.js"></script>
+  <script src="js/charming.min.js"></script>
+  <script src="js/TweenMax.min.js"></script>
+  <script src="js/landingfx.js"></script>
 
 
-</body></html>
+</body>
+
+</html>
