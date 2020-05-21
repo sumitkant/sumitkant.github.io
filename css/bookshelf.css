@@ -24,7 +24,7 @@
 
 .bricks-wrapper .entry-thumb,
 .bricks-wrapper .entry-text {
-    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.9);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
     /*    border: 2px solid black;*/
 }
 
@@ -116,7 +116,7 @@
 }
 
 .bricks-wrapper .entry-thumb:hover {
-    box-shadow: 0 0 0 4pt black;
+    box-shadow: 0 0 25px rgba(0,0,0,0.35);
     -webkit-transition: all 0.15s ease-in-out;
     -o-transition: all 0.15s ease-in-out;
     transition: all 0.15s ease-in-out;
@@ -251,10 +251,9 @@ div.entry-thumb {
 }
 
 div.entry-thumb {
-    border-radius: 0.6em;
+    border-radius: 1.2em;
 /*    border: 3px solid white;*/
 
-/*    box-shadow: 0 0 0 2pt black;*/
     -webkit-transition: all 0.15s ease-in-out;
     -o-transition: all 0.15s ease-in-out;
     transition: all 0.15s ease-in-out;
@@ -385,12 +384,14 @@ div.entry-text {
 
 /* Style the buttons */
 button.btn {
+    font-size: 0.8em;
     border: none;
-    border-radius: 10px;
+    border-radius: 1.1em;
     outline: none;
-    padding: 0 20px;
+    padding: 0.11em 2em;
     background-color: #dfdfdf;
     cursor: pointer;
+    margin: 0 0.2em;
 }
 
 /* Add a light grey background on mouse-over */
