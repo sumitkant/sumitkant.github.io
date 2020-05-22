@@ -239,6 +239,7 @@ screen and (max-height:640px) {
     }
 
     .nav-links {
+        margin-top: 10px;
         padding-top: 5vh;
         height: 39vh;
     }
@@ -290,7 +291,7 @@ screen and (max-height:640px) {
     height: 100%;
     z-index: -100000;
     /*    background: white;*/
-    background: #aaa url(https://images.unsplash.com/photo-1532759627329-f664e1222001?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1952&q=80) no-repeat top center;
+    background: #aaa url("../images/homepage/Artboard 1.jpg") no-repeat left top;
     background-size: cover;
     /*    background-blend-mode: lighten;*/
     -webkit-transition: all 0.15s ease-in-out;
