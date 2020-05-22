@@ -142,7 +142,8 @@ body {
 
 
 
-@media only screen and (max-width:500px) {
+@media screen and (max-width:500px),
+screen and (max-height:640px) {
     #sumitkant {
         position: relative;
         width: 200px;
