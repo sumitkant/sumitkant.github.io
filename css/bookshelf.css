@@ -1,7 +1,7 @@
 .bookshelf-intro {
     font-size: 2.5em;
     text-align: center;
-    margin: 1em 0;
+    margin: 0 0 1em 0;
 }
 
 
@@ -378,9 +378,13 @@ div.entry-text {
 }
 
 #myBtnContainer {
+    display: block;
+    width: 90%;
     text-align: center;
     font-family: var(--font-headings);
+    margin: 0 auto;
 }
+
 
 /* Style the buttons */
 button.btn {
@@ -391,7 +395,7 @@ button.btn {
     padding: 0.11em 2em;
     background-color: #dfdfdf;
     cursor: pointer;
-    margin: 0 0.2em;
+    margin: 0.4em 0.2em;
 }
 
 /* Add a light grey background on mouse-over */

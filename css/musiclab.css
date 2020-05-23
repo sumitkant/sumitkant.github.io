@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap');
 body {
-    background: url(../images/musiclab/wallpaper_4k.png) center center;
-    background-size: cover;
+    /*    background: url(../images/musiclab/wallpaper_4k.png) center center;*/
+    /*    background-size: cover;*/
+    background: black;
+    overflow: hidden;
 }
 
 .copyright {
@@ -19,7 +22,8 @@ body {
 h1 {
     text-align: center;
     color: white;
-    margin-top: 10vh;
+    margin: 2vh auto;
+    font-size: calc(4vh + 1vw);
 }
 
 a,
@@ -28,11 +32,79 @@ a:visited {
     text-decoration: underline;
 }
 
-
-h3 {
+h1, h2 {
     
+}
+h2 {
+    font-size: 1.5em;
+    color: white;
     text-align: center;
-    margin: auto;
-    margin-top: 50vh;
-    height: 20px;
+    margin-top: 5vh;
+}
+
+#jmllogo {
+    display: block;
+    width: calc(20vh + 8vw);
+    margin: 20vh auto 0 auto;
+}
+
+.color {    
+    animation: col 8s linear infinite;
+}
+
+.st0 {
+    fill: white;
+}
+
+@keyframes col {
+
+    0%,
+    10% {
+        fill: #fc5c65
+    }
+
+    10%,
+    20% {
+        fill: #fd9644
+    }
+
+    20%,
+    30% {
+        fill: #fed330
+    }
+
+    30%,
+    40% {
+        fill: #26de81
+    }
+
+    40%,
+    50% {
+        fill: #2bcbba
+    }
+
+    50%,
+    60% {
+        fill: #26de81
+    }
+
+    60%,
+    70% {
+        fill: #2bcbba
+    }
+
+    70%,
+    80% {
+        fill: #fed330
+    }
+
+    80%,
+    90% {
+        fill: #fd9644
+    }
+
+    90%,
+    100% {
+        fill: #fc5c65
+    }
 }
