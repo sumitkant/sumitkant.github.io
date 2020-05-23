@@ -121,7 +121,7 @@ body {
         margin: 10px auto;
         text-align: center;
         padding: 20px 10px;
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.5);
     }
 
     .nav-links a:hover {
@@ -173,7 +173,7 @@ screen and (max-height:640px) {
 
     .nav-links a:hover {
         /*        filter: blur(2px);*/
-        background: rgba(0, 0, 0, 0.4);
+        background: rgba(0, 0, 0, 0.5);
 
     }
 
