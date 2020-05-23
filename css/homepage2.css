@@ -42,15 +42,17 @@ body {
     width: 100%;
     display: block;
     text-align: center;
-    color: black;
+    color: white;
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
     bottom: 10px;
+    mix-blend-mode: difference;
 }
 
 #copyright span a {
-    color: black;
+    color: white;
+    mix-blend-mode: difference;
 }
 
 .bgrid {
