@@ -1347,6 +1347,14 @@ input::-moz-focus-inner {
     margin-bottom: 1.8rem;
 }
 
+.bricks-wrapper .entry-header h4.entry-title-small {
+    font-size: 1.8rem;
+    margin: 0;
+    padding: 0;
+/*    line-height: 1;*/
+/*    margin-bottom: 1rem;*/
+}
+
 .bricks-wrapper .entry-header .entry-title a,
 .bricks-wrapper .entry-header .entry-title a:visited {
     color: var(--color-text-normal);
@@ -2451,7 +2459,7 @@ header a {
 
 #content-wrap .primary-content img {
     width: 100%;
-    border-radius: 0.5em;
+    border-radius: 2em;
     /*    max-width: 910px;*/
     /*    margin: 3rem 0 3rem -6rem;*/
 }
