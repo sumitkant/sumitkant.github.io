@@ -13,7 +13,7 @@
     <!--- basic page needs
    ================================================== -->
     <meta charset="utf-8">
-    <title>Blog | Front Page News - Dash Application</title>
+    <title>Blog | Modie - Dash Application</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -123,237 +123,335 @@
 
                     <div class="content-media">
                         <div class="post-thumb">
-                            <img src="https://images.unsplash.com/photo-1476242906366-d8eb64c2f661?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80">
+                            <img src="../images/Blogs/8.MoodieDashApp/MOODIE_APP.jpg">
                         </div>
                     </div>
 
                     <div class="primary-content">
 
-                        <h1 class="page-title">Front Page News | A Dash Application</h1>
+                        <h1 class="page-title">Moodie | A Dash Application</h1>
 
                         <ul class="entry-meta">
-                            <li class="date">December 24, 2019</li>
-                            <li class="cat"><a href="">Web Scraping</a><a href="">Python</a></li>
+                            <li class="date">June 24, 2020</li>
+                            <li class="cat"><a href="">CNN</a><a href="">Python, TensorFlow</a></li>
                         </ul>
 
-                        <blockquote>
-                            <p>We can't have, like, willy-nilly proliferation of fake news. That's crazy. You can't have more types of fake news than real news. That's allowing public deception to go unchecked. That's crazy.
-                            <br>
-                            <b> - Elon Musk</b></p>
-                            
-                        </blockquote>
                         
-                        <p>This is how it looks like. <br> <a href="https://front-page-news.herokuapp.com/" target="_blank"><b>Front Page News App</b></a></p>
+                        <p>A fun weekend project of deploying my first CNN based model in production using heroku. This is how it looks like  <a href="http://knowyourmood.herokuapp.com/" target="_blank"><b>Link to Moodie App</b></a></p>
                         
-                        <h2>Introduction</h2>
+                        
 
-                        <p>While there a lot of news apps out there, most of them are not Ad free (Adblockers are not allowed nowadays). The news is sandwiched between ads that none of us want to see and the entire experience is bad. With the intention of improving my general awarenewss (which still hasn't improved yet), I embarked on this project to create a news app but with a twist. </p>
+                        <p>Moodie was a weekend project to deploy a TensorFlow based model in production.  </p>
+                        <p>The model was tasked to predict the facial expression given an input image. The output is one of seven facial expressions from /Happy, Sad, Disgust, Afraid, Surprise, Neutral/. The app is designed to take one or multiple images and throw out predictions for each image separately, along with a graph on what other expressions were probable. I deployed this model on heroku by creating a Dash Application. </p>
+                        <p>Let’s dive deep!</p>
+                        
+                        <h2>The Ingredients</h2>
+                        
+                        <p>To create and deploy this kind of we needed 4 things</p>
+                        
+                        <h3>Dash by Plotly (Frontend & Backend)</h3>
+                        <p> <a href="https://plotly.com/dash/"><b>Dash</b></a> is an open Source library released by Plotly to build web apps with ease. It takes care of both front end and back-end and lets you focus on the core of your UI, your app.</p>
                         
                         
-                        <p>I used web scraping to scrape font-page links of the "The Hindu" newspaper (known to be credible) and compiled in the form of a <b><a href="https://plot.ly/dash/" target="_blank">Dash</a></b>, an open-source plotly project for building interactive applications at scale. I deployed this application on <a href="https://www.heroku.com/" target="_blank"><b>Heroku</b></a>, a cloud platform as a service</p>
+                        <h3>Heroku (Server)</h3>
+                        <p> <a href="https://www.heroku.com/about"><b>Heroku</b></a> is a cloud platform as a service that lets you build and deploy web apps. It has both free and paid subscriptions to test our your apps and deploy full scale. </p>
                         
-                        <p>A screenshot of application is below.</p>
+                        <h3>TensorFlow </h3>
+                        <p> <a href="https://www.tensorflow.org"><b>TensorFlow</b></a> is an end to end open source machine learning platform. It has an ecosystem of all the tools you’ll need to build and deploy a machine learning model at scale.</p>
                         
-                        <img src="../images/Blogs/5.frontpagenews/front-page-news.herokuapp.com_(Pixel%202).png" alt="application screenshot" style="box-shadow: 0 0 6px #e8e8e8;">
+                        <h3>Git </h3>
+                        <p> <a href="https://www.tensorflow.org"><b>Git</b></a> is a version control system used for tracking changes in the code. This is required to run commands to deploy the app in heroku.</p>
                         
-                        <br>
-                        <br>
-
-
-                        <h2>Step 1: Structure of the app</h2>
-
-                        <p>Firstly, the news links are scraped from the <a href="https://www.thehindu.com/todays-paper/" target="_blank"><b>front page</b></a> of the newspaper. This activity is done whenever the app is loaded. The links are refreshed for each day. The links are loaded as options in a drop-down menu.</p>
                         
-                        <p>The next step is to follow each link and extract content from the page. This involves, extracting heading, location, timestamp, intro-title and body copy. This activity is performed in real-time when a user clicks the link.</p>
+                        <h2>Making the Moodie Stew</h2>
+                        <p>To create this app, the following steps were followed</p>
+                        <ol>
+                            <li>Train a CNN on facial expression data and generate a compatible model file</li>
+                            <li>Write a python script that takes image as user input, converts into tensorflow readable format and scores the image to get predictions on the facial expression</li>
+                            <li>Package the steps in app.py file and deploying it on Heroku</li>
+                        </ol>
                         
-                        <h2>Step 2 : Coding the layout</h2>
+                        <p>I have used Anaconda to manage all open source package installations</p>
                         
-                        <h4>Initiating Dash layout</h4>
+                        <h3>Virtual Environment</h3>
+                        <p>A virtual environment is a python environment with python and other scripts installed that are isolated from already installed packages in the default location. The max size of the app cannot be more than 500 MB for it to be deployed on Heroku. This will come handy when specifying requirements of installed packages and versions for the app</p>
                         
-                        <p>A basic dash layout looks like as shown in the code below</p>
-                        
-<pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash</span>
-<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_core_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">dcc</span>
-<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_html_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">html</span>
-<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">dash.dependencies</span> <span style="color: #AA22FF; font-weight: bold">import</span> Input, Output
-
-app <span style="color: #666666">=</span> dash<span style="color: #666666">.</span>Dash()
-
-server <span style="color: #666666">=</span> app<span style="color: #666666">.</span>server
-
-app<span style="color: #666666">.</span>title <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Front Page News | Sumit Kant&#39;</span>
-app<span style="color: #666666">.</span>layout <span style="color: #666666">=</span> html<span style="color: #666666">.</span>Div([
-    html<span style="color: #666666">.</span>H1(<span style="color: #BB4444">&#39;Front Page News | Sumit Kant&#39;</span>),
-])
-
-<span style="color: #AA22FF; font-weight: bold">if</span> __name__ <span style="color: #666666">==</span> <span style="color: #BB4444">&#39;__main__&#39;</span>:
-    app<span style="color: #666666">.</span>run_server(debug<span style="color: #666666">=</span><span style="color: #AA22FF">True</span>)
-</pre><br>
-
-                    <h4>Getting front-page links</h4>
-                        
-                    <p>I used <code>requests</code>, <code>urllib</code> and <code>BeautifulSoup</code> packages to extract links from the front-page of the newspaper, as shown below</p>
+                        <p>The virtual environment can be created with the following command. TensorFlow is stable for python 3.7, so we specified that in the <code>create</code> command. Once created we can activate the environment using <code>conda activate</code>. To learn more about virtual environments, check out the <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html"><b>official documentation</b></a></p>
                     
-<pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">requests</span>
-<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">urllib.request</span>
-<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">bs4</span> <span style="color: #AA22FF; font-weight: bold">import</span> BeautifulSoup
-url <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;https://www.thehindu.com/todays-paper/&#39;</span>
-response <span style="color: #666666">=</span> requests<span style="color: #666666">.</span>get(url)
-soup <span style="color: #666666">=</span> BeautifulSoup(response<span style="color: #666666">.</span>text, <span style="color: #BB4444">&quot;html.parser&quot;</span>)
-front_page <span style="color: #666666">=</span> [(x<span style="color: #666666">.</span>get_text(), x<span style="color: #666666">.</span>get(<span style="color: #BB4444">&#39;href&#39;</span>)) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> soup<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;ul&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>: <span style="color: #BB4444">&#39;archive-list&#39;</span>})[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;a&#39;</span>)]
+<!-- HTML generated using hilite.me --><pre style="margin: 0; line-height: 125%">conda create —-name moodie <span style="color: #B8860B">python</span><span style="color: #666666">=</span>3.7
+Conda activate moodie
+</pre>    
+
+                        <br>
+
+
+                        <h3>Installing Packages</h3>
+                        <p>Using the anaconda prompt we can install the following packages one by one. Note that we are only installing tensorflow-cpu just to ensure that our app size remains within 500MB. Since our model takes input one at a time and there is no complex processing of image, we can use tensorflow-cpu.</p>
+                        
+                        <p>We will also need Python Imaging Library to manipulate images and pass it to the pre-trained model.</p>
+                        
+
+<!-- HTML generated using hilite.me --><pre style="margin: 0; line-height: 125%">pip install dash
+pip install tensorflow-cpu
+pip install Pillow
 </pre>
-<br>
 
-                    <h4>Extracting content in real-time</h4>
-                    
-                    <p>Now each link that is served in the drop-down, if clicked will be treated as a new <code>soup</code> and relevant content will be extracted, as shown in the function call below.</p>
-                    
-<pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">def</span> <span style="color: #00A000">display_article</span>(value):
-    <span style="color: #008800; font-style: italic"># soup</span>
-    temp_soup <span style="color: #666666">=</span> BeautifulSoup(requests<span style="color: #666666">.</span>get(value)<span style="color: #666666">.</span>text, <span style="color: #BB4444">&quot;html.parser&quot;</span>)
+                        <br>
+                        
+                        <h3>App.py</h3>
+                        <p>This is the heart of the app. App.py file will determine how your app looks and what functions it performs. To create this app, I just need 2 things</p>
+                        <ol>
+                            <li>Upload button - A mechanism to upload or take a picture </li>
+                            <li>Output Area - where the image will be displayed &amp; predictions will be made. The output area also contains a bar graph of all probable emotions and their modelled probabilities.</li>
+                        </ol>
+                        
+                        <p>Let's first initialize the app. We will need the following libraries to be imported</p>
+                        
+<!-- HTML generated using hilite.me --><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-style: italic"># basic</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF;">base64</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF;">io</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF;">numpy</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">np</span>
 
-    <span style="color: #008800; font-style: italic"># Intro text under image</span>
-    intro_text <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;h2&#39;</span>,{<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;intro&#39;</span>})
-    <span style="color: #AA22FF; font-weight: bold">if</span> (intro_text <span style="color: #666666">==</span> <span style="color: #AA22FF">None</span>): intro_text <span style="color: #666666">=</span> <span style="color: #BB4444">&#39; &#39;</span>
-    <span style="color: #AA22FF; font-weight: bold">else</span>: intro_text <span style="color: #666666">=</span> intro_text<span style="color: #666666">.</span>get_text()
+<span style="color: #008800; font-style: italic"># dash</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF;">dash</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF;">dash_core_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF;">dcc</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF;">dash_html_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF;">html</span>
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF;">dash.dependencies</span> <span style="color: #AA22FF; font-weight: bold">import</span> Input, Output, State
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF;">plotly.graph_objs</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF;">go</span>
 
-    <span style="color: #008800; font-style: italic"># Article body copy</span>
-    article <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;paywall&#39;</span>})
-    <span style="color: #AA22FF; font-weight: bold">if</span> (article <span style="color: #666666">==</span> <span style="color: #AA22FF">None</span>) : article <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Article not available&#39;</span>
-    <span style="color: #AA22FF; font-weight: bold">else</span>: article <span style="color: #666666">=</span> [html<span style="color: #666666">.</span>P(x<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> article<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;p&#39;</span>)]
-
-    <span style="color: #008800; font-style: italic"># Article image</span>
-    <span style="color: #AA22FF; font-weight: bold">try</span>:
-        img <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;source&#39;</span>)[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>get(<span style="color: #BB4444">&#39;srcset&#39;</span>)
-    <span style="color: #AA22FF; font-weight: bold">except</span>:
-        img <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;https://i.ytimg.com/vi/wcTpTYQv7lg/maxresdefault.jpg&#39;</span>
-    
-    <span style="color: #008800; font-style: italic"># Article title</span>
-    title <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;h1&#39;</span>,{<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;title&#39;</span>})<span style="color: #666666">.</span>get_text()
-
-    city <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;ut-container&#39;</span>})<span style="color: #666666">.</span>findChildren()[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()[:<span style="color: #666666">-1</span>]
-
-    time_stamp <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;ut-container&#39;</span>})<span style="color: #666666">.</span>findChildren()[<span style="color: #666666">3</span>]<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()
+<span style="color: #008800; font-style: italic"># tensorflow &amp; keras</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF;">tensorflow</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF;">tf</span>
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF;">tensorflow.keras.models</span> <span style="color: #AA22FF; font-weight: bold">import</span> load_model
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF;">tensorflow.keras.preprocessing</span> <span style="color: #AA22FF;">import</span> image
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF;">PIL</span> <span style="color: #AA22FF; font-weight: bold">import</span> Image
 
 
-    <span style="color: #AA22FF; font-weight: bold">return</span> city, time_stamp, title, intro_text, img, article
-</pre><br>
-                    <h4>Putting it all together</h4>
-                    <p>I used <code>@app.callback</code> to link input and outputs to the html layout. </p>
-                    
-                    <p>The <code>Input</code> component of <code>dash.dependencies</code> recieves input from the drop-down whose value is then passed on to the function <code>display_article()</code> as an argument.</p>
-                    
-                    <p>The output of the function call returns multiple items which are recieved by the <code>Ouput</code> component of <code>dash.dependencies</code>. This component then takes the output value and displays in the <code>children</code> of selected component selected by <code>id</code>. </p>
-                    
-                    <p>For example, the output "city" of the function call <code>display_article()</code>, will be displayed as the child element of the <code>div</code> tag with <code>id = "display-city"</code></p>
-                    
-                    <p>The finalized code is shown below.</p>
-                    
-<pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash</span>
-<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_core_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">dcc</span>
-<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_html_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">html</span>
-<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">dash.dependencies</span> <span style="color: #AA22FF; font-weight: bold">import</span> Input, Output
-<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">requests</span>
-<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">urllib.request</span>
-<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">bs4</span> <span style="color: #AA22FF; font-weight: bold">import</span> BeautifulSoup
-
-
-external_stylesheets <span style="color: #666666">=</span> [<span style="color: #BB4444">&#39;https://codepen.io/chriddyp/pen/bWLwgP.css&#39;</span>, <span style="color: #BB4444">&#39;https://codepen.io/sumitkant/pen/oNgzyjw.css&#39;</span>]
-
-app <span style="color: #666666">=</span> dash<span style="color: #666666">.</span>Dash(__name__, external_stylesheets<span style="color: #666666">=</span>external_stylesheets)
-
-<span style="color: #008800; font-style: italic">#python</span>
-url <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;https://www.thehindu.com/todays-paper/&#39;</span>
-response <span style="color: #666666">=</span> requests<span style="color: #666666">.</span>get(url)
-soup <span style="color: #666666">=</span> BeautifulSoup(response<span style="color: #666666">.</span>text, <span style="color: #BB4444">&quot;html.parser&quot;</span>)
-front_page <span style="color: #666666">=</span> [(x<span style="color: #666666">.</span>get_text(), x<span style="color: #666666">.</span>get(<span style="color: #BB4444">&#39;href&#39;</span>)) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> soup<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;ul&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>: <span style="color: #BB4444">&#39;archive-list&#39;</span>})[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;a&#39;</span>)]
-
-
+app <span style="color: #666666">=</span> dash<span style="color: #666666">.</span>Dash(__name__)
 server <span style="color: #666666">=</span> app<span style="color: #666666">.</span>server
+app<span style="color: #666666">.</span>title <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Moodie | Sumit Kant&#39;</span>
 
-app<span style="color: #666666">.</span>title <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Front Page News | Sumit Kant&#39;</span>
 app<span style="color: #666666">.</span>layout <span style="color: #666666">=</span> html<span style="color: #666666">.</span>Div([
-    html<span style="color: #666666">.</span>H1(<span style="color: #BB4444">&#39;Front Page News&#39;</span>),
-    
-    html<span style="color: #666666">.</span>Div(dcc<span style="color: #666666">.</span>Dropdown(
-        <span style="color: #AA22FF">id</span><span style="color: #666666">=</span><span style="color: #BB4444">&#39;dropdown&#39;</span>,
-        options<span style="color: #666666">=</span>[{<span style="color: #BB4444">&#39;label&#39;</span>: i[<span style="color: #666666">0</span>], <span style="color: #BB4444">&#39;value&#39;</span>:i[<span style="color: #666666">1</span>] } <span style="color: #AA22FF; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> front_page],
-        value<span style="color: #666666">=</span>front_page[<span style="color: #666666">0</span>][<span style="color: #666666">1</span>]
-    )),
-
-    html<span style="color: #666666">.</span>Small(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-city&#39;</span>),
-    html<span style="color: #666666">.</span>Small(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-timestamp&#39;</span>),
-    html<span style="color: #666666">.</span>H2(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-title&#39;</span>),
-    html<span style="color: #666666">.</span>H5(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-intro&#39;</span>),
-    html<span style="color: #666666">.</span>Img(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-image&#39;</span>),
-    html<span style="color: #666666">.</span>Div(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-article&#39;</span>)
+    html<span style="color: #666666">.</span>H1(<span style="color: #BB4444">&#39;Moodie&#39;</span>)
 ])
 
-<span style="color: #AA22FF">@app.callback</span>([
-    Output(<span style="color: #BB4444">&#39;display-city&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
-    Output(<span style="color: #BB4444">&#39;display-timestamp&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
-    Output(<span style="color: #BB4444">&#39;display-title&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
-    Output(<span style="color: #BB4444">&#39;display-intro&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
-    Output(<span style="color: #BB4444">&#39;display-image&#39;</span>, <span style="color: #BB4444">&#39;src&#39;</span>),
-    Output(<span style="color: #BB4444">&#39;display-article&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),],
-    [Input(<span style="color: #BB4444">&#39;dropdown&#39;</span>, <span style="color: #BB4444">&#39;value&#39;</span>)])
+<span style="color: #AA22FF; font-weight: bold">if</span> __name__ <span style="color: #666666">==</span> <span style="color: #BB4444">&#39;__main__&#39;</span>:
+    app<span style="color: #666666">.</span>run_server(debug<span style="color: #666666">=</span><span style="color: #AA22FF">False</span>)
+</pre>
+                        <br>
 
-<span style="color: #AA22FF; font-weight: bold">def</span> <span style="color: #00A000">display_article</span>(value):
-    <span style="color: #008800; font-style: italic"># soup</span>
-    temp_soup <span style="color: #666666">=</span> BeautifulSoup(requests<span style="color: #666666">.</span>get(value)<span style="color: #666666">.</span>text, <span style="color: #BB4444">&quot;html.parser&quot;</span>)
+                        
+                        
+                        <p>Dash provides a ready made script for uploading images using <code>dcc.Upload</code>. For a mobile device, the upload button also adds ‘click a picture’ feature using the on-device camera.</p>
+                        
+                        <p>Notice that when you try to upload an image, it serialises the string into a string which is then parsed to display the image. This can become a bottleneck when the image size is large. They may take longer time to upload and serialise and may not show any output because of the timeout. The way to increase the timeout is tricky, so i haven't explored it yet.</p>
+                        
+                        
+<!-- HTML generated using hilite.me --><pre style="margin: 0; line-height: 125%">dcc<span style="color: #666666">.</span>Upload(
+        <span style="color: #AA22FF">id</span><span style="color: #666666">=</span><span style="color: #BB4444">&#39;upload-image&#39;</span>,
+        children<span style="color: #666666">=</span>html<span style="color: #666666">.</span>Div([
+            <span style="color: #BB4444">&#39;Drag and Drop or &#39;</span>,
+            html<span style="color: #666666">.</span>A(<span style="color: #BB4444">&#39;Select Files&#39;</span>), <span style="color: #BB4444">&#39; to check your mood!&#39;</span>
+        ]),
+        multiple<span style="color: #666666">=</span><span style="color: #AA22FF">True</span>,
+        max_size <span style="color: #666666">=</span> <span style="color: #666666">-1</span>
+    )
+</pre>
 
-    <span style="color: #008800; font-style: italic"># Intro text under image</span>
-    intro_text <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;h2&#39;</span>,{<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;intro&#39;</span>})
-    <span style="color: #AA22FF; font-weight: bold">if</span> (intro_text <span style="color: #666666">==</span> <span style="color: #AA22FF">None</span>): intro_text <span style="color: #666666">=</span> <span style="color: #BB4444">&#39; &#39;</span>
-    <span style="color: #AA22FF; font-weight: bold">else</span>: intro_text <span style="color: #666666">=</span> intro_text<span style="color: #666666">.</span>get_text()
+                        <br>
+                        
+                        <p>Next, we parse the serialised image into recognisable format (jpg) and manipulate this using the `pillow` package. What we need from the image is to be gray scale (or 1 channel) and all the pixel values to be normalised which is just dividing the image object by 255.</p>
+                        
+                        <p>Next we call predict method on the image which through out list of probabilities which are mapped to 	“crafted replies”. These replies will be displayed at the bottom of the image</p>
+                        
+                        <p>Next we just call a go object that takes expressions as string and probabilities as values and prepares the chart. Putting it all together will give us this final code</p>
+                        
+<!-- HTML generated using hilite.me --><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-style: italic"># basic</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">base64</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">io</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">numpy</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">np</span>
 
-    <span style="color: #008800; font-style: italic"># Article body copy</span>
-    article <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;paywall&#39;</span>})
-    <span style="color: #AA22FF; font-weight: bold">if</span> (article <span style="color: #666666">==</span> <span style="color: #AA22FF">None</span>) : article <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Article not available&#39;</span>
-    <span style="color: #AA22FF; font-weight: bold">else</span>: article <span style="color: #666666">=</span> [html<span style="color: #666666">.</span>P(x<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> article<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;p&#39;</span>)]
+<span style="color: #008800; font-style: italic"># dash</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_core_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">dcc</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_html_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">html</span>
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">dash.dependencies</span> <span style="color: #AA22FF; font-weight: bold">import</span> Input, Output, State
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">plotly.graph_objs</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">go</span>
 
-    <span style="color: #008800; font-style: italic"># Article image</span>
-    <span style="color: #AA22FF; font-weight: bold">try</span>:
-        img <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;source&#39;</span>)[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>get(<span style="color: #BB4444">&#39;srcset&#39;</span>)
-    <span style="color: #AA22FF; font-weight: bold">except</span>:
-        img <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;https://i.ytimg.com/vi/wcTpTYQv7lg/maxresdefault.jpg&#39;</span>
+<span style="color: #008800; font-style: italic"># tensorflow &amp; keras</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">tensorflow</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">tf</span>
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">tensorflow.keras.models</span> <span style="color: #AA22FF; font-weight: bold">import</span> load_model
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">tensorflow.keras.preprocessing</span> <span style="color: #AA22FF; font-weight: bold">import</span> image
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">PIL</span> <span style="color: #AA22FF; font-weight: bold">import</span> Image
+
+
+app <span style="color: #666666">=</span> dash<span style="color: #666666">.</span>Dash(__name__)
     
-    <span style="color: #008800; font-style: italic"># Article title</span>
-    title <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;h1&#39;</span>,{<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;title&#39;</span>})<span style="color: #666666">.</span>get_text()
+server <span style="color: #666666">=</span> app<span style="color: #666666">.</span>server
 
-    city <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;ut-container&#39;</span>})<span style="color: #666666">.</span>findChildren()[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()[:<span style="color: #666666">-1</span>]
+model <span style="color: #666666">=</span> load_model(<span style="color: #BB4444">&#39;trained_model/model_filter.h5&#39;</span>)
 
-    time_stamp <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;ut-container&#39;</span>})<span style="color: #666666">.</span>findChildren()[<span style="color: #666666">3</span>]<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()
+app<span style="color: #666666">.</span>title <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Moodie | Sumit Kant&#39;</span>
+
+app<span style="color: #666666">.</span>layout <span style="color: #666666">=</span> html<span style="color: #666666">.</span>Div([
+
+    html<span style="color: #666666">.</span>H1(<span style="color: #BB4444">&#39;Moodie&#39;</span>),
+    html<span style="color: #666666">.</span>Div(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;subtext&#39;</span>, children <span style="color: #666666">=</span>  [
+
+        html<span style="color: #666666">.</span>P(<span style="color: #BB4444">&#39;Moodie is a fun weekend deep learning project that is designed to detect facial expressions from an image. The predictions are powered by a trained CNN model in keras using TensorFlow as backend. So go crazy and use any image of your liking...&#39;</span>),
+
+        html<span style="color: #666666">.</span>P(<span style="color: #BB4444">&#39;P.S: None of your images are saved anywhere... :)&#39;</span>),
+
+        html<span style="color: #666666">.</span>P(<span style="color: #BB4444">&#39;P.P.S: The CNN is not trained to detect whether the face exists or not, the assumption here is that an image of a face is uploaded and one of the 7 expression will dominate the prediction&#39;</span>)
+        ]
 
 
-    <span style="color: #AA22FF; font-weight: bold">return</span> city, time_stamp, title, intro_text, img, article
+        ),
+    
+        dcc<span style="color: #666666">.</span>Upload(
+            <span style="color: #AA22FF">id</span><span style="color: #666666">=</span><span style="color: #BB4444">&#39;upload-image&#39;</span>,
+            children<span style="color: #666666">=</span>html<span style="color: #666666">.</span>Div([
+                <span style="color: #BB4444">&#39;Drag and Drop or &#39;</span>,
+                html<span style="color: #666666">.</span>A(<span style="color: #BB4444">&#39;Select Files&#39;</span>), <span style="color: #BB4444">&#39; to check your mood!&#39;</span>
+            ]),
+            style<span style="color: #666666">=</span>{
+                <span style="color: #BB4444">&#39;width&#39;</span>: <span style="color: #BB4444">&#39;100%&#39;</span>,
+                <span style="color: #BB4444">&#39;lineHeight&#39;</span>: <span style="color: #BB4444">&#39;60px&#39;</span>,
+                <span style="color: #BB4444">&#39;borderWidth&#39;</span>: <span style="color: #BB4444">&#39;1px&#39;</span>,
+                <span style="color: #BB4444">&#39;borderStyle&#39;</span>: <span style="color: #BB4444">&#39;dashed&#39;</span>,
+                <span style="color: #BB4444">&#39;borderRadius&#39;</span>: <span style="color: #BB4444">&#39;10px&#39;</span>, 
+                <span style="color: #BB4444">&#39;textAlign&#39;</span>: <span style="color: #BB4444">&#39;center&#39;</span>,
+            },
+            <span style="color: #008800; font-style: italic"># Allow multiple files to be uploaded</span>
+            multiple<span style="color: #666666">=</span><span style="color: #AA22FF">True</span>,
+            max_size <span style="color: #666666">=</span> <span style="color: #666666">-1</span>
+
+        ), <span style="color: #008800; font-style: italic"># dcc.Upload</span>
+    
+    dcc<span style="color: #666666">.</span>Loading(
+        <span style="color: #AA22FF">id</span><span style="color: #666666">=</span><span style="color: #BB4444">&quot;upload-image-loading&quot;</span>,
+        children <span style="color: #666666">=</span> [html<span style="color: #666666">.</span>Div(<span style="color: #AA22FF">id</span><span style="color: #666666">=</span><span style="color: #BB4444">&#39;output-image-upload&#39;</span>)],
+        <span style="color: #AA22FF">type</span><span style="color: #666666">=</span><span style="color: #BB4444">&#39;dot&#39;</span>,
+        color <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;black&#39;</span>
+        ),
+
+    html<span style="color: #666666">.</span>Div(<span style="color: #BB4444">&#39;© Copyright 2020 | Sumit Kant&#39;</span>, <span style="color: #AA22FF">id</span><span style="color: #666666">=</span><span style="color: #BB4444">&#39;copyright&#39;</span>)
+])
+
+
+
+<span style="color: #AA22FF; font-weight: bold">def</span> <span style="color: #00A000">parse_contents</span>(contents, filename):
+
+    content_type, content_string <span style="color: #666666">=</span> contents<span style="color: #666666">.</span>split(<span style="color: #BB4444">&#39;,&#39;</span>)
+    decoded <span style="color: #666666">=</span> base64<span style="color: #666666">.</span>b64decode(content_string)
+    fh <span style="color: #666666">=</span> <span style="color: #AA22FF">open</span>(<span style="color: #BB4444">&quot;imageToSave.jpg&quot;</span>, <span style="color: #BB4444">&quot;wb&quot;</span>)
+    fh<span style="color: #666666">.</span>write(decoded)
+    fh<span style="color: #666666">.</span>close()
+
+
+    img <span style="color: #666666">=</span> image<span style="color: #666666">.</span>load_img(<span style="color: #BB4444">&#39;imageToSave.jpg&#39;</span>, color_mode<span style="color: #666666">=</span><span style="color: #BB4444">&#39;grayscale&#39;</span>, target_size<span style="color: #666666">=</span>(<span style="color: #666666">48</span>, <span style="color: #666666">48</span>))
+    x   <span style="color: #666666">=</span> image<span style="color: #666666">.</span>img_to_array(img)
+    x   <span style="color: #666666">=</span> np<span style="color: #666666">.</span>expand_dims(x, axis <span style="color: #666666">=</span> <span style="color: #666666">0</span>)
+    x  <span style="color: #666666">/=</span> <span style="color: #666666">255</span>
+
+    pred <span style="color: #666666">=</span> model<span style="color: #666666">.</span>predict(x)
+
+    values <span style="color: #666666">=</span> [<span style="color: #AA22FF">int</span>(<span style="color: #AA22FF">round</span>(x<span style="color: #666666">*100</span>,<span style="color: #666666">0</span>)) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> pred[<span style="color: #666666">0</span>]]
+    labels <span style="color: #666666">=</span> [<span style="color: #BB4444">&#39;Anger&#39;</span>,<span style="color: #BB4444">&#39;Disgust&#39;</span>,<span style="color: #BB4444">&#39;Fear&#39;</span>,<span style="color: #BB4444">&#39;Happy&#39;</span>,<span style="color: #BB4444">&#39;Sad&#39;</span>,<span style="color: #BB4444">&#39;Surprise&#39;</span>,<span style="color: #BB4444">&#39;Neutral&#39;</span>]
+
+
+    objects <span style="color: #666666">=</span> [
+        <span style="color: #BB4444">&#39;Angry? or Hangry?&#39;</span>, 
+        <span style="color: #BB4444">&#39;Disgusted? Huh?&#39;</span>, 
+        <span style="color: #BB4444">&#39;Afraid? Don</span><span style="color: #BB6622; font-weight: bold">\&#39;</span><span style="color: #BB4444">t be...&#39;</span>, 
+        <span style="color: #BB4444">&#39;Yay! You</span><span style="color: #BB6622; font-weight: bold">\&#39;</span><span style="color: #BB4444">re happy!!&#39;</span>, 
+        <span style="color: #BB4444">&#39;Why so sad?&#39;</span>, 
+        <span style="color: #BB4444">&#39;Surprised!!!&#39;</span>, 
+        <span style="color: #BB4444">&#39;Neutral? #NoNeutrals&#39;</span>
+    ]
+
+    <span style="color: #AA22FF; font-weight: bold">return</span> html<span style="color: #666666">.</span>Div([
+            <span style="color: #008800; font-style: italic"># html.H5(filename),</span>
+            <span style="color: #008800; font-style: italic"># HTML images accept base64 encoded strings in the same format</span>
+            <span style="color: #008800; font-style: italic"># that is supplied by the upload</span>
+            html<span style="color: #666666">.</span>Img(src<span style="color: #666666">=</span>contents),
+            html<span style="color: #666666">.</span>H4(objects[pred<span style="color: #666666">.</span>argmax()]),
+            html<span style="color: #666666">.</span>Div([
+                 dcc<span style="color: #666666">.</span>Graph(
+                    <span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;bar_chart&#39;</span>,
+                    
+                    figure <span style="color: #666666">=</span> {
+                    
+                        <span style="color: #BB4444">&#39;data&#39;</span>: [go<span style="color: #666666">.</span>Bar(
+                            y <span style="color: #666666">=</span> labels, 
+                            x <span style="color: #666666">=</span> values,
+                            textposition <span style="color: #666666">=</span><span style="color: #BB4444">&#39;auto&#39;</span>,
+                            text <span style="color: #666666">=</span> [<span style="color: #AA22FF">str</span>(v)<span style="color: #666666">+</span><span style="color: #BB4444">&#39;%&#39;</span> <span style="color: #AA22FF; font-weight: bold">for</span> v <span style="color: #AA22FF; font-weight: bold">in</span> values],
+                            marker_color <span style="color: #666666">=</span> [<span style="color: #BB4444">&#39;black&#39;</span>]<span style="color: #666666">*</span><span style="color: #AA22FF">len</span>(labels),
+                            hoverinfo <span style="color: #666666">=</span><span style="color: #BB4444">&#39;skip&#39;</span>,
+                            orientation <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;h&#39;</span>,
+
+                            )],
+
+                        <span style="color: #BB4444">&#39;layout&#39;</span>: go<span style="color: #666666">.</span>Layout(
+                            xaxis <span style="color: #666666">=</span> {<span style="color: #BB4444">&#39;showgrid&#39;</span>: <span style="color: #AA22FF">False</span>, <span style="color: #BB4444">&#39;ticks&#39;</span> : <span style="color: #BB4444">&#39;&#39;</span>, <span style="color: #BB4444">&#39;showticklabels&#39;</span> :<span style="color: #AA22FF">False</span>, <span style="color: #BB4444">&#39;zeroline&#39;</span>: <span style="color: #AA22FF">False</span>},
+                            yaxis <span style="color: #666666">=</span> {<span style="color: #BB4444">&#39;showgrid&#39;</span>: <span style="color: #AA22FF">False</span>, <span style="color: #BB4444">&#39;ticks&#39;</span> : <span style="color: #BB4444">&#39;&#39;</span>, <span style="color: #BB4444">&#39;zeroline&#39;</span>: <span style="color: #AA22FF">False</span>},
+                            font  <span style="color: #666666">=</span> {<span style="color: #BB4444">&#39;family&#39;</span> : <span style="color: #BB4444">&#39;Lora&#39;</span>, <span style="color: #BB4444">&#39;size&#39;</span> : <span style="color: #666666">14</span>},
+                            margin <span style="color: #666666">=</span> {<span style="color: #BB4444">&#39;pad&#39;</span> : <span style="color: #666666">10</span>, <span style="color: #BB4444">&#39;l&#39;</span>:<span style="color: #666666">100</span>, <span style="color: #BB4444">&#39;r&#39;</span>:<span style="color: #666666">25</span>, <span style="color: #BB4444">&#39;t&#39;</span>:<span style="color: #666666">50</span>, <span style="color: #BB4444">&#39;b&#39;</span>:<span style="color: #666666">50</span>},
+                            title <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Detected Expressions&#39;</span>,
+                            height<span style="color: #666666">=300</span>,
+                            )
+                        },
+
+                    config <span style="color: #666666">=</span> {
+                        <span style="color: #BB4444">&#39;displayModeBar&#39;</span>: <span style="color: #AA22FF">False</span>
+                        }
+                )]),
+        ])
+
+
+<span style="color: #AA22FF">@app.callback</span>(Output(<span style="color: #BB4444">&#39;output-image-upload&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
+              [Input(<span style="color: #BB4444">&#39;upload-image&#39;</span>, <span style="color: #BB4444">&#39;contents&#39;</span>)],
+              [State(<span style="color: #BB4444">&#39;upload-image&#39;</span>, <span style="color: #BB4444">&#39;filename&#39;</span>)])
+<span style="color: #AA22FF; font-weight: bold">def</span> <span style="color: #00A000">update_output</span>(list_of_contents, list_of_names):
+    <span style="color: #AA22FF; font-weight: bold">if</span> list_of_contents <span style="color: #AA22FF; font-weight: bold">is</span> <span style="color: #AA22FF; font-weight: bold">not</span> <span style="color: #AA22FF">None</span>:
+        children <span style="color: #666666">=</span> [
+            parse_contents(c, n) <span style="color: #AA22FF; font-weight: bold">for</span> c, n <span style="color: #AA22FF; font-weight: bold">in</span>
+            <span style="color: #AA22FF">zip</span>(list_of_contents, list_of_names)]
+        <span style="color: #AA22FF; font-weight: bold">return</span> children
 
 
 <span style="color: #AA22FF; font-weight: bold">if</span> __name__ <span style="color: #666666">==</span> <span style="color: #BB4444">&#39;__main__&#39;</span>:
-    app<span style="color: #666666">.</span>run_server(debug<span style="color: #666666">=</span><span style="color: #AA22FF">True</span>)
-</pre><br>
-                    <h2>Step 3 : Deploying on Heroku</h2>
-                    
-                    <p>For deploying a dash application on Heroku, the <a href="https://dash.plot.ly/deployment" target = "_blank"><b>documentation</b></a> given by plotly is clear enough. If you are deploying your Dash app on Heroku, just replace the code in the documentation with your <code>app.py</code> code and follow along as described.</p>
-                    
-                    
-                    <h2>Results</h2>
-                    
-                    <p>Check the link below for final results. This app is currenly optimzed for mobile. <br>
-                    <a href="https://front-page-news.herokuapp.com/" target = "_blank"><b>Front Page News App</b></a>
-                    </p>
-                    
-                    
+    app<span style="color: #666666">.</span>run_server(debug<span style="color: #666666">=</span><span style="color: #AA22FF">False</span>)
+</pre>
 
+                        <br>
+
+
+
+                        <h3>Deployment errands</h3>
+                        
+                        <p>Once we are at the stage when we are satisfied with our code. We will now use git to run heroku commands. </p>
+                    
+                        <p>For deploying a dash application on Heroku, the <a href="https://dash.plot.ly/deployment" target = "_blank"><b>documentation</b></a> given by plotly is clear enough. If you are deploying your Dash app on Heroku, just replace the code in the documentation with your <code>app.py</code> code and follow along as described.</p>
+                        
+                        
+                        <h2>Results</h2>
+                        
+                        <p>This app yeilded some interesting results. For example, even Venom was looking happy in this image.</p>
+                        <p>See for yourself - <a href="http://knowyourmood.herokuapp.com/" target="_blank"><b>Link to Web App</b></a></p>
+                        
+                        <img src="../images/Blogs/8.MoodieDashApp/results_1.png" alt="Detecting facial expressions of Venom">
+                        
+                    
+                    </div> <!-- primary-content -->
+                       
                         <!-- END OF BLOG -->
-
-                    </div> <!-- end entry-primary -->
 
                     <div class="pagenav group">
                         <div class="prev-nav">
-                            <a href="xgboostmultiprocessing.html" rel="prev">
+                            <a href="intro-to-deep-learning-mit-notes.html" rel="prev">
                                 <span>Previous</span>
-                                Parallelize Grid-Search for XGBoost
+                                [Notes] Intro to Deep Learning - MIT 6.S191
                             </a>
                         </div>
 <!--
@@ -385,7 +483,7 @@ app<span style="color: #666666">.</span>layout <span style="color: #666666">=</s
 
                 <div class="col-twelve">
                     <div class="copyright">
-                        <span>© Copyright 2019</span>
+                        <span>© Copyright 2019-2021</span>
                         <span>By <a href="index.html">Sumit Kant</a></span>
                     </div>
 
