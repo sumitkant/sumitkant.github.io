@@ -6,7 +6,7 @@ body {
 
 .bodycopy {
     width: 40%;
-    font-size: 1.2em;
+    font-size: 1em;
     font-weight: 500;
     background: rgba(0, 0, 0, 0.8);
     color: white;
@@ -129,7 +129,7 @@ body {
 
 @media only screen and (max-width:1200px) {
     .bodycopy {
-        font-size: 1.1em;
+        font-size: 1em;
         display: inline-block;
         position: relative;
         width: 60%;
