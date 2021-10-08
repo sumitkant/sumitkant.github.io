@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html class="no-js oldie ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>
+<html class="no-js oldie ie9" lang="en">
+<![endif]-->
+<!--[if (gte IE 9)|!(IE)]>
+<!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+
+    <!--- basic page needs
+   ================================================== -->
+    <meta charset="utf-8">
+    <title>Python | Front Page News - Dash Application</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- mobile specific metas
+   ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+   ================================================== -->
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/vendor.css">
+    <link rel="stylesheet" href="../../css/main.css">
+
+
+    <!-- script
+   ================================================== -->
+    <script src="../../js/modernizr.js"></script>
+    <script src="../../js/pace.min.js"></script>
+
+    <!-- favicons
+	================================================== -->
+    <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+
+</head>
+
+<body id="top">
+
+    <!-- header 
+   ================================================== -->
+    <header class="short-header">
+
+        <div class="gradient-block"></div>
+
+        <div class="row header-content">
+
+            <div class="logo">
+                <a href="../../index.html">Sumit Kant</a>
+            </div>
+
+            <nav id="main-nav-wrap">
+                <ul class="main-navigation sf-menu">
+                    <li><a href="../../index.html" title="">Home</a></li>
+                <li class="current">
+                        <a href="../../blog.html" title="">Blog</a>
+                    </li>
+                    <li><a href="../../bookshelf.html" title="">Bookshelf</a></li>
+                    <li><a href="../../about.html" title="">About</a></li>
+                </ul>
+            </nav> <!-- end main-nav-wrap -->
+
+        </div>
+
+    </header> <!-- end header -->
+
+
+    <!-- content
+   ================================================== -->
+    <section id="content-wrap" class="blog-single">
+        <div class="row">
+            <div class="col-twelve">
+
+                <article class="format-standard">
+
+                    <div class="content-media">
+                        <div class="post-thumb">
+                            <img src="https://images.unsplash.com/photo-1476242906366-d8eb64c2f661?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80">
+                        </div>
+                    </div>
+
+                    <div class="primary-content">
+
+                        <h1 class="page-title">Front Page News | A Dash Application</h1>
+
+                        <ul class="entry-meta">
+                            <li class="date">December 24, 2019</li>
+                            <li class="cat"><a href="">Web Scraping</a><a href="">Python</a></li>
+                        </ul>
+
+                        <blockquote>
+                            <p>We can't have, like, willy-nilly proliferation of fake news. That's crazy. You can't have more types of fake news than real news. That's allowing public deception to go unchecked. That's crazy.
+                            <br>
+                            <b> - Elon Musk</b></p>
+                            
+                        </blockquote>
+                        
+                        <p>This is how it looks like. <br> <a href="https://front-page-news.herokuapp.com/" target="_blank"><b>Front Page News App</b></a></p>
+                        
+                        <h2>Introduction</h2>
+
+                        <p>While there a lot of news apps out there, most of them are not Ad free (Adblockers are not allowed nowadays). The news is sandwiched between ads that none of us want to see and the entire experience is bad. With the intention of improving my general awarenewss (which still hasn't improved yet), I embarked on this project to create a news app but with a twist. </p>
+                        
+                        
+                        <p>I used web scraping to scrape font-page links of the "The Hindu" newspaper (known to be credible) and compiled in the form of a <b><a href="https://plot.ly/dash/" target="_blank">Dash</a></b>, an open-source plotly project for building interactive applications at scale. I deployed this application on <a href="https://www.heroku.com/" target="_blank"><b>Heroku</b></a>, a cloud platform as a service</p>
+                        
+                        <p>A screenshot of application is below.</p>
+                        
+                        <img src="../../images/Blogs/5.frontpagenews/front-page-news.herokuapp.com_(Pixel%202).png" alt="application screenshot" style="box-shadow: 0 0 6px #e8e8e8;">
+                        
+                        <br>
+                        <br>
+
+
+                        <h2>Step 1: Structure of the app</h2>
+
+                        <p>Firstly, the news links are scraped from the <a href="https://www.thehindu.com/todays-paper/" target="_blank"><b>front page</b></a> of the newspaper. This activity is done whenever the app is loaded. The links are refreshed for each day. The links are loaded as options in a drop-down menu.</p>
+                        
+                        <p>The next step is to follow each link and extract content from the page. This involves, extracting heading, location, timestamp, intro-title and body copy. This activity is performed in real-time when a user clicks the link.</p>
+                        
+                        <h2>Step 2 : Coding the layout</h2>
+                        
+                        <h4>Initiating Dash layout</h4>
+                        
+                        <p>A basic dash layout looks like as shown in the code below</p>
+                        
+<pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_core_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">dcc</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_html_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">html</span>
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">dash.dependencies</span> <span style="color: #AA22FF; font-weight: bold">import</span> Input, Output
+
+app <span style="color: #666666">=</span> dash<span style="color: #666666">.</span>Dash()
+
+server <span style="color: #666666">=</span> app<span style="color: #666666">.</span>server
+
+app<span style="color: #666666">.</span>title <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Front Page News | Sumit Kant&#39;</span>
+app<span style="color: #666666">.</span>layout <span style="color: #666666">=</span> html<span style="color: #666666">.</span>Div([
+    html<span style="color: #666666">.</span>H1(<span style="color: #BB4444">&#39;Front Page News | Sumit Kant&#39;</span>),
+])
+
+<span style="color: #AA22FF; font-weight: bold">if</span> __name__ <span style="color: #666666">==</span> <span style="color: #BB4444">&#39;__main__&#39;</span>:
+    app<span style="color: #666666">.</span>run_server(debug<span style="color: #666666">=</span><span style="color: #AA22FF">True</span>)
+</pre><br>
+
+                    <h4>Getting front-page links</h4>
+                        
+                    <p>I used <code>requests</code>, <code>urllib</code> and <code>BeautifulSoup</code> packages to extract links from the front-page of the newspaper, as shown below</p>
+                    
+<pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">requests</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">urllib.request</span>
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">bs4</span> <span style="color: #AA22FF; font-weight: bold">import</span> BeautifulSoup
+url <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;https://www.thehindu.com/todays-paper/&#39;</span>
+response <span style="color: #666666">=</span> requests<span style="color: #666666">.</span>get(url)
+soup <span style="color: #666666">=</span> BeautifulSoup(response<span style="color: #666666">.</span>text, <span style="color: #BB4444">&quot;html.parser&quot;</span>)
+front_page <span style="color: #666666">=</span> [(x<span style="color: #666666">.</span>get_text(), x<span style="color: #666666">.</span>get(<span style="color: #BB4444">&#39;href&#39;</span>)) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> soup<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;ul&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>: <span style="color: #BB4444">&#39;archive-list&#39;</span>})[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;a&#39;</span>)]
+</pre>
+<br>
+
+                    <h4>Extracting content in real-time</h4>
+                    
+                    <p>Now each link that is served in the drop-down, if clicked will be treated as a new <code>soup</code> and relevant content will be extracted, as shown in the function call below.</p>
+                    
+<pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">def</span> <span style="color: #00A000">display_article</span>(value):
+    <span style="color: #008800; font-style: italic"># soup</span>
+    temp_soup <span style="color: #666666">=</span> BeautifulSoup(requests<span style="color: #666666">.</span>get(value)<span style="color: #666666">.</span>text, <span style="color: #BB4444">&quot;html.parser&quot;</span>)
+
+    <span style="color: #008800; font-style: italic"># Intro text under image</span>
+    intro_text <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;h2&#39;</span>,{<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;intro&#39;</span>})
+    <span style="color: #AA22FF; font-weight: bold">if</span> (intro_text <span style="color: #666666">==</span> <span style="color: #AA22FF">None</span>): intro_text <span style="color: #666666">=</span> <span style="color: #BB4444">&#39; &#39;</span>
+    <span style="color: #AA22FF; font-weight: bold">else</span>: intro_text <span style="color: #666666">=</span> intro_text<span style="color: #666666">.</span>get_text()
+
+    <span style="color: #008800; font-style: italic"># Article body copy</span>
+    article <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;paywall&#39;</span>})
+    <span style="color: #AA22FF; font-weight: bold">if</span> (article <span style="color: #666666">==</span> <span style="color: #AA22FF">None</span>) : article <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Article not available&#39;</span>
+    <span style="color: #AA22FF; font-weight: bold">else</span>: article <span style="color: #666666">=</span> [html<span style="color: #666666">.</span>P(x<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> article<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;p&#39;</span>)]
+
+    <span style="color: #008800; font-style: italic"># Article image</span>
+    <span style="color: #AA22FF; font-weight: bold">try</span>:
+        img <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;source&#39;</span>)[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>get(<span style="color: #BB4444">&#39;srcset&#39;</span>)
+    <span style="color: #AA22FF; font-weight: bold">except</span>:
+        img <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;https://i.ytimg.com/vi/wcTpTYQv7lg/maxresdefault.jpg&#39;</span>
+    
+    <span style="color: #008800; font-style: italic"># Article title</span>
+    title <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;h1&#39;</span>,{<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;title&#39;</span>})<span style="color: #666666">.</span>get_text()
+
+    city <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;ut-container&#39;</span>})<span style="color: #666666">.</span>findChildren()[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()[:<span style="color: #666666">-1</span>]
+
+    time_stamp <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;ut-container&#39;</span>})<span style="color: #666666">.</span>findChildren()[<span style="color: #666666">3</span>]<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()
+
+
+    <span style="color: #AA22FF; font-weight: bold">return</span> city, time_stamp, title, intro_text, img, article
+</pre><br>
+                    <h4>Putting it all together</h4>
+                    <p>I used <code>@app.callback</code> to link input and outputs to the html layout. </p>
+                    
+                    <p>The <code>Input</code> component of <code>dash.dependencies</code> recieves input from the drop-down whose value is then passed on to the function <code>display_article()</code> as an argument.</p>
+                    
+                    <p>The output of the function call returns multiple items which are recieved by the <code>Ouput</code> component of <code>dash.dependencies</code>. This component then takes the output value and displays in the <code>children</code> of selected component selected by <code>id</code>. </p>
+                    
+                    <p>For example, the output "city" of the function call <code>display_article()</code>, will be displayed as the child element of the <code>div</code> tag with <code>id = "display-city"</code></p>
+                    
+                    <p>The finalized code is shown below.</p>
+                    
+<pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_core_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">dcc</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">dash_html_components</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">html</span>
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">dash.dependencies</span> <span style="color: #AA22FF; font-weight: bold">import</span> Input, Output
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">requests</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">urllib.request</span>
+<span style="color: #AA22FF; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">bs4</span> <span style="color: #AA22FF; font-weight: bold">import</span> BeautifulSoup
+
+
+external_stylesheets <span style="color: #666666">=</span> [<span style="color: #BB4444">&#39;https://codepen.io/chriddyp/pen/bWLwgP.css&#39;</span>, <span style="color: #BB4444">&#39;https://codepen.io/sumitkant/pen/oNgzyjw.css&#39;</span>]
+
+app <span style="color: #666666">=</span> dash<span style="color: #666666">.</span>Dash(__name__, external_stylesheets<span style="color: #666666">=</span>external_stylesheets)
+
+<span style="color: #008800; font-style: italic">#python</span>
+url <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;https://www.thehindu.com/todays-paper/&#39;</span>
+response <span style="color: #666666">=</span> requests<span style="color: #666666">.</span>get(url)
+soup <span style="color: #666666">=</span> BeautifulSoup(response<span style="color: #666666">.</span>text, <span style="color: #BB4444">&quot;html.parser&quot;</span>)
+front_page <span style="color: #666666">=</span> [(x<span style="color: #666666">.</span>get_text(), x<span style="color: #666666">.</span>get(<span style="color: #BB4444">&#39;href&#39;</span>)) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> soup<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;ul&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>: <span style="color: #BB4444">&#39;archive-list&#39;</span>})[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;a&#39;</span>)]
+
+
+server <span style="color: #666666">=</span> app<span style="color: #666666">.</span>server
+
+app<span style="color: #666666">.</span>title <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Front Page News | Sumit Kant&#39;</span>
+app<span style="color: #666666">.</span>layout <span style="color: #666666">=</span> html<span style="color: #666666">.</span>Div([
+    html<span style="color: #666666">.</span>H1(<span style="color: #BB4444">&#39;Front Page News&#39;</span>),
+    
+    html<span style="color: #666666">.</span>Div(dcc<span style="color: #666666">.</span>Dropdown(
+        <span style="color: #AA22FF">id</span><span style="color: #666666">=</span><span style="color: #BB4444">&#39;dropdown&#39;</span>,
+        options<span style="color: #666666">=</span>[{<span style="color: #BB4444">&#39;label&#39;</span>: i[<span style="color: #666666">0</span>], <span style="color: #BB4444">&#39;value&#39;</span>:i[<span style="color: #666666">1</span>] } <span style="color: #AA22FF; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> front_page],
+        value<span style="color: #666666">=</span>front_page[<span style="color: #666666">0</span>][<span style="color: #666666">1</span>]
+    )),
+
+    html<span style="color: #666666">.</span>Small(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-city&#39;</span>),
+    html<span style="color: #666666">.</span>Small(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-timestamp&#39;</span>),
+    html<span style="color: #666666">.</span>H2(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-title&#39;</span>),
+    html<span style="color: #666666">.</span>H5(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-intro&#39;</span>),
+    html<span style="color: #666666">.</span>Img(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-image&#39;</span>),
+    html<span style="color: #666666">.</span>Div(<span style="color: #AA22FF">id</span> <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;display-article&#39;</span>)
+])
+
+<span style="color: #AA22FF">@app.callback</span>([
+    Output(<span style="color: #BB4444">&#39;display-city&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
+    Output(<span style="color: #BB4444">&#39;display-timestamp&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
+    Output(<span style="color: #BB4444">&#39;display-title&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
+    Output(<span style="color: #BB4444">&#39;display-intro&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),
+    Output(<span style="color: #BB4444">&#39;display-image&#39;</span>, <span style="color: #BB4444">&#39;src&#39;</span>),
+    Output(<span style="color: #BB4444">&#39;display-article&#39;</span>, <span style="color: #BB4444">&#39;children&#39;</span>),],
+    [Input(<span style="color: #BB4444">&#39;dropdown&#39;</span>, <span style="color: #BB4444">&#39;value&#39;</span>)])
+
+<span style="color: #AA22FF; font-weight: bold">def</span> <span style="color: #00A000">display_article</span>(value):
+    <span style="color: #008800; font-style: italic"># soup</span>
+    temp_soup <span style="color: #666666">=</span> BeautifulSoup(requests<span style="color: #666666">.</span>get(value)<span style="color: #666666">.</span>text, <span style="color: #BB4444">&quot;html.parser&quot;</span>)
+
+    <span style="color: #008800; font-style: italic"># Intro text under image</span>
+    intro_text <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;h2&#39;</span>,{<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;intro&#39;</span>})
+    <span style="color: #AA22FF; font-weight: bold">if</span> (intro_text <span style="color: #666666">==</span> <span style="color: #AA22FF">None</span>): intro_text <span style="color: #666666">=</span> <span style="color: #BB4444">&#39; &#39;</span>
+    <span style="color: #AA22FF; font-weight: bold">else</span>: intro_text <span style="color: #666666">=</span> intro_text<span style="color: #666666">.</span>get_text()
+
+    <span style="color: #008800; font-style: italic"># Article body copy</span>
+    article <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;paywall&#39;</span>})
+    <span style="color: #AA22FF; font-weight: bold">if</span> (article <span style="color: #666666">==</span> <span style="color: #AA22FF">None</span>) : article <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;Article not available&#39;</span>
+    <span style="color: #AA22FF; font-weight: bold">else</span>: article <span style="color: #666666">=</span> [html<span style="color: #666666">.</span>P(x<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()) <span style="color: #AA22FF; font-weight: bold">for</span> x <span style="color: #AA22FF; font-weight: bold">in</span> article<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;p&#39;</span>)]
+
+    <span style="color: #008800; font-style: italic"># Article image</span>
+    <span style="color: #AA22FF; font-weight: bold">try</span>:
+        img <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find_all(<span style="color: #BB4444">&#39;source&#39;</span>)[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>get(<span style="color: #BB4444">&#39;srcset&#39;</span>)
+    <span style="color: #AA22FF; font-weight: bold">except</span>:
+        img <span style="color: #666666">=</span> <span style="color: #BB4444">&#39;https://i.ytimg.com/vi/wcTpTYQv7lg/maxresdefault.jpg&#39;</span>
+    
+    <span style="color: #008800; font-style: italic"># Article title</span>
+    title <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;h1&#39;</span>,{<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;title&#39;</span>})<span style="color: #666666">.</span>get_text()
+
+    city <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;ut-container&#39;</span>})<span style="color: #666666">.</span>findChildren()[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()[:<span style="color: #666666">-1</span>]
+
+    time_stamp <span style="color: #666666">=</span> temp_soup<span style="color: #666666">.</span>find(<span style="color: #BB4444">&#39;div&#39;</span>, {<span style="color: #BB4444">&#39;class&#39;</span>:<span style="color: #BB4444">&#39;ut-container&#39;</span>})<span style="color: #666666">.</span>findChildren()[<span style="color: #666666">3</span>]<span style="color: #666666">.</span>get_text()<span style="color: #666666">.</span>strip()
+
+
+    <span style="color: #AA22FF; font-weight: bold">return</span> city, time_stamp, title, intro_text, img, article
+
+
+<span style="color: #AA22FF; font-weight: bold">if</span> __name__ <span style="color: #666666">==</span> <span style="color: #BB4444">&#39;__main__&#39;</span>:
+    app<span style="color: #666666">.</span>run_server(debug<span style="color: #666666">=</span><span style="color: #AA22FF">True</span>)
+</pre><br>
+                    <h2>Step 3 : Deploying on Heroku</h2>
+                    
+                    <p>For deploying a dash application on Heroku, the <a href="https://dash.plot.ly/deployment" target = "_blank"><b>documentation</b></a> given by plotly is clear enough. If you are deploying your Dash app on Heroku, just replace the code in the documentation with your <code>app.py</code> code and follow along as described.</p>
+                    
+                    
+                    <h2>Results</h2>
+                    
+                    <p>Check the link below for final results. This app is currenly optimzed for mobile. <br>
+                    <a href="https://front-page-news.herokuapp.com/" target = "_blank"><b>Front Page News App</b></a>
+                    </p>
+                    
+                    
+
+                        <!-- END OF BLOG -->
+
+                    </div> <!-- end entry-primary -->
+
+                    <div class="pagenav group">
+                        <div class="prev-nav">
+                            <a href="xgboostmultiprocessing.html" rel="prev">
+                                <span>Previous</span>
+                                Parallelize Grid-Search for XGBoost
+                            </a>
+                        </div>
+                        <div class="next-nav">
+                            <a href="amazon-wishlist-tracking.html" rel="next">
+                                <span>Next</span>
+                                Automating Amazon Wishlist Tracking
+                            </a>
+                        </div>
+                    </div>
+
+                </article>
+
+
+            </div> <!-- end col-twelve -->
+        </div> <!-- end row -->
+
+    </section> <!-- end content -->
+
+
+    <!-- footer
+   ================================================== -->
+    <footer>
+
+
+        <div class="footer-bottom">
+            <div class="row">
+
+                <div class="col-twelve">
+                    <div class="copyright">
+                        <span>© Copyright 2021</span>
+                        <span>By <a href="../../index.html">Sumit Kant</a></span>
+                    </div>
+
+                    <div id="go-top">
+                        <a class="smoothscroll" title="Back to Top" href="#top"><i class="icon icon-arrow-up"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div> <!-- end footer-bottom -->
+
+    </footer>
+
+    <div id="preloader">
+        <div id="loader"></div>
+    </div>
+
+    <!-- Java Script
+   ================================================== -->
+    <script src="../../js/jquery-2.1.3.min.js"></script>
+    <script src="../../js/plugins.js"></script>
+    <script src="../../js/main.js"></script>
+
+</body>
+
+</html>
+

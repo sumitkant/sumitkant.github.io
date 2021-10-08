@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html class="no-js oldie ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>
+<html class="no-js oldie ie9" lang="en">
+<![endif]-->
+<!--[if (gte IE 9)|!(IE)]>
+<!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+
+    <!--- basic page needs
+   ================================================== -->
+    <meta charset="utf-8">
+    <title>Blog | Streamlit App</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- mobile specific metas
+   ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+   ================================================== -->
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/vendor.css">
+    <link rel="stylesheet" href="../../css/main.css">
+
+
+    <!-- script
+   ================================================== -->
+    <script src="../../js/modernizr.js"></script>
+    <script src="../../js/pace.min.js"></script>
+
+    <!-- favicons
+	================================================== -->
+    <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+
+</head>
+
+<body id="top">
+
+    <!-- header 
+   ================================================== -->
+    <header class="short-header">
+
+        <div class="gradient-block"></div>
+
+        <div class="row header-content">
+
+            <div class="logo">
+                <a href="../../index.html">Sumit Kant</a>
+            </div>
+
+            <nav id="main-nav-wrap">
+                <ul class="main-navigation sf-menu">
+                    <li><a href="../../index.html" title="">Home</a></li>
+                    <li class="current">
+                        <a href="../../blog.html" title="">Blog</a>
+                    </li>
+                    <li><a href="../../bookshelf.html" title="">Bookshelf</a></li>
+                    <li><a href="../../about.html" title="">About</a></li>
+                </ul>
+            </nav> <!-- end main-nav-wrap -->
+
+
+        </div>
+
+    </header> <!-- end header -->
+
+
+    <!-- content
+   ================================================== -->
+    <section id="content-wrap" class="blog-single">
+        <div class="row">
+            <div class="col-twelve">
+
+                <article class="format-standard">
+
+                    <div class="content-media">
+                        <div class="post-thumb">
+                            <img src="../../images/Blogs/AllBanners/13.jpg">
+                        </div>
+                    </div>
+
+                    <div class="primary-content">
+
+                        <h1 class="page-title">Build and deploy apps in minutes with streamlit</h1>
+
+                        <ul class="entry-meta">
+                            <li class="date">June 20, 2021</li>
+                            <li class="cat"><a href="">Python, Streamlit</a></li>
+                        </ul>
+
+                        <p>Another productive weekend passed by, learning the extremely powerful yet simple web app builder - <a href="https://streamlit.io/" target="_blank"><b>Streamlit</b></a>.</p>
+
+                        <p>Streamlit is a python based framework that reduces the effort of building and deploying web apps to almost writing a markdown document. It is extremely fast. And you can use it as a debugger tool. You can pretty much print anything out in the window and automatically formats it for you. Put simply, <b>Streamlit is awesome!</b></p>
+
+                        <p>The video from streamlit is all you need to understand. To code it, please continue reading... :)</p>
+
+                        <video muted="" controls="" loop="" class="w-full">
+                            <source src="https://s3-us-west-2.amazonaws.com/assets.streamlit.io/videos/hero-video.mp4"></video>
+
+                        <br>
+
+                        <br>
+
+                        <p>Let's go over it more formally by looking at an example.</p>
+
+
+                        <img src='../../images/Blogs/11.TVAppStreamlit/app_preview.png'>
+
+                        <br>
+                        <br>
+
+                        <p>This is how the app looks like. You get a side bar and a main page. In the main page you can print out the headings, bullet points and your favorite chart. You can keep the sidebar for controls. This works typically like a website with a touch of Python to make it more interactive. This is how I went about building it.</p>
+
+                        <ol>
+                            <li>Installing Streamlit</li>
+                            <li>Writing content</li>
+                            <li>Publishing code to Github Repo</li>
+                            <li>Deploying the app in seconds</li>
+                        </ol>
+
+
+
+                        <p>Let's go through each step one by one.</p>
+
+
+                        <h2>1. Installing Streamlit</h2>
+                        <p>Before installing streamlit, it is good idea to set up a virutal environment. You can then export the same requirements in <code>requirements.txt</code> file to let streamlit know about the packages you are trying to use while deploying. I use conda to install and manage packages</p>
+                        <!-- HTML generated using hilite.me -->
+                        <div style="background: #f8f8f8; overflow:auto;width:auto;border: 0; padding: 0">
+                            <pre style="margin: 0; line-height: 125%">conda create <span style="color: #666666">-</span>n myappenv python<span style="color: #666666">=3.9</span> <span style="color: #008800; font-style: italic"># create environment </span>
+conda activate myappenv <span style="color: #008800; font-style: italic"># activate environment</span>
+</pre>
+                        </div>
+
+
+
+                        <br>
+                        <p>To leave the virtual environment, you can use <code>conda deactivate</code></p>
+
+                        <p>Now the environment is set up. You can install streamlit and required dependencies using <code>pip install streamlit</code></p>
+
+                        <p>To test it out, create an empty python file, say, <code>test.py</code>, and write <code>streamlit run test.py</code> in the console to run a streamlit server. This will open up your default browser window, where you can see the streamlit server running. Once you make any changes to the test.py document and hit ctrl+s, it will automatically refresh the contents of the page (It prompts during the first change whether you want to rerun once or always - I use <b>Rerun always</b>). Yes. That easy!</p>
+
+                        <h2>2. Writing content to test.py</h2>
+
+                        <p>Next you need to import streamlit by using <code>import streamtlit as st</code></p>
+
+                        <h3>Use st.write for main content</h3>
+                        <p>This step will look more like writing a markdown document. To format anything within the streamlit web page, you need to write content within <code>st.write('')</code>. For example to create headings and some bullet text you only need to write...</p>
+
+                        <!-- HTML generated using hilite.me -->
+                        <div style="background: #f8f8f8; overflow:auto;width:auto;border: 0; padding: 0">
+                            <pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">streamlit</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">st</span><br>st<span style="color: #666666">.</span>write(<span style="color: #BB4444">&#39;&#39;&#39;</span>
+<span style="color: #BB4444"># Heading or H1</span>
+<span style="color: #BB4444">## Subheading or H2</span>
+<span style="color: #BB4444">* Bullet 1</span>
+<span style="color: #BB4444">* Bullet 2</span>
+<span style="color: #BB4444">* Bullet 3</span>
+<span style="color: #BB4444">* Bullet 4</span>
+<span style="color: #BB4444">&#39;&#39;&#39;</span>)
+</pre>
+                        </div>
+
+                        <br>
+
+                        <h3>Use st.sidebar.write for sidebar content</h3>
+
+                        <p>Okay. This is easy, but what about side bar. For this, you only need to use <code>st.sidebar.write('')</code>, and that will push the content to the sidebar</p>
+
+                        <h3>Widgets</h3>
+
+                        <p>You can use multiple widgets within streamlit, all available within one line of code. For example to use a slider, all you need to call is <code>st.slider()</code>. You can connect the input of the slider to a st.write() content which will update automatically once you move the slider.</p>
+
+
+
+                        <!-- HTML generated using hilite.me -->
+                        <div style="background: #f8f8f8; overflow:auto;width:auto;border: 0; padding: 0">
+                            <pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">streamlit</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">st</span>
+x <span style="color: #666666">=</span> st<span style="color: #666666">.</span>slider(<span style="color: #BB4444">&#39;x&#39;</span>)  <span style="color: #008800; font-style: italic"># 👈 this is a widget</span>
+st<span style="color: #666666">.</span>write(x, <span style="color: #BB4444">&#39;squared is&#39;</span>, x <span style="color: #666666">*</span> x)
+</pre>
+                        </div>
+
+                        <br>
+                        <p> Not getting too much in detail, here is a <a href="https://docs.streamlit.io/en/stable/main_concepts.html#display-and-style-data"><b>link</b></a> to explore widgets, streamlit themselves have done a better job of explaining.</p>
+
+                        <h3>Other features</h3>
+
+                        <p>You can also print tables out using <code>st.table()</code>, interaactive plotly charts using <code>st.plotly_chart()</code> and images using <code>st.image()</code>. More details in <a href=""https://docs.streamlit.io/en/stable/api.html><b>this documentation</b></a></p>
+
+                        <h2>3. Publishing code to Github Repo</h2>
+
+                        <p>Once you are done with you app that you want to deploy, it's time to push it to Github. For that, follow these steps</p>
+
+                        <ol>
+                            <li>Go to <a href="https://github.com/"><b>github.com</b></a> and create a new repository. To avoid errors don't initialize with README and `gitignore`</li>
+                            <li>Head to the remote location on you PC or mac</li>
+                            <li>Git bash in the directory of project files</li>
+                            <li>Initialize using <code>git init</code></li>
+                            <li>Add files using <code>git add .</code></li>
+                            <li>Commit - <code>git commit -m "First commit"</code></li>
+                            <li>At the top of your Github repository's Quick Setup page, click to copy the remote repository URL</li>
+                            <li>Add origin - <code>git remote add origin REMOTE_URL </code></li>
+                            <li>Verify origin - <code>git remote -v</code></li>
+                            <li>Push to origin - <code>git push origin master</code></li>
+
+                        </ol>
+
+                        <h2>4. Deploying the app</h2>
+
+                        <p>My favorite part!!! For deploying your app you only need to click deploy in you streamlit app and it open page in browser that looks like this...</p>
+
+                        <img src="https://docs.streamlit.io/en/stable/_images/streamlit_cloud_deploy_interface.png" alt="">
+
+                        <br>
+
+                        <p>You only need to mention three things from your public github repo</p>
+
+                        <ol>
+                            <li>Your Repo URL</li>
+                            <li>Branch Name (master)</li>
+                            <li>Main File (test.py)</li>
+                        </ol>
+
+                        <p>...and hit deploy!!! If this does not surprise you, I don't know what will. All the heavy lifting of deployment is taken care of for you, like a butler at your service.</p>
+
+                        <p>Your deployed app can be found at </p>
+
+                        <!-- HTML generated using hilite.me -->
+                        <div style="background: #f8f8f8; overflow:auto;width:auto;border: 0; padding: 0">
+                            <pre style="margin: 0; line-height: 125%">https:<span style="color: #666666">//</span>share<span style="color: #666666">.</span>streamlit<span style="color: #666666">.</span>io<span style="color: #666666">/</span>[user name]<span style="color: #666666">/</span>[repo name]<span style="color: #666666">/</span>[branch name]<span style="color: #666666">/</span>[app path]
+</pre>
+                        </div>
+
+                        <br>
+
+
+                        <p>By this point, I think you are already bored with the constant rant of me trying to convince you that streamlit is awesome. This is one of the most simple tools to build and deploy any kind of app that you want. It literally takes a lot of burden off from your shoulders. If you are not convinced, Just try deploying using any other framework, like dash by Plotly</p>
+
+                        <p>Thank you for reading! Hope you liked it!</p>
+
+
+
+
+
+                    </div> <!-- primary-content -->
+
+                    <!-- END OF BLOG -->
+
+                    <div class="pagenav group">
+                        <div class="prev-nav">
+                            <a href="intro-to-deep-learning-mit-notes.html" rel="prev">
+                                <span>Previous</span>
+                                [Notes] Intro to Deep Learning - MIT 6.S191
+                            </a>
+                        </div>
+
+                        <div class="next-nav">
+                            <a href="frontpagenews-dashapplication.html" rel="next">
+                                <span>Next</span>
+                                Front Page News | Dash Application
+                            </a>
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+            </div> <!-- end col-twelve -->
+        </div> <!-- end row -->
+
+    </section> <!-- end content -->
+
+
+    <!-- footer
+   ================================================== -->
+    <footer>
+
+
+        <div class="footer-bottom">
+            <div class="row">
+
+                <div class="col-twelve">
+                    <div class="copyright">
+                        <span>© Copyright 2019-2021</span>
+                        <span>By <a href="index.html">Sumit Kant</a></span>
+                    </div>
+
+                    <div id="go-top">
+                        <a class="smoothscroll" title="Back to Top" href="#top"><i class="icon icon-arrow-up"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div> <!-- end footer-bottom -->
+
+    </footer>
+
+    <div id="preloader">
+        <div id="loader"></div>
+    </div>
+
+    <!-- Java Script
+   ================================================== -->
+    <script src="../../js/jquery-2.1.3.min.js"></script>
+    <script src="../../js/plugins.js"></script>
+    <script src="../../js/main.js"></script>
+
+</body></html>
