@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/homepage2.css">
+    <link rel="stylesheet" href="css/about.css">
 
 
     <!-- script
@@ -36,62 +36,338 @@
 
     <!-- favicons
 	================================================== -->
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <style>
+        #titletext{
+            margin-top: -8.5em;
+            text-align: center;
+        }
+        
+        #separator{
+            margin-bottom: 6.5em;
+        }
+    </style>
 
 </head>
 
-<body>
+<body id="top">
 
-    <!--
-    <div id="sumitkant">
-        <a href="index.html"></a>
-    </div>
--->
+    <!-- header 
+   ================================================== -->
+    <header class="short-header">
 
-    <div id="logo">
-        <a href="index.html"></a>
-    </div>
+        <div class="gradient-block"></div>
 
-    <div class="bgrid nav-links">
-       
-        <a href="blog.html" class="blogs">
-            <div class="nav-link-child">Blog</div>
-        </a>
+        <div class="row header-content">
 
-        <a href="bookshelf.html" class="books">
-            <div class="nav-link-child">Bookshelf</div>
-        </a>
+            <div class="logo">
+                <a href="index.html">Author</a>
+            </div>
 
-        <a href="about.html" class="about">
-            <div class="nav-link-child">About</div>
-        </a>
+            <nav id="main-nav-wrap">
+                <ul class="main-navigation sf-menu">
+                    <li class='current'><a href="index.html" title="">Home</a></li>
+                    <li class="has-children">
+                        <a href="blog.html" title="">Blog</a>
+                    </li>
+                    <li><a href="bookshelf.html" title="">Bookshelf</a></li>
+<!--                    <li class="current"> </li>-->
+                </ul>
+            </nav> <!-- end main-nav-wrap -->
 
-        <a href="neuralnotework.html" class="about">
-            <div class="nav-link-child">Brain Dump</div>
-        </a>
-        
-        <a href="deep-learning.html" class="about">
-            <div class="nav-link-child">Deep Learning</div>
-        </a>
-
-        <div class="bg_transition"></div>
-
-        <div class="bodycopy">
-            <p>Welcome to my blog. I am Sumit. This is where I record my learnings or when I build something new and interesting. This is my attempt to share them with you. Explore these links and see if you find something that clicks with you. Let me know!!
-            </p>
-            
         </div>
-    </div>
+
+    </header> <!-- end header -->
+
+
+    <!-- content
+   ================================================== -->
+    <section id="content-wrap" class="site-page">
+        <div class="row">
+            <div class="col-twelve">
+
+                <section>
+
+                    <div class="content-media">
+                    </div>
+
+                    <div class="primary-content">
+                        
+                        <h1 class="entry-title add-bottom">Hi! I am Sumit! </h1>
+                        
+                        <div>
+                            <img src="images/homepage/bg_normal_smooth.jpg" alt="">
+                        </div>
+
+                        <br>
+
+                        <p class="lead">Welcome to my blog. This is where I record my learnings or when I build something new and interesting. This is my attempt to share them with you. Explore these links and see if you find something that clicks with you. Let me know!! </p>
+                        
+                        <h2>In Brief</h2>                        
+                        <p>
+                        I build machine learning models for a living. I like learn about recent advacements in AI/ML/DL. I am also an avid reader, mostly of non-fiction books. I am currently exploring audiobooks and book summaries to increase my content intake. I also like to play drums and listen to all genres of music. Recently, I developed a new found interest in investing. So far, the portfolio is giving decent returns owing to the bull runs! 
+                        <br>
+                        Check my online CV below, see if something resonates with you!
+                        </p>
+
+                        <br>
+
+                        <h2>Work Experience</h2>
+
+
+                        <div class="row block-1-1 block-tab-full">
+                            <div class="bgrid">
+                                <h3>American Express</h3>
+                                <p class="lead">Assistant Manager</p>
+                                <p class="small">Dec'18 - Present</p>
+                                <a href="https://www.americanexpress.com/in/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png" alt="American Express Logo" style="width: 20%; border-radius:00"></a>
+                                <p>I am a data scientist in Global Commercial Data Science team here at American Express. I work on identifying and evaluating sources of information to build a dataset, formalize dependent variable definitions, build and fine-tune ML models, measure and document results for governance approvals and finally deploy them in production for consumption.</p>
+
+                                <p>I have taken over multiple priorities during my tenure. These include building auto-retraining models, developing an end-to-end pipeline for the team to experiment faster and make decisions quicker, revamping web and app ad impression model and finally estimating and sizing potential spend and lend incremental opportunity for the US Commercial portfolio </p>
+                            </div>
+
+                            <div class="bgrid">
+                                <h3>Indus Towers</h3>
+                                <p class="lead">Assistant Manager</p>
+                                <p class="small">Jul'17 - Dec'18</p>
+                                <a href="https://www.industowers.com/" target="_blank"><img src="https://www.industowers.com/wp-content/themes/indus/images/logo.svg" alt="Indus Towers Logo" style="width: 12%; border-radius:00 "></a>
+                                <p>I was hired out of B-school as a management trainee at Indus Towers. After 3 months of on site training, I was inducted to Energy BU at the corporate office. I analysed energy billing operation data billed to telcom operators and identified revenue leakges and opportunities. </p>
+                                    
+                                <p>I also developed a POC for estimating energy consumption at 100K+ Indus owned tower sites and helped lauched a mobile module to deliver actionable insights on the ground. </p>
+                                
+                                
+                            </div>
+
+                            <div class="bgrid">
+                                <h3>Crisp Analytics </h3>
+                                <p class="lead">Intern</p>
+                                <p class="small">Apr'16 - May'16</p>
+                                <a href="https://www.lumiq.ai/" target="_blank"><img src="https://media.glassdoor.com/sql/2053664/crisp-analytics-squarelogo-1574117150989.png" alt="Strawberry POS Logo" style="width: 20%; border-radius: 0;"></a>
+                                <p>I interned at Crisp Analytics (now Lumiq.ai), a Noida-based startup on a project to build a customer churn/attrition model using Azure ML and R for a leading fashion retailer, a client of the company.</p>
+                                <p>I also re-designed the company logo (the one you see above) and generated branding collaterals.</p>
+                            </div>
+
+                            <div class="bgrid">
+                                <h3>Nikola Tech</h3>
+                                <p class="lead">Front End Developer</p>
+                                <p class="small">Apr'15 - May'15</p>
+                                <a href="https://strawberrypos.com/" target="_blank"><img src="https://strawberrypos.com/wp-content/uploads/2017/09/Artboard-2-1.png" alt="Strawberry POS Logo" style="width: 35%; border-radius: 0; margin-left: -5%;"></a>
+                                <p>My short stint here as a Front-End Developer was to partly manage the website graphical content. I generated instructional videos for the Strawberry POS system (the primary product of the startup) and packaged it in Google Chrome application as a web-based guide for end users and sales representatives. I also revamped UI/UX design of consumer facing food-ordering application. </p>
+                            </div>
 
 
 
-    <div id="copyright">
-        <span>© Copyright 2020</span>
-        <span><a href="https://sumitkant.github.io/"> | Sumit Kant</a></span>
-    </div>
+                        </div>
+                        <br>
 
 
+                        <h2>Education</h2>
+
+
+
+                        <div class="row block-1-1 block-tab-full">
+                            <div class="bgrid">
+                                <h3>IIM Lucknow</h3>
+                                <p class="lead">PGDM, Marketing &amp; Systems</p>
+                                <p class="small">2015 - 2017</p>
+                            </div>
+
+                            <div class="bgrid">
+                                <h3>IIT Mandi</h3>
+                                <p class="lead">B.Tech, Mechanical Engineering</p>
+                                <p class="small">2010 - 2014</p>
+                            </div>
+                        </div>
+
+                        <br>
+                        <h2>Skills &amp; Tools</h2>
+
+
+
+                        <div class="row block-1-1 block-tab-full">
+                            <div class="bgrid">
+                                <!--                                <h3 class="skill_heading">40%</h3>-->
+                                <div class="track"></div>
+                                <div class="thumb" style="width: 60%;"></div>
+                                <p class="small">Artificial Narrow Intelligence</p>
+                                <br>
+                                <div style="width: 80%; margin: 0 auto">
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 60%;"></div>
+                                    <p class="smallest">Machine Learning</p>
+
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 20%;"></div>
+                                    <p class="smallest">Deep Learning</p>
+
+                                </div>
+
+                            </div>
+                            
+                             <div class="bgrid">
+                                <!--                                <h3 class="skill_heading">40%</h3>-->
+                                <div class="track"></div>
+                                <div class="thumb" style="width: 60%;"></div>
+                                <p class="small">Data Analytics</p>
+                                <br>
+                                <div style="width: 80%; margin: 0 auto">
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 70%;"></div>
+                                    <p class="smallest">Python</p>
+
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 50%;"></div>
+                                    <p class="smallest">Excel</p>
+                                    
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 30%;"></div>
+                                    <p class="smallest">PySpark</p>
+                                    
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 70%;"></div>
+                                    <p class="smallest">SQL</p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="bgrid">
+                                <!--                                <h3 class="skill_heading">45%</h3>-->
+                                <div class="track"></div>
+                                <div class="thumb" style="width: 45%;"></div>
+                                <p class="small">Data Visualization</p>
+                                <br>
+                                <div style="width: 80%; margin: 0 auto;">
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 20%;"></div>
+                                    <p class="smallest">Plotly</p>
+
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 70%;"></div>
+                                    <p class="smallest">Matplotlib</p>
+
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 50%;"></div>
+                                    <p class="smallest">Tableau</p>
+
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 40%;"></div>
+                                    <p class="smallest">Power BI</p>
+                                </div>
+                            </div>
+
+                            <div class="bgrid">
+                                <!--                                <h3 class="skill_heading">45%</h3>-->
+                                <div class="track"></div>
+                                <div class="thumb" style="width: 45%;"></div>
+                                <p class="small">Web &amp; Graphic Design</p>
+                                <br>
+                                <div style="width: 80%; margin: 0 auto;">
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 60%;"></div>
+                                    <p class="smallest">Adobe Photoshop</p>
+
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 30%;"></div>
+                                    <p class="smallest">Adobe Illustrator</p>
+
+                                    <div class="track"></div>
+                                    <div class="thumb" style="width: 70%;"></div>
+                                    <p class="smallest">HTML &amp; CSS </p>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!--
+                       <h2>Interests</h2>
+                       
+                       
+                       
+                       <br>
+                       
+-->
+                       <br>
+<!--
+                        <h2>Online Certifications</h2>
+
+
+
+
+                        <div class="row block-1-1 block-tab-full">
+                            <div class="bgrid">
+
+                                <p class="lead">sumit[dot]kant@iiml[dot]org</p>
+                                <p class="small">Email</p>
+                            </div>
+
+                            <div class="bgrid">
+                                <p class="lead"><a href="https://www.linkedin.com/in/sumitkant/" target="_blank">linkedin.com/in/sumitkant</a></p>
+                                <p class="small">LinkedIn</p>
+                            </div>
+                        </div>
+                        
+                        
+                        <br>
+-->
+                        <h2>Contact</h2>
+
+
+
+
+                        <div class="row block-1-1 block-tab-full">
+                            <div class="bgrid">
+
+                                <p class="lead">sumit[dot]kant@iiml[dot]org</p>
+                                <p class="small">Email</p>
+                            </div>
+
+                            <div class="bgrid">
+                                <p class="lead"><a href="https://www.linkedin.com/in/sumitkant/" target="_blank">linkedin.com/in/sumitkant</a></p>
+                                <p class="small">LinkedIn</p>
+                            </div>
+                        </div>
+
+
+
+                    </div> <!-- Primary Content : END -->
+
+                    <!--                    <p><img src="images/about.png"></p>-->
+
+
+                </section>
+            </div>
+        </div> <!-- end col-twelve -->
+
+    </section> <!-- end content -->
+
+    <!-- footer
+   ================================================== -->
+    <footer>
+        <!-- end footer-main -->
+
+        <div class="footer-bottom">
+            <div class="row">
+
+                <div class="col-twelve">
+                    <div class="copyright">
+                        <span>© Copyright 2020</span>
+                        <span><a href="https://sumitkant.github.io/">Sumit Kant</a></span>
+                    </div>
+
+                    <div id="go-top">
+                        <a class="smoothscroll" title="Back to Top" href="#top"><i class="icon icon-arrow-up"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div> <!-- end footer-bottom -->
+
+    </footer>
 
     <div id="preloader">
         <div id="loader"></div>
@@ -101,14 +377,6 @@
    ================================================== -->
     <script src="js/jquery-2.1.3.min.js"></script>
     <script src="js/plugins.js"></script>
-    <script src="js/jquery.appear.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/imagesloaded.pkgd.min.js"></script>
-    <script src="js/charming.min.js"></script>
-    <script src="js/TweenMax.min.js"></script>
-    <script src="js/landingfx.js"></script>
-    <script src="js/particleSphere.js"></script>
-
-
 
 </body></html>

@@ -1794,11 +1794,11 @@ header a {
     padding: 0;
     outline: 0;
     border: none;
-    width: 60px;
+    width: 150px;
     height: 65px;
-    background: url("../images/logo.png") no-repeat center;
-    filter: invert(100%);
-    background-size: 60px 65px;
+    background: url("../images/Main_Logo.svg") no-repeat center;
+/*    filter: invert(100%);*/
+    background-size: 150px 65px;
     font: 0/0 a;
     text-shadow: none;
     color: transparent;
