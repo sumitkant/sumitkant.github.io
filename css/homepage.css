@@ -21,12 +21,12 @@
 
 
 .intro {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 1);
     color: white;
     height: 52vh;
     /*    border-top-left-radius: 3em;*/
     border: 5px solid transparent;
-    border-radius: 3em 0 0 3em;
+    border-radius: 1.5em 0 0 1.5em;
     /*    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.2);*/
 }
 
@@ -34,12 +34,12 @@
 
 
 .nav-links {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: #4a4a4a;
     height: 52vh;
     color: white;
     /*    border-bottom-right-radius: 3em;*/
     border: 5px solid transparent;
-    border-radius: 0 3em 3em 0;
+    border-radius: 0 1.5em 1.5em 0;
     /*    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.2);*/
 }
 
@@ -61,12 +61,12 @@
     text-align: right;
     padding-right: 1em;
     position: relative;
-    top: 17vh;
+    top: 5vh;
 }
 
 .intro__title {
     color: white;
-    font-size: 4em;
+    font-size: 2.5em;
 }
 
 .intro__title span {
@@ -76,6 +76,18 @@
     /*    white-space: pre;*/
 }
 
+.intro__portrait {
+    background: url("../images/homepage/portrait.jpg") no-repeat center;
+    width: 200px;
+    height: 200px;
+    background-size: cover;
+    border-radius: 120px;
+    clear: both;
+    float: right;
+    margin-left: 100%;
+    border: 3px solid white;
+    margin-bottom: 20px;
+}
 
 p.typewrite {
     font-size: 0.4em;
@@ -101,9 +113,9 @@ p.typewrite .wrap {
 
 .nav-link-child {
     color: white;
-    line-height: 12.5vh;
+    line-height: 9vh;
     font-family: var(--font-display);
-    font-size: 2em;
+    font-size: 1.5em;
     transition: all 0.15s ease-in-out;
 }
 
@@ -111,7 +123,7 @@ p.typewrite .wrap {
     width: max-content;
     margin-top: -4.5vh;
     font-weight: bold;
-    line-height: 1.8em;
+    /*line-height: 1.8em;*/
     border-bottom: 2px solid black;
 }
 
@@ -153,32 +165,49 @@ div.nav-link-child:hover {
 /*STRUCTURE FOR SMALL SCREENS*/
 
 @media only screen and (max-width:768px) {
+
     .main_content {
         max-width: 85%;
         margin: auto;
     }
-
     .intro {
-        height: 30vh;
-        border-radius: 3em 3em 0 0;
+        height: 32vh;
+        border-radius: 1.5em 1.5em 0 0;
     }
 
     .nav-links {
         padding-top: 2.5vh;
         height: 40vh;
-        border-radius: 0em 0em 3em 3em;
+        border-radius: 0em 0em 1.5em 1.5em;
     }
+    
+    .intro__portrait{
+        margin: 0;
+        padding: 0;
+    }
+    
+    .intro_inner {
+        text-align: left;
+        margin: 0 0 0 1em;
+    }
+    .nav-links a {
+        text-align: center;
+    }
+   .nav-link-child {
 
-
+        line-height: 2em;
+    }
+/*
     #logo a {
         margin: 2.5vh 0 0 0;
         height: 80px;
         background-size: 100% 80px;
     }
 
-    .intro_inner {
-        text-align: center;
-        top: 8vh;
+    
+    
+    h2.intro__title{
+        margin: 0;
         padding: 0;
     }
 
@@ -187,27 +216,15 @@ div.nav-link-child:hover {
         font-weight: 100;
     }
 
-    .nav-links a {
-        text-align: center;
-    }
+   
 
-    .nav-links p {
-        position: relative;
-        left: 50%;
-        transform: translateX(-50%);
-        margin-top: -2vh;
-    }
-
-    .nav-link-child {
-
-        line-height: 8vh;
-    }
+ 
+*/
 }
 
 @media only screen and (max-width:600px) {
-    p.typewrite {
-        font-size: 0.7em;
-    }
+
+
 
 }
 
@@ -222,38 +239,50 @@ screen and (max-height:640px) {
     .col-twelve {
         margin-top: -4vh;
     }
+    
+    h2.intro__title{
+        font-size: 1.7em;
+        margin-left: 0;
+        padding-left: 0;
+        padding-top: 25px;
 
-    p.typewrite {
-        font-size: 0.8em;
     }
 
-    .intro {
-        height: 30vh;
-        margin-top: -1vh;
+    p.typewrite {
+        font-size: 0.7em;
+        text-align: left;
+    }
+    
+    .intro__portrait {
+        margin: 0;
+        padding: 0;
+        width: 150px;
+        height: 150px;
     }
 
     #logo a {
-        margin: 2vh 0 2vh 0;
+        margin: 1vh 0 1vh 0;
         height: 70px;
         background-size: 100% 70px;
     }
 
     .nav-links {
-        margin-top: 10px;
         padding-top: 5vh;
         height: 39vh;
     }
 
     .intro_inner {
-        text-align: center;
-        top: 8.5vh;
-        padding: 0;
+        text-align: left;
+        top: 1em;
+        padding-left: 10px;
     }
 
     .intro__title {
         font-size: 3em;
         margin-bottom: 0;
     }
+    
+    
 
     .nav-links p {
         font-size: 0.1em;
@@ -261,9 +290,9 @@ screen and (max-height:640px) {
 
     .nav-link-child {
 
-        line-height: 6vh;
+        line-height: 1.5em;
         margin-bottom: 1vh;
-        font-size: 1.5em;
+        font-size: 1em;
     }
 
     .copyright {
@@ -290,8 +319,8 @@ screen and (max-height:640px) {
     width: 100%;
     height: 100%;
     z-index: -100000;
-    /*    background: white;*/
-    background: #aaa url("../images/homepage/Artboard 1.jpg") no-repeat left top;
+    background: white;
+    background: url("../images/homepage/main_bg.jpeg") no-repeat left top;
     background-size: cover;
     /*    background-blend-mode: lighten;*/
     -webkit-transition: all 0.15s ease-in-out;
