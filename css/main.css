@@ -76,7 +76,8 @@
 /* CHANGE SCROLL BAR COLORS ***********************/
 
 body::-webkit-scrollbar-track {
-    /*    border: 1px solid var(--color-bg-highlight);*/
+/*        border: 1px solid var(--color-bg-highlight);*/
+    background: rbga(0,0,0,0);
 
 }
 

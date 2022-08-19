@@ -1,14 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,700;1,200&display=swap');
 
 
-body{
+body {
     overflow-x: hidden;
-/*    overflow-y: hidden;*/
-/*    background-color: black;*/
+    
+}
+
+
+.bg_bg {
+    width: 100%;
+    height: 100%;
+    z-index: -1000000;
     background: url('../images/musiclab/bg.jpg') center center;
     background-size: cover;
-/*    position: absolute;*/
+    position: fixed;
 }
+
 .bg_mage {
     margin: 0;
     padding: 0;
@@ -25,12 +32,12 @@ body{
 }
 
 .copyright {
-/*    position: absolute;*/
+    /*    position: absolute;*/
     bottom: 1vh;
     width: 100%;
     height: 50px;
     text-align: center;
-/*    transform: translateX(-50%);*/
+    /*    transform: translateX(-50%);*/
     color: white;
     font-size: 0.7em;
     font-family: "Poppins";
@@ -40,7 +47,8 @@ body{
     color: white;
 }
 
-h1,h2 {
+h1,
+h2 {
     text-align: center;
     color: white;
     margin: 1vh auto 0 auto;
@@ -54,29 +62,30 @@ a:visited {
     text-decoration: underline;
 }
 
-p, .video_container p{
+p,
+.video_container p {
     font-size: 1.2em;
     color: white;
-    font-family:"Poppins";
+    font-family: "Poppins";
 }
 
 
 
-p.follow_text{
+p.follow_text {
     text-align: center;
     margin-bottom: 0;
     font-size: 1em;
 }
 
-.shadow{
+.shadow {
     text-shadow: 0 0 10px #000;
 }
 
-a.blue{
+a.blue {
     color: #06D0FF;
 }
 
-a.red{
+a.red {
     color: red;
 }
 
@@ -86,7 +95,7 @@ h2 {
     color: white;
     text-align: center;
     margin-top: 2vh;
-    
+
 }
 
 #jmllogo {
@@ -96,19 +105,20 @@ h2 {
     clear: both;
 }
 
-#videos{
+#videos {
     margin-top: 20vh;
 }
 
-#video-title{
-    font-size: 1em;
+#video-title {
+    font-size: 0.8em;
+    line-height: 1.1;
 }
 
 .video_container {
     width: 31%;
     margin: 0 1% 0 1%;
     float: left;
-    padding: 0 0 0 0 ;
+    padding: 0 0 0 0;
 }
 
 .video_container a img {
@@ -119,7 +129,7 @@ h2 {
 }
 
 
-.color {    
+.color {
     animation: col 8s linear infinite;
 }
 
@@ -180,22 +190,23 @@ h2 {
     }
 }
 
-@media screen and (max-width:768px){
+@media screen and (max-width:768px) {
 
-    #videos{
+    #videos {
         margin-top: 25vh;
     }
+
     .video_container {
         width: 100%;
         margin: 1%;
         float: left;
     }
-    
+
     .video_container a img {
         width: 100vw;
         height: 49vw;
         object-fit: cover;
         margin-top: 0;
     }
-    
+
 }
