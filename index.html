@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sumit Kant — ML Engineer & Data Scientist</title>
+  <title>Sumit Kant — Gen AI Researcher</title>
   <meta name="description"
     content="Sumit Kant — Manager Data Science at AmEx. Building ML models, reading non-fiction, playing drums." />
   <meta property="og:title" content="Sumit Kant — ML Engineer & Data Scientist" />
@@ -702,7 +702,18 @@
       }
 
       .hero-right {
-        display: none;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        /* order: -1; */
+        /* moves SVG ABOVE the text on mobile */
+      }
+
+      .hero-avatar-zone {
+        max-width: 100%;
+        /* smaller on mobile so it doesn't dominate */
+        aspect-ratio: 1 / 1;
+        /* square feels better on narrow screens */
       }
 
       .hero-tagline {
@@ -1605,15 +1616,14 @@
   <!-- Navigation -->
   <nav class="nav">
     <a href="#" class="nav-logo" aria-label="Sumit Kant Home">
-      <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60"
-          style="display:block;">
-          <!-- Fallback if SVG not supported -->
-          <!-- <img src="./fallback.png" alt="Animated avatar" /> -->
-        </object>
+      <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block;">
+        <!-- Fallback if SVG not supported -->
+        <!-- <img src="./fallback.png" alt="Animated avatar" /> -->
+      </object>
       <!-- <div class="nav-logo-mark"> -->
 
-        
-        <!-- <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+
+      <!-- <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
           <text x="2" y="13" font-family="Cabinet Grotesk, sans-serif" font-weight="900" font-size="12"
             fill="currentColor">SK</text>
         </svg> -->
@@ -1687,25 +1697,27 @@
 
       <!-- Right: Avatar / SVG face drop zone -->
       <div class="hero-right">
-        <object type="image/svg+xml" data="./images/animation20fps_56F_square_fixed.svg" width="500" height="500"
-          style="display:block;">
-          <!-- Fallback if SVG not supported -->
-          <!-- <img src="./fallback.png" alt="Animated avatar" /> -->
-        </object>
-        <!-- <div class="hero-avatar-zone" id="avatarZone" title="Drop your SVG here"> -->
-        <!-- Replace this comment with your <img src="face.svg"> or inline <svg> -->
-        <!-- <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+
+
+        <div class="hero-avatar-zone" id="avatarZone" title="Drop your SVG here">
+          <object type="image/svg+xml" data="./images/animation20fps_56F_square_fixed.svg" width="100%"
+            style="display:block;">
+            <!-- Fallback if SVG not supported -->
+            <!-- <img src="./fallback.png" alt="Animated avatar" /> -->
+          </object>
+          <!-- Replace this comment with your <img src="face.svg"> or inline <svg> -->
+          <!-- <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
           </svg> -->
-        <!-- <span>Your face SVG here</span> -->
-        <!-- </div> -->
+          <!-- <span>Your face SVG here</span> -->
+        </div>
       </div>
     </div>
 
-    <div class="hero-scroll" aria-hidden="true">
+    <!-- <div class="hero-scroll" aria-hidden="true">
       <div class="scroll-line"></div>
       <span>Scroll</span>
-    </div>
+    </div> -->
   </section>
 
   <!-- Stats Bar -->
@@ -1782,7 +1794,8 @@
         <!-- GenAI -->
         <p class="section-subtitle reveal" style="margin-top: var(--space-4);">
           I lead the GenAI adoption effort within the <strong>Credit &amp; Fraud Risk (CFR)</strong> business unit at
-          American Express, delivering training sessions, workshops, and building solutions to drive enterprise-wide adoption of GenAI across global locations in the US, India, and Singapore.
+          American Express, delivering training sessions, workshops, and building solutions to drive enterprise-wide
+          adoption of GenAI across global locations in the US, India, and Singapore.
         </p>
         <!-- <ul class="section-subtitle reveal" style="margin-top: var(--space-2); padding-left: 1.25rem;">
           <li>Conducted <strong>15 distinct training sessions</strong> reaching 2,000+ people, achieving <strong>95%+
@@ -1799,7 +1812,7 @@
         <h2 class="timeline-role reveal">Building Machine Learning Solutions</h2>
         <p class="section-subtitle reveal" style="margin-top: var(--space-4);">
           Over 7+ years in data science, I've delivered <strong>26 end-to-end ML solutions</strong> spanning a wide
-          spectrum of techniques including XGBoost, kNN, time-series modeling. 
+          spectrum of techniques including XGBoost, kNN, time-series modeling.
         </p>
         <!-- <ul class="section-subtitle reveal" style="margin-top: var(--space-2); padding-left: 1.25rem;">
           <li><strong>Classification &amp; regression</strong> — kNN and XGBoost size-of-wallet models for 2.8M US SMEs;
