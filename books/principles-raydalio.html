@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Principles — Ray Dalio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F1ECE0;
+    --bg-soft: #E8E1D1;
+    --ink: #1A1A1A;
+    --ink-soft: #4A4A4A;
+    --ink-mute: #8A8378;
+    --accent: #C75A1F;
+    --line: #1A1A1A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Subtle paper noise */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.012) 1px, transparent 1px),
+      radial-gradient(circle at 70% 70%, rgba(0,0,0,0.012) 1px, transparent 1px);
+    background-size: 3px 3px, 5px 5px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    height: 100vh;
+    max-height: 760px;
+    padding: 0 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .card {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    padding: 72px 80px 88px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+
+  .card.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 56px;
+  }
+
+  .eyebrow .divider {
+    width: 1px;
+    height: 11px;
+    background: var(--ink-mute);
+    opacity: 0.6;
+  }
+
+  .eyebrow .section {
+    color: var(--accent);
+  }
+
+  /* Card number */
+  .card-number {
+    position: absolute;
+    top: 72px;
+    right: 80px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-mute);
+    letter-spacing: 0.04em;
+  }
+
+  .card-number .total {
+    opacity: 0.5;
+  }
+
+  /* Quote card */
+  .quote-mark {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 180px;
+    line-height: 0.7;
+    color: var(--accent);
+    font-weight: 800;
+    margin-bottom: 8px;
+    margin-left: -8px;
+    user-select: none;
+  }
+
+  .quote-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    font-size: 38px;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    max-width: 820px;
+    margin-top: 12px;
+  }
+
+  .quote-text .highlight {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  .quote-attribution {
+    margin-top: auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .quote-attribution::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  /* Concept card */
+  .concept-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .concept-label::before {
+    content: '';
+    width: 18px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .concept-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 56px;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 32px;
+    max-width: 880px;
+  }
+
+  .concept-title .accent {
+    color: var(--accent);
+  }
+
+  .concept-body {
+    font-family: 'Inter', sans-serif;
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 760px;
+    font-weight: 400;
+  }
+
+  .concept-body strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .concept-list {
+    list-style: none;
+    margin-top: 8px;
+    max-width: 780px;
+  }
+
+  .concept-list li {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.4;
+    color: var(--ink);
+    padding: 12px 0 12px 44px;
+    position: relative;
+    border-top: 1px solid rgba(26,26,26,0.1);
+    letter-spacing: -0.01em;
+  }
+
+  .concept-list li:last-child {
+    border-bottom: 1px solid rgba(26,26,26,0.1);
+  }
+
+  .concept-list li::before {
+    content: counter(item, decimal-leading-zero);
+    counter-increment: item;
+    position: absolute;
+    left: 0;
+    top: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .concept-list {
+    counter-reset: item;
+  }
+
+  .concept-list li .accent-word {
+    color: var(--accent);
+  }
+
+  .concept-example {
+    margin-top: 28px;
+    padding: 18px 24px 18px 26px;
+    border-left: 2px solid var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    font-style: italic;
+    max-width: 720px;
+    font-weight: 400;
+  }
+
+  .concept-example::before {
+    content: 'EXAMPLE';
+    display: block;
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .concept-example.note::before {
+    content: 'NOTE';
+  }
+
+  .concept-formula {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 44px;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-top: 8px;
+    margin-bottom: 28px;
+    letter-spacing: -0.02em;
+  }
+
+  .concept-formula .op {
+    color: var(--accent);
+    margin: 0 12px;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    z-index: 10;
+  }
+
+  .nav-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .nav-btn:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  .nav-btn:disabled:hover {
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .nav-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    max-width: 380px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    opacity: 0.18;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    padding: 0;
+  }
+
+  .dot:hover {
+    opacity: 0.5;
+  }
+
+  .dot.active {
+    background: var(--accent);
+    opacity: 1;
+    width: 22px;
+    border-radius: 3px;
+  }
+
+  /* Footer brand */
+  .brand {
+    position: fixed;
+    bottom: 32px;
+    left: 32px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    z-index: 10;
+  }
+
+  .brand-counter {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    z-index: 10;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Decorative corner mark */
+  .corner-mark {
+    position: absolute;
+    top: 72px;
+    left: 80px;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+  }
+
+  .corner-mark::before,
+  .corner-mark::after {
+    content: '';
+    position: absolute;
+    background: var(--accent);
+  }
+
+  .corner-mark::before {
+    width: 100%;
+    height: 1.5px;
+    top: 0;
+  }
+
+  .corner-mark::after {
+    width: 1.5px;
+    height: 100%;
+    left: 0;
+  }
+
+  @media (max-width: 768px) {
+    .stage { padding: 0 20px; max-height: none; }
+    .card { padding: 56px 28px 88px; }
+    .card-number { top: 56px; right: 28px; }
+    .corner-mark { top: 56px; left: 28px; }
+    .quote-mark { font-size: 110px; }
+    .quote-text { font-size: 24px; }
+    .concept-title { font-size: 34px; }
+    .concept-body { font-size: 16px; }
+    .concept-list li { font-size: 18px; padding-left: 36px; }
+    .concept-formula { font-size: 28px; }
+    .eyebrow { font-size: 10px; margin-bottom: 36px; }
+    .brand, .brand-counter { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <!-- Cards inject here -->
+  <div id="card-container"></div>
+</div>
+
+<div class="brand">Principles · Ray Dalio</div>
+<div class="brand-counter" id="counter">01 / 36</div>
+
+<div class="nav">
+  <button class="nav-btn" id="prev" aria-label="Previous">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="next" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<script>
+const cards = [
+  // 1
+  { type: 'concept', section: 'Introduction', label: 'Definition',
+    title: 'Principles, <span class="accent">defined</span>',
+    body: '<strong>Fundamental truths that serve as the foundations for behavior</strong> that gets you what you want out of life.',
+    example: 'Without them, you would react to everything as if for the first time. With them, you classify situations into types and make better decisions, more often.' },
+
+  // 2
+  { type: 'concept', section: 'Introduction', label: 'Framework',
+    title: 'Think for yourself.<br>Three questions.',
+    list: [
+      'What do <span class="accent-word">you</span> want?',
+      'What is <span class="accent-word">true</span>?',
+      'What should you <span class="accent-word">do</span> about #1, in light of #2?'
+    ],
+    example: 'Do it with humility and open-mindedness — so you consider the best thinking available to you, not just your own.' },
+
+  // 3
+  { type: 'concept', section: 'Introduction', label: 'Principle',
+    title: 'Fail <span class="accent">well</span>.',
+    body: 'Experience painful failures that provide big learnings — without failing badly enough to get knocked out of the game.',
+    example: 'Dalio\'s painful mistakes shifted him from "I know I\'m right" to "How do I know I\'m right?"' },
+
+  // 4
+  { type: 'quote', section: 'Crossing the Threshold · 1967–1979',
+    quote: 'When everybody thinks the same thing, it is almost certainly <span class="highlight">reflected in the price</span>, and betting on it is probably going to be a mistake.',
+    attribution: 'Ray Dalio' },
+
+  // 5
+  { type: 'concept', section: 'Crossing the Threshold · 1967–1979', label: 'Trading',
+    title: 'Defensive <span class="accent">and</span> aggressive at once.',
+    body: 'If you\'re not <strong>aggressive</strong>, you won\'t make money. If you\'re not <strong>defensive</strong>, you won\'t keep money.',
+    example: 'Dalio learned this watching the Nifty 50 craze of 1972 collapse — easy money led to inflation, then tightening, then reversal.' },
+
+  // 6
+  { type: 'concept', section: 'My Abyss · 1979–1982', label: 'After the crash',
+    title: 'The four ways <span class="accent">forward</span>.',
+    list: [
+      'Seek out the smartest people who <span class="accent-word">disagree</span> with you.',
+      'Know when <span class="accent-word">not to have</span> an opinion.',
+      'Develop and systemize <span class="accent-word">timeless</span> principles.',
+      'Balance risks: keep upside, reduce downside.'
+    ],
+    example: 'Dalio\'s rules after losing nearly everything betting against the 1982 recovery.' },
+
+  // 7
+  { type: 'quote', section: 'My Abyss · 1979–1982',
+    quote: 'I just want to be right — I <span class="highlight">don\'t care</span> if the right answer comes from me.',
+    attribution: 'Ray Dalio' },
+
+  // 8
+  { type: 'concept', section: 'My Abyss · 1979–1982', label: 'Observation',
+    title: 'Your greatest <span class="accent">weakness</span> is the flip side of your greatest strength.',
+    body: 'Most people are too much one way and not enough another.',
+    example: 'The bold are reckless. The careful are slow. The decisive are impulsive. The thoughtful are paralyzed.' },
+
+  // 9
+  { type: 'concept', section: 'My Road of Trials · 1983–1994', label: 'Team',
+    title: 'Three things a team <span class="accent">must do</span>.',
+    list: [
+      'Put <span class="accent-word">honest thoughts</span> on the table.',
+      'Have thoughtful <span class="accent-word">disagreements</span>; shift opinions as you learn.',
+      'Agree on a way to <span class="accent-word">decide</span> when disagreements remain.'
+    ],
+    example: 'Voting. Clear authorities. Anything that lets you move past disagreement without resentment.' },
+
+  // 10
+  { type: 'quote', section: 'My Road of Trials · 1983–1994',
+    quote: '<span class="highlight">Maturity</span> is the ability to reject good alternatives in order to pursue even better ones.',
+    attribution: 'Ray Dalio' },
+
+  // 11
+  { type: 'concept', section: 'My Road of Trials · 1983–1994', label: 'Portfolio',
+    title: 'Fifteen to twenty <span class="accent">uncorrelated</span> bets.',
+    body: 'With 15 to 20 good, uncorrelated return streams, you can dramatically reduce risk <strong>without reducing expected return</strong>.',
+    example: 'Knowing how to combine return streams matters more than picking good ones. Assets in the same class are about 60% correlated — they rise and fall together.' },
+
+  // 12
+  { type: 'concept', section: 'The Ultimate Boon · 1995–2010', label: 'All Weather',
+    title: 'Only <span class="accent">two forces</span> to worry about.',
+    body: '<strong>Growth and inflation.</strong> Build a mix of assets that performs in all four combinations of them.',
+    example: 'This is the logic behind Dalio\'s All Weather Portfolio — built so his family\'s wealth couldn\'t be wiped out after he was gone.' },
+
+  // 13
+  { type: 'quote', section: 'The Ultimate Boon · 1995–2010',
+    quote: 'The greatest success you can have as the person in charge is to <span class="highlight">orchestrate others</span> to do things well without you.',
+    attribution: 'Ray Dalio' },
+
+  // 14
+  { type: 'concept', section: 'The Ultimate Boon · 1995–2010', label: 'Contrast',
+    title: 'Investors <span class="accent">vs.</span> policymakers.',
+    body: '<strong>Investors</strong> think independently, anticipate what hasn\'t happened, and put real money behind bets. <strong>Policymakers</strong> come from environments that nurture consensus, train them to react to what\'s already happened, and prepare them to negotiate — not to bet.',
+    example: 'It\'s why the two groups so often see the same crisis differently — and why one tends to be early while the other is late.' },
+
+  // 15
+  { type: 'quote', section: 'Looking Back from a Higher Level',
+    quote: 'The satisfaction of success doesn\'t come from achieving your goals, but from <span class="highlight">struggling well</span>.',
+    attribution: 'Ray Dalio' },
+
+  // 16
+  { type: 'concept', section: 'Looking Back from a Higher Level', label: 'Formula',
+    title: 'Pain is a <span class="accent">signal</span>.',
+    formula: 'Pain <span class="op">+</span> Reflection <span class="op">=</span> Progress',
+    body: 'Pain is nature\'s reminder that there\'s something important to learn.',
+    example: 'Dalio built a Pain Button app so people could log pain in the moment — and reflect on it once it passed.' },
+
+  // 17
+  { type: 'concept', section: 'Embrace Reality', label: 'On weaknesses',
+    title: 'Four <span class="accent">choices</span> for a weakness.',
+    list: [
+      'Deny it. <span class="accent-word">(What most people do.)</span>',
+      'Accept it and work to convert it into a strength.',
+      'Accept it and <span class="accent-word">find ways around</span> it.',
+      'Change what you\'re going after.'
+    ],
+    example: 'Option 3 is easiest and most viable. Option 2 is best — if it works.' },
+
+  // 18
+  { type: 'concept', section: 'Embrace Reality', label: 'Two roles',
+    title: 'Designer <span class="accent">vs.</span> worker.',
+    body: 'You are both the <strong>designer</strong> of your machine and a <strong>worker</strong> in it. Being a good designer matters more.',
+    example: 'If you, the designer, find that you, the worker, can\'t do something well — fire yourself as the worker and find a replacement. Stay in the designer role.' },
+
+  // 19
+  { type: 'concept', section: 'Embrace Reality', label: 'Five don\'ts',
+    title: 'Don\'t.',
+    list: [
+      'Confuse what you <span class="accent-word">wish</span> were true with what is.',
+      'Worry about <span class="accent-word">looking good</span>.',
+      'Overweight <span class="accent-word">first-order</span> consequences.',
+      'Let pain stand in the way of progress.',
+      'Blame bad outcomes on anyone but yourself.'
+    ] },
+
+  // 20
+  { type: 'quote', section: 'Embrace Reality',
+    quote: 'There is almost always a good path that you just haven\'t discovered yet, so <span class="highlight">look for it</span> until you find it — rather than settle for the choice that is then apparent to you.',
+    attribution: 'Ray Dalio' },
+
+  // 21
+  { type: 'concept', section: 'The 5-Step Process', label: 'The method',
+    title: 'The <span class="accent">5-Step</span> Process.',
+    list: [
+      'Have clear <span class="accent-word">goals</span>.',
+      'Identify problems — and <span class="accent-word">don\'t tolerate</span> them.',
+      'Diagnose problems to their <span class="accent-word">root causes</span>.',
+      'Design plans to get around them.',
+      'Push through to <span class="accent-word">results</span>.'
+    ],
+    example: 'Do one step at a time. When setting goals, just set goals — don\'t think about how you\'ll achieve them.' },
+
+  // 22
+  { type: 'concept', section: 'The 5-Step Process', label: 'Distinction',
+    title: 'Goals <span class="accent">vs.</span> desires.',
+    body: 'Your <strong>values</strong> determine your goals. <strong>Desires</strong> are first-order consequences that can pull you off them.',
+    example: 'The goal is fitness. The desire is the donut.' },
+
+  // 23
+  { type: 'concept', section: 'Be Radically Open-Minded', label: 'The two flaws',
+    title: 'Ego <span class="accent">and</span> blind spots.',
+    body: 'The two biggest barriers to good decision making.',
+    example: 'Aristotle defined tragedy as a terrible outcome from a fatal flaw that, if fixed, would have led to a wonderful one. For Dalio, these are it.' },
+
+  // 24
+  { type: 'quote', section: 'Be Radically Open-Minded',
+    quote: 'You must not let your <span class="highlight">need to be right</span> be more important than your <span class="highlight">need to find out what\'s true</span>.',
+    attribution: 'Ray Dalio' },
+
+  // 25
+  { type: 'concept', section: 'Be Radically Open-Minded', label: 'Protocol',
+    title: 'The <span class="accent">two-minute</span> rule.',
+    body: 'In any disagreement, give the other person <strong>two uninterrupted minutes</strong> to lay out their thinking before responding.',
+    example: 'The goal of thoughtful disagreement is not to convince. It is to find out which view is true.' },
+
+  // 26
+  { type: 'concept', section: 'People Are Wired Differently', label: 'Habit',
+    title: 'The <span class="accent">habit loop</span>.',
+    formula: 'Cue <span class="op">→</span> Routine <span class="op">→</span> Reward',
+    body: 'Stick with a behavior for roughly <strong>18 months</strong> and you\'ll likely keep it for life.',
+    example: 'From Charles Duhigg\'s The Power of Habit. Dalio recommends writing down your three most harmful habits — then committing to break one.' },
+
+  // 27
+  { type: 'concept', section: 'People Are Wired Differently', label: 'Archetype',
+    title: '<span class="accent">Shapers.</span>',
+    formula: 'Visionary <span class="op">+</span> Practical <span class="op">+</span> Determined',
+    body: 'Shapers go from <strong>visualization to actualization</strong>.',
+    example: 'Steve Jobs was probably the greatest shaper of our time — measured by the size and success of what he built, often over the doubts of others.' },
+
+  // 28
+  { type: 'concept', section: 'Make Decisions Effectively', label: 'Mindset',
+    title: 'Every decision is a <span class="accent">bet</span>.',
+    body: 'There\'s a <strong>probability</strong> and a <strong>reward</strong> for being right — and a probability and a penalty for being wrong.',
+    example: 'Raising your probability of being right is valuable no matter how high it already is. Stress-test your thinking even when you\'re pretty sure.' },
+
+  // 29
+  { type: 'concept', section: 'Make Decisions Effectively', label: 'Weighting',
+    title: 'Whose opinion is <span class="accent">believable</span>?',
+    body: 'Someone who:',
+    list: [
+      'Has succeeded at this thing <span class="accent-word">at least three times</span>.',
+      'Can logically explain the <span class="accent-word">cause-effect</span> behind their conclusion.'
+    ],
+    example: 'Treating all opinions equally is more likely to lead you away from truth than toward it.' },
+
+  // 30
+  { type: 'concept', section: 'Work Principles', label: 'The equation',
+    title: 'Idea <span class="accent">Meritocracy</span>.',
+    formula: 'Radical Truth <span class="op">+</span> Radical Transparency <span class="op">+</span> Believability-Weighted Decisions',
+    example: 'At Bridgewater, virtually all meetings are recorded and made available to everyone — to make this real, not aspirational.' },
+
+  // 31
+  { type: 'quote', section: 'Work Principles',
+    quote: 'The difference between a culture of shared values and a cult is the extent to which there is <span class="highlight">independent thinking</span>.',
+    attribution: 'Ray Dalio' },
+
+  // 32
+  { type: 'quote', section: 'On Mistakes',
+    quote: 'I have not failed. I\'ve just found <span class="highlight">ten thousand ways</span> that do not work.',
+    attribution: 'Thomas Edison' },
+
+  // 33
+  { type: 'quote', section: 'On Mistakes',
+    quote: 'If you look back on yourself a year ago and aren\'t <span class="highlight">shocked by how stupid</span> you were, you haven\'t learned much.',
+    attribution: 'Ray Dalio' },
+
+  // 34
+  { type: 'concept', section: 'Hire Right', label: 'Priorities',
+    title: 'The <span class="accent">Three C\'s</span>.',
+    list: [
+      '<span class="accent-word">Character</span>',
+      '<span class="accent-word">Common sense</span>',
+      '<span class="accent-word">Creativity</span>'
+    ],
+    body: 'Before skills.',
+    example: 'Values and abilities rarely change. Skills can be acquired in a limited amount of time. Hire for who you want to share your life with — not just the first job they\'ll do.' },
+
+  // 35
+  { type: 'concept', section: 'Perceive Problems', label: 'Parable',
+    title: 'The frog in <span class="accent">boiling water</span>.',
+    body: 'Throw a frog into boiling water and it jumps out. Put it in room-temperature water and slowly bring it to a boil — it stays until it dies.',
+    example: 'People get slowly used to unacceptable things that would shock them if seen with fresh eyes.' },
+
+  // 36
+  { type: 'quote', section: 'Do What You Set Out',
+    quote: 'Success consists of going from failure to failure <span class="highlight">without loss of enthusiasm</span>.',
+    attribution: 'Winston Churchill' }
+];
+
+const BOOK = 'Principles';
+const container = document.getElementById('card-container');
+const dotsEl = document.getElementById('dots');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const counter = document.getElementById('counter');
+
+let current = 0;
+
+function renderCard(card, idx) {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.dataset.index = idx;
+
+  const num = String(idx + 1).padStart(2, '0');
+  const total = String(cards.length).padStart(2, '0');
+
+  let inner = `
+    <div class="corner-mark"></div>
+    <div class="card-number">${num} <span class="total">/ ${total}</span></div>
+    <div class="eyebrow">
+      <span>${BOOK}</span>
+      <span class="divider"></span>
+      <span class="section">${card.section}</span>
+    </div>
+  `;
+
+  if (card.type === 'quote') {
+    inner += `
+      <div class="quote-mark">"</div>
+      <div class="quote-text">${card.quote}</div>
+      <div class="quote-attribution">${card.attribution}</div>
+    `;
+  } else {
+    inner += `<div class="concept-label">${card.label || 'Concept'}</div>`;
+    inner += `<div class="concept-title">${card.title}</div>`;
+    if (card.formula) {
+      inner += `<div class="concept-formula">${card.formula}</div>`;
+    }
+    if (card.body) {
+      inner += `<div class="concept-body">${card.body}</div>`;
+    }
+    if (card.list) {
+      inner += `<ol class="concept-list">`;
+      card.list.forEach(item => {
+        inner += `<li>${item}</li>`;
+      });
+      inner += `</ol>`;
+    }
+    if (card.example) {
+      inner += `<div class="concept-example">${card.example}</div>`;
+    }
+  }
+
+  el.innerHTML = inner;
+  return el;
+}
+
+// Build all cards
+cards.forEach((card, idx) => {
+  container.appendChild(renderCard(card, idx));
+});
+
+// Build dots
+cards.forEach((_, idx) => {
+  const dot = document.createElement('button');
+  dot.className = 'dot';
+  dot.setAttribute('aria-label', `Go to card ${idx + 1}`);
+  dot.addEventListener('click', () => goTo(idx));
+  dotsEl.appendChild(dot);
+});
+
+function update() {
+  document.querySelectorAll('.card').forEach((el, i) => {
+    el.classList.toggle('active', i === current);
+  });
+  document.querySelectorAll('.dot').forEach((el, i) => {
+    el.classList.toggle('active', i === current);
+  });
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === cards.length - 1;
+  const num = String(current + 1).padStart(2, '0');
+  const total = String(cards.length).padStart(2, '0');
+  counter.textContent = `${num} / ${total}`;
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= cards.length) return;
+  current = idx;
+  update();
+}
+
+function next() { goTo(current + 1); }
+function prev() { goTo(current - 1); }
+
+prevBtn.addEventListener('click', prev);
+nextBtn.addEventListener('click', next);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+  if (e.key === 'End') { e.preventDefault(); goTo(cards.length - 1); }
+});
+
+// Touch swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) {
+    if (dx < 0) next();
+    else prev();
+  }
+});
+
+update();
+</script>
+</body>
+</html>
