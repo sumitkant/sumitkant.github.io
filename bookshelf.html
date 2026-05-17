@@ -1,995 +1,1023 @@
 <!DOCTYPE html>
-<!--[if IE 8 ]><html class="no-js oldie ie8" lang="en"> <![endif]-->
-<!--[if IE 9 ]>
-<html class="no-js oldie ie9" lang="en">
-<![endif]-->
-<!--[if (gte IE 9)|!(IE)]>
-<!-->
-<html class="no-js" lang="en">
-<!--<![endif]-->
+<html lang="en">
 
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Sumit Kant's reading log — 75+ books spanning science, design, business, and human behaviour." />
+  <title>Bookshelf — Sumit Kant</title>
 
-    <!--- basic page needs
-   ================================================== -->
-    <meta charset="utf-8">
-    <title>Bookshelf | Sumit Kant</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&display=swap"
+    rel="stylesheet" />
 
-    <!-- mobile specific metas
-   ================================================== -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <style>
+    /* ─── Design tokens ─────────────────────────────── */
+    :root {
+      --bg: #f2efe9;
+      --bg-surface: #eae7e0;
+      --bg-raised: #e2dfd8;
+      --bg-hover: #dedad2;
+      --border: rgba(0, 0, 0, 0.08);
+      --border-hover: rgba(0, 0, 0, 0.18);
+      --text-primary: #1a1a18;
+      --text-secondary: #6b6b65;
+      --text-tertiary: #a8a8a0;
+      --accent: #c85c2a;
+      --notes-bg: #1a1a18;
+      --notes-text: #f2efe9;
+      --star: #c9a84c;
+      --overlay: rgba(20, 18, 14, 0.84);
+      --stats-bg: #1c1a17;
+      --stats-divider: rgba(255, 255, 255, 0.10);
+      --stats-label: rgba(255, 255, 255, 0.45);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: ui-monospace, 'Cascadia Code', monospace;
+    }
 
-    <!-- CSS
-   ================================================== -->
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/vendor.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/bookshelf.css">
+    /* ─── Reset ─────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
 
-    <!-- script
-   ================================================== -->
-    <script src="js/modernizr.js"></script>
-    <script src="js/pace.min.js"></script>
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    <!-- favicons
-	================================================== -->
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-    <style>
+    /* ─── Nav ────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(242, 239, 233, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
 
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-    </style>
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
 
+    .nav-monogram {
+      width: 30px;
+      height: 30px;
+      background: var(--text-primary);
+      color: var(--bg);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      transition: color 0.15s;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+
+    .nav-links a.active {
+      font-weight: 500;
+    }
+
+    /* ─── Page wrapper ───────────────────────────────── */
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    /* ─── Hero ───────────────────────────────────────── */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* ─── Stats strip ────────────────────────────────── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--stats-bg);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+
+    .stat {
+      position: relative;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    /* Vertical dividers between cells */
+    .stat+.stat::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      height: 60%;
+      width: 1px;
+      background: var(--stats-divider);
+    }
+
+    .stat-value {
+      font-size: clamp(2.6rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      font-family: var(--font);
+    }
+
+    .stat-value .accent {
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--stats-label);
+      line-height: 1.5;
+      text-align: center;
+      max-width: 160px;
+    }
+
+    /* ─── Toolbar (filters + search) ────────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+      position: sticky;
+      top: var(--nav-h);
+      z-index: 50;
+      background: var(--bg);
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12.5px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .filter-btn.active {
+      background: var(--text-primary);
+      color: var(--bg);
+      border-color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .filter-btn .count {
+      opacity: 0.55;
+      font-size: 11px;
+    }
+
+    .filter-btn.active .count {
+      opacity: 0.65;
+    }
+
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+
+    .search-wrap:focus-within {
+      border-color: var(--border-hover);
+    }
+
+    .search-wrap svg {
+      width: 14px;
+      height: 14px;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      font-family: var(--font);
+      color: var(--text-primary);
+      width: 160px;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    /* ─── Grid ───────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 20px 16px;
+    }
+
+    /* ─── Book card ──────────────────────────────────── */
+    .book-card {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      animation: fadeUp 0.35s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cover-wrap {
+      position: relative;
+      aspect-ratio: 2/3;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+    }
+
+    .cover-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .book-card:hover .cover-img {
+      transform: scale(1.04);
+    }
+
+    /* Hover overlay */
+    .cover-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--overlay);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 14px 12px;
+      opacity: 0;
+      transition: opacity 0.22s ease;
+    }
+
+    .book-card:hover .cover-overlay {
+      opacity: 1;
+    }
+
+    .overlay-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+
+    .overlay-author {
+      font-size: 11px;
+      color: rgba(240, 237, 232, 0.55);
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .overlay-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--notes-bg);
+      color: var(--notes-text);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      align-self: flex-start;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+    }
+
+    .overlay-cta svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    /* Notes badge (top-right) */
+    .badge-notes {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--notes-bg);
+      color: var(--notes-text);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 3px 7px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      z-index: 2;
+    }
+
+    .badge-notes svg {
+      width: 9px;
+      height: 9px;
+    }
+
+    /* Star badge (top-left) */
+    .badge-star {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(11, 11, 11, 0.75);
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .badge-star svg {
+      width: 11px;
+      height: 11px;
+      fill: var(--star);
+      color: var(--star);
+    }
+
+    /* Book meta below cover */
+    .book-meta {
+      margin-top: 10px;
+    }
+
+    .book-title {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .book-author {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ─── Skeleton ───────────────────────────────────── */
+    .skeleton-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .skeleton-cover {
+      aspect-ratio: 2/3;
+      border-radius: var(--radius-md);
+      background: var(--bg-raised);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-cover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.55) 50%,
+          transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .skeleton-line {
+      height: 10px;
+      border-radius: 4px;
+      background: var(--bg-raised);
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-line::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.55) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s infinite;
+    }
+
+    .skeleton-line.short {
+      width: 60%;
+    }
+
+    /* ─── Empty state ─────────────────────────────────── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 0;
+      color: var(--text-tertiary);
+      font-size: 14px;
+    }
+
+    /* ─── Year dividers ──────────────────────────────── */
+    .year-divider {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 8px 0 4px;
+    }
+
+    .year-divider-label {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    .year-divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    footer a {
+      color: var(--text-tertiary);
+      transition: color 0.15s;
+    }
+
+    footer a:hover {
+      color: var(--text-primary);
+    }
+
+    /* ─── Responsive ─────────────────────────────────── */
+    @media (max-width: 720px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat:nth-child(3)::before {
+        display: none;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .search-input {
+        width: 120px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page {
+        padding: 0 1rem 4rem;
+      }
+
+      .nav-inner {
+        padding: 0 1rem;
+      }
+
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px 10px;
+      }
+    }
+  </style>
 </head>
 
-<body id="top">
-    <!--    <div class="mesh__container" id="mesh__container"></div>-->
+<body>
 
+  <!-- ─── Navigation ─────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://sumitkant.github.io/blog.html">Blog</a></li>
+        <li><a href="https://sumitkant.github.io/bookshelf.html" class="active">Books &amp; Reading</a></li>
+        <li><a href="https://sumitkant.github.io/johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="https://sumitkant.github.io/deep-learning.html">AI Lab</a></li>
+        <li><a href="https://sumitkant.github.io/neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
 
+  <!-- ─── Page content ───────────────────────────── -->
+  <main class="page">
 
-    <!-- header 
-   ================================================== -->
-    <header class="short-header">
+    <!-- Hero -->
+    <header class="hero">
+      <p class="hero-eyebrow">Reading log</p>
+      <h1 class="hero-title">My <strong style="color: var(--accent);">Bookshelf</strong></h1>
 
-        <!-- The cursor elements -->
-        <!--
-    <main class="page">
-      <div class="page__innter">
-        <div class="cursor cursor--small"></div>
-        <canvas class="cursor cursor--canvas" resize></canvas>
+      <p class="hero-sub">Mostly non-fiction. Books I've read since 2018 — some left marks, some didn't. Click any cover
+        with a <strong>notes</strong> badge to read my takeaways.</p>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats" id="stats-row">
+      <div class="stat">
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-label">Books on shelf</div>
       </div>
-    </main>
--->
-
-
-
-
-        <!--    <div class="gradient-block"></div>-->
-
-        <div class="row header-content">
-
-            <div class="logo">
-                <a href="index.html">Author</a>
-            </div>
-
-            <nav id="main-nav-wrap">
-                <ul class="main-navigation sf-menu">
-                    <li><a href="index.html" title="">Home</a></li>
-                    <li><a href="blog.html" title="">Blog</a></li>
-                    <li class="current"><a href="bookshelf.html" title="">Bookshelf</a></li>
-                    
-                </ul>
-            </nav> <!-- end main-nav-wrap -->
-
-        </div>
-
-    </header> <!-- end header -->
-
-
-
-    <div class="content content--first">
-
-        <section id="bricks">
-
-            <div class="row masonry">
-
-                <!-- brick-wrapper -->
-                <div class="row">
-
-                    <h2 class='bookshelf-intro'>Bookshelf</h2>
-
-                    <div class="row">
-                        <div id="myBtnContainer">
-                            <button class="btn active" data="all">All</button>
-                            <button class="btn" data="recommended">Recommended</button>
-                            <button class="btn" data="notes"> Notes</button>
-                            <button class="btn" data="2021"> 2021</button>
-                            <button class="btn" data="2020"> 2020</button>
-                            <button class="btn" data="2019"> 2019</button>
-                            <button class="btn" data="2018"> 2018</button>
-                        </div>
-                    </div>
-
-                </div>
-
-
-                <br>
-                <br>
-
-
-                <div class="bricks-wrapper">
-
-                    <div class="grid-sizer"></div>
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2021">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1518834400l/38602142._SY475_.jpg" alt="Coffee Can Investing cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2021">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1414404081l/23454500.jpg" alt="Guru of Chaos cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1575289232l/49057616._SY475_.jpg" alt="The Rudest Book Ever cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1475482930l/68783._SY475_.jpg" alt="Girl, Interrupted cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1320528453l/4948826.jpg" alt="Sum: Forty Tales from the Afterlives cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1290403773l/17745.jpg" alt="Envisioning Information cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1575073611l/1617.jpg" alt="Night cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1364848267l/16248196.jpg" alt="The Art of Thinking Clearly cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1506524572l/36313514._SY475_.jpg" alt="Women &amp; Power cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1532024623l/40090596._SY475_.jpg" alt="Art Matters cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1581527774l/41881472._SY475_.jpg" alt="The Psychology of Money cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1485288654l/33980368._SY475_.jpg" alt="Mindset  cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1453423959l/28670512._SY475_.jpg" alt="When Breath Becomes Air cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1485713249l/34043770.jpg" alt="Deep Learning With Python cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1598335721l/55113745._SX318_.jpg" alt="Ikigai: The Japanese Secret to a Long and Happy Life cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                                        
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1423763749l/6900.jpg" alt="Tuesdays with Morrie cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1375677702l/17288649.jpg" alt="Creative Confidence: Unleashing the Creative Potential Within Us All cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1560425455l/17744._SX318_.jpg" alt="The Visual Display of Quantitative Information cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://images-na.ssl-images-amazon.com/images/I/518UoljodvL._SX324_BO1,204,203,200_.jpg" alt="Coraline cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388252662l/44895.jpg" alt="Confessions of an Advertising Man cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1521655176l/39339994._SY475_.jpg" alt="Norse Mythology cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1544963815l/34890015._SY475_.jpg" alt="Factfulness cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->          
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1422538855l/23158207.jpg" alt="How Google works cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->                    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb notes 2020">
-                            <a href="book_notes/Leonardo-da-vinci_notes.html" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479481051l/33006207._SY475_.jpg" alt="Leonardo da Vinci cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-                    
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1528656577l/40506506._SY475_.jpg" alt="The River of Consciousness cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1359616016l/871741.jpg" alt="Black Holes and Baby Universes cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1566773386l/52426127._SX318_SY475_.jpg" alt="The Free Voice cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended notes 2020">
-                            <a href="https://www.canva.com/design/DAD31Qb6AP4/aPO15hX9qAIYFtrqOtHshQ/view" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1525051245l/39996150._SX318_.jpg" alt="HBR Focus - Emotional Intelligence Series cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-                    
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended notes 2020">
-                            <a href="" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1483893599l/33819314._SX318_.jpg" alt="Machine Learning Mastery cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended notes 2020">
-                            <a href="https://www.canva.com/design/DAD3YXBFl8I/GEZvsYllUjxghfYt_A1Cdw/view" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1400881733l/16144853.jpg" alt="Leaders Eat Last cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended notes 2020">
-                            <a href="https://www.canva.com/design/DAD3PdisP2s/W8tUapGU9VIYoSgmVcGbsQ/view" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1329749895l/870848.jpg" alt="Emotional Intelligence cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-
-
-
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://images-na.ssl-images-amazon.com/images/I/715fIqHjtjL.jpg" alt="Mossad cover">
-                            </a>
-                        </div>
-
-                    </article> <!-- end article -->
-
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb notes recommended 2019">
-                            <a href="book_notes/show_your_work.html" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1404580714l/18290401.jpg" alt="Show Your Work Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1404576602l/13099738.jpg" alt="Steal like an Artist Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1454839763l/28951784._SX318_.jpg" alt="Why Fonts Matter Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1394311090l/21063341.jpg" alt="Contagious Book Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1468760805l/31138556._SY475_.jpg" alt="Homo Dues Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1461500831l/24275197._SY475_.jpg" alt="Being Mortal Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1311282216l/324748.jpg" alt="The Dip Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1541816726l/41551710._SY475_.jpg" alt="Stepher Hawking Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386573716l/19306508.jpg" alt="Man's Search for Meaning Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1463951925l/26245270._SX318_.jpg" alt="Benjamin Franklin Autobiography Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479737643l/29358247.jpg" alt="Oliver sacks the last interview Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1490567231l/30736658._SY475_.jpg" alt="Never Split the difference Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1387714555l/142292.jpg" alt="My Stroke of Insight Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347563905l/905654.jpg" alt="Fooled by Randomness Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1539931467l/42390797._SY475_.jpg" alt="Quick and Easy wy to effective speaking">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1444690744l/26535513._SX318_.jpg" alt="Story telling with Data Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1476262211l/32594756._SY475_.jpg" alt="The Talent Sutra Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1447618400l/26246256.jpg" alt="The graphic design Idea Book Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1349005586l/2318174.jpg" alt="Detail in Typography Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1530121509l/34847065._SY475_.jpg" alt="The Innocent Man Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1322313779l/4656126.jpg" alt="Predictably Irrational">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1419671833l/18332143.jpg" alt="The everything store cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1390506811l/20561643.jpg" alt="The Rosie Project cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479633570l/33017355._SY475_.jpg" alt="marketing 4.0 cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1467159999l/30807394._SY475_.jpg" alt="devlok cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1391026083l/28815.jpg" alt="Influence cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1428689248l/1486976.jpg" alt="Myth = Mithya cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2019">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1349068826l/234843.jpg" alt="The art of War cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended notes 2018">
-                            <a href="https://www.canva.com/design/DAD3P3Yb4zA/5uIAi6LOX-8vq1YmAG9g6w/view" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1518667202l/38587103._SY475_.jpg" alt="Catalyst Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1375414895l/17851885.jpg" alt="I am Malala Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1559563270l/16256798._SX318_.jpg" alt="I am Malala Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1442823028l/25817524.jpg" alt="Alibaba Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1320558363l/8520362.jpg" alt="The Grand Design Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1493998427l/32938155._SY475_.jpg" alt="Option B Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1473282681l/31869077._SY475_.jpg" alt="The Internet of Money Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1360936414l/7108725.jpg" alt="Start with Why Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1384777320l/8273417.jpg" alt="the upside of irrationality Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1443982085l/26864936.jpg" alt="What If irrationality Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended notes 2018">
-                            <a href="https://www.canva.com/design/DADQYGxc-H0/IZ1WXJwH8O7UCfkRNVN87w/view" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1356136579l/16158498.jpg" alt="Give &amp; Take Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1415265430l/703032.jpg" alt="Theory of Everything Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1485273206l/30317414.jpg" alt="Awkward Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1433930311l/20873740._SY475_.jpg" alt="Sapiens Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1333576876l/10127019.jpg" alt="The Lean Startup Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1471237286l/31448659._SY475_.jpg" alt="Black Holes: The BBC Reith Lectures Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1446562076l/27420086._SY475_.jpg" alt="Rebooting India Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                    <article class="brick entry animate-this">
-
-                        <div class="entry-thumb recommended 2018">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1428687805l/24833211.jpg" alt="Warren Buffett: The Life and Business Lessons of Warren Buffett Cover">
-                            </a>
-                        </div>
-
-                    </article>
-
-                </div>
-            </div>
-        </section> <!-- end bricks -->
-
-
-
-        <!--
-        <section id="bricks">
-
-            <div class="row masonry">
-
-                 brick-wrapper 
-                <div class="row">
-
-                    <h2 class='bookshelf-intro'>GoodReads of 2018</h2>
-
-                    <p class="subtitle">Highlighted books are recommended reads</p>
-
-                </div>
-
-                <div class="bricks-wrapper">
-
-                    <div class="grid-sizer"></div>
-
-                    <article class="brick entry format-standard animate-this">
-
-                        <div class="entry-thumb recommended">
-                            <a href="#" class="thumb-link" target="_blank">
-                                <img src="https://images-na.ssl-images-amazon.com/images/I/715fIqHjtjL.jpg" alt="Mossad cover">
-                            </a>
-                        </div>
-
-                    </article>
-                </div>
-            </div>
-        </section>
--->
-
-
-
-
-
+      <div class="stat">
+        <div class="stat-value" id="stat-notes">—</div>
+        <div class="stat-label">With notes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="stat-rec">—</div>
+        <div class="stat-label">Recommended</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">2018<br><span class="accent"> – <br></span> 2021</div>
+        <div class="stat-label">Years tracked</div>
+      </div>
     </div>
 
-    <!-- END OF Rotation Revealer Effect -->
-
-
-
-
-
-
-
-    <div id="preloader">
-        <div id="loader"></div>
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="filters" id="filters" role="group" aria-label="Filter books">
+        <!-- Injected by JS -->
+      </div>
+      <div class="search-wrap">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <circle cx="9" cy="9" r="6" />
+          <path d="M14 14l3.5 3.5" />
+        </svg>
+        <input class="search-input" type="search" id="search" placeholder="Search titles…" aria-label="Search books"
+          autocomplete="off" />
+      </div>
     </div>
 
-    <!-- Java Script
-   ================================================== -->
-    <script src="js/jquery-2.1.3.min.js"></script>
-    <script src="js/plugins.js"></script>
-    <script src="js/jquery.appear.js"></script>
+    <!-- Grid -->
+    <div class="grid" id="grid" role="list" aria-label="Book grid">
+      <!-- Skeleton placeholders rendered immediately -->
+    </div>
 
-    <script src="js/main.js"></script>
-    <script src="js/imagesloaded.pkgd.min.js"></script>
-    <script src="js/charming.min.js"></script>
-    <script src="js/TweenMax.min.js"></script>
-    <script src="js/landingfx.js"></script>
-    <script src="js/bookshelf.js"></script>
+  </main>
 
+  <footer class="page" style="padding-top:0">
+    <span>© 2026 Sumit Kant</span>
+    <div style="display:flex;gap:16px">
+      <a href="https://sumitkant.github.io/">Website</a>
+      <a href="https://sumitkant.github.io/about.html">Full CV</a>
+      <a href="mailto:sumit.kant@iiml.org">Email</a>
+    </div>
+  </footer>
+
+  <script>
+    /* ──────────────────────────────────────────────────
+       Data & state
+    ─────────────────────────────────────────────────── */
+    let allBooks = [];
+    let activeFilter = 'all';
+    let searchQuery = '';
+    const EAGER_COUNT = 20; // render covers immediately; rest lazy-load
+
+    /* ──────────────────────────────────────────────────
+       SVGs
+    ─────────────────────────────────────────────────── */
+    const SVG_NOTES = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="2" width="10" height="12" rx="1.5"/><path d="M6 6h4M6 9h4M6 12h2"/></svg>`;
+    const SVG_STAR = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1l1.9 3.8 4.2.6-3 2.9.7 4.2L8 10.5l-3.8 2 .7-4.2-3-2.9 4.2-.6z"/></svg>`;
+    const SVG_ARR = `<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 6h8M6 2l4 4-4 4"/></svg>`;
+
+    /* ──────────────────────────────────────────────────
+       Build filters
+    ─────────────────────────────────────────────────── */
+    function buildFilters(books) {
+      const years = [...new Set(books.map(b => b.year))].sort((a, b) => b - a);
+      const notesCount = books.filter(b => b.notes).length;
+      const recCount = books.filter(b => b.recommended).length;
+
+      const defs = [
+        { key: 'all', label: 'All', count: books.length, icon: null },
+        { key: 'recommended', label: 'Recommended', count: recCount, icon: SVG_STAR },
+        { key: 'notes', label: 'With notes', count: notesCount, icon: SVG_NOTES },
+        ...years.map(y => ({ key: String(y), label: String(y), count: books.filter(b => b.year === y).length, icon: null })),
+      ];
+
+      const container = document.getElementById('filters');
+      container.innerHTML = '';
+      defs.forEach(d => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (d.key === activeFilter ? ' active' : '');
+        btn.dataset.filter = d.key;
+        btn.setAttribute('aria-pressed', d.key === activeFilter);
+        btn.innerHTML = `${d.icon ? d.icon : ''}<span>${d.label}</span><span class="count">· ${d.count}</span>`;
+        btn.addEventListener('click', () => setFilter(d.key));
+        container.appendChild(btn);
+      });
+    }
+
+    /* ──────────────────────────────────────────────────
+       Filtering logic
+    ─────────────────────────────────────────────────── */
+    function getFiltered() {
+      let list = [...allBooks];
+      if (activeFilter === 'recommended') list = list.filter(b => b.recommended);
+      else if (activeFilter === 'notes') list = list.filter(b => b.notes);
+      else if (/^\d{4}$/.test(activeFilter)) list = list.filter(b => String(b.year) === activeFilter);
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(b =>
+          b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q)
+        );
+      }
+      return list;
+    }
+
+    function setFilter(key) {
+      activeFilter = key;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        const on = btn.dataset.filter === key;
+        btn.classList.toggle('active', on);
+        btn.setAttribute('aria-pressed', on);
+      });
+      renderGrid(getFiltered());
+    }
+
+    /* ──────────────────────────────────────────────────
+       Card builder
+    ─────────────────────────────────────────────────── */
+    function buildCard(book, index, lazy) {
+      const card = document.createElement('div');
+      card.className = 'book-card';
+      card.style.animationDelay = `${Math.min(index * 25, 400)}ms`;
+      card.setAttribute('role', 'listitem');
+
+      const isLinked = !!book.notes;
+
+      const coverWrap = document.createElement('div');
+      coverWrap.className = 'cover-wrap';
+
+      // Actual image
+      const img = document.createElement('img');
+      img.className = 'cover-img';
+      img.alt = book.title + ' cover';
+      img.width = 200;
+      img.height = 300;
+      img.decoding = 'async';
+
+      if (lazy) {
+        img.loading = 'lazy';
+        // Use IntersectionObserver for the data-src → src swap + skeleton removal
+        img.dataset.src = book.cover;
+        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 1px placeholder
+      } else {
+        img.src = book.cover;
+        img.loading = 'eager';
+      }
+
+      img.addEventListener('load', () => { img.style.opacity = 1; });
+      img.style.opacity = lazy ? '0' : '1';
+      img.style.transition = 'opacity 0.3s ease';
+
+      coverWrap.appendChild(img);
+
+      // Notes badge
+      if (book.notes) {
+        const badge = document.createElement('div');
+        badge.className = 'badge-notes';
+        badge.innerHTML = `${SVG_NOTES} Notes`;
+        coverWrap.appendChild(badge);
+      }
+
+      // Star badge
+      if (book.recommended) {
+        const star = document.createElement('div');
+        star.className = 'badge-star';
+        star.innerHTML = SVG_STAR;
+        star.setAttribute('title', 'Recommended');
+        coverWrap.appendChild(star);
+      }
+
+      // Hover overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'cover-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.innerHTML = `
+        <div class="overlay-title">${escHtml(book.title)}</div>
+        <div class="overlay-author">${escHtml(book.author)} · ${book.year}</div>
+        ${isLinked ? `<a class="overlay-cta" href="${book.notes}" target="_blank" rel="noopener">Read notes ${SVG_ARR}</a>` : ''}
+      `;
+      coverWrap.appendChild(overlay);
+
+      // Clicking the whole card opens notes if available
+      card.addEventListener('click', () => {
+        if (book.notes) window.open(book.notes, '_blank', 'noopener');
+      });
+      if (book.notes) card.style.cursor = 'pointer';
+
+      card.appendChild(coverWrap);
+
+      // Meta below
+      const meta = document.createElement('div');
+      meta.className = 'book-meta';
+      meta.innerHTML = `
+        <div class="book-title">${escHtml(book.title)}</div>
+        <div class="book-author">${escHtml(book.author)}</div>
+      `;
+      card.appendChild(meta);
+
+      return card;
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* ──────────────────────────────────────────────────
+       Skeleton helpers
+    ─────────────────────────────────────────────────── */
+    function buildSkeleton() {
+      const el = document.createElement('div');
+      el.className = 'skeleton-card';
+      el.setAttribute('role', 'listitem');
+      el.innerHTML = `
+        <div class="skeleton-cover"></div>
+        <div class="skeleton-line" style="margin-top:10px;width:85%"></div>
+        <div class="skeleton-line short" style="margin-top:6px"></div>
+      `;
+      return el;
+    }
+
+    /* ──────────────────────────────────────────────────
+       Render grid
+    ─────────────────────────────────────────────────── */
+    function renderGrid(books) {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+
+      if (books.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.textContent = 'No books match your search.';
+        grid.appendChild(empty);
+        return;
+      }
+
+      // Group by year when showing all / year filter
+      const showYearDividers = (activeFilter === 'all' || /^\d{4}$/.test(activeFilter)) && !searchQuery;
+      let lastYear = null;
+
+      books.forEach((book, i) => {
+        // Year divider
+        if (showYearDividers && book.year !== lastYear) {
+          const div = document.createElement('div');
+          div.className = 'year-divider';
+          div.innerHTML = `<span class="year-divider-label">${book.year}</span><div class="year-divider-line"></div>`;
+          grid.appendChild(div);
+          lastYear = book.year;
+        }
+
+        const lazy = i >= EAGER_COUNT;
+        const card = buildCard(book, i, lazy);
+        grid.appendChild(card);
+      });
+
+      // Observe lazy images
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              delete img.dataset.src;
+            }
+            observer.unobserve(img);
+          }
+        });
+      }, { rootMargin: '200px' });
+
+      grid.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
+    }
+
+    /* ──────────────────────────────────────────────────
+       Show skeletons immediately (no flash)
+    ─────────────────────────────────────────────────── */
+    function showSkeletons(n) {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      for (let i = 0; i < n; i++) grid.appendChild(buildSkeleton());
+    }
+
+    /* ──────────────────────────────────────────────────
+       Update stat cards
+    ─────────────────────────────────────────────────── */
+    function updateStats(books) {
+      const total = books.length;
+      const notes = books.filter(b => b.notes).length;
+      const rec = books.filter(b => b.recommended).length;
+      document.getElementById('stat-total').innerHTML = `${total}<span class="accent">+</span>`;
+      document.getElementById('stat-notes').innerHTML = `${notes}<span class="accent">+</span>`;
+      document.getElementById('stat-rec').innerHTML = `${rec}<span class="accent">+</span>`;
+    }
+
+    /* ──────────────────────────────────────────────────
+       Search handler (debounced)
+    ─────────────────────────────────────────────────── */
+    let searchTimer;
+    document.getElementById('search').addEventListener('input', e => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        searchQuery = e.target.value.trim();
+        renderGrid(getFiltered());
+      }, 180);
+    });
+
+    /* ──────────────────────────────────────────────────
+       Boot: show skeletons → fetch JSON → render
+    ─────────────────────────────────────────────────── */
+    showSkeletons(20);
+
+    fetch('media/books.json')
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(data => {
+        allBooks = data;
+        updateStats(data);
+        buildFilters(data);
+        renderGrid(getFiltered());
+      })
+      .catch(err => {
+        console.error('Could not load books.json:', err);
+        document.getElementById('grid').innerHTML =
+          '<div class="empty-state">Could not load bookshelf. Make sure books.json is in the same directory.</div>';
+      });
+  </script>
 
 </body>
 
