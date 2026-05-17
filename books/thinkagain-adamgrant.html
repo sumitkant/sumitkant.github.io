@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Think Again — Adam Grant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #2A1F3D;
+    --bg-deep:   #211832;
+    --bg-card:   #31253F;
+    --cream:     #F5F0E8;
+    --cream-dim: #C8BFA8;
+    --cream-mute:#7A7060;
+    --pink:      #E8A0BF;
+    --pink-dim:  #C07090;
+    --line:      rgba(245,240,232,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+  }
+
+  /* Subtle star-field texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(232,160,191,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 85% 80%, rgba(245,240,232,0.04) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(42,31,61,0) 0%, rgba(33,24,50,0.4) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    height: 100vh;
+    max-height: 760px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  /* ─── Card shell ─── */
+  .card {
+    position: absolute;
+    inset: 40px 60px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1),
+                transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+  }
+
+  .card.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* ─── Eyebrow ─── */
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cream-mute);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 52px;
+  }
+
+  .eyebrow .sep {
+    width: 1px;
+    height: 10px;
+    background: var(--cream-mute);
+    opacity: 0.5;
+  }
+
+  .eyebrow .ch {
+    color: var(--pink);
+  }
+
+  /* ─── Card counter ─── */
+  .card-number {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cream-mute);
+    letter-spacing: 0.06em;
+  }
+
+  .card-number .total {
+    opacity: 0.4;
+  }
+
+  /* ══════════════════════════
+     QUOTE CARD
+  ══════════════════════════ */
+  .big-quote {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 96px;
+    line-height: 0.75;
+    color: var(--pink);
+    font-weight: 800;
+    margin-bottom: 4px;
+    margin-left: -4px;
+    user-select: none;
+    opacity: 0.85;
+  }
+
+  .quote-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 400;
+    font-size: clamp(22px, 3.2vw, 36px);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+    max-width: 800px;
+    margin-top: 16px;
+    font-style: italic;
+  }
+
+  .quote-text .hl {
+    color: var(--pink);
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  .attr {
+    margin-top: auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cream-dim);
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .attr::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--pink);
+  }
+
+  /* ══════════════════════════
+     CONCEPT CARD
+  ══════════════════════════ */
+  .concept-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .concept-tag::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--pink);
+  }
+
+  .concept-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: clamp(32px, 4.8vw, 58px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--cream);
+    margin-bottom: 28px;
+    max-width: 900px;
+  }
+
+  .concept-title .pk {
+    color: var(--pink);
+  }
+
+  .concept-body {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(15px, 1.6vw, 18px);
+    line-height: 1.65;
+    color: var(--cream-dim);
+    max-width: 740px;
+    font-weight: 400;
+  }
+
+  .concept-body strong {
+    color: var(--cream);
+    font-weight: 600;
+  }
+
+  /* Numbered list */
+  .c-list {
+    list-style: none;
+    counter-reset: ci;
+    margin-top: 6px;
+    max-width: 800px;
+  }
+
+  .c-list li {
+    counter-increment: ci;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    font-size: clamp(17px, 2vw, 23px);
+    line-height: 1.35;
+    color: var(--cream);
+    padding: 13px 0 13px 46px;
+    position: relative;
+    border-top: 1px solid var(--line);
+    letter-spacing: -0.01em;
+  }
+
+  .c-list li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .c-list li::before {
+    content: counter(ci, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--pink);
+    letter-spacing: 0.04em;
+  }
+
+  .c-list li .pk { color: var(--pink); }
+  .c-list li .dim { color: var(--cream-dim); font-weight: 400; }
+
+  /* Formula */
+  .formula {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 3.2vw, 40px);
+    line-height: 1.25;
+    color: var(--cream);
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .formula .op {
+    color: var(--pink);
+    margin: 0 10px;
+    font-weight: 400;
+  }
+
+  /* Example block */
+  .example {
+    margin-top: 24px;
+    padding: 16px 22px 16px 24px;
+    border-left: 2px solid var(--pink-dim);
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(13px, 1.3vw, 15px);
+    line-height: 1.65;
+    color: var(--cream-dim);
+    font-style: italic;
+    max-width: 740px;
+  }
+
+  .example::before {
+    content: 'EXAMPLE';
+    display: block;
+    font-style: normal;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    color: var(--pink-dim);
+    margin-bottom: 6px;
+  }
+
+  .example.note::before { content: 'NOTE'; }
+  .example.study::before { content: 'STUDY'; }
+
+  /* Definition pair card */
+  .def-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 820px;
+    margin-top: 4px;
+  }
+
+  .def-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 20px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+    align-items: start;
+  }
+
+  .def-row:last-child { border-bottom: 1px solid var(--line); }
+
+  .def-label {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--pink);
+    letter-spacing: -0.01em;
+    padding-top: 1px;
+  }
+
+  .def-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--cream-dim);
+  }
+
+  /* ─── Nav ─── */
+  .nav {
+    position: fixed;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 10;
+  }
+
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(245,240,232,0.2);
+    background: transparent;
+    color: var(--cream-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .nav-btn:hover {
+    border-color: var(--pink);
+    color: var(--pink);
+    background: rgba(232,160,191,0.08);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+  }
+  .nav-btn:disabled:hover {
+    border-color: rgba(245,240,232,0.2);
+    color: var(--cream-dim);
+    background: transparent;
+  }
+
+  .nav-btn svg { width: 13px; height: 13px; }
+
+  .dots {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    max-width: 340px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--cream);
+    opacity: 0.15;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
+    padding: 0;
+  }
+
+  .dot:hover { opacity: 0.4; }
+
+  .dot.active {
+    background: var(--pink);
+    opacity: 1;
+    width: 20px;
+    border-radius: 3px;
+  }
+
+  /* ─── Brand / counter ─── */
+  .brand {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cream-mute);
+    z-index: 10;
+  }
+
+  .brand-counter {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--cream-mute);
+    z-index: 10;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 768px) {
+    .card { inset: 20px 22px; }
+    .eyebrow { margin-bottom: 32px; }
+    .big-quote { font-size: 70px; }
+    .def-pair { gap: 0; }
+    .def-row { grid-template-columns: 1fr; gap: 4px; }
+    .brand, .brand-counter { display: none; }
+    .nav { bottom: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div id="cards"></div>
+</div>
+
+<div class="brand">Think Again · Adam Grant</div>
+<div class="brand-counter" id="counter">01 / 36</div>
+
+<nav class="nav">
+  <button class="nav-btn" id="prev" aria-label="Previous">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="next" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</nav>
+
+<script>
+const BOOK = 'Think Again';
+
+const cards = [
+  // 1
+  { type:'concept', ch:'Prologue', tag:'Mindset',
+    title:'Seizing <span class="pk">and</span> freezing.',
+    body:'Psychologists\' term for what we do under uncertainty: we favor the <strong>comfort of conviction</strong> over the <strong>discomfort of doubt</strong>.',
+    example:'We let our beliefs get brittle long before our bones.' },
+
+  // 2
+  { type:'concept', ch:'Prologue', tag:'Identity',
+    title:'Without my tools, <span class="pk">who am I?</span>',
+    body:'When firefighters die in fires, they often die holding their tools. Dropping equipment doesn\'t just mean unlearning habits — it means <strong>admitting failure and shedding part of your identity</strong>.',
+    example:'A hallmark of wisdom is knowing when it\'s time to abandon some of your most cherished tools — and some of the most cherished parts of your identity.' },
+
+  // 3
+  { type:'quote', ch:'Prologue',
+    quote:'Even our great governing document, the U.S. Constitution, allows for <span class="hl">amendments</span>. What if we were quicker to make amendments to our own <span class="hl">mental constitutions?</span>',
+    attr:'Adam Grant' },
+
+  // 4
+  { type:'def', ch:'Chapter 1', tag:'The Three Modes',
+    title:'Three modes that <span class="pk">block</span> thinking.',
+    defs:[
+      { label:'Preacher', text:'Sacred beliefs feel threatened. We deliver sermons to protect and promote our ideals.' },
+      { label:'Prosecutor', text:'We spot flaws in others\' reasoning. We marshal arguments to prove them wrong.' },
+      { label:'Politician', text:'We seek approval. We campaign and lobby for the support of our audience.' }
+    ],
+    example:'The risk: we get so wrapped up in preaching, prosecuting, and politicking that we never rethink our own views.' },
+
+  // 5
+  { type:'concept', ch:'Chapter 1', tag:'The Scientist Mode',
+    title:'A frame of mind, <span class="pk">not</span> a profession.',
+    body:'We move into <strong>scientist mode</strong> when we\'re searching for truth: forming hypotheses, designing experiments, following evidence wherever it leads.',
+    example:'Evidence shows the best business strategists are actually slow and unsure — not the decisive, clear-sighted paragons of conviction we celebrate.' },
+
+  // 6
+  { type:'concept', ch:'Chapter 1', tag:'Intelligence',
+    title:'Intelligence is <span class="pk">no cure</span>.',
+    body:'The higher you score on an IQ test, the more likely you are to fall for stereotypes — you\'re faster at recognizing patterns. And the smarter you are, <strong>the more you struggle to update your beliefs</strong>.',
+    example:'The better you are at crunching numbers, the more spectacularly you fail at analyzing patterns that contradict your views.' },
+
+  // 7
+  { type:'quote', ch:'Chapter 1',
+    quote:'If knowledge is power, <span class="hl">knowing what we don\'t know</span> is wisdom.',
+    attr:'Adam Grant' },
+
+  // 8
+  { type:'concept', ch:'Chapter 2', tag:'Dunning-Kruger',
+    title:'You don\'t know you\'re <span class="pk">a member</span>.',
+    body:'It\'s when we lack competence that we\'re most likely to brim with overconfidence. People who score lowest on emotional intelligence tests are also the least likely to invest in self-improvement.',
+    example:'"The first rule of the Dunning-Kruger club: you don\'t know you\'re a member of the Dunning-Kruger club."' },
+
+  // 9
+  { type:'def', ch:'Chapter 2', tag:'The Confidence Spectrum',
+    title:'Where should confidence <span class="pk">live</span>?',
+    defs:[
+      { label:'Armchair Quarterback', text:'Confidence exceeds competence. Over-certain, under-informed.' },
+      { label:'The Sweet Spot', text:'Confident humility. Faith in your capability, doubt about your current solution.' },
+      { label:'Impostor', text:'Competence exceeds confidence. A useful state — it motivates harder work and better questions.' }
+    ],
+    example:'"Arrogance is ignorance plus conviction." — Tim Urban' },
+
+  // 10
+  { type:'concept', ch:'Chapter 2', tag:'The Ideal',
+    title:'Confident <span class="pk">humility</span>.',
+    body:'Having faith in your capability while appreciating you may not have the right solution — or even be <strong>addressing the right problem</strong>.',
+    example:'Enough doubt to reexamine old knowledge. Enough confidence to pursue new insights. Confidence is a measure of how much you believe in yourself — distinct from how much you believe in your methods.' },
+
+  // 11
+  { type:'quote', ch:'Chapter 3',
+    quote:'The goal is not to be wrong more often. It\'s to recognize that we\'re all wrong more often than we\'d like to admit — and the more we deny it, <span class="hl">the deeper the hole we dig</span> for ourselves.',
+    attr:'Adam Grant' },
+
+  // 12
+  { type:'concept', ch:'Chapter 3', tag:'Superforecasting',
+    title:'What actually predicts <span class="pk">great judgment.</span>',
+    body:'Not grit. Not ambition. Not even intelligence (that came second). The single biggest driver of forecasters\' success was <strong>how often they updated their beliefs</strong>.',
+    example:'That factor had roughly triple the predictive power of brainpower. Just a few more efforts at rethinking — not hundreds — can move the needle significantly.' },
+
+  // 13
+  { type:'concept', ch:'Chapter 3', tag:'Identity',
+    title:'Detach to <span class="pk">learn</span>.',
+    list:[
+      'Detach your <span class="pk">present</span> from your past.',
+      'Detach your <span class="pk">opinions</span> from your identity.'
+    ],
+    body:'Who you are should be a question of what you <strong>value</strong>, not what you <strong>believe</strong>.',
+    example:'"Being wrong is the only way I feel sure I\'ve learned anything." — Daniel Kahneman' },
+
+  // 14
+  { type:'def', ch:'Chapter 4', tag:'Types of Conflict',
+    title:'Not all conflict is <span class="pk">the same</span>.',
+    defs:[
+      { label:'Relationship conflict', text:'Personal, emotional, filled with animosity. Destructive for performance.' },
+      { label:'Task conflict', text:'Clashes about ideas and opinions. Productive when it stays respectful.' }
+    ],
+    example:'High-performing teams keep relationship conflict low — but have moderate task conflict early on. "The absence of conflict is not harmony, it\'s apathy."' },
+
+  // 15
+  { type:'concept', ch:'Chapter 4', tag:'Challenge Networks',
+    title:'Not a support network. <span class="pk">A challenge network.</span>',
+    body:'The ideal members are <strong>disagreeable givers</strong>: they criticize because they care, not to feed their egos. They dish out tough love.',
+    example:'"We learn more from people who challenge our thought process than those who affirm our conclusions. Strong leaders engage their critics and make themselves stronger. Weak leaders silence their critics and make themselves weaker."' },
+
+  // 16
+  { type:'concept', ch:'Chapter 4', tag:'Cognitive Illusion',
+    title:'The illusion of <span class="pk">explanatory depth</span>.',
+    body:'We think we understand things far better than we do. Ask someone how bicycle gears work, or how earbuds transmit sound from phone to ear — they struggle, and quickly realize how little they actually know.',
+    example:'The fastest way to soften a strong opinion is to ask people to explain the mechanism behind it — not to justify the view.' },
+
+  // 17
+  { type:'concept', ch:'Chapter 5', tag:'On Persuasion',
+    title:'A debate is a dance, <span class="pk">not a war</span>.',
+    body:'It\'s not a tug-of-war where you drag your opponent to your side if you pull hard enough. It\'s a dance not yet choreographed, negotiated with a partner who has different steps in mind.',
+    example:'If you try too hard to lead, your partner resists. If you can adapt your moves to hers, and she to yours, you\'re more likely to end up in rhythm.' },
+
+  // 18
+  { type:'concept', ch:'Chapter 5', tag:'The Dilution Principle',
+    title:'Fewer reasons, <span class="pk">stronger case</span>.',
+    body:'"A weak argument generally dilutes a strong one." — Neil Rackham. Average negotiators bring too many weapons to battle and lose ground on their weakest point.',
+    example:'If you have too many arguments, you dilute the power of each one. Skilled negotiators identified far fewer counterarguments — and were far more successful.' },
+
+  // 19
+  { type:'concept', ch:'Chapter 5', tag:'Technique',
+    title:'Steel man, <span class="pk">not straw man</span>.',
+    body:'Most people poke holes in the <strong>weakest version</strong> of the other side\'s case. Skilled debaters argue against the <strong>strongest version</strong>.',
+    example:'The highest form of argument is refuting the central point. The lowest is name-calling.' },
+
+  // 20
+  { type:'quote', ch:'Chapter 5',
+    quote:'In a heated argument, you can always stop and ask: <span class="hl">What evidence would change your mind?</span> If the answer is "nothing," there\'s no point in continuing the debate.',
+    attr:'Adam Grant' },
+
+  // 21
+  { type:'concept', ch:'Chapter 6', tag:'Reducing Prejudice',
+    title:'Counterfactual <span class="pk">thinking</span>.',
+    body:'Help someone imagine what they\'d believe if they were born somewhere else, raised differently, lived an alternative life.',
+    example:'When people grasp how arbitrary their stereotypes are — not the positive qualities of their rival — they become more open to rethinking their views. In a meta-analysis of 500+ studies with 250,000 participants, intergroup contact reduced prejudice in 94% of cases.' },
+
+  // 22
+  { type:'concept', ch:'Chapter 6', tag:'The Overview Effect',
+    title:'The view from <span class="pk">outer space</span>.',
+    body:'Astronauts returning from space become less focused on personal happiness and individual achievement — and more concerned with the <strong>collective good</strong>.',
+    example:'Psychologists studying 100+ astronauts found the shift consistent: seeing Earth from outside it, you realize you share a common identity with all human beings.' },
+
+  // 23
+  { type:'concept', ch:'Chapter 7', tag:'Motivational Interviewing',
+    title:'Help them find <span class="pk">their own</span> motivation.',
+    list:[
+      'Ask <span class="pk">open-ended</span> questions.',
+      'Engage in <span class="pk">reflective</span> listening.',
+      'Affirm the person\'s <span class="pk">desire and ability</span> to change.'
+    ],
+    example:'Used in 1,000+ controlled trials. A statistically meaningful effect on behavior change in roughly 3 out of 4 studies. Physicians using it have a success rate of 4 in 5.' },
+
+  // 24
+  { type:'concept', ch:'Chapter 7', tag:'The Righting Reflex',
+    title:'Resist the urge <span class="pk">to fix</span>.',
+    body:'The <strong>righting reflex</strong>: the desire to fix problems and offer answers. A skilled motivational interviewer resists it entirely.',
+    example:'"Even the devil appreciates being listened to." Interacting with an empathetic, nonjudgmental listener makes people less anxious, less defensive, and more willing to explore their own opinions openly.' },
+
+  // 25
+  { type:'quote', ch:'Chapter 7',
+    quote:'Many communicators try to make themselves look smart. Great listeners are more interested in making their audiences <span class="hl">feel smart</span>.',
+    attr:'Adam Grant' },
+
+  // 26
+  { type:'concept', ch:'Chapter 8', tag:'Cognitive Bias',
+    title:'Binary <span class="pk">bias</span>.',
+    body:'The human tendency to seek clarity by simplifying a complex continuum into two categories.',
+    example:'When an article reframed abortion as a complex spectrum of views — instead of two sides — 100% of pairs were able to draft and sign a joint statement, up from 46% with the binary version. They asserted fewer opinions and asked more questions.' },
+
+  // 27
+  { type:'concept', ch:'Chapter 8', tag:'Perspective',
+    title:'Perspective-<span class="pk">seeking</span>, not perspective-taking.',
+    body:'Imagining how the other side thinks often makes you <strong>less</strong> open. Actually talking to them — asking, listening for nuance — works.',
+    example:'When people were randomly assigned to reflect on political opposites\' intentions, they became less receptive to rethinking their own views. Good scientists don\'t theorize about people — they strike up conversations.' },
+
+  // 28
+  { type:'quote', ch:'Chapter 8',
+    quote:'Acknowledging complexity doesn\'t make speakers and writers less convincing. It makes them <span class="hl">more credible</span>.',
+    attr:'Adam Grant' },
+
+  // 29
+  { type:'concept', ch:'Chapter 9', tag:'Learning',
+    title:'Active learning <span class="pk">beats</span> lectures.',
+    body:'A meta-analysis of 225 studies, 46,000 students: traditional lecturing produced grades <strong>half a letter worse</strong>, and students were <strong>1.55× more likely to fail</strong>.',
+    example:'"Charismatic speakers can put us under a political spell. We should be persuaded by the substance of an argument — not the shiny package it\'s wrapped in."' },
+
+  // 30
+  { type:'concept', ch:'Chapter 9', tag:'Education',
+    title:'Why valedictorians don\'t change <span class="pk">the world</span>.',
+    body:'School rewards mastering old ways of thinking. <strong>Influential careers demand new ways of thinking.</strong>',
+    example:'"Valedictorians aren\'t likely to be the future\'s visionaries. They typically settle into the system instead of shaking it up." — Karen Arnold. Across industries, grades are not a strong predictor of job performance.' },
+
+  // 31
+  { type:'def', ch:'Chapter 10', tag:'Organizational Culture',
+    title:'Performance culture <span class="pk">vs.</span> learning culture.',
+    defs:[
+      { label:'Performance culture', text:'Excellence of execution is paramount. Mistakes are hidden. Rethinking feels like failure. NASA had this — it cost them Challenger and Columbia.' },
+      { label:'Learning culture', text:'Psychological safety + accountability. People report more errors but make fewer. By admitting mistakes freely, they eliminate them.' }
+    ],
+    example:'' },
+
+  // 32
+  { type:'concept', ch:'Chapter 10', tag:'Definition',
+    title:'Psychological safety is <span class="pk">not</span> being nice.',
+    body:'Not relaxed standards. Not unconditional praise. Not avoiding hard conversations.',
+    list:[
+      'A climate of <span class="pk">respect, trust, and openness</span>.',
+      'Where people raise concerns <span class="pk">without fear of reprisal</span>.',
+      'The foundation of a <span class="pk">learning culture</span>.'
+    ] },
+
+  // 33
+  { type:'concept', ch:'Chapter 10', tag:'Rethinking Organizations',
+    title:'"Best practices" implies <span class="pk">an endpoint</span>.',
+    body:'We might be better off looking for <strong>better practices</strong>.',
+    example:'At Amazon, Jeff Bezos\' principle: "disagree and commit." Instead of demanding proof, experiments start with a bet. "I know we disagree on this — but will you gamble with me on it?" The goal in a learning culture is to make rethinking so familiar it becomes routine.' },
+
+  // 34
+  { type:'concept', ch:'Chapter 11', tag:'Identity',
+    title:'Identity <span class="pk">foreclosure</span>.',
+    body:'Settling prematurely on a sense of self before enough due diligence — and closing your mind to alternative selves.',
+    example:'"The students most certain about their career plans at twenty are often the ones with the deepest regrets by thirty." Kids might be better off learning about careers as <strong>actions to take</strong> rather than identities to claim.' },
+
+  // 35
+  { type:'concept', ch:'Chapter 11', tag:'Career',
+    title:'The twice-yearly <span class="pk">checkup</span>.',
+    list:[
+      'When did you form the aspirations you\'re <span class="pk">currently pursuing</span> — and how have you changed since?',
+      'Have you hit a <span class="pk">learning plateau</span> in your role, and is it time to pivot?'
+    ],
+    example:'"It\'s better to lose the past two years of progress than waste the next twenty." Grit is valuable — but gritty mountaineers are also more likely to die on expeditions, because they\'re determined to reach the summit at any cost.' },
+
+  // 36
+  { type:'quote', ch:'Epilogue',
+    quote:'"What I believe" is a <span class="hl">process</span> rather than a finality.',
+    attr:'Adam Grant' },
+];
+
+const total = cards.length;
+let current = 0;
+
+const container = document.getElementById('cards');
+const dotsEl    = document.getElementById('dots');
+const prevBtn   = document.getElementById('prev');
+const nextBtn   = document.getElementById('next');
+const counterEl = document.getElementById('counter');
+
+function buildCard(card, idx) {
+  const el = document.createElement('div');
+  el.className = 'card';
+
+  const num   = String(idx + 1).padStart(2, '0');
+  const tot   = String(total).padStart(2, '0');
+
+  let html = `
+    <div class="card-number">${num} <span class="total">/ ${tot}</span></div>
+    <div class="eyebrow">
+      <span>${BOOK}</span>
+      <span class="sep"></span>
+      <span class="ch">${card.ch}</span>
+    </div>
+  `;
+
+  if (card.type === 'quote') {
+    html += `
+      <div class="big-quote">"</div>
+      <div class="quote-text">${card.quote}</div>
+      <div class="attr">${card.attr}</div>
+    `;
+  } else if (card.type === 'def') {
+    html += `<div class="concept-tag">${card.tag || 'Concept'}</div>`;
+    html += `<div class="concept-title">${card.title}</div>`;
+    html += `<div class="def-pair">`;
+    card.defs.forEach(d => {
+      html += `<div class="def-row">
+        <div class="def-label">${d.label}</div>
+        <div class="def-text">${d.text}</div>
+      </div>`;
+    });
+    html += `</div>`;
+    if (card.example) html += `<div class="example study">${card.example}</div>`;
+  } else {
+    // concept
+    html += `<div class="concept-tag">${card.tag || 'Concept'}</div>`;
+    html += `<div class="concept-title">${card.title}</div>`;
+    if (card.formula) html += `<div class="formula">${card.formula}</div>`;
+    if (card.body)    html += `<div class="concept-body">${card.body}</div>`;
+    if (card.list) {
+      html += `<ol class="c-list">`;
+      card.list.forEach(item => { html += `<li>${item}</li>`; });
+      html += `</ol>`;
+    }
+    if (card.example) html += `<div class="example">${card.example}</div>`;
+  }
+
+  el.innerHTML = html;
+  return el;
+}
+
+// Render all cards
+cards.forEach((c, i) => container.appendChild(buildCard(c, i)));
+
+// Dots
+cards.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'dot';
+  d.setAttribute('aria-label', `Go to card ${i+1}`);
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+
+function goTo(idx) {
+  if (idx < 0 || idx >= total) return;
+  current = idx;
+  document.querySelectorAll('.card').forEach((el, i) =>
+    el.classList.toggle('active', i === current));
+  document.querySelectorAll('.dot').forEach((el, i) =>
+    el.classList.toggle('active', i === current));
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === total - 1;
+  const n = String(current + 1).padStart(2, '0');
+  const t = String(total).padStart(2, '0');
+  counterEl.textContent = `${n} / ${t}`;
+}
+
+prevBtn.addEventListener('click', () => goTo(current - 1));
+nextBtn.addEventListener('click', () => goTo(current + 1));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); goTo(current + 1); }
+  if (e.key === 'ArrowLeft')                    { e.preventDefault(); goTo(current - 1); }
+  if (e.key === 'Home')                         { e.preventDefault(); goTo(0); }
+  if (e.key === 'End')                          { e.preventDefault(); goTo(total - 1); }
+});
+
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 48) dx < 0 ? goTo(current + 1) : goTo(current - 1);
+});
+
+goTo(0);
+</script>
+</body>
+</html>
