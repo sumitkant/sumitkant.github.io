@@ -1,0 +1,618 @@
+[
+  {
+    "title": "Coffee Can Investing",
+    "author": "Saurabh Mukherjea",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1518834400l/38602142._SY475_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Guru of Chaos",
+    "author": "Saurabh Mukherjea",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1414404081l/23454500.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Rudest Book Ever",
+    "author": "Shwetabh Gangwar",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1575289232l/49057616._SY475_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Girl, Interrupted",
+    "author": "Susanna Kaysen",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1475482930l/68783._SY475_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Sum: Forty Tales from the Afterlives",
+    "author": "David Eagleman",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1320528453l/4948826.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Envisioning Information",
+    "author": "Edward Tufte",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1290403773l/17745.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Night",
+    "author": "Elie Wiesel",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1575073611l/1617.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Art of Thinking Clearly",
+    "author": "Rolf Dobelli",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1364848267l/16248196.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Women & Power",
+    "author": "Mary Beard",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1506524572l/36313514._SY475_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Art Matters",
+    "author": "Neil Gaiman",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1532024623l/40090596._SY475_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Psychology of Money",
+    "author": "Morgan Housel",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1581527774l/41881472._SY475_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": true
+  },
+  {
+    "title": "Mindset",
+    "author": "Carol Dweck",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1485288654l/33980368._SY475_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": true
+  },
+  {
+    "title": "When Breath Becomes Air",
+    "author": "Paul Kalanithi",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1453423959l/28670512._SY475_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": true
+  },
+  {
+    "title": "Deep Learning with Python",
+    "author": "François Chollet",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1485713249l/34043770.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Ikigai",
+    "author": "Héctor García & Francesc Miralles",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1598335721l/55113745._SX318_.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Tuesdays with Morrie",
+    "author": "Mitch Albom",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1423763749l/6900.jpg",
+    "year": 2021,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Creative Confidence",
+    "author": "Tom & David Kelley",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1375677702l/17288649.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Visual Display of Quantitative Information",
+    "author": "Edward Tufte",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1560425455l/17744._SX318_.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Coraline",
+    "author": "Neil Gaiman",
+    "cover": "https://images-na.ssl-images-amazon.com/images/I/518UoljodvL._SX324_BO1,204,203,200_.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Confessions of an Advertising Man",
+    "author": "David Ogilvy",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388252662l/44895.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Norse Mythology",
+    "author": "Neil Gaiman",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1521655176l/39339994._SY475_.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Factfulness",
+    "author": "Hans Rosling",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1544963815l/34890015._SY475_.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": true
+  },
+  {
+    "title": "How Google Works",
+    "author": "Eric Schmidt & Jonathan Rosenberg",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1422538855l/23158207.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Leonardo da Vinci",
+    "author": "Walter Isaacson",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479481051l/33006207._SY475_.jpg",
+    "year": 2020,
+    "notes": "https://sumitkant.github.io/book_notes/Leonardo-da-vinci_notes.html",
+    "recommended": true
+  },
+  {
+    "title": "The River of Consciousness",
+    "author": "Oliver Sacks",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1528656577l/40506506._SY475_.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Black Holes and Baby Universes",
+    "author": "Stephen Hawking",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1359616016l/871741.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Free Voice",
+    "author": "Ravish Kumar",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1566773386l/52426127._SX318_SY475_.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "HBR Emotional Intelligence Series",
+    "author": "Harvard Business Review",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1525051245l/39996150._SX318_.jpg",
+    "year": 2020,
+    "notes": "https://www.canva.com/design/DAD31Qb6AP4/aPO15hX9qAIYFtrqOtHshQ/view",
+    "recommended": false
+  },
+  {
+    "title": "Machine Learning Mastery",
+    "author": "Jason Brownlee",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1483893599l/33819314._SX318_.jpg",
+    "year": 2020,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Leaders Eat Last",
+    "author": "Simon Sinek",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1400881733l/16144853.jpg",
+    "year": 2019,
+    "notes": "https://www.canva.com/design/DAD3YXBFl8I/GEZvsYllUjxghfYt_A1Cdw/view",
+    "recommended": true
+  },
+  {
+    "title": "Emotional Intelligence",
+    "author": "Daniel Goleman",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1329749895l/870848.jpg",
+    "year": 2019,
+    "notes": "https://www.canva.com/design/DAD3PdisP2s/W8tUapGU9VIYoSgmVcGbsQ/view",
+    "recommended": true
+  },
+  {
+    "title": "Mossad",
+    "author": "Michael Bar-Zohar & Nissim Mishal",
+    "cover": "https://images-na.ssl-images-amazon.com/images/I/715fIqHjtjL.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Show Your Work",
+    "author": "Austin Kleon",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1404580714l/18290401.jpg",
+    "year": 2019,
+    "notes": "https://sumitkant.github.io/book_notes/show_your_work.html",
+    "recommended": true
+  },
+  {
+    "title": "Steal Like an Artist",
+    "author": "Austin Kleon",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1404576602l/13099738.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Why Fonts Matter",
+    "author": "Sarah Hyndman",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1454839763l/28951784._SX318_.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Contagious",
+    "author": "Jonah Berger",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1394311090l/21063341.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Homo Deus",
+    "author": "Yuval Noah Harari",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1468760805l/31138556._SY475_.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Being Mortal",
+    "author": "Atul Gawande",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1461500831l/24275197._SY475_.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Dip",
+    "author": "Seth Godin",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1311282216l/324748.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Stephen Hawking: A Memoir of Friendship and Physics",
+    "author": "Leonard Mlodinow",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1541816726l/41551710._SY475_.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Man's Search for Meaning",
+    "author": "Viktor Frankl",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386573716l/19306508.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": true
+  },
+  {
+    "title": "Benjamin Franklin: An American Life",
+    "author": "Walter Isaacson",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1463951925l/26245270._SX318_.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Oliver Sacks: The Last Interview",
+    "author": "Oliver Sacks",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479737643l/29358247.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Never Split the Difference",
+    "author": "Chris Voss",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1490567231l/30736658._SY475_.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": true
+  },
+  {
+    "title": "My Stroke of Insight",
+    "author": "Jill Bolte Taylor",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1387714555l/142292.jpg",
+    "year": 2019,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Fooled by Randomness",
+    "author": "Nassim Nicholas Taleb",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347563905l/905654.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Quick and Easy Way to Effective Speaking",
+    "author": "Dale Carnegie",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1539931467l/42390797._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Storytelling with Data",
+    "author": "Cole Nussbaumer Knaflic",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1444690744l/26535513._SX318_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Talent Sutra",
+    "author": "Pramath Raj Sinha",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1476262211l/32594756._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Graphic Design Idea Book",
+    "author": "Steven Heller & Gail Anderson",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1447618400l/26246256.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Detail in Typography",
+    "author": "Jost Hochuli",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1349005586l/2318174.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Innocent Man",
+    "author": "John Grisham",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1530121509l/34847065._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Predictably Irrational",
+    "author": "Dan Ariely",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1322313779l/4656126.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Everything Store",
+    "author": "Brad Stone",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1419671833l/18332143.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Rosie Project",
+    "author": "Graeme Simsion",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1390506811l/20561643.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Marketing 4.0",
+    "author": "Philip Kotler",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1479633570l/33017355._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Devlok with Devdutt Pattanaik",
+    "author": "Devdutt Pattanaik",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1467159999l/30807394._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Influence",
+    "author": "Robert Cialdini",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1391026083l/28815.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": true
+  },
+  {
+    "title": "Myth = Mithya",
+    "author": "Devdutt Pattanaik",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1428689248l/1486976.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Art of War",
+    "author": "Sun Tzu",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1349068826l/234843.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Catalyst",
+    "author": "Jonah Berger",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1518667202l/38587103._SY475_.jpg",
+    "year": 2018,
+    "notes": "https://www.canva.com/design/DAD3P3Yb4zA/5uIAi6LOX-8vq1YmAG9g6w/view",
+    "recommended": false
+  },
+  {
+    "title": "I Am Malala",
+    "author": "Malala Yousafzai",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1375414895l/17851885.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Alibaba",
+    "author": "Duncan Clark",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1442823028l/25817524.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Grand Design",
+    "author": "Stephen Hawking & Leonard Mlodinow",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1320558363l/8520362.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Option B",
+    "author": "Sheryl Sandberg & Adam Grant",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1493998427l/32938155._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Internet of Money",
+    "author": "Andreas Antonopoulos",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1473282681l/31869077._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Start with Why",
+    "author": "Simon Sinek",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1360936414l/7108725.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "The Upside of Irrationality",
+    "author": "Dan Ariely",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1384777320l/8273417.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "What If?",
+    "author": "Randall Munroe",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1443982085l/26864936.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Give and Take",
+    "author": "Adam Grant",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1356136579l/16158498.jpg",
+    "year": 2018,
+    "notes": "https://www.canva.com/design/DADQYGxc-H0/IZ1WXJwH8O7UCfkRNVN87w/view",
+    "recommended": false
+  },
+  {
+    "title": "The Theory of Everything",
+    "author": "Stephen Hawking",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1415265430l/703032.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Awkward",
+    "author": "Ty Tashiro",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1485273206l/30317414.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Sapiens",
+    "author": "Yuval Noah Harari",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1433930311l/20873740._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": true
+  },
+  {
+    "title": "The Lean Startup",
+    "author": "Eric Ries",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1333576876l/10127019.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Black Holes: The BBC Reith Lectures",
+    "author": "Stephen Hawking",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1471237286l/31448659._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Rebooting India",
+    "author": "Nandan Nilekani & Viral Shah",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1446562076l/27420086._SY475_.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  },
+  {
+    "title": "Warren Buffett: The Life and Business Lessons",
+    "author": "Mary Buffett & David Clark",
+    "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1428687805l/24833211.jpg",
+    "year": 2018,
+    "notes": null,
+    "recommended": false
+  }
+]
