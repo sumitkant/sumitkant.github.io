@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,45 +9,67 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&display=swap"
+    rel="stylesheet" />
   <link href="css/bookshelf.css" rel="stylesheet" />
 
   <style>
     /* ── Tokens (mirror bookshelf exactly) ──────────── */
     :root {
-      --bg:            #f2efe9;
-      --bg-surface:    #eae7e0;
-      --bg-raised:     #e2dfd8;
-      --border:        rgba(0,0,0,0.08);
-      --border-hover:  rgba(0,0,0,0.18);
-      --text-primary:  #1a1a18;
-      --text-secondary:#6b6b65;
+      --bg: #f2efe9;
+      --bg-surface: #eae7e0;
+      --bg-raised: #e2dfd8;
+      --border: rgba(0, 0, 0, 0.08);
+      --border-hover: rgba(0, 0, 0, 0.18);
+      --text-primary: #1a1a18;
+      --text-secondary: #6b6b65;
       --text-tertiary: #a8a8a0;
-      --accent:        #c85c2a;
-      --notes-bg:      #1a1a18;
-      --notes-text:    #f2efe9;
-      --star:          #c9a84c;
-      --overlay:       rgba(20,18,14,0.84);
-      --stats-bg:      #1c1a17;
-      --stats-divider: rgba(255,255,255,0.10);
-      --stats-label:   rgba(255,255,255,0.45);
-      --radius-sm:     6px;
-      --radius-md:     10px;
-      --radius-lg:     14px;
-      --nav-h:         58px;
-      --content-w:     1100px;
-      --font:          'Plus Jakarta Sans', system-ui, sans-serif;
+      --accent: #c85c2a;
+      --notes-bg: #1a1a18;
+      --notes-text: #f2efe9;
+      --star: #c9a84c;
+      --overlay: rgba(20, 18, 14, 0.84);
+      --stats-bg: #1c1a17;
+      --stats-divider: rgba(255, 255, 255, 0.10);
+      --stats-label: rgba(255, 255, 255, 0.45);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
     }
 
     /* ── Logo color animation ───────────────────────── */
     @keyframes jmlColor {
-      0%   { fill: #c85c2a; }
-      18%  { fill: #e8b840; }
-      36%  { fill: #2ab8a0; }
-      54%  { fill: #5470e0; }
-      72%  { fill: #c040b8; }
-      90%  { fill: #e84060; }
-      100% { fill: #c85c2a; }
+      0% {
+        fill: #c85c2a;
+      }
+
+      18% {
+        fill: #e8b840;
+      }
+
+      36% {
+        fill: #2ab8a0;
+      }
+
+      54% {
+        fill: #5470e0;
+      }
+
+      72% {
+        fill: #c040b8;
+      }
+
+      90% {
+        fill: #e84060;
+      }
+
+      100% {
+        fill: #c85c2a;
+      }
     }
 
     .jml-svg .color {
@@ -61,8 +84,19 @@
     }
 
     /* ── Reset ──────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; scroll-behavior: smooth; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
     body {
       background: var(--bg);
       color: var(--text-primary);
@@ -71,7 +105,11 @@
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
-    a { color: inherit; text-decoration: none; }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
     /* ── Nav ────────────────────────────────────────── */
     nav {
@@ -80,10 +118,11 @@
       z-index: 100;
       height: var(--nav-h);
       border-bottom: 1px solid var(--border);
-      background: rgba(242,239,233,0.92);
+      background: rgba(242, 239, 233, 0.92);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
     }
+
     .nav-inner {
       max-width: var(--content-w);
       margin: 0 auto;
@@ -93,6 +132,7 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .nav-logo {
       display: flex;
       align-items: center;
@@ -100,6 +140,7 @@
       font-size: 14px;
       font-weight: 500;
     }
+
     .nav-monogram {
       width: 30px;
       height: 30px;
@@ -114,21 +155,28 @@
       letter-spacing: -0.02em;
       flex-shrink: 0;
     }
+
     .nav-links {
       display: flex;
       align-items: center;
       gap: 28px;
       list-style: none;
     }
+
     .nav-links a {
       font-size: 13.5px;
       color: var(--text-secondary);
       transition: color 0.15s;
     }
-    .nav-links a:hover, .nav-links a.active {
+
+    .nav-links a:hover,
+    .nav-links a.active {
       color: var(--text-primary);
     }
-    .nav-links a.active { font-weight: 500; }
+
+    .nav-links a.active {
+      font-weight: 500;
+    }
 
     /* ── Page wrapper ───────────────────────────────── */
     .page {
@@ -145,17 +193,21 @@
       padding: 3.5rem 0 2.5rem;
       border-bottom: 1px solid var(--border);
     }
+
     .hero-logo-wrap {
       flex-shrink: 0;
     }
+
     .jml-svg {
       width: 110px;
       height: auto;
       display: block;
     }
+
     .hero-text {
       flex: 1;
     }
+
     .hero-eyebrow {
       font-size: 11px;
       letter-spacing: 0.14em;
@@ -165,14 +217,20 @@
       font-weight: 500;
       margin-bottom: 10px;
     }
+
     .hero-title {
       font-size: clamp(1.8rem, 4vw, 2.6rem);
-      font-weight: 300;
+      font-weight: 800;
       line-height: 1.1;
       letter-spacing: -0.03em;
       margin-bottom: 12px;
     }
-    .hero-title strong { font-weight: 800; color: var(--accent); }
+
+    .hero-title strong {
+      font-weight: 800;
+      color: var(--accent);
+    }
+
     .hero-sub {
       font-size: 14px;
       color: var(--text-secondary);
@@ -180,11 +238,13 @@
       margin-bottom: 18px;
       max-width: 500px;
     }
+
     .hero-links {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
+
     .hero-link {
       display: inline-flex;
       align-items: center;
@@ -197,15 +257,18 @@
       color: var(--text-secondary);
       transition: all 0.15s;
     }
+
     .hero-link:hover {
       border-color: var(--border-hover);
       color: var(--text-primary);
     }
+
     .hero-link.yt {
       background: var(--text-primary);
       color: var(--bg);
       border-color: var(--text-primary);
     }
+
     .hero-link svg {
       width: 14px;
       height: 14px;
@@ -220,6 +283,7 @@
       overflow: hidden;
       margin: 2rem 0;
     }
+
     .stat {
       position: relative;
       padding: 2.25rem 2rem;
@@ -230,7 +294,8 @@
       justify-content: center;
       gap: 12px;
     }
-    .stat + .stat::before {
+
+    .stat+.stat::before {
       content: '';
       position: absolute;
       left: 0;
@@ -239,6 +304,7 @@
       width: 1px;
       background: var(--stats-divider);
     }
+
     .stat-value {
       font-size: clamp(2.4rem, 4vw, 3.2rem);
       font-weight: 800;
@@ -246,7 +312,11 @@
       letter-spacing: -0.03em;
       color: #ffffff;
     }
-    .stat-value .accent { color: var(--accent); }
+
+    .stat-value .accent {
+      color: var(--accent);
+    }
+
     .stat-label {
       font-size: 10.5px;
       font-weight: 700;
@@ -272,6 +342,7 @@
       z-index: 50;
       background: var(--bg);
     }
+
     .search-wrap {
       display: flex;
       align-items: center;
@@ -283,13 +354,18 @@
       transition: border-color 0.15s;
       margin-left: auto;
     }
-    .search-wrap:focus-within { border-color: var(--border-hover); }
+
+    .search-wrap:focus-within {
+      border-color: var(--border-hover);
+    }
+
     .search-wrap svg {
       width: 14px;
       height: 14px;
       color: var(--text-tertiary);
       flex-shrink: 0;
     }
+
     .search-input {
       background: transparent;
       border: none;
@@ -299,7 +375,11 @@
       color: var(--text-primary);
       width: 160px;
     }
-    .search-input::placeholder { color: var(--text-tertiary); }
+
+    .search-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
     .toolbar-count {
       font-size: 12px;
       color: var(--text-tertiary);
@@ -319,10 +399,19 @@
       cursor: pointer;
       animation: fadeUp 0.35s ease both;
     }
+
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .cover-wrap {
       position: relative;
       aspect-ratio: 9 / 16;
@@ -331,6 +420,7 @@
       background: var(--bg-raised);
       border: 1px solid var(--border);
     }
+
     .cover-img {
       width: 100%;
       height: 100%;
@@ -340,8 +430,15 @@
       transition: transform 0.35s ease;
       opacity: 0;
     }
-    .cover-img.loaded { opacity: 1; transition: opacity 0.3s ease, transform 0.35s ease; }
-    .video-card:hover .cover-img { transform: scale(1.04); }
+
+    .cover-img.loaded {
+      opacity: 1;
+      transition: opacity 0.3s ease, transform 0.35s ease;
+    }
+
+    .video-card:hover .cover-img {
+      transform: scale(1.04);
+    }
 
     /* Hover overlay */
     .cover-overlay {
@@ -355,7 +452,11 @@
       opacity: 0;
       transition: opacity 0.22s ease;
     }
-    .video-card:hover .cover-overlay { opacity: 1; }
+
+    .video-card:hover .cover-overlay {
+      opacity: 1;
+    }
+
     .overlay-title {
       font-size: 11.5px;
       font-weight: 600;
@@ -367,11 +468,13 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+
     .overlay-date {
       font-size: 10px;
-      color: rgba(242,239,232,0.5);
+      color: rgba(242, 239, 232, 0.5);
       margin-bottom: 10px;
     }
+
     .overlay-cta {
       display: inline-flex;
       align-items: center;
@@ -385,7 +488,11 @@
       align-self: flex-start;
       text-decoration: none;
     }
-    .overlay-cta svg { width: 10px; height: 10px; }
+
+    .overlay-cta svg {
+      width: 10px;
+      height: 10px;
+    }
 
     /* New badge */
     .badge-new {
@@ -410,18 +517,29 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: rgba(242,239,232,0.15);
-      border: 1px solid rgba(242,239,232,0.3);
+      background: rgba(242, 239, 232, 0.15);
+      border: 1px solid rgba(242, 239, 232, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: opacity 0.2s;
       z-index: 2;
     }
-    .play-dot svg { width: 10px; height: 10px; fill: #f2efe9; }
-    .video-card:hover .play-dot { opacity: 0; }
 
-    .video-meta { margin-top: 10px; }
+    .play-dot svg {
+      width: 10px;
+      height: 10px;
+      fill: #f2efe9;
+    }
+
+    .video-card:hover .play-dot {
+      opacity: 0;
+    }
+
+    .video-meta {
+      margin-top: 10px;
+    }
+
     .video-title {
       font-size: 12.5px;
       font-weight: 500;
@@ -432,6 +550,7 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+
     .video-date {
       font-size: 11px;
       color: var(--text-tertiary);
@@ -439,7 +558,11 @@
     }
 
     /* ── Skeleton ───────────────────────────────────── */
-    .skeleton-card { display: flex; flex-direction: column; }
+    .skeleton-card {
+      display: flex;
+      flex-direction: column;
+    }
+
     .skeleton-cover {
       aspect-ratio: 9 / 16;
       border-radius: var(--radius-md);
@@ -447,18 +570,27 @@
       position: relative;
       overflow: hidden;
     }
-    .skeleton-cover::after, .skeleton-line::after {
+
+    .skeleton-cover::after,
+    .skeleton-line::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.55) 50%, transparent 100%);
       background-size: 200% 100%;
       animation: shimmer 1.6s infinite;
     }
+
     @keyframes shimmer {
-      0%   { background-position:  200% 0; }
-      100% { background-position: -200% 0; }
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
     }
+
     .skeleton-line {
       height: 10px;
       border-radius: 4px;
@@ -467,7 +599,10 @@
       position: relative;
       overflow: hidden;
     }
-    .skeleton-line.short { width: 55%; }
+
+    .skeleton-line.short {
+      width: 55%;
+    }
 
     /* ── Empty / error state ─────────────────────────── */
     .state-msg {
@@ -491,23 +626,64 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-    footer a { color: var(--text-tertiary); transition: color 0.15s; }
-    footer a:hover { color: var(--text-primary); }
+
+    footer a {
+      color: var(--text-tertiary);
+      transition: color 0.15s;
+    }
+
+    footer a:hover {
+      color: var(--text-primary);
+    }
 
     /* ── Responsive ─────────────────────────────────── */
     @media (max-width: 760px) {
-      .hero { flex-direction: column; gap: 1.5rem; text-align: center; align-items: center; }
-      .hero-sub { margin-left: auto; margin-right: auto; }
-      .hero-links { justify-content: center; }
-      .stats { grid-template-columns: repeat(3, 1fr); }
-      .nav-links { display: none; }
-      .grid { grid-template-columns: repeat(3, 1fr); }
+      .hero {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+        align-items: center;
+      }
+
+      .hero-sub {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-links {
+        justify-content: center;
+      }
+
+      .stats {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
+
     @media (max-width: 480px) {
-      .page { padding: 0 1rem 4rem; }
-      .nav-inner { padding: 0 1rem; }
-      .grid { grid-template-columns: repeat(3, 1fr); gap: 12px 8px; }
-      .stats { grid-template-columns: repeat(3, 1fr); }
+      .page {
+        padding: 0 1rem 4rem;
+      }
+
+      .nav-inner {
+        padding: 0 1rem;
+      }
+
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px 8px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
   </style>
 </head>
@@ -518,8 +694,14 @@
   <nav>
     <div class="nav-inner">
       <a href="https://sumitkant.github.io/" class="nav-logo">
-        <span class="nav-monogram">SK</span>
-        <span>Sumit Kant</span>
+        <div style="overflow:hidden; height:65px; width:auto;">
+          <img src="images/musiclab/banner_logo.png" alt="Johnny's Music Lab logo" style="height:65px;
+              width:auto;
+              display:block;
+              filter:invert(1);
+              transform-origin: 50% 55%;
+              transform: scale(3);">
+        </div>
       </a>
       <ul class="nav-links">
         <li><a href="https://sumitkant.github.io/blog.html">Blog</a></li>
@@ -543,7 +725,7 @@ c0,6.3,5.1,11.4,11.4,11.4c6.3,0,11.4-5.1,11.4-11.4V158.1h0.2c1-9.9,5.4-19,12.6-2
 c11.2,0,21.9,4.3,29.9,12.2c7.2,7,11.6,16.2,12.6,26.1h0.2l0,3.6v120.1c0,6.3,5.1,11.4,11.4,11.4s11.4-5.1,11.4-11.4v-21.5h0.2
 c1-9.9,5.4-19,12.6-26.1c8-7.9,18.6-12.2,29.9-12.2h56.5c0-0.2,0-0.4,0-0.6l-0.6-77.8c-0.2-13.5-9.6-30-21.3-36.9l-66.1-38.9
 c-11.7-6.8-30.8-17.9-42.5-24.5L240.9,5c-5.9-3.3-13.5-5-21.3-5c-7.7,0-15.5,1.7-21.3,5l-66.7,37.8c-11.9,6.6-30.8,17.6-42.5,24.5
-L22,106.7c-11.7,6.9-21.2,23.4-21.3,36.9l-0.6,76.6c0,0.8,0,1.6,0,2.5h57.8C81.6,222.7,100.3,240.7,100.5,263.8z"/>
+L22,106.7c-11.7,6.9-21.2,23.4-21.3,36.9l-0.6,76.6c0,0.8,0,1.6,0,2.5h57.8C81.6,222.7,100.3,240.7,100.5,263.8z" />
           <path class="st0" d="M371.1,264.7v21.5h-0.2c-1,9.9-5.4,19-12.6,26.1c-8,7.9-18.6,12.2-29.9,12.2s-21.8-4.3-29.9-12.2
 c-7.2-7-11.6-16.2-12.6-26.1h-0.2l0-3.6V162.5c0-6.3-5.1-11.4-11.4-11.4s-11.4,5.1-11.4,11.4v183.2h-0.2c-1,9.9-5.4,19-12.6,26.1
 c-8,7.9-18.6,12.2-29.9,12.2c-11.2,0-21.8-4.3-29.9-12.2c-7.2-7-11.6-16.2-12.6-26.1h-0.2l0-3.6V162.5c0-6.3-5.1-11.4-11.4-11.4
@@ -551,20 +733,29 @@ c-6.3,0-11.4,5.1-11.4,11.4v123.7h-0.2c-1,9.9-5.4,19-12.6,26.1c-8,7.9-18.6,12.2-2
 c-7.7-7.6-12.2-17.6-12.7-28.4l0-0.1l0-2l0.1-17.8c0-6-4.7-10.1-11.4-10.1H0c0,5.6,0,10.9,0.1,15.2l0.6,77.8
 c0.2,13.5,9.6,30,21.3,36.9l66.1,38.9c11.7,6.8,30.8,17.9,42.5,24.5l67.7,38.4c5.9,3.3,13.7,5,21.3,5s15.5-1.7,21.3-5l66.7-37.8
 c11.9-6.6,30.8-17.6,42.5-24.5l67.1-39.3c11.7-6.9,21.2-23.4,21.3-37.1l0.6-76.6c0.1-4.9,0.1-10.8,0.1-17.1h-56.6
-C376.2,253.2,371.1,258.4,371.1,264.7z"/>
+C376.2,253.2,371.1,258.4,371.1,264.7z" />
         </svg>
       </div>
       <div class="hero-text">
         <p class="hero-eyebrow">Music Lab</p>
         <h1 class="hero-title">Johnny's<br><strong>Music Lab</strong></h1>
-        <p class="hero-sub">Drum covers, grooves, rudiments and experiments on the kit — posted as YouTube Shorts. Drumming since 2013.</p>
+        <p class="hero-sub">Drum covers, grooves, rudiments and experiments on the kit — posted as YouTube Shorts.
+          Drumming since 2013.</p>
         <div class="hero-links">
-          <a class="hero-link yt" href="https://youtube.com/channel/UCVhJVJStOItucQ5JFmFjYQQ" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          <a class="hero-link yt" href="https://youtube.com/channel/UCVhJVJStOItucQ5JFmFjYQQ" target="_blank"
+            rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z" />
+            </svg>
             Subscribe on YouTube
           </a>
           <a class="hero-link" href="https://www.instagram.com/johnnysmusiclab/" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="2" y="2" width="20" height="20" rx="5" />
+              <circle cx="12" cy="12" r="4.5" />
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+            </svg>
             @johnnysmusiclab
           </a>
         </div>
@@ -602,91 +793,131 @@ C376.2,253.2,371.1,258.4,371.1,264.7z"/>
     <div class="grid" id="grid">
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="0" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
+        <iframe class="latestVideoEmbed" vnum="0" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
           <div class="badge-new">NEW</div>
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="1" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="1" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="2" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="2" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="3" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="3" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="4" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="4" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="5" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="5" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="6" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="6" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="7" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="7" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="8" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="8" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="9" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none" frameborder="0"></iframe>
-        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb" class="cover-img" src="" alt="">
-          <div class="play-dot"><svg viewBox="0 0 10 12"><path d="M2 1l7 5-7 5V1z"/></svg></div>
+        <iframe class="latestVideoEmbed" vnum="9" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
+          frameborder="0"></iframe>
+        <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
+            class="cover-img" src="" alt="">
+          <div class="play-dot"><svg viewBox="0 0 10 12">
+              <path d="M2 1l7 5-7 5V1z" />
+            </svg></div>
           <div class="cover-overlay"><span class="overlay-cta">Watch ↗</span></div>
         </a>
         <p id="video-title" class="video-title">Loading…</p>
@@ -713,7 +944,7 @@ C376.2,253.2,371.1,258.4,371.1,264.7z"/>
 
     function loadVideo(iframe) {
       $.getJSON(reqURL + iframe.getAttribute('cid'),
-        function(data) {
+        function (data) {
           var videoNumber = (iframe.getAttribute('vnum') ? Number(iframe.getAttribute('vnum')) : 0);
           console.log(videoNumber);
           var link = data.items[videoNumber].link;
@@ -727,7 +958,7 @@ C376.2,253.2,371.1,258.4,371.1,264.7z"/>
           iframe.parentElement.querySelector("#video-link").setAttribute("href", link);
 
           /* reveal thumbnail once it loads */
-          iframe.parentElement.querySelector("#video-thumb").onload = function() {
+          iframe.parentElement.querySelector("#video-thumb").onload = function () {
             this.classList.add("loaded");
           };
         }
@@ -741,4 +972,5 @@ C376.2,253.2,371.1,258.4,371.1,264.7z"/>
   </script>
 
 </body>
+
 </html>
