@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Course notes from Generative AI for Everyone by Andrew Ng on Coursera — how GenAI works, what it can do, real-world applications, business impact, and responsible AI." />
+  <title>Generative AI for Everyone — Sumit Kant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Palette ────────────────────────────────────────
+       #1B4079  Yale Blue
+       #4D7C8A  Air Force blue
+       #7F9C96  Cambridge blue
+       #8FAD88  Sage green
+       #CBDF90  Mindaro
+    ──────────────────────────────────────────────────── */
+    :root {
+      --yale:     #1B4079;
+      --airforce: #4D7C8A;
+      --cambridge:#7F9C96;
+      --sage:     #8FAD88;
+      --mindaro:  #CBDF90;
+
+      --bg:            #f0f5ee;
+      --bg-surface:    #e4ede1;
+      --bg-raised:     #d6e3d2;
+      --border:        rgba(27,64,121,0.10);
+      --border-hover:  rgba(27,64,121,0.24);
+      --text-primary:  #0f2240;
+      --text-secondary:#2d4a5e;
+      --text-tertiary: #7a9aaa;
+      --accent:        var(--airforce);
+      --dark-bg:       var(--yale);
+      --dark-text:     #e8f0e4;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --nav-h: 72px; --content-w: 1100px; --prose-w: 720px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-primary); font-family: var(--font); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Nav ─────────────────────────────────────────── */
+    nav { position: sticky; top: 0; z-index: 100; height: var(--nav-h); border-bottom: 1px solid var(--border); background: rgba(240,245,238,0.93); backdrop-filter: blur(14px); }
+    .nav-inner { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+    .nav-monogram { width: 30px; height: 30px; background: var(--yale); color: var(--mindaro); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 13.5px; color: var(--text-secondary); transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+    .nav-links a.active { font-weight: 500; }
+
+    /* ─── Page ────────────────────────────────────────── */
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+    /* ─── Post hero ───────────────────────────────────── */
+    .post-hero { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); max-width: var(--prose-w); }
+    .hero-eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px; }
+    .hero-title { font-size: clamp(1.9rem,4vw,2.8rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 14px; }
+    .hero-title strong { color: var(--airforce); }
+    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.75; }
+
+    /* ─── Meta ────────────────────────────────────────── */
+    .post-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
+    .meta-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono); letter-spacing: 0.03em; background: var(--bg-surface); }
+    .meta-tag.yale     { background: var(--yale);     color: var(--mindaro); border-color: transparent; font-weight: 600; }
+    .meta-tag.airforce { background: var(--airforce); color: #fff;           border-color: transparent; font-weight: 600; }
+    .meta-tag.sage     { background: var(--sage);     color: var(--yale);    border-color: transparent; font-weight: 600; }
+    .meta-dot { color: var(--text-tertiary); font-size: 10px; }
+
+    /* ─── Layout ──────────────────────────────────────── */
+    .post-layout { display: grid; grid-template-columns: var(--prose-w) 1fr; gap: 0 3rem; align-items: start; padding-top: 3rem; }
+    .post-prose { min-width: 0; }
+    .post-toc { position: sticky; top: calc(var(--nav-h) + 1.5rem); padding-left: 1.5rem; border-left: 2px solid var(--mindaro); }
+    .toc-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .toc-list a { font-size: 12px; color: var(--text-secondary); transition: color 0.15s; display: block; line-height: 1.4; }
+    .toc-list a:hover { color: var(--airforce); }
+    .toc-sub { padding-left: 12px; }
+    .toc-sub a { font-size: 11px; color: var(--text-tertiary); }
+    .toc-week { font-size: 9px; font-family: var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mindaro); background: var(--yale); padding: 2px 8px; border-radius: 999px; display: inline-block; margin: 6px 0 4px; }
+
+    /* ─── Prose ───────────────────────────────────────── */
+    .post-prose section { margin-bottom: 3rem; }
+    .post-prose h2 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.025em; color: var(--text-primary); margin-bottom: 1rem; padding-top: 2.5rem; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .post-prose h2:first-child { border-top: none; padding-top: 0; }
+    .h2-num { font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.12em; padding: 3px 7px; border-radius: var(--radius-sm); background: var(--yale); color: var(--mindaro); white-space: nowrap; }
+    .week-divider { grid-column: 1/-1; display: flex; align-items: center; gap: 14px; margin: 1rem 0 0.5rem; }
+    .week-label { font-size: 11px; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; background: var(--yale); color: var(--mindaro); padding: 4px 14px; border-radius: 999px; white-space: nowrap; }
+    .week-line { flex: 1; height: 1px; background: var(--border); }
+    .post-prose h3 { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 1.75rem 0 0.6rem; }
+    .post-prose p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; }
+    .post-prose p:last-child { margin-bottom: 0; }
+    .post-prose strong { color: var(--text-primary); font-weight: 600; }
+    .post-prose em { font-style: italic; }
+
+    /* ─── Callout ─────────────────────────────────────── */
+    .callout { border-left: 3px solid var(--airforce); background: var(--bg-surface); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1rem 1.25rem; margin: 1.25rem 0; font-size: 14px; color: var(--text-secondary); line-height: 1.75; }
+    .callout.sage     { border-left-color: var(--sage); }
+    .callout.mindaro  { border-left-color: var(--mindaro); background: var(--bg-raised); }
+    .callout.yale     { border-left-color: var(--yale); }
+    .callout strong   { color: var(--text-primary); }
+
+    /* ─── Pull quote ──────────────────────────────────── */
+    .pull-quote { background: var(--yale); color: var(--dark-text); border-radius: var(--radius-lg); padding: 1.75rem 2rem; margin: 1.5rem 0; position: relative; overflow: hidden; }
+    .pull-quote::before { content: '"'; position: absolute; top: -20px; left: 12px; font-size: 9rem; font-weight: 800; line-height: 1; color: var(--mindaro); opacity: 0.18; font-family: Georgia,serif; pointer-events: none; }
+    .pull-quote-text { font-size: 1.05rem; font-weight: 700; line-height: 1.6; color: var(--dark-text); position: relative; z-index: 1; }
+    .pull-quote-text em { color: var(--mindaro); font-style: normal; }
+    .pull-quote-attr { display: block; margin-top: 10px; font-size: 11px; color: rgba(203,223,144,0.55); font-family: var(--font-mono); letter-spacing: 0.08em; position: relative; z-index: 1; }
+
+    /* ─── Inline list ─────────────────────────────────── */
+    .ilist { list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 0.75rem 0 1rem; }
+    .ilist li { font-size: 14px; color: var(--text-secondary); padding-left: 18px; position: relative; line-height: 1.65; }
+    .ilist li::before { content: '▸'; position: absolute; left: 0; color: var(--airforce); font-size: 10px; top: 3px; }
+    .ilist li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Stat strip ──────────────────────────────────── */
+    .stat-strip { display: grid; grid-template-columns: repeat(3,1fr); background: var(--yale); border-radius: var(--radius-lg); overflow: hidden; margin: 1.5rem 0; }
+    .stat-cell { padding: 1.75rem 1.25rem; text-align: center; border-right: 1px solid rgba(203,223,144,0.1); }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 8px; }
+    .stat-val.m { color: var(--mindaro); }
+    .stat-val.s { color: var(--sage); }
+    .stat-val.c { color: var(--cambridge); }
+    .stat-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-family: var(--font-mono); color: rgba(203,223,144,0.45); }
+
+    /* ─── Application cards ───────────────────────────── */
+    .app-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1.25rem 0; }
+    .app-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem; border-top: 3px solid var(--airforce); }
+    .app-card.sage  { border-top-color: var(--sage); }
+    .app-card.cambridge { border-top-color: var(--cambridge); }
+    .app-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .app-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+    .app-card ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .app-card li { font-size: 12.5px; color: var(--text-secondary); padding-left: 12px; position: relative; line-height: 1.4; }
+    .app-card li::before { content: '·'; position: absolute; left: 3px; color: var(--airforce); font-weight: 700; }
+
+    /* ─── Limitation cards ────────────────────────────── */
+    .limit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1.25rem 0; }
+    .limit-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem 1.1rem; }
+    .limit-title { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .limit-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .limit-card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 0; }
+
+    /* ─── Prompt example box ──────────────────────────── */
+    .prompt-box { background: var(--yale); border-radius: var(--radius-md); padding: 1.1rem 1.3rem; margin: 0.75rem 0; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7; color: #d4e8cc; }
+    .prompt-box .pk { color: var(--mindaro); font-weight: 600; }
+    .prompt-box .pv { color: var(--sage); }
+    .prompt-label { font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 4px; }
+
+    /* ─── Steps list ──────────────────────────────────── */
+    .steps { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 1.25rem 0; }
+    .step { display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; background: var(--yale); color: var(--mindaro); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .step-body { font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; }
+    .step-body strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Table ───────────────────────────────────────── */
+    .tbl-wrap { overflow-x: auto; margin: 1.25rem 0; border-radius: var(--radius-md); border: 1px solid var(--border); }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th { background: var(--yale); color: var(--mindaro); padding: 10px 14px; text-align: left; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+    .tbl td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; line-height: 1.5; }
+    .tbl tr:last-child td { border-bottom: none; }
+    .tbl tr:nth-child(even) td { background: var(--bg-surface); }
+    .tbl td:first-child { font-weight: 600; color: var(--text-primary); }
+    .tbl .hl { color: var(--airforce); font-weight: 500; }
+
+    /* ─── Pipeline ────────────────────────────────────── */
+    .pipeline { display: flex; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); margin: 1.25rem 0; }
+    .pipe { flex: 1; padding: 1rem; background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+    .pipe:last-child { border-right: none; }
+    .pipe.active { background: var(--yale); }
+    .pipe-name { font-size: 12px; font-weight: 700; color: var(--text-primary); }
+    .pipe.active .pipe-name { color: var(--mindaro); }
+    .pipe-desc { font-size: 11.5px; color: var(--text-tertiary); line-height: 1.4; }
+    .pipe.active .pipe-desc { color: rgba(203,223,144,0.5); }
+
+    /* ─── Model size cards ────────────────────────────── */
+    .model-grid { display: flex; flex-direction: column; gap: 0; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); margin: 1.25rem 0; }
+    .model-row { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); background: #fff; }
+    .model-row:last-child { border-bottom: none; }
+    .model-size { width: 120px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; letter-spacing: -0.02em; border-right: 1px solid var(--border); padding: 12px; text-align: center; }
+    .model-size.s1 { color: var(--cambridge); background: rgba(127,156,150,0.08); }
+    .model-size.s2 { color: var(--airforce); background: rgba(77,124,138,0.08); }
+    .model-size.s3 { color: var(--yale); background: rgba(27,64,121,0.08); }
+    .model-body { padding: 12px 16px; flex: 1; }
+    .model-cap { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 4px; }
+    .model-ex { font-size: 11.5px; color: var(--text-tertiary); font-style: italic; }
+
+    /* ─── Responsible AI grid ─────────────────────────── */
+    .resp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1.25rem 0; }
+    .resp-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; text-align: center; }
+    .resp-icon { font-size: 1.5rem; margin-bottom: 8px; }
+    .resp-name { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .resp-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.45; }
+
+    /* ─── Footer ──────────────────────────────────────── */
+    footer { border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-tertiary); flex-wrap: wrap; gap: 10px; }
+    footer a { color: var(--text-tertiary); transition: color 0.15s; }
+    footer a:hover { color: var(--text-primary); }
+
+    /* ─── Responsive ──────────────────────────────────── */
+    @media (max-width: 900px) { .post-layout { grid-template-columns: 1fr; } .post-toc { display: none; } .app-grid, .limit-grid, .resp-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) { .nav-links { display: none; } .page { padding: 0 1rem 4rem; } .nav-inner { padding: 0 1rem; } .stat-strip { grid-template-columns: 1fr; } .pipeline { flex-direction: column; } .pipe { border-right: none; border-bottom: 1px solid var(--border); } }
+  </style>
+</head>
+<body>
+
+<!-- ─── Nav ──────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+    <ul class="nav-links">
+      <li><a href="https://sumitkant.github.io/blog.html" class="active">Blog</a></li>
+      <li><a href="https://sumitkant.github.io/bookshelf.html">Books &amp; Reading</a></li>
+      <li><a href="https://sumitkant.github.io/johnnysmusiclab.html">Music Lab</a></li>
+      <li><a href="https://sumitkant.github.io/deep-learning.html">AI Lab</a></li>
+      <li><a href="https://sumitkant.github.io/neuralnotework.html">My Second Brain</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ─── Banner SVG ──────────────────────────────────── -->
+  <div style="margin:3rem 0 0;border-radius:14px;overflow:hidden;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="100%" style="display:block;">
+      <defs>
+        <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"   stop-color="#1B4079"/>
+          <stop offset="40%"  stop-color="#4D7C8A"/>
+          <stop offset="75%"  stop-color="#7F9C96"/>
+          <stop offset="100%" stop-color="#8FAD88"/>
+        </linearGradient>
+        <linearGradient id="gs" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.05"/>
+          <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <pattern id="gd" width="28" height="28" patternUnits="userSpaceOnUse">
+          <circle cx="14" cy="14" r="1.1" fill="#CBDF90" opacity="0.18"/>
+        </pattern>
+      </defs>
+      <rect width="1100" height="300" fill="url(#gb)"/>
+      <rect width="1100" height="300" fill="url(#gd)"/>
+      <rect width="1100" height="300" fill="url(#gs)"/>
+      <!-- Concentric rings — AI landscape nod -->
+      <circle cx="820" cy="150" r="210" fill="none" stroke="#CBDF90" stroke-width="0.8" opacity="0.1"/>
+      <circle cx="820" cy="150" r="150" fill="none" stroke="#CBDF90" stroke-width="0.8" opacity="0.12"/>
+      <circle cx="820" cy="150" r="90"  fill="none" stroke="#CBDF90" stroke-width="1"   opacity="0.16"/>
+      <circle cx="820" cy="150" r="40"  fill="#CBDF90" opacity="0.12"/>
+      <circle cx="820" cy="150" r="16"  fill="#CBDF90" opacity="0.55"/>
+      <!-- Neural connections from centre -->
+      <g stroke="#CBDF90" stroke-width="0.9" opacity="0.2">
+        <line x1="820" y1="134" x2="760" y2="80"/>  <circle cx="760" cy="80"  r="5" fill="#CBDF90"/>
+        <line x1="836" y1="145" x2="910" y2="90"/>  <circle cx="910" cy="90"  r="5" fill="#8FAD88"/>
+        <line x1="836" y1="155" x2="920" y2="190"/> <circle cx="920" cy="190" r="5" fill="#7F9C96"/>
+        <line x1="820" y1="166" x2="780" y2="230"/> <circle cx="780" cy="230" r="5" fill="#CBDF90"/>
+        <line x1="804" y1="148" x2="720" y2="160"/> <circle cx="720" cy="160" r="5" fill="#8FAD88"/>
+        <!-- secondary -->
+        <line x1="760" y1="80"  x2="700" y2="50"/>  <circle cx="700" cy="50"  r="3.5" fill="#CBDF90" opacity="0.6"/>
+        <line x1="910" y1="90"  x2="970" y2="60"/>  <circle cx="970" cy="60"  r="3.5" fill="#8FAD88" opacity="0.6"/>
+        <line x1="920" y1="190" x2="990" y2="220"/> <circle cx="990" cy="220" r="3.5" fill="#7F9C96" opacity="0.6"/>
+      </g>
+      <!-- Eyebrow -->
+      <text x="60" y="96" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="11" font-weight="700" letter-spacing="3.5" fill="#CBDF90" opacity="0.65">ANDREW NG · DEEPLEARNING.AI · COURSERA</text>
+      <!-- Main title -->
+      <text x="58" y="155" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="50" font-weight="800" letter-spacing="-2" fill="#fff" opacity="0.96">Generative AI</text>
+      <text x="58" y="208" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="50" font-weight="800" letter-spacing="-2" fill="#CBDF90" opacity="0.97">for Everyone</text>
+      <!-- Underline -->
+      <rect x="58" y="218" width="420" height="3" rx="1.5" fill="#8FAD88" opacity="0.6"/>
+      <!-- Date -->
+      <text x="58" y="252" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="11" font-weight="400" letter-spacing="1.5" fill="#fff" opacity="0.3">3 WEEKS · MARCH 2024 · ANDREW NG</text>
+    </svg>
+  </div>
+
+  <!-- ─── Post Hero ─────────────────────────────────────── -->
+  <header class="post-hero">
+    <p class="hero-eyebrow">Course Notes · Generative AI · March 2024</p>
+    <h1 class="hero-title">Generative AI <strong>for Everyone</strong></h1>
+    <p class="hero-sub">My notes from Andrew Ng's Coursera course — a non-technical deep dive into what generative AI is, how it works, where it fits in the AI landscape, and what it means for business and society.</p>
+  </header>
+
+  <!-- ─── Meta ─────────────────────────────────────────── -->
+  <div class="post-meta">
+    <span class="meta-tag yale">Generative AI</span>
+    <span class="meta-tag airforce">LLMs</span>
+    <span class="meta-tag sage">Business</span>
+    <span class="meta-tag">Coursera</span>
+    <span class="meta-dot">·</span>
+    <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--text-tertiary);padding-left:0;">Andrew Ng · March 16, 2024 · 3 weeks</span>
+  </div>
+
+  <!-- ─── Layout ───────────────────────────────────────── -->
+  <div class="post-layout">
+  <article class="post-prose">
+
+    <!-- ════════════════ WEEK 1 ════════════════ -->
+    <div class="week-divider"><span class="week-label">Week 1</span><div class="week-line"></div></div>
+
+    <!-- 01 What is GenAI -->
+    <section id="what-is">
+      <h2><span class="h2-num">01</span> What is Generative AI?</h2>
+      <p><strong>Generative AI is a class of AI systems that can produce high-quality content</strong> — specifically text, images, and audio. Examples include ChatGPT, Bard, and BingChat.</p>
+
+      <div class="stat-strip">
+        <div class="stat-cell"><div class="stat-val m">$4.4T</div><div class="stat-lbl">Added annually to economy</div></div>
+        <div class="stat-cell"><div class="stat-val s">7%</div><div class="stat-lbl">Global GDP rise in 10 yrs</div></div>
+        <div class="stat-cell"><div class="stat-val c">80%</div><div class="stat-lbl">US workers with tasks impacted</div></div>
+      </div>
+
+      <p>AI has been mentioned on 38% of S&amp;P 500 earnings calls as of early 2024 — the most mentions in tech, followed by energy. Generative AI as a <strong>developer tool</strong> will be even more impactful in the long term. AI is already pervasive: Google and Bing for web search, fraud detection in credit card payments, recommender systems on Amazon and Netflix.</p>
+
+      <div class="callout sage">
+        <strong>AI is a general purpose technology</strong> — like electricity or the internet. Asking "what is AI useful for?" is like asking what electricity is good for. The answer is: everything.
+      </div>
+    </section>
+
+    <!-- 02 How GenAI works -->
+    <section id="how-works">
+      <h2><span class="h2-num">02</span> How Generative AI Works</h2>
+
+      <h3>Where it fits in the AI landscape</h3>
+      <p>Think of AI as a toolbox. Supervised learning is the most important existing tool. Generative AI is the newest addition. The toolbox also contains unsupervised learning and reinforcement learning.</p>
+
+      <!-- AI Landscape Venn SVG -->
+      <svg viewBox="0 0 560 260" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:520px;margin:1.25rem auto;border-radius:12px;background:#fff;border:1px solid var(--border);" aria-label="AI landscape diagram">
+        <!-- Outer AI circle -->
+        <circle cx="260" cy="130" r="118" fill="none" stroke="#1B4079" stroke-width="2"/>
+        <text x="150" y="60"  font-family="'Plus Jakarta Sans',system-ui" font-size="13" font-weight="700" fill="#1B4079">AI</text>
+        <!-- Supervised learning — large blob -->
+        <ellipse cx="230" cy="145" rx="78" ry="68" fill="#4D7C8A" opacity="0.18"/>
+        <text x="185" y="165" font-family="'Plus Jakarta Sans',system-ui" font-size="11" fill="#4D7C8A" font-weight="600" text-anchor="middle">Supervised</text>
+        <text x="185" y="180" font-family="'Plus Jakarta Sans',system-ui" font-size="11" fill="#4D7C8A" font-weight="600" text-anchor="middle">learning</text>
+        <!-- GenAI -->
+        <circle cx="330" cy="105" r="32" fill="#1B4079" opacity="0.25"/>
+        <text x="330" y="100" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#1B4079" font-weight="700" text-anchor="middle">Generative</text>
+        <text x="330" y="114" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#1B4079" font-weight="700" text-anchor="middle">AI ✦</text>
+        <!-- Unsupervised -->
+        <circle cx="340" cy="168" r="22" fill="#8FAD88" opacity="0.4"/>
+        <text x="340" y="165" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="#2d5a3a" font-weight="600" text-anchor="middle">Unsupervised</text>
+        <text x="340" y="176" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="#2d5a3a" font-weight="600" text-anchor="middle">learning</text>
+        <!-- Reinforcement -->
+        <circle cx="316" cy="210" r="14" fill="#CBDF90" opacity="0.8"/>
+        <text x="316" y="230" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="#5a6a20" font-weight="600" text-anchor="middle">RL</text>
+        <!-- Arrow to GenAI -->
+        <path d="M430 65 L360 100" stroke="#1B4079" stroke-width="1.5" marker-end="url(#arr)" opacity="0.5"/>
+        <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#1B4079" stroke-width="1.2"/></marker></defs>
+        <text x="435" y="62" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#1B4079" opacity="0.6">newest tool</text>
+      </svg>
+
+      <h3>Supervised Learning</h3>
+      <p>Given an input (A), the model learns to predict an output (B). A decade of large-scale supervised learning laid the foundation for generative AI. Early models were small; researchers discovered that <strong>larger models with more data continue to improve</strong>, which unlocked LLMs.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Input (A)</th><th>Output (B)</th><th>Application</th></tr></thead>
+          <tbody>
+            <tr><td>Email</td><td>Spam? (0/1)</td><td>Spam filtering</td></tr>
+            <tr><td>Ad, user info</td><td>Click? (0/1)</td><td>Online advertising</td></tr>
+            <tr><td>X-ray image</td><td>Diagnosis</td><td>Healthcare</td></tr>
+            <tr><td>Audio recording</td><td>Text transcript</td><td>Speech recognition</td></tr>
+            <tr><td>Restaurant reviews</td><td>Sentiment (pos/neg)</td><td>Reputation monitoring</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Large Language Models (LLMs)</h3>
+      <p>LLMs are built by using supervised learning to <strong>repeatedly predict the next word</strong>. Train on hundreds of billions of words and you get ChatGPT.</p>
+
+      <!-- Next-word prediction SVG -->
+      <svg viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:520px;margin:1rem 0;border-radius:10px;background:#fff;border:1px solid var(--border);">
+        <text x="280" y="28" font-family="'Plus Jakarta Sans',system-ui" font-size="13" font-weight="700" fill="#1B4079" text-anchor="middle">My favourite food is a bagel with cream cheese</text>
+        <line x1="30" y1="36" x2="530" y2="36" stroke="#CBDF90" stroke-width="2"/>
+        <!-- rows -->
+        <g font-family="'Plus Jakarta Sans',system-ui" font-size="12">
+          <text x="40"  y="65"  fill="#4D7C8A">My favourite food is a</text>   <text x="440" y="65"  fill="#1B4079" font-weight="700">→ bagel</text>
+          <text x="40"  y="90"  fill="#4D7C8A">My favourite food is a bagel</text><text x="440" y="90"  fill="#1B4079" font-weight="700">→ with</text>
+          <text x="40"  y="115" fill="#4D7C8A">My favourite food is a bagel with</text><text x="440" y="115" fill="#1B4079" font-weight="700">→ cream</text>
+          <text x="40"  y="140" fill="#4D7C8A">My favourite food is a bagel with cream</text><text x="440" y="140" fill="#1B4079" font-weight="700">→ cheese</text>
+        </g>
+        <text x="280" y="168" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#7F9C96" text-anchor="middle">Input (A) → Output (B): next word prediction</text>
+      </svg>
+
+      <h3>LLM as a Thought Partner</h3>
+      <p>LLMs give us new ways to find information — like having a knowledgeable collaborator always on hand. They can brainstorm, rewrite, summarise, and reason. But they sometimes <strong>hallucinate</strong> — making up plausible-sounding but incorrect facts. Use trustworthy websites for high-stakes topics (health, legal); LLMs are better where less structured web information exists.</p>
+    </section>
+
+    <!-- 03 Applications -->
+    <section id="applications">
+      <h2><span class="h2-num">03</span> Generative AI Applications</h2>
+      <p>GenAI tasks fall into three broad modes. Across all of them, the more context you give, the better the output.</p>
+
+      <div class="app-grid">
+        <div class="app-card">
+          <div class="app-icon">✍️</div>
+          <div class="app-title">Writing</div>
+          <ul>
+            <li>Brainstorm product names or campaign ideas</li>
+            <li>Write press releases</li>
+            <li>Translation</li>
+            <li>Generate specific output with context</li>
+          </ul>
+        </div>
+        <div class="app-card sage">
+          <div class="app-icon">📖</div>
+          <div class="app-title">Reading</div>
+          <ul>
+            <li>Proof reading</li>
+            <li>Summarising long articles or call centre conversations</li>
+            <li>Customer email analysis and routing</li>
+            <li>Reputation monitoring over time</li>
+          </ul>
+        </div>
+        <div class="app-card cambridge">
+          <div class="app-icon">💬</div>
+          <div class="app-title">Chatting</div>
+          <ul>
+            <li>Specialised chatbots (travel, cooking, IT support)</li>
+            <li>Human-in-the-loop triage</li>
+            <li>Deploy internal-facing first, monitor before going public</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout">
+        Two types of LLM applications: <strong>Web apps</strong> (ChatGPT, BingChat — direct human interaction) and <strong>LLM-based software</strong> (identifying or processing text inside larger systems, like email classification pipelines).
+      </div>
+    </section>
+
+    <!-- 04 Limitations -->
+    <section id="limitations">
+      <h2><span class="h2-num">04</span> What LLMs Can and Cannot Do</h2>
+      <p>A useful mental model: <strong>think of an LLM as a fresh college graduate with lots of general knowledge but no company-specific context, no internet access, and no memory of past sessions</strong>. You get a different fresh graduate every conversation.</p>
+
+      <div class="limit-grid">
+        <div class="limit-card">
+          <div class="limit-title"><span class="limit-dot" style="background:var(--airforce)"></span>Knowledge Cutoff</div>
+          <p>The model's knowledge is frozen at training time — it won't have details on recent events.</p>
+        </div>
+        <div class="limit-card">
+          <div class="limit-title"><span class="limit-dot" style="background:var(--sage)"></span>Hallucinations</div>
+          <p>Ask it for Shakespeare quotes about Beyoncé and it will confidently invent them. Always verify factual claims.</p>
+        </div>
+        <div class="limit-card">
+          <div class="limit-title"><span class="limit-dot" style="background:var(--cambridge)"></span>Context Length</div>
+          <p>LLMs accept input + output of a limited combined length (the context window). Very long documents may not fit.</p>
+        </div>
+        <div class="limit-card">
+          <div class="limit-title"><span class="limit-dot" style="background:var(--yale)"></span>Structured Data</div>
+          <p>LLMs work best with unstructured data (text, images, audio). For tabular data, supervised learning is usually better.</p>
+        </div>
+        <div class="limit-card" style="grid-column:1/-1;">
+          <div class="limit-title"><span class="limit-dot" style="background:#c9a030"></span>Bias &amp; Toxicity</div>
+          <p>LLMs are trained on internet data, which carries societal biases. The model learns and can reproduce those biases.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Prompting tips -->
+    <section id="prompting">
+      <h2><span class="h2-num">05</span> Tips for Prompting</h2>
+
+      <h3>1. Be detailed and specific</h3>
+      <p>Give sufficient context. Describe the task in detail. Vague prompt → vague output.</p>
+
+      <p class="prompt-label">Initial prompt</p>
+      <div class="prompt-box">Help me write an email asking to be assigned to the legal documents project</div>
+      <p class="prompt-label">With context + detail</p>
+      <div class="prompt-box">Help me write an email asking to be assigned to the legal documents project. <span class="pv">I'm applying for a job on the legal documents project, which will check legal documents using LLMs. I have ample experience prompting LLMs to generate accurate text in a professional tone.</span>
+<span class="pk">Write a paragraph explaining why my background makes me a strong candidate.</span></div>
+
+      <h3>2. Guide the model to think through its answer</h3>
+      <p>Add explicit steps to the prompt so the model follows a structured reasoning path.</p>
+
+      <p class="prompt-label">Final prompt</p>
+      <div class="prompt-box">Brainstorm 5 names for a new cat toy
+<span class="pk">Step 1:</span> <span class="pv">Come up with 5 fun, joyful words that relate to cats.</span>
+<span class="pk">Step 2:</span> <span class="pv">For each word, come up with a rhyming name for a toy.</span>
+<span class="pk">Step 3:</span> <span class="pv">For each toy name, add a fun, relevant emoji.</span></div>
+
+      <h3>3. Experiment and iterate</h3>
+      <ul class="ilist">
+        <li>There are no perfect prompts — adjust and improve until results are satisfactory</li>
+        <li><strong>Don't overthink</strong> the initial prompt; just start</li>
+        <li>Be careful with confidential information</li>
+        <li>Always double-check before fully trusting the output</li>
+      </ul>
+    </section>
+
+    <!-- 06 Image Generation -->
+    <section id="image-gen">
+      <h2><span class="h2-num">06</span> Image Generation — Diffusion Models</h2>
+      <p>Image generation is mostly done via <strong>Diffusion Models</strong> — a supervised learning approach at heart. Training: take a clean image + caption, progressively add noise across steps. The model learns to predict a less noisy image from a noisier one. Generation works in reverse: start from pure noise + a text prompt and iteratively denoise until a clean image appears (typically ~100 steps).</p>
+
+      <!-- Diffusion model SVG -->
+      <svg viewBox="0 0 560 110" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:520px;margin:1rem 0;border-radius:10px;background:#fff;border:1px solid var(--border);">
+        <defs>
+          <pattern id="noise1" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#f0f5ee"/><circle cx="1" cy="1" r="0.8" fill="#4D7C8A" opacity="0.5"/><circle cx="3" cy="3" r="0.8" fill="#8FAD88" opacity="0.4"/></pattern>
+          <pattern id="noise2" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#e4ede1"/><circle cx="2" cy="2" r="1.2" fill="#1B4079" opacity="0.35"/></pattern>
+          <pattern id="noise3" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#d6e3d2"/><circle cx="3" cy="3" r="1.5" fill="#4D7C8A" opacity="0.25"/></pattern>
+        </defs>
+        <!-- Training direction (left = clean, right = noisy) -->
+        <text x="280" y="18" font-family="'Plus Jakarta Sans',system-ui" font-size="10" font-weight="700" fill="#1B4079" text-anchor="middle" letter-spacing="1">TRAINING: add noise →    GENERATION: remove noise ←</text>
+        <!-- 4 image stages -->
+        <g>
+          <rect x="30"  y="28" width="70" height="60" rx="4" fill="#CBDF90" opacity="0.7"/>
+          <text x="65"  y="62" font-family="'Plus Jakarta Sans',system-ui" font-size="18" text-anchor="middle">🍎</text>
+          <text x="65"  y="100" font-family="'Plus Jakarta Sans',system-ui" font-size="8.5" fill="#1B4079" text-anchor="middle" font-weight="600">Clean</text>
+        </g>
+        <text x="115" y="60" fill="#7F9C96" font-size="16" font-family="'Plus Jakarta Sans',system-ui">→</text>
+        <g>
+          <rect x="128" y="28" width="70" height="60" rx="4" fill="url(#noise3)"/>
+          <text x="163" y="100" font-family="'Plus Jakarta Sans',system-ui" font-size="8.5" fill="#4D7C8A" text-anchor="middle">Light noise</text>
+        </g>
+        <text x="213" y="60" fill="#7F9C96" font-size="16" font-family="'Plus Jakarta Sans',system-ui">→</text>
+        <g>
+          <rect x="226" y="28" width="70" height="60" rx="4" fill="url(#noise2)"/>
+          <text x="261" y="100" font-family="'Plus Jakarta Sans',system-ui" font-size="8.5" fill="#4D7C8A" text-anchor="middle">More noise</text>
+        </g>
+        <text x="311" y="60" fill="#7F9C96" font-size="16" font-family="'Plus Jakarta Sans',system-ui">→</text>
+        <g>
+          <rect x="324" y="28" width="70" height="60" rx="4" fill="url(#noise1)"/>
+          <text x="359" y="100" font-family="'Plus Jakarta Sans',system-ui" font-size="8.5" fill="#4D7C8A" text-anchor="middle">Pure noise</text>
+        </g>
+        <!-- Prompt label -->
+        <text x="450" y="50" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#1B4079" font-weight="600">"red apple"</text>
+        <text x="450" y="65" font-family="'Plus Jakarta Sans',system-ui" font-size="9.5" fill="#4D7C8A">+ noisy image</text>
+        <text x="450" y="80" font-family="'Plus Jakarta Sans',system-ui" font-size="9.5" fill="#4D7C8A">→ less noisy</text>
+      </svg>
+    </section>
+
+    <!-- ════════════════ WEEK 2 ════════════════ -->
+    <div class="week-divider"><span class="week-label">Week 2</span><div class="week-line"></div></div>
+
+    <!-- 07 Software applications -->
+    <section id="software">
+      <h2><span class="h2-num">07</span> Using GenAI in Software Applications</h2>
+      <p>Before GenAI, building a reading, writing, or chatbot app required months of ML engineering. Now a working prototype can be built in hours or days. Example — a reputation monitoring system:</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Approach</th><th>Steps</th><th>Time</th></tr></thead>
+          <tbody>
+            <tr><td>Traditional ML</td><td>Label data → train model → cloud deployment</td><td class="hl">Months</td></tr>
+            <tr><td>Prompt-based</td><td>Write a prompt classifying review sentiment → call LLM API</td><td class="hl">Hours / days</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 08 Project Lifecycle -->
+    <section id="lifecycle">
+      <h2><span class="h2-num">08</span> Lifecycle of a Generative AI Project</h2>
+      <p>Building GenAI applications is a <strong>highly empirical, iterative process</strong> — not a straight line from idea to deployment.</p>
+
+      <div class="pipeline">
+        <div class="pipe active"><div class="pipe-name">1. Scope</div><div class="pipe-desc">Decide what the software can do</div></div>
+        <div class="pipe"><div class="pipe-name">2. Build</div><div class="pipe-desc">Initial prototype in 1–2 days</div></div>
+        <div class="pipe"><div class="pipe-name">3. Evaluate</div><div class="pipe-desc">Catch counterintuitive cases, improve</div></div>
+        <div class="pipe"><div class="pipe-name">4. Deploy</div><div class="pipe-desc">Monitor; loop back to step 2 or 3</div></div>
+      </div>
+    </section>
+
+    <!-- 09 RAG -->
+    <section id="rag">
+      <h2><span class="h2-num">09</span> Retrieval Augmented Generation (RAG)</h2>
+      <p>RAG lets an LLM answer questions using <strong>specific documents you provide</strong> at query time, rather than relying purely on its training knowledge. Think of the LLM as a reasoning engine, not a knowledge store.</p>
+
+      <!-- RAG flow SVG -->
+      <svg viewBox="0 0 560 90" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:520px;margin:1rem 0;border-radius:10px;background:#fff;border:1px solid var(--border);">
+        <g font-family="'Plus Jakarta Sans',system-ui" font-size="11">
+          <rect x="20"  y="25" width="100" height="36" rx="6" fill="#CBDF90" opacity="0.7"/>
+          <text x="70"  y="47" fill="#1B4079" font-weight="700" text-anchor="middle">Question</text>
+          <path d="M125 43 L155 43" stroke="#4D7C8A" stroke-width="1.5" marker-end="url(#a2)"/>
+          <rect x="158" y="25" width="120" height="36" rx="6" fill="#e4ede1"/>
+          <text x="218" y="43" fill="#1B4079" font-weight="700" text-anchor="middle">Search Docs</text>
+          <path d="M282 43 L312 43" stroke="#4D7C8A" stroke-width="1.5" marker-end="url(#a2)"/>
+          <rect x="315" y="25" width="120" height="36" rx="6" fill="#e4ede1"/>
+          <text x="375" y="43" fill="#1B4079" font-weight="700" text-anchor="middle">New Prompt</text>
+          <path d="M439 43 L469 43" stroke="#4D7C8A" stroke-width="1.5" marker-end="url(#a2)"/>
+          <rect x="472" y="25" width="68" height="36" rx="6" fill="#1B4079"/>
+          <text x="506" y="43" fill="#CBDF90" font-weight="700" text-anchor="middle">Answer</text>
+          <defs><marker id="a2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#4D7C8A" stroke-width="1.2"/></marker></defs>
+        </g>
+        <text x="218" y="80" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="#7F9C96" text-anchor="middle">Retrieved text injected into prompt → LLM reasons over it</text>
+      </svg>
+
+      <h3>RAG Applications</h3>
+      <ul class="ilist">
+        <li><strong>Chat with PDFs</strong> — PDF.ai, ChatPDF, AskYourPDF, docAnalyzer.ai</li>
+        <li><strong>Article Q&amp;A</strong> — CourseraCoach, Snapchat AI, Hubspot chatbot</li>
+        <li><strong>New web search forms</strong> — BingChat, You.com</li>
+      </ul>
+    </section>
+
+    <!-- 10 Fine-tuning & Pretraining -->
+    <section id="finetuning">
+      <h2><span class="h2-num">10</span> Fine-tuning, Pretraining &amp; Model Choices</h2>
+
+      <h3>Fine-tuning</h3>
+      <p>Useful when the context is bigger than the input context length, or when the LLM needs domain-specific language (medical notes, legal, financial documents). Allows a <strong>smaller model to match a larger one</strong> on a specific task — lower cost, lower latency, runs on-device.</p>
+
+      <h3>Pretraining</h3>
+      <ul class="ilist">
+        <li>Expensive — requires <strong>$10M+</strong>, many months, and vast data</li>
+        <li><strong>When in doubt: don't do it.</strong> Should be a last resort.</li>
+        <li>BloombergGPT was trained on 50B+ parameters of proprietary Bloomberg data — outperforms open-source GPTs on financial text</li>
+      </ul>
+
+      <h3>Model Size</h3>
+      <div class="model-grid">
+        <div class="model-row">
+          <div class="model-size s1">1B</div>
+          <div class="model-body">
+            <div class="model-cap">Pattern matching and basic world knowledge</div>
+            <div class="model-ex">e.g. Restaurant review sentiment classifier</div>
+          </div>
+        </div>
+        <div class="model-row">
+          <div class="model-size s2">10B</div>
+          <div class="model-body">
+            <div class="model-cap">Greater world knowledge, can follow basic instructions</div>
+            <div class="model-ex">e.g. Food order chatbot</div>
+          </div>
+        </div>
+        <div class="model-row">
+          <div class="model-size s3">100B+</div>
+          <div class="model-body">
+            <div class="model-cap">Rich world knowledge, complex reasoning</div>
+            <div class="model-ex">e.g. Brainstorming partner, complex Q&amp;A</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Closed vs Open Source</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th></th><th>Closed Source</th><th>Open Source</th></tr></thead>
+          <tbody>
+            <tr><td>Access</td><td>Via cloud API — easy to integrate</td><td>Full control, run on own hardware</td></tr>
+            <tr><td>Power</td><td class="hl">Generally more powerful/large</td><td>Rapidly catching up</td></tr>
+            <tr><td>Cost</td><td>Relatively inexpensive (contributed by large cos.)</td><td>Infra costs shift to you</td></tr>
+            <tr><td>Risk</td><td>Vendor lock-in — switching means re-running all prompts</td><td>Full data and privacy control</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Instruction Fine-tuning &amp; RLHF</h3>
+      <p>A base LLM predicts the next word — if you ask "What is the capital of France?" it might respond with another question (the most common continuation in training data). <strong>Instruction fine-tuning</strong> trains it on Q&amp;A pairs to follow instructions instead. <strong>RLHF</strong> (Reinforcement Learning with Human Feedback) goes further: train a reward model on human preference scores, then tune the LLM to generate responses the reward model rates highly. Companies use RLHF to make LLMs <em>Helpful, Honest, and Harmless</em> (the 3 Hs).</p>
+
+      <h3>Tool Use &amp; Agents</h3>
+      <ul class="ilist">
+        <li><strong>Tools</strong> — LLMs can call external functions (place an order, run a calculation). LLMs are bad at precise math; a calculator tool solves this by letting the model offload computation and receive the result</li>
+        <li><strong>Agents</strong> — use LLMs to carry out complex sequences of actions autonomously. Cutting-edge research area, evolving rapidly</li>
+      </ul>
+    </section>
+
+    <!-- 11 Cost intuition -->
+    <section id="cost">
+      <h2><span class="h2-num">11</span> Cost Intuition</h2>
+      <p>Pricing is based on <strong>input + output tokens</strong>. Output tokens are generally more expensive. A token is roughly ¾ of a word — 300 words ≈ 400 tokens. Common short words ("the", "a") count as 1 token; longer words split ("program" + "ming").</p>
+
+      <div class="callout sage">
+        <strong>Back-of-envelope:</strong> Keeping an adult occupied for 1 hour (250 words/min reading speed) = 15,000 output words + 15,000 prompt words = 30,000 words = ~40,000 tokens. At $0.002/1K tokens → <strong>$0.08 total</strong>. Genuinely inexpensive at scale.
+      </div>
+    </section>
+
+    <!-- ════════════════ WEEK 3 ════════════════ -->
+    <div class="week-divider"><span class="week-label">Week 3</span><div class="week-line"></div></div>
+
+    <!-- 12 GenAI & Business -->
+    <section id="business">
+      <h2><span class="h2-num">12</span> Generative AI &amp; Business</h2>
+
+      <h3>Day-to-day uses</h3>
+      <ul class="ilist">
+        <li><strong>Writing assistant &amp; thought partner</strong> — drafting, editing, ideating</li>
+        <li><strong>Marketing</strong> — brainstorming email campaigns, ad copy</li>
+        <li><strong>Recruiting</strong> — summarising candidate reviews in 50 words or less</li>
+        <li><strong>Programming</strong> — writing Python, debugging, documentation</li>
+      </ul>
+
+      <h3>Task Analysis Framework</h3>
+      <p>AI doesn't automate <em>jobs</em> — it automates <em>tasks</em>. Most jobs are a collection of many tasks. The framework: list the tasks in a role → assess each for GenAI potential along two dimensions:</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Technical Feasibility</th><th>Business Value</th></tr></thead>
+          <tbody>
+            <tr><td>Can AI do it? At what cost?</td><td>How much time is spent on this task?</td></tr>
+            <tr><td>Think: fresh grad following prompt instructions</td><td>Does doing it faster/cheaper create real value?</td></tr>
+            <tr><td>If unsure, try prompting an LLM to test it</td><td>Does doing this more consistently unlock new revenue?</td></tr>
+            <tr><td>An ML engineer can assess RAG/fine-tuning feasibility</td><td>Look beyond cost savings — workflow expansion matters</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Augmentation vs Automation</h3>
+      <ul class="ilist">
+        <li><strong>Augmentation</strong> — AI helps a human do the task faster (human-in-the-loop)</li>
+        <li><strong>Automation</strong> — AI performs the task autonomously once trust is established</li>
+      </ul>
+
+      <h3>Job impacts across roles</h3>
+      <ul class="ilist">
+        <li><strong>Programmer</strong> — writing code and documentation: high potential. Reviewing others' code, gathering requirements: lower</li>
+        <li><strong>Lawyer</strong> — drafting and reviewing documents, interpreting regulations: high potential. Negotiating, reviewing evidence: lower</li>
+        <li><strong>Landscaper</strong> — most tasks: low potential. Physical roles remain less impacted than knowledge roles</li>
+      </ul>
+
+      <div class="callout mindaro">
+        <strong>Insight:</strong> Historically, automation hit low-wage jobs hardest. GenAI reverses this — <em>higher-wage knowledge workers</em> are now most exposed. Sales, marketing, software engineering, and customer operations will be most impacted.
+      </div>
+    </section>
+
+    <!-- 13 Teams -->
+    <section id="teams">
+      <h2><span class="h2-num">13</span> Teams to Build GenAI Software</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Role</th><th>Responsibility</th></tr></thead>
+          <tbody>
+            <tr><td>Software Engineer</td><td>Writes the app; ideally knows LLM basics</td></tr>
+            <tr><td>ML Engineer</td><td>Implements the AI system; familiar with prompting, RAG, fine-tuning</td></tr>
+            <tr><td>Product Manager</td><td>Identifies and scopes the project</td></tr>
+            <tr><td>Prompt Engineer</td><td>Usually not a standalone role — typically an ML engineer with extra skills</td></tr>
+            <tr><td>Data Engineer</td><td>Organises data, ensures data quality (larger teams)</td></tr>
+            <tr><td>Data Scientist</td><td>Analyses data and guides project/business decisions (larger teams)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>A one-person team can be a software engineer with prompting know-how, or an ML engineer. A two-person team: ML engineer + software engineer. Many configurations work — start lean and scale the team as the product complexity grows.</p>
+    </section>
+
+    <!-- 14 Society & Responsible AI -->
+    <section id="society">
+      <h2><span class="h2-num">14</span> Generative AI &amp; Society</h2>
+
+      <h3>Concerns about AI</h3>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>Will AI amplify human biases?</strong> Yes, it can reproduce biases in training data. Mitigations: fine-tuning with curated data and RLHF to train models on an unbiased reward model.</div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>Who loses their job?</strong> Geoff Hinton predicted in 2016 that radiologists would be replaced in 5 years. A decade later, not one has lost their job — because radiologists perform 30+ tasks and X-ray interpretation is just one. The correct framing: "AI won't replace radiologists. Radiologists who use AI will replace radiologists that don't." — Curtis Langlotz, Stanford.</div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>Human extinction?</strong> Arguments are not concrete. Perfect control isn't needed for technology to be valuable and safe — we can't control turbulence on aeroplanes, but we fly. AI will also be a key tool in solving real risks: climate change, pandemics.</div>
+        </li>
+      </ol>
+
+      <h3>Artificial General Intelligence (AGI)</h3>
+      <p>General-purpose AI ≠ Artificial General Intelligence. AGI by definition can do <em>any</em> intellectual task a human can — drive a car after 20 hours of practice, complete a PhD thesis in 5 years. <strong>Though AI is powerful and better than humans at specific tasks, expecting AGI-level performance is an extremely high bar</strong> and not where we are today.</p>
+
+      <h3>Responsible AI</h3>
+      <div class="resp-grid">
+        <div class="resp-card"><div class="resp-icon">⚖️</div><div class="resp-name">Fairness</div><div class="resp-desc">Ensure AI doesn't perpetuate or amplify biases</div></div>
+        <div class="resp-card"><div class="resp-icon">🔍</div><div class="resp-name">Transparency</div><div class="resp-desc">Make AI decisions understandable to those affected</div></div>
+        <div class="resp-card"><div class="resp-icon">🔒</div><div class="resp-name">Privacy</div><div class="resp-desc">Protect user data and confidentiality</div></div>
+        <div class="resp-card"><div class="resp-icon">🛡️</div><div class="resp-name">Security</div><div class="resp-desc">Safeguard systems from malicious attacks</div></div>
+        <div class="resp-card"><div class="resp-icon">🌱</div><div class="resp-name">Ethical Use</div><div class="resp-desc">Deploy AI only for beneficial purposes</div></div>
+        <div class="resp-card"><div class="resp-icon">🤝</div><div class="resp-name">Diverse Teams</div><div class="resp-desc">Include perspectives from all stakeholders</div></div>
+      </div>
+    </section>
+
+    <!-- 15 Closing -->
+    <section id="closing">
+      <h2><span class="h2-num">15</span> Building a More Intelligent World</h2>
+      <p>Intelligence is the power to apply knowledge and skills to make good decisions. Human intelligence is expensive — education, training, time. Artificial intelligence is cheap. <strong>AI has the potential to give every individual the ability to access intelligence at low cost.</strong></p>
+
+      <div class="pull-quote">
+        <p class="pull-quote-text">AI is the new electricity — with the potential to revolutionize all industries and all corners of human life. The fear of AI today is similar to the fear of electricity when it was new. <em>Today, nobody would give up light, heat, and refrigeration for fear of electrocution.</em></p>
+        <span class="pull-quote-attr">— Andrew Ng</span>
+      </div>
+
+      <p>Looking beyond AI, the world faces climate change, pandemics, and war. Solving them will require all the intelligence we can master — including artificial intelligence.</p>
+    </section>
+
+  </article>
+
+  <!-- ─── TOC ─────────────────────────────────────────── -->
+  <aside class="post-toc">
+    <p class="toc-label">On this page</p>
+    <ul class="toc-list">
+      <li><span class="toc-week">Week 1</span></li>
+      <li><a href="#what-is">What is Generative AI?</a></li>
+      <li><a href="#how-works">How Generative AI Works</a></li>
+      <li class="toc-sub"><a href="#how-works">AI landscape</a></li>
+      <li class="toc-sub"><a href="#how-works">Supervised learning</a></li>
+      <li class="toc-sub"><a href="#how-works">LLMs &amp; next-word prediction</a></li>
+      <li><a href="#applications">Applications</a></li>
+      <li class="toc-sub"><a href="#applications">Writing · Reading · Chatting</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+      <li class="toc-sub"><a href="#limitations">Hallucinations, context, bias</a></li>
+      <li><a href="#prompting">Prompting Tips</a></li>
+      <li><a href="#image-gen">Image Generation</a></li>
+      <li><span class="toc-week">Week 2</span></li>
+      <li><a href="#software">GenAI in Software</a></li>
+      <li><a href="#lifecycle">Project Lifecycle</a></li>
+      <li><a href="#rag">RAG</a></li>
+      <li><a href="#finetuning">Fine-tuning &amp; Pretraining</a></li>
+      <li class="toc-sub"><a href="#finetuning">Model size</a></li>
+      <li class="toc-sub"><a href="#finetuning">Closed vs open source</a></li>
+      <li class="toc-sub"><a href="#finetuning">RLHF &amp; Agents</a></li>
+      <li><a href="#cost">Cost Intuition</a></li>
+      <li><span class="toc-week">Week 3</span></li>
+      <li><a href="#business">GenAI &amp; Business</a></li>
+      <li class="toc-sub"><a href="#business">Task analysis framework</a></li>
+      <li class="toc-sub"><a href="#business">Augmentation vs automation</a></li>
+      <li><a href="#teams">Teams</a></li>
+      <li><a href="#society">Society &amp; Responsible AI</a></li>
+      <li class="toc-sub"><a href="#society">AGI</a></li>
+      <li class="toc-sub"><a href="#society">5 dimensions</a></li>
+      <li><a href="#closing">Building a Smarter World</a></li>
+    </ul>
+  </aside>
+  </div>
+</main>
+
+<footer class="page" style="padding-top:20px">
+  <span>© 2026 Sumit Kant</span>
+</footer>
+</body>
+</html>
