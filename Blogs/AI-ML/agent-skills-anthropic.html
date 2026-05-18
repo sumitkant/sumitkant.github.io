@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Notes from the Agent Skills with Anthropic course by DeepLearning.ai — what skills are, how they work, and when to use them." />
+  <title>Agent Skills with Anthropic — Sumit Kant</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ─── Design tokens (identical to bookshelf.html) ── */
+    :root {
+      --bg: #f2efe9;
+      --bg-surface: #eae7e0;
+      --bg-raised: #e2dfd8;
+      --bg-hover: #dedad2;
+      --border: rgba(0, 0, 0, 0.08);
+      --border-hover: rgba(0, 0, 0, 0.18);
+      --text-primary: #1a1a18;
+      --text-secondary: #6b6b65;
+      --text-tertiary: #a8a8a0;
+      --accent: #c85c2a;
+      --notes-bg: #1a1a18;
+      --notes-text: #f2efe9;
+      --star: #c9a84c;
+      --overlay: rgba(20, 18, 14, 0.84);
+      --stats-bg: #1c1a17;
+      --stats-divider: rgba(255, 255, 255, 0.10);
+      --stats-label: rgba(255, 255, 255, 0.45);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --prose-w: 720px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+
+    /* ─── Reset ─────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ─── Nav ────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(242, 239, 233, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-monogram {
+      width: 30px;
+      height: 30px;
+      background: var(--text-primary);
+      color: var(--bg);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      transition: color 0.15s;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+
+    .nav-links a.active {
+      font-weight: 500;
+    }
+
+    /* ─── Page wrapper ───────────────────────────────── */
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    /* ─── Course Banner ──────────────────────────────── */
+    .course-banner {
+      margin: 3rem 0 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: #c85c2a;
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .banner-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #c85c2a 0%, #a84520 50%, #8c3515 100%);
+    }
+
+    .banner-grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0.12;
+      background-image: repeating-linear-gradient(0deg, #fff 0, #fff 1px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(90deg, #fff 0, #fff 1px, transparent 1px, transparent 40px);
+    }
+
+    .banner-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .banner-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+
+    .banner-wordmark {
+      font-size: clamp(2.8rem, 8vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .banner-sub {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.65);
+      letter-spacing: 0.04em;
+    }
+
+    /* Network SVG decoration */
+    .banner-network {
+      position: absolute;
+      right: 4%;
+      bottom: 0;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    /* ─── Article hero ───────────────────────────────── */
+    .post-hero {
+      padding: 2.5rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+      max-width: var(--prose-w);
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    .hero-title strong {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+    }
+
+    /* ─── Meta row ───────────────────────────────────── */
+    .post-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      letter-spacing: 0.03em;
+      background: var(--bg-surface);
+    }
+
+    .meta-tag.accent-tag {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .meta-dot {
+      color: var(--text-tertiary);
+      font-size: 10px;
+    }
+
+    /* ─── Layout: sidebar TOC + prose ───────────────── */
+    .post-layout {
+      display: grid;
+      grid-template-columns: var(--prose-w) 1fr;
+      gap: 0 3rem;
+      align-items: start;
+      padding-top: 3rem;
+    }
+
+    .post-prose {
+      min-width: 0;
+    }
+
+    .post-toc {
+      position: sticky;
+      top: calc(var(--nav-h) + 1.5rem);
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--border);
+    }
+
+    .toc-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .toc-list a {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      transition: color 0.15s;
+      display: block;
+      line-height: 1.4;
+    }
+
+    .toc-list a:hover {
+      color: var(--accent);
+    }
+
+    .toc-list .toc-sub {
+      padding-left: 12px;
+    }
+
+    .toc-list .toc-sub a {
+      font-size: 11.5px;
+      color: var(--text-tertiary);
+    }
+
+    /* ─── Prose elements ─────────────────────────────── */
+    .post-prose section {
+      margin-bottom: 3rem;
+    }
+
+    .post-prose h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      margin-top: 0;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post-prose h2:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .h2-num {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      letter-spacing: 0.12em;
+      padding: 3px 7px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-raised);
+      white-space: nowrap;
+    }
+
+    .post-prose h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+      margin: 1.75rem 0 0.6rem;
+    }
+
+    .post-prose p {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .post-prose p:last-child {
+      margin-bottom: 0;
+    }
+
+    .post-prose strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .post-prose em {
+      font-style: italic;
+    }
+
+    /* ─── Code blocks ────────────────────────────────── */
+    .code-block {
+      background: var(--notes-bg);
+      color: #e8e4dc;
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .code-block .c-key {
+      color: #e5a87c;
+    }
+
+    .code-block .c-str {
+      color: #98c379;
+    }
+
+    .code-block .c-cmt {
+      color: #6a7fa8;
+    }
+
+    .code-block .c-head {
+      color: #c85c2a;
+      font-weight: 600;
+    }
+
+    .code-block .c-dim {
+      color: #555;
+    }
+
+    .code-filename {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    /* ─── Callout boxes ──────────────────────────────── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--bg-surface);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .callout strong {
+      color: var(--text-primary);
+    }
+
+    /* ─── Skill folder diagram ───────────────────────── */
+    .folder-diagram {
+      background: var(--notes-bg);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 2;
+      margin: 1.25rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .fd-dir {
+      color: #e5a87c;
+    }
+
+    .fd-file {
+      color: #98c379;
+    }
+
+    .fd-cmt {
+      color: #6a7fa8;
+    }
+
+    .fd-tree {
+      color: #555;
+    }
+
+    /* ─── Use-case cards ─────────────────────────────── */
+    .usecase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 1.25rem 0;
+    }
+
+    .usecase-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.25rem;
+    }
+
+    .usecase-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .usecase-card-label span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .usecase-card ul {
+      padding-left: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .usecase-card li {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .usecase-card li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 10px;
+      top: 1px;
+    }
+
+    /* ─── Architecture diagram ───────────────────────── */
+    .arch-diagram {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin: 1.25rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .arch-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .arch-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .arch-box.dark {
+      background: var(--notes-bg);
+      color: var(--notes-text);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .arch-box.accent {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .arch-box.muted {
+      background: var(--bg-raised);
+      color: var(--text-secondary);
+      font-weight: 400;
+      font-size: 12px;
+    }
+
+    .arch-arrow {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .arch-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+    }
+
+    .arch-row-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      min-width: 90px;
+      font-style: italic;
+    }
+
+    /* ─── Pipeline chain ─────────────────────────────── */
+    .pipeline {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 1.25rem 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .pipe-step {
+      flex: 1;
+      background: var(--bg-surface);
+      padding: 1rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+
+    .pipe-step+.pipe-step {
+      border-left: 1px solid var(--border);
+    }
+
+    .pipe-step-name {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .pipe-step-desc {
+      font-size: 10.5px;
+      color: var(--text-tertiary);
+      line-height: 1.4;
+    }
+
+    .pipe-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-raised);
+      padding: 0 6px;
+      color: var(--text-tertiary);
+      font-size: 12px;
+    }
+
+    /* ─── Comparison table ───────────────────────────── */
+    .comparison-table-wrap {
+      overflow-x: auto;
+      margin: 1.25rem 0;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .comparison-table th {
+      background: var(--notes-bg);
+      color: var(--notes-text);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .comparison-table th:first-child {
+      border-radius: var(--radius-sm) 0 0 0;
+    }
+
+    .comparison-table th:last-child {
+      border-radius: 0 var(--radius-sm) 0 0;
+    }
+
+    .comparison-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background: var(--bg-surface);
+    }
+
+    .comparison-table td:first-child {
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .comparison-table td.highlight {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* ─── Pill badges ────────────────────────────────── */
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0.75rem 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      background: var(--bg-surface);
+      font-family: var(--font-mono);
+      letter-spacing: 0.03em;
+    }
+
+    .pill.skill-pill {
+      background: var(--notes-bg);
+      color: #e8e4dc;
+      border-color: transparent;
+    }
+
+    /* ─── Progressive disclosure diagram ─────────────── */
+    .pd-diagram {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin: 1.25rem 0;
+    }
+
+    .pd-row {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pd-row:last-child {
+      border-bottom: none;
+    }
+
+    .pd-label-col {
+      width: 130px;
+      flex-shrink: 0;
+      padding: 14px 16px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+
+    .pd-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .pd-label.always {
+      color: var(--accent);
+    }
+
+    .pd-label.triggered {
+      color: var(--star);
+    }
+
+    .pd-label.ondemand {
+      color: #6a9fb5;
+    }
+
+    .pd-content {
+      padding: 14px 16px;
+      flex: 1;
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .pd-content code {
+      font-size: 11px;
+    }
+
+    /* ─── Skill vs comparison cards ─────────────────── */
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 1.25rem 0;
+    }
+
+    .vs-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      background: var(--bg-surface);
+    }
+
+    .vs-card-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vs-card-title .vs-icon {
+      font-size: 14px;
+    }
+
+    .vs-card p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 0.5rem;
+    }
+
+    .vs-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ─── Pre-built skills grid ──────────────────────── */
+    .prebuilt-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 1.25rem 0;
+    }
+
+    .prebuilt-card {
+      background: var(--notes-bg);
+      color: var(--notes-text);
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .prebuilt-ext {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    .prebuilt-name {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    footer a {
+      color: var(--text-tertiary);
+      transition: color 0.15s;
+    }
+
+    footer a:hover {
+      color: var(--text-primary);
+    }
+
+    /* ─── Responsive ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .post-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .post-toc {
+        display: none;
+      }
+
+      .usecase-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .prebuilt-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .vs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav-links {
+        display: none;
+      }
+
+      .page {
+        padding: 0 1rem 4rem;
+      }
+
+      .nav-inner {
+        padding: 0 1rem;
+      }
+
+      .prebuilt-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pipeline {
+        flex-direction: column;
+      }
+
+      .pipe-step+.pipe-step {
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ─── Navigation ─────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://sumitkant.github.io/blog.html" class="active">Blog</a></li>
+        <li><a href="https://sumitkant.github.io/bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="https://sumitkant.github.io/johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="https://sumitkant.github.io/deep-learning.html">AI Lab</a></li>
+        <li><a href="https://sumitkant.github.io/neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+
+    <!-- ─── Course Banner ───────────────────────────── -->
+    <div class="course-banner">
+      <div class="banner-bg"></div>
+      <div class="banner-grid"></div>
+      <!-- Network illustration -->
+      <svg class="banner-network" width="340" height="260" viewBox="0 0 340 260" fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <circle cx="170" cy="130" r="18" fill="#fff" />
+        <line x1="170" y1="112" x2="80" y2="60" stroke="#fff" stroke-width="2" />
+        <line x1="170" y1="112" x2="260" y2="60" stroke="#fff" stroke-width="2" />
+        <line x1="170" y1="148" x2="80" y2="200" stroke="#fff" stroke-width="2" />
+        <line x1="170" y1="148" x2="260" y2="200" stroke="#fff" stroke-width="2" />
+        <line x1="152" y1="130" x2="40" y2="130" stroke="#fff" stroke-width="2" />
+        <line x1="188" y1="130" x2="300" y2="130" stroke="#fff" stroke-width="2" />
+        <circle cx="80" cy="60" r="10" fill="#fff" />
+        <circle cx="260" cy="60" r="10" fill="#fff" />
+        <circle cx="80" cy="200" r="10" fill="#fff" />
+        <circle cx="260" cy="200" r="10" fill="#fff" />
+        <circle cx="40" cy="130" r="10" fill="#fff" />
+        <circle cx="300" cy="130" r="10" fill="#fff" />
+      </svg>
+      <div class="banner-content">
+        <p class="banner-eyebrow">DeepLearning.ai · May 2026</p>
+        <div class="banner-wordmark">ANTHROPIC</div>
+        <p class="banner-sub">Agent Skills with Anthropic — Course Notes</p>
+      </div>
+    </div>
+
+    <!-- ─── Post Hero ────────────────────────────────── -->
+    <header class="post-hero">
+      <p class="hero-eyebrow">Course Notes · Agentic AI</p>
+      <h1 class="hero-title">Agent <strong>Skills</strong> with Anthropic</h1>
+      <p class="hero-sub">
+        My notes from the DeepLearning.ai short course taught by Elie Schoppik. Skills are one of
+        the most practically useful ideas I've come across in agentic AI — a clean answer to the
+        question of how you make agents reliably do the same complex thing, over and over again.
+      </p>
+    </header>
+
+    <!-- ─── Meta ─────────────────────────────────────── -->
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">Agentic AI</span>
+      <span class="meta-tag">Claude</span>
+      <span class="meta-tag">Skills</span>
+      <span class="meta-tag">Agents</span>
+      <span class="meta-dot">·</span>
+      <span class="meta-tag"
+        style="background:transparent; border-color:transparent; color:var(--text-tertiary); padding-left:0;">
+        Instructor: Elie Schoppik &nbsp;·&nbsp; May 11, 2026
+      </span>
+    </div>
+
+    <!-- ─── Post Layout ───────────────────────────────── -->
+    <div class="post-layout">
+
+      <!-- ─── Prose ─────────────────────────────────── -->
+      <article class="post-prose">
+
+        <!-- Introduction -->
+        <section id="intro">
+          <h2><span class="h2-num">00</span> Introduction</h2>
+          <p>
+            This course covers how <strong>Agent Skills</strong> work, best practices for creating them,
+            and how to build skills across different use-cases — from marketing automation to code review
+            to multi-agent research pipelines.
+          </p>
+          <p>By the end, you'll be able to:</p>
+          <div class="pill-row">
+            <span class="pill">📦 Create skills from scratch</span>
+            <span class="pill">🔗 Combine skills with MCP &amp; sub-agents</span>
+            <span class="pill">📊 Build data analysis workflows</span>
+            <span class="pill">🧪 Review &amp; test code with skills</span>
+            <span class="pill">🔍 Build research agents with the Agent SDK</span>
+          </div>
+        </section>
+
+        <!-- What are Skills -->
+        <section id="what-are-skills">
+          <h2><span class="h2-num">01</span> What are Skills?</h2>
+          <div class="callout">
+            <strong>Skills are folders of instructions</strong> that extend your agent's capabilities with
+            specialised knowledge or new capabilities.
+          </div>
+          <p>
+            A skill lives on the filesystem as a directory with a mandatory <code>SKILL.md</code> file
+            and optional supporting directories for scripts, references, and assets.
+          </p>
+
+          <div class="code-filename">📁 my-skill/</div>
+          <div class="folder-diagram">
+            <span class="fd-dir">my-skill/</span>
+            <span class="fd-tree">├── </span><span class="fd-file">SKILL.md</span> <span class="fd-cmt"># Required:
+              metadata + instructions</span>
+            <span class="fd-tree">├── </span><span class="fd-dir">scripts/</span> <span class="fd-cmt"># Optional:
+              executable code</span>
+            <span class="fd-tree">├── </span><span class="fd-dir">references/</span> <span class="fd-cmt"># Optional:
+              documentation</span>
+            <span class="fd-tree">├── </span><span class="fd-dir">assets/</span> <span class="fd-cmt"># Optional:
+              templates, resources</span>
+            <span class="fd-tree">└── </span><span class="fd-dim">...</span> <span class="fd-cmt"># Any additional
+              files</span>
+          </div>
+
+          <h3>SKILL.md — the entry point</h3>
+          <p>
+            Every skill begins with a <code>SKILL.md</code> file containing a YAML frontmatter block
+            with a <code>name</code> and <code>description</code>, followed by the main instructions
+            in markdown. The instructions can reference additional files in <code>references/</code>
+            or scripts in <code>scripts/</code>.
+          </p>
+
+          <div class="code-filename">📄 SKILL.md</div>
+          <div class="code-block">
+            <span class="c-dim">---</span>
+            <span class="c-key">name:</span> <span class="c-str">analyzing-marketing-campaign</span>
+            <span class="c-key">description:</span> <span class="c-str">Analyze weekly marketing campaign performance
+              across channels. Use when analyzing multi-channel digital
+              marketing data to calculate funnel metrics and compare to
+              benchmarks, compute cost and revenue efficiency metrics,
+              or get budget reallocation recommendations.</span>
+            <span class="c-dim">---</span>
+
+            <span class="c-head"># Marketing Campaign Analysis</span>
+            Automated analysis of multi-channel marketing campaign data
+
+            <span class="c-head">## Input</span>
+            Excel/CSV with columns: **Date, Campaign_Name, Channel, Segment,
+            Impressions, Clicks, Conversions, Spend, Revenue, Orders**
+
+            <span class="c-head">## Funnel Metrics (per channel)</span>
+            - **CTR** = Clicks / Impressions × 100
+            - **CVR** = Conversions / Clicks × 100
+
+            <span class="c-head">## References</span>
+            Reference to <span class="c-str">`references/budget_reallocation_rules.md`</span>
+          </div>
+
+          <h3>Naming conventions</h3>
+          <p>
+            The folder name should match the <code>name</code> field in the frontmatter.
+            Use lowercase letters separated by dashes (e.g. <code>analyzing-marketing-campaign</code>),
+            and avoid reserved keywords like <em>claude</em>, <em>anthropic</em>, or <em>chatgpt</em>.
+          </p>
+
+          <h3>How to use a skill?</h3>
+          <p>
+            To use a skill, an agent needs two basic tools: <strong>filesystem access</strong> (to read and write files)
+            and a <strong>bash tool</strong> (to execute code). These let the agent execute whatever
+            a skill requires. From there, skills can be combined with MCP servers and sub-agents to
+            build powerful agentic workflows.
+          </p>
+          <p>
+            For example, an agent can pull data via MCP and then rely on a skill to determine what
+            to do with that data — how to compute metrics, apply rules, and format outputs. It can
+            also delegate tasks to sub-agents with isolated context, which can themselves use skills
+            for specialised knowledge.
+          </p>
+        </section>
+
+        <!-- When to use -->
+        <section id="when-to-use">
+          <h2><span class="h2-num">02</span> When to Use a Skill?</h2>
+          <p>Skills are the right tool when you have any of these situations:</p>
+          <div class="arch-diagram">
+            <div class="arch-row">
+              <div class="arch-box accent">Weekly / Daily</div>
+              <span class="arch-arrow">→</span>
+              <div class="arch-box muted">Repeated workflows you explain to the agent every time</div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-box accent">Large Context</div>
+              <span class="arch-arrow">→</span>
+              <div class="arch-box muted">Need to load additional documents that fill the context window</div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-box accent">Company Logic</div>
+              <span class="arch-arrow">→</span>
+              <div class="arch-box muted">LLM doesn't know how your team or company operates</div>
+            </div>
+          </div>
+          <p>
+            In short: if you're repeatedly explaining the same workflow or bundling the same reference files
+            every session, package it as a skill once and stop paying that tax on every conversation.
+          </p>
+
+          <h3>Uploading a skill to Claude</h3>
+          <p>
+            Package the skill folder into a <code>.zip</code> file and upload it via
+            <strong>Capabilities → Add → upload zip file</strong> in Claude. Skills are also applicable
+            in other coding environments like Codex, Gemini CLI, and more — they're an open standard.
+          </p>
+        </section>
+
+        <!-- How skills work -->
+        <section id="how-it-works">
+          <h2><span class="h2-num">03</span> How Skills Work</h2>
+          <p>
+            Skills are an <strong>open standard</strong> — they're transferrable across any skill-compatible
+            agent. Build a skill once and deploy it across multiple agent products.
+          </p>
+
+          <h3>Progressive Disclosure</h3>
+          <p>
+            This is the core design principle behind skills. The idea is to only load data when it's
+            actually needed — avoiding unnecessary pollution of the context window.
+          </p>
+          <div class="callout">
+            More data in context → more tokens consumed → faster context fill-up → greater likelihood
+            of <strong>context degradation</strong> → incorrect responses.
+          </div>
+          <p>Skills solve this through three loading tiers:</p>
+
+          <div class="pd-diagram">
+            <div class="pd-row">
+              <div class="pd-label-col"><span class="pd-label always">Always</span></div>
+              <div class="pd-content">
+                The skill's <code>name</code> and <code>description</code> from the YAML frontmatter.
+                These live in the agent's context window so it knows what skills are available and how to trigger them.
+              </div>
+            </div>
+            <div class="pd-row">
+              <div class="pd-label-col"><span class="pd-label triggered">On Match</span></div>
+              <div class="pd-content">
+                When a user request matches the skill's description, the full <code>SKILL.md</code>
+                instruction body is loaded — the step-by-step workflow, formulas, output format, etc.
+              </div>
+            </div>
+            <div class="pd-row">
+              <div class="pd-label-col"><span class="pd-label ondemand">On Demand</span></div>
+              <div class="pd-content">
+                Scripts, reference files, and assets (templates, images) are loaded separately,
+                only if the instructions call for them. This keeps the context lean.
+              </div>
+            </div>
+          </div>
+
+          <p>
+            This architecture means you can have many skills registered at once without bloating the
+            context window — only the skill that's actually needed gets fully loaded.
+          </p>
+        </section>
+
+        <!-- Why use skills -->
+        <section id="why-skills">
+          <h2><span class="h2-num">04</span> Why Use Agent Skills?</h2>
+          <p>
+            When building purpose-specific agents — finance, research, coding, marketing — the underlying
+            foundation is actually a general-purpose agent: a simple scaffolding of <code>bash</code> and
+            <code>filesystem</code> tools. What these agents <em>lack</em> is the underlying context
+            and domain expertise to do the job <strong>reliably</strong>.
+          </p>
+
+          <div class="arch-diagram">
+            <div class="arch-row">
+              <span class="arch-label">Old model</span>
+              <span class="arch-arrow">→</span>
+              <div class="arch-box">Research Agent</div>
+              <div class="arch-box">Coding Agent</div>
+              <div class="arch-box">Finance Agent</div>
+              <div class="arch-box">Marketing Agent</div>
+            </div>
+            <div class="arch-row">
+              <span class="arch-label">New model</span>
+              <span class="arch-arrow">→</span>
+              <div class="arch-box dark">General Agent</div>
+              <span class="arch-arrow">+</span>
+              <div class="arch-box accent">Skills</div>
+              <span class="arch-arrow">+</span>
+              <div class="arch-box muted">MCP / Sub-agents</div>
+            </div>
+          </div>
+
+          <p>
+            Beyond domain knowledge, skills also provide <strong>repeatable workflows</strong>. In a
+            non-deterministic environment where model outputs can vary, skills give the agent articulate,
+            step-by-step instructions for a task — making agent behaviour more predictable and measurable.
+          </p>
+
+          <h3>Three use-case categories</h3>
+          <div class="usecase-grid">
+            <div class="usecase-card">
+              <div class="usecase-card-label"><span class="dot"></span>Domain Expertise</div>
+              <ul>
+                <li>Brand guidelines and templates</li>
+                <li>Legal review processes</li>
+                <li>Data analysis methodologies</li>
+              </ul>
+            </div>
+            <div class="usecase-card">
+              <div class="usecase-card-label"><span class="dot"></span>Repeatable Workflow</div>
+              <ul>
+                <li>Weekly marketing campaign review</li>
+                <li>Customer call prep workflow</li>
+                <li>Quarterly business review</li>
+              </ul>
+            </div>
+            <div class="usecase-card">
+              <div class="usecase-card-label"><span class="dot"></span>New Capabilities</div>
+              <ul>
+                <li>Creating presentations</li>
+                <li>Generating Excel / PDF reports</li>
+                <li>Building MCP servers</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3>Without skills — the cost</h3>
+          <p>Every session without a skill means you have to:</p>
+          <div class="arch-diagram">
+            <div class="arch-row"><span style="font-size:13px;color:var(--text-secondary);">📝 Describe your
+                instructions and requirements from scratch</span></div>
+            <div class="arch-row"><span style="font-size:13px;color:var(--text-secondary);">📎 Bundle all reference
+                files and supporting documents manually</span></div>
+            <div class="arch-row"><span style="font-size:13px;color:var(--text-secondary);">🎲 Hope the outputs are
+                consistent — with no guarantee they are</span></div>
+          </div>
+
+          <h3>Skills are portable</h3>
+          <p>
+            Agent skills are now an <strong>open standard</strong>, adopted by a growing number of
+            agent products. The same skill works in Claude Code, agents built with the Claude Agent SDK,
+            Gemini CLI, Codex, and more.
+          </p>
+
+          <h3>Skills are composable</h3>
+          <p>
+            You can chain multiple skills to build complex, predictable pipelines. Here's an example
+            marketing pipeline:
+          </p>
+          <div class="pipeline">
+            <div class="pipe-step">
+              <div class="pipe-step-name">BigQuery Skill</div>
+              <div class="pipe-step-desc">Provide marketing-related schema &amp; data access</div>
+            </div>
+            <div class="pipe-connector">→</div>
+            <div class="pipe-step">
+              <div class="pipe-step-name">Campaign Analysis Skill</div>
+              <div class="pipe-step-desc">Analyze funnel metrics &amp; compute ROAS</div>
+            </div>
+            <div class="pipe-connector">→</div>
+            <div class="pipe-step">
+              <div class="pipe-step-name">Brand Skill</div>
+              <div class="pipe-step-desc">Apply brand fonts, colors, logo guidelines</div>
+            </div>
+            <div class="pipe-connector">→</div>
+            <div class="pipe-step">
+              <div class="pipe-step-name">PowerPoint Skill</div>
+              <div class="pipe-step-desc">Generate a branded slide deck</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Skills vs everything else -->
+        <section id="skills-vs">
+          <h2><span class="h2-num">05</span> Skills vs Tools, MCP &amp; Sub-agents</h2>
+
+          <h3>Skills vs MCP</h3>
+          <div class="vs-grid">
+            <div class="vs-card">
+              <div class="vs-card-title"><span class="vs-icon">🔌</span> MCP</div>
+              <p>Connects your agent to <strong>external systems and data</strong> — Google Drive, databases, APIs, and
+                more.</p>
+              <p>MCP is the pipe that brings data in.</p>
+            </div>
+            <div class="vs-card">
+              <div class="vs-card-title"><span class="vs-icon">🧠</span> Skills</div>
+              <p>Teaches your agent <strong>what to do with that data</strong> — how to analyse it, which rules to
+                apply, how to format the output.</p>
+              <p>Skills are the expertise that acts on the data.</p>
+            </div>
+          </div>
+
+          <h3>Skills vs Tools</h3>
+          <div class="callout">
+            A good analogy: <strong>tools are a hammer, saw, and nails</strong> — the raw primitive
+            operations. A <strong>skill is the knowledge of how to build a bookshelf</strong> — the
+            methodology that orchestrates those tools toward a specific outcome.
+          </div>
+          <p>
+            Tool definitions always live in the model's context window. Skills are progressively
+            loaded only when needed — this distinction is key. Skills can also include tools on demand,
+            triggered selectively through progressive disclosure rather than always occupying context.
+          </p>
+
+          <h3>Skills vs Sub-agents</h3>
+          <p>
+            A main agent can spawn sub-agents that work independently and report back. Sub-agents have
+            isolated context with fine-grained permissions and can run tasks in parallel. You can
+            specify which skills each sub-agent has access to, letting the main agent act as
+            <strong>orchestrator</strong> while sub-agents handle specialised work.
+          </p>
+          <div class="arch-diagram">
+            <div class="arch-row">
+              <div class="arch-box dark" style="font-size:13px;">Main Agent (Orchestrator)</div>
+            </div>
+            <div class="arch-row" style="margin-left:16px;">
+              <span class="arch-arrow" style="transform:rotate(90deg);">→</span>
+            </div>
+            <div class="arch-row" style="gap:8px;">
+              <div class="arch-box muted">Interview Analyzer<br><small style="color:var(--text-tertiary);">skills +
+                  tools</small></div>
+              <div class="arch-box muted">Survey Analyzer<br><small style="color:var(--text-tertiary);">skills +
+                  tools</small></div>
+              <div class="arch-box muted">Code Reviewer<br><small style="color:var(--text-tertiary);">skills +
+                  tools</small></div>
+            </div>
+          </div>
+
+          <h3>Summary comparison</h3>
+          <div class="comparison-table-wrap">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Skills</th>
+                  <th>Prompts</th>
+                  <th>Sub-agents</th>
+                  <th>MCP</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>What it provides</td>
+                  <td class="highlight">Procedural knowledge</td>
+                  <td>Moment-to-moment instructions</td>
+                  <td>Task delegation</td>
+                  <td>Tool connectivity</td>
+                </tr>
+                <tr>
+                  <td>Persistence</td>
+                  <td class="highlight">Across conversations</td>
+                  <td>Single conversation</td>
+                  <td>Across sessions</td>
+                  <td>Continuous connection</td>
+                </tr>
+                <tr>
+                  <td>Contains</td>
+                  <td class="highlight">Instructions + code + assets</td>
+                  <td>Natural language</td>
+                  <td>Full agent logic</td>
+                  <td>Tool definitions</td>
+                </tr>
+                <tr>
+                  <td>When it loads</td>
+                  <td class="highlight">Dynamically, as needed</td>
+                  <td>Each turn</td>
+                  <td>When invoked</td>
+                  <td>Always available</td>
+                </tr>
+                <tr>
+                  <td>Best for</td>
+                  <td class="highlight">Specialised expertise</td>
+                  <td>Quick requests</td>
+                  <td>Specialised tasks</td>
+                  <td>Data access</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Pre-built skills -->
+        <section id="prebuilt">
+          <h2><span class="h2-num">06</span> Pre-built Skills</h2>
+          <p>
+            Anthropic ships a set of pre-built document skills you can use out of the box.
+            These encode hard-won best practices for creating each document type — available libraries,
+            rendering quirks, output conventions.
+          </p>
+          <div class="prebuilt-grid">
+            <div class="prebuilt-card">
+              <div class="prebuilt-ext">.pptx</div>
+              <div class="prebuilt-name">Presentations &amp; slide decks</div>
+            </div>
+            <div class="prebuilt-card">
+              <div class="prebuilt-ext">.docx</div>
+              <div class="prebuilt-name">Word documents &amp; reports</div>
+            </div>
+            <div class="prebuilt-card">
+              <div class="prebuilt-ext">.pdf</div>
+              <div class="prebuilt-name">PDF creation &amp; form filling</div>
+            </div>
+            <div class="prebuilt-card">
+              <div class="prebuilt-ext">.xlsx</div>
+              <div class="prebuilt-name">Spreadsheets &amp; models</div>
+            </div>
+          </div>
+          <p>
+            There's also a <strong>skill creator skill</strong> — a meta-skill that guides the agent
+            through the creation process and best practices for writing new skills. It's one of the
+            most useful tools in the kit for bootstrapping domain-specific skills quickly.
+          </p>
+
+          <h3>Hands-on exercises in the course</h3>
+          <div class="arch-diagram">
+            <div class="arch-row">
+              <div class="arch-box muted" style="font-size:12px;">1. Use the skill creator to build a BigQuery skill
+              </div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-box muted" style="font-size:12px;">2. Create a company brand guidelines skill (with
+                logos)</div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-box muted" style="font-size:12px;">3. Combine brand skill + PowerPoint skill for branded
+                decks</div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-box muted" style="font-size:12px;">4. Build a research agent with the Claude Agent SDK
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Key takeaways -->
+        <section id="takeaways">
+          <h2><span class="h2-num">07</span> Key Takeaways</h2>
+          <p>
+            Agent skills are genuinely one of the most practical primitives I've seen in agentic AI.
+            The core insight is simple: <strong>don't explain, package</strong>. If you're repeating
+            yourself to an agent — whether that's workflow instructions, domain rules, or reference
+            documents — wrap it in a skill and let the agent discover it automatically.
+          </p>
+          <p>
+            The progressive disclosure model is elegant. By keeping only the skill's name and description
+            in context at all times, you can register many skills without bloating the context window.
+            The full instructions only load when they're actually needed — a smart tradeoff between
+            discoverability and efficiency.
+          </p>
+          <p>
+            And the open-standard angle matters: a skill written today for Claude Code works tomorrow
+            in any other skill-compatible agent environment. The investment compounds.
+          </p>
+          <div class="callout">
+            <strong>The analogy that stuck with me:</strong> tools are the hammer, saw, and nails.
+            A skill is knowing how to build a bookshelf. The general-purpose agent already has the tools —
+            it just needs the expertise.
+          </div>
+        </section>
+
+      </article>
+
+      <!-- ─── Table of contents ──────────────────────── -->
+      <aside class="post-toc">
+        <p class="toc-label">On this page</p>
+        <ul class="toc-list">
+          <li><a href="#intro">Introduction</a></li>
+          <li><a href="#what-are-skills">What are Skills?</a></li>
+          <li class="toc-sub"><a href="#what-are-skills">SKILL.md structure</a></li>
+          <li class="toc-sub"><a href="#what-are-skills">Naming conventions</a></li>
+          <li><a href="#when-to-use">When to Use a Skill?</a></li>
+          <li><a href="#how-it-works">How Skills Work</a></li>
+          <li class="toc-sub"><a href="#how-it-works">Progressive Disclosure</a></li>
+          <li><a href="#why-skills">Why Use Agent Skills?</a></li>
+          <li class="toc-sub"><a href="#why-skills">Use-case categories</a></li>
+          <li class="toc-sub"><a href="#why-skills">Portable &amp; Composable</a></li>
+          <li><a href="#skills-vs">Skills vs Tools, MCP &amp; Sub-agents</a></li>
+          <li class="toc-sub"><a href="#skills-vs">Comparison table</a></li>
+          <li><a href="#prebuilt">Pre-built Skills</a></li>
+          <li><a href="#takeaways">Key Takeaways</a></li>
+        </ul>
+      </aside>
+
+    </div><!-- /post-layout -->
+  </main>
+
+  <footer class="page" style="padding-top:20px">
+    <span>© 2026 Sumit Kant</span>
+    <!-- <div style="display:flex;gap:16px">
+      <a href="https://sumitkant.github.io/">Website</a>
+      <a href="https://sumitkant.github.io/about.html">Full CV</a>
+      <a href="mailto:sumit.kant@iiml.org">Email</a>
+    </div> -->
+  </footer>
+
+</body>
+
+</html>
