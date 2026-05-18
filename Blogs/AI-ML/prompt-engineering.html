@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Learn how to write excellent prompts for large language models like GPT-4 and Bard with these best practices for prompt engineering." />
+  <title>Crafting Irresistible Prompts for LLMs — Sumit Kant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Design tokens ─────────────────────────────── */
+    :root {
+      --bg:            #f5f4ff;
+      --bg-surface:    #eeecff;
+      --bg-raised:     #e5e2ff;
+      --bg-hover:      #dbd8ff;
+      --border:        rgba(99, 89, 210, 0.12);
+      --border-hover:  rgba(99, 89, 210, 0.28);
+      --text-primary:  #16122e;
+      --text-secondary:#4a4570;
+      --text-tertiary: #9691c4;
+      --accent:        #5b50e8;       /* indigo-blue */
+      --accent-mid:    #8b5cf6;       /* purple */
+      --accent-hot:    #ec4899;       /* pink */
+      --dark-bg:       #16122e;       /* deep indigo */
+      --dark-text:     #f5f4ff;
+      --stats-divider: rgba(255,255,255,0.10);
+      --stats-label:   rgba(255,255,255,0.45);
+      --radius-sm:  6px;
+      --radius-md:  10px;
+      --radius-lg:  14px;
+      --nav-h:      72px;
+      --content-w:  1100px;
+      --prose-w:    720px;
+      --font:       'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:  ui-monospace, 'Cascadia Code', monospace;
+    }
+
+    /* ─── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Nav ────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(245, 244, 255, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .nav-inner {
+      max-width: var(--content-w); margin: 0 auto; padding: 0 2rem;
+      height: 100%; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; letter-spacing: 0.01em; }
+    .nav-monogram {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+      color: #fff;
+      border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; letter-spacing: -0.02em; flex-shrink: 0;
+    }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 13.5px; color: var(--text-secondary); transition: color 0.15s; letter-spacing: 0.01em; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+    .nav-links a.active { font-weight: 500; }
+
+    /* ─── Page wrapper ───────────────────────────────── */
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+    /* ─── Banner ─────────────────────────────────────── */
+    .post-banner {
+      margin: 3rem 0 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      min-height: 260px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Post hero ──────────────────────────────────── */
+    .post-hero { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); max-width: var(--prose-w); }
+    .hero-eyebrow {
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.03em; color: var(--text-primary); margin-bottom: 14px;
+    }
+    .hero-title strong { color: var(--accent); font-weight: 800; }
+    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.75; }
+
+    /* ─── Meta ───────────────────────────────────────── */
+    .post-meta {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+      padding: 1.25rem 0; border-bottom: 1px solid var(--border);
+    }
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border);
+      font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono);
+      letter-spacing: 0.03em; background: var(--bg-surface);
+    }
+    .meta-tag.accent-tag {
+      background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+      color: #fff; border-color: transparent; font-weight: 600;
+    }
+    .meta-tag.pink-tag {
+      background: var(--accent-hot); color: #fff; border-color: transparent; font-weight: 600;
+    }
+    .meta-dot { color: var(--text-tertiary); font-size: 10px; }
+
+    /* ─── Layout ─────────────────────────────────────── */
+    .post-layout {
+      display: grid;
+      grid-template-columns: var(--prose-w) 1fr;
+      gap: 0 3rem;
+      align-items: start;
+      padding-top: 3rem;
+    }
+    .post-prose { min-width: 0; }
+    .post-toc {
+      position: sticky; top: calc(var(--nav-h) + 1.5rem);
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--border);
+    }
+    .toc-label {
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px;
+    }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .toc-list a { font-size: 12.5px; color: var(--text-secondary); transition: color 0.15s; display: block; line-height: 1.4; }
+    .toc-list a:hover { color: var(--accent); }
+    .toc-list .toc-sub { padding-left: 12px; }
+    .toc-list .toc-sub a { font-size: 11.5px; color: var(--text-tertiary); }
+
+    /* ─── Prose ──────────────────────────────────────── */
+    .post-prose section { margin-bottom: 3rem; }
+    .post-prose h2 {
+      font-size: 1.35rem; font-weight: 800; letter-spacing: -0.025em;
+      color: var(--text-primary); margin-bottom: 1rem;
+      padding-top: 2.5rem; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .post-prose h2:first-child { border-top: none; padding-top: 0; }
+    .h2-num {
+      font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary);
+      letter-spacing: 0.12em; padding: 3px 7px; border-radius: var(--radius-sm);
+      background: var(--bg-raised); white-space: nowrap;
+    }
+    .post-prose h3 {
+      font-size: 1rem; font-weight: 700; letter-spacing: -0.015em;
+      color: var(--text-primary); margin: 1.75rem 0 0.6rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .h3-badge {
+      font-size: 9.5px; font-family: var(--font-mono); font-weight: 700;
+      letter-spacing: 0.08em; padding: 2px 8px; border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+      color: #fff; white-space: nowrap;
+    }
+    .h3-badge.pink { background: var(--accent-hot); }
+    .post-prose p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; }
+    .post-prose p:last-child { margin-bottom: 0; }
+    .post-prose strong { color: var(--text-primary); font-weight: 600; }
+    .post-prose em { font-style: italic; }
+    .post-prose a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(91,80,232,0.3); }
+    .post-prose a:hover { text-decoration-color: var(--accent); }
+
+    /* ─── Callout ────────────────────────────────────── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--bg-surface);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 1rem 1.25rem; margin: 1.25rem 0;
+      font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+    }
+    .callout strong { color: var(--text-primary); }
+    .callout.pink { border-left-color: var(--accent-hot); }
+    .callout.purple { border-left-color: var(--accent-mid); }
+
+    /* ─── Paradigm timeline cards ────────────────────── */
+    .paradigm-grid { display: flex; flex-direction: column; gap: 8px; margin: 1.25rem 0; }
+    .paradigm-card {
+      display: flex; align-items: stretch; border-radius: var(--radius-md);
+      border: 1px solid var(--border); overflow: hidden; background: #fff;
+    }
+    .paradigm-year {
+      width: 90px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10.5px; font-family: var(--font-mono); font-weight: 700;
+      letter-spacing: 0.06em; color: #fff; text-align: center; line-height: 1.3;
+      padding: 12px 10px;
+    }
+    .paradigm-year.y1 { background: linear-gradient(160deg, #5b50e8, #7c6ef0); }
+    .paradigm-year.y2 { background: linear-gradient(160deg, #7c6ef0, #8b5cf6); }
+    .paradigm-year.y3 { background: linear-gradient(160deg, #8b5cf6, #c084fc); }
+    .paradigm-year.y4 { background: linear-gradient(160deg, #c084fc, #ec4899); }
+    .paradigm-body { padding: 12px 16px; flex: 1; }
+    .paradigm-name { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .paradigm-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+
+    /* ─── Elements list ──────────────────────────────── */
+    .elements-list { display: flex; flex-direction: column; gap: 8px; margin: 1.25rem 0; }
+    .element-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 12px 16px;
+    }
+    .element-icon {
+      width: 28px; height: 28px; border-radius: var(--radius-sm); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+    }
+    .element-icon.blue  { background: rgba(91,80,232,0.15); }
+    .element-icon.purple{ background: rgba(139,92,246,0.15); }
+    .element-icon.pink  { background: rgba(236,72,153,0.15); }
+    .element-icon.teal  { background: rgba(20,184,166,0.15); }
+    .element-label { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+    .element-desc  { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
+
+    /* ─── Best practices grid ────────────────────────── */
+    .practices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1.25rem 0; }
+    .practice-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 1rem 1.1rem;
+    }
+    .practice-card-title {
+      font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .practice-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .practice-card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 0; }
+
+    /* ─── Code blocks ────────────────────────────────── */
+    .code-wrap { margin: 1rem 0; }
+    .code-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary);
+      background: var(--dark-bg); color: rgba(255,255,255,0.45);
+      padding: 5px 14px 4px; border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      letter-spacing: 0.04em;
+    }
+    .code-block {
+      background: var(--dark-bg); color: #d4ceff;
+      border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
+      padding: 1.15rem 1.4rem;
+      font-family: var(--font-mono); font-size: 12.5px; line-height: 1.75;
+      overflow-x: auto; white-space: pre;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .code-block.rounded { border-radius: var(--radius-md); }
+    .c-key  { color: #a5b4fc; }  /* indigo */
+    .c-str  { color: #86efac; }  /* green */
+    .c-pink { color: #f9a8d4; }  /* pink */
+    .c-dim  { color: #6366a0; }
+    code {
+      font-family: var(--font-mono); font-size: 12px;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      padding: 1px 6px; border-radius: 4px; color: var(--accent);
+    }
+
+    /* ─── Example cards ──────────────────────────────── */
+    .example-block {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden; margin: 1.25rem 0;
+    }
+    .example-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+    }
+    .example-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+      color: #fff; font-size: 10px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .example-num.pink { background: linear-gradient(135deg, var(--accent-mid), var(--accent-hot)); }
+    .example-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+    .example-body { padding: 14px 16px; }
+    .example-body p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 10px; }
+    .example-body p:last-child { margin-bottom: 0; }
+    .example-body strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── References ─────────────────────────────────── */
+    .ref-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 1rem 0; }
+    .ref-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13.5px; color: var(--text-secondary);
+    }
+    .ref-list li::before {
+      content: '↗'; color: var(--accent); font-size: 12px; flex-shrink: 0; margin-top: 2px;
+    }
+    .ref-list a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(91,80,232,0.3); }
+    .ref-list a:hover { text-decoration-color: var(--accent); }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--text-tertiary); flex-wrap: wrap; gap: 10px;
+    }
+    footer a { color: var(--text-tertiary); transition: color 0.15s; }
+    footer a:hover { color: var(--text-primary); }
+
+    /* ─── Responsive ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .post-layout { grid-template-columns: 1fr; }
+      .post-toc { display: none; }
+      .practices-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .page { padding: 0 1rem 4rem; }
+      .nav-inner { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Nav ──────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://sumitkant.github.io/blog.html" class="active">Blog</a></li>
+        <li><a href="https://sumitkant.github.io/bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="https://sumitkant.github.io/johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="https://sumitkant.github.io/deep-learning.html">AI Lab</a></li>
+        <li><a href="https://sumitkant.github.io/neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+
+    <!-- ─── Banner ───────────────────────────────────── -->
+    <div class="post-banner">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="100%" style="display:block;border-radius:14px;">
+        <defs>
+          <linearGradient id="pe-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stop-color="#2d1b7a"/>
+            <stop offset="45%"  stop-color="#5b50e8"/>
+            <stop offset="75%"  stop-color="#8b5cf6"/>
+            <stop offset="100%" stop-color="#ec4899"/>
+          </linearGradient>
+          <linearGradient id="pe-glow" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#fff" stop-opacity="0.06"/>
+            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <pattern id="pe-dots" width="36" height="36" patternUnits="userSpaceOnUse">
+            <circle cx="18" cy="18" r="1.2" fill="#fff" opacity="0.18"/>
+          </pattern>
+          <!-- Blur filter for glow nodes -->
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="6" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Background layers -->
+        <rect width="1100" height="300" fill="url(#pe-bg)"/>
+        <rect width="1100" height="300" fill="url(#pe-dots)"/>
+        <rect width="1100" height="300" fill="url(#pe-glow)"/>
+
+        <!-- Decorative arcs -->
+        <circle cx="900" cy="-60" r="260" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.08"/>
+        <circle cx="900" cy="-60" r="360" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.05"/>
+        <circle cx="200" cy="360" r="220" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.06"/>
+
+        <!-- Token sequence visualization -->
+        <g opacity="0.22" font-family="ui-monospace,'Cascadia Code',monospace" font-size="11" fill="#fff" letter-spacing="0.04em">
+          <!-- Row 1 -->
+          <rect x="60"  y="34" width="74" height="20" rx="4" fill="#fff" fill-opacity="0.12"/>
+          <text x="70"  y="48" fill="rgba(255,255,255,0.8)">Write a</text>
+          <rect x="144" y="34" width="74" height="20" rx="4" fill="#fff" fill-opacity="0.12"/>
+          <text x="154" y="48" fill="rgba(255,255,255,0.8)">short</text>
+          <rect x="228" y="34" width="80" height="20" rx="4" fill="#ec4899" fill-opacity="0.3"/>
+          <text x="238" y="48" fill="#f9a8d4">story</text>
+          <rect x="318" y="34" width="74" height="20" rx="4" fill="#fff" fill-opacity="0.12"/>
+          <text x="328" y="48" fill="rgba(255,255,255,0.8)">about</text>
+
+          <!-- Row 2 -->
+          <rect x="60"  y="62" width="88" height="20" rx="4" fill="#fff" fill-opacity="0.12"/>
+          <text x="70"  y="76">Q: Let's</text>
+          <rect x="158" y="62" width="60" height="20" rx="4" fill="#a5b4fc" fill-opacity="0.25"/>
+          <text x="168" y="76" fill="#c7d2fe">think</text>
+          <rect x="228" y="62" width="76" height="20" rx="4" fill="#fff" fill-opacity="0.12"/>
+          <text x="238" y="76">step by</text>
+          <rect x="314" y="62" width="52" height="20" rx="4" fill="#a5b4fc" fill-opacity="0.25"/>
+          <text x="324" y="76" fill="#c7d2fe">step</text>
+        </g>
+
+        <!-- Central ">_" prompt symbol -->
+        <text x="550" y="178" font-family="ui-monospace,'Cascadia Code',monospace"
+              font-size="72" font-weight="700" fill="#fff" opacity="0.9"
+              text-anchor="middle" letter-spacing="-2">&gt;_</text>
+
+        <!-- Title -->
+        <text x="550" y="224" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="17" font-weight="800" letter-spacing="2.5" fill="#fff" opacity="0.95"
+              text-anchor="middle">PROMPT  ENGINEERING</text>
+
+        <!-- Sub label -->
+        <text x="550" y="252" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="10" font-weight="500" letter-spacing="1.8" fill="#fff" opacity="0.45"
+              text-anchor="middle">LARGE LANGUAGE MODELS · BEST PRACTICES · MAY 2023</text>
+
+        <!-- Right-side glowing nodes -->
+        <g filter="url(#glow)">
+          <circle cx="960" cy="80"  r="5" fill="#ec4899" opacity="0.8"/>
+          <circle cx="1010" cy="140" r="7" fill="#8b5cf6" opacity="0.7"/>
+          <circle cx="980"  cy="200" r="4" fill="#a5b4fc" opacity="0.7"/>
+          <circle cx="1040" cy="220" r="5" fill="#ec4899" opacity="0.6"/>
+          <line x1="960" y1="80"  x2="1010" y2="140" stroke="#fff" stroke-width="0.8" opacity="0.2"/>
+          <line x1="1010" y1="140" x2="980" y2="200" stroke="#fff" stroke-width="0.8" opacity="0.2"/>
+          <line x1="980" y1="200" x2="1040" y2="220" stroke="#fff" stroke-width="0.8" opacity="0.2"/>
+        </g>
+
+        <!-- Left-side glowing nodes -->
+        <g filter="url(#glow)">
+          <circle cx="140" cy="220" r="5" fill="#a5b4fc" opacity="0.7"/>
+          <circle cx="90"  cy="160" r="7" fill="#8b5cf6" opacity="0.65"/>
+          <circle cx="120" cy="100" r="4" fill="#ec4899" opacity="0.7"/>
+          <line x1="140" y1="220" x2="90"  y2="160" stroke="#fff" stroke-width="0.8" opacity="0.2"/>
+          <line x1="90"  y1="160" x2="120" y2="100" stroke="#fff" stroke-width="0.8" opacity="0.2"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- ─── Post Hero ──────────────────────────────────── -->
+    <header class="post-hero">
+      <p class="hero-eyebrow">Article · Prompt Engineering · May 2023</p>
+      <h1 class="hero-title">Crafting <strong>Irresistible</strong> Prompts for Large Language Models</h1>
+      <p class="hero-sub">
+        Learn how to write excellent prompts for large language models like GPT-4 and Bard — covering
+        what prompts are, why they matter, and the best practices for engineering them effectively.
+      </p>
+    </header>
+
+    <!-- ─── Meta ──────────────────────────────────────── -->
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">Prompt Engineering</span>
+      <span class="meta-tag pink-tag">LLMs</span>
+      <span class="meta-tag">NLP</span>
+      <span class="meta-tag">Deep Learning</span>
+      <span class="meta-dot">·</span>
+      <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--text-tertiary);padding-left:0;">
+        Sumit Kant &nbsp;·&nbsp; May 7, 2023 &nbsp;·&nbsp; 5 min read
+      </span>
+    </div>
+
+    <!-- ─── Post Layout ────────────────────────────────── -->
+    <div class="post-layout">
+
+      <!-- ─── Prose ──────────────────────────────────── -->
+      <article class="post-prose">
+
+        <!-- 01 What are LLMs -->
+        <section id="llms">
+          <h2><span class="h2-num">01</span> What are Large Language Models (LLMs)?</h2>
+          <p>
+            Large Language Models are AI models that can understand and generate human-like language.
+            These models are trained on massive amounts of text data and can be used for a variety of
+            tasks, including language translation, text completion, and question-answering. In essence,
+            these models are trained to <strong>predict the next word given a sequence of words</strong>.
+          </p>
+          <p>
+            Large Language Models like OpenAI's GPT-4 and Google's Bard are increasingly becoming
+            popular owing to their success in generating smart responses. However, these smart responses
+            are elicited only when the instructions are clear and contain keywords that trigger the
+            model to respond in that way. This is what <strong>prompt engineering</strong> aims to
+            achieve — writing good prompts for eliciting good responses.
+          </p>
+        </section>
+
+        <!-- 02 Four Paradigms -->
+        <section id="paradigms">
+          <h2><span class="h2-num">02</span> Four Paradigms of NLP Progress</h2>
+          <p>
+            Natural Language Processing has gone through four phases of development.
+            None of these are obsolete — each paradigm built on the last.
+          </p>
+          <div class="paradigm-grid">
+            <div class="paradigm-card">
+              <div class="paradigm-year y1">~2015</div>
+              <div class="paradigm-body">
+                <div class="paradigm-name">1. Feature Engineering</div>
+                <div class="paradigm-desc">Hand-crafting features for embedding contextual information to improve model performance. Mostly for non-Neural-Network models.</div>
+              </div>
+            </div>
+            <div class="paradigm-card">
+              <div class="paradigm-year y2">2013–2018</div>
+              <div class="paradigm-body">
+                <div class="paradigm-name">2. Architecture Engineering</div>
+                <div class="paradigm-desc">Fully supervised neural network models that took care of feature engineering automatically. Better network architectures took precedence.</div>
+              </div>
+            </div>
+            <div class="paradigm-card">
+              <div class="paradigm-year y3">2017–now</div>
+              <div class="paradigm-body">
+                <div class="paradigm-name">3. Objective Engineering</div>
+                <div class="paradigm-desc">Pre-trained models like BERT can be fine-tuned on different objectives. Finding the right training objective became the key challenge.</div>
+              </div>
+            </div>
+            <div class="paradigm-card">
+              <div class="paradigm-year y4">2019–now</div>
+              <div class="paradigm-body">
+                <div class="paradigm-name">4. Prompt Engineering</div>
+                <div class="paradigm-desc">Large Language Models can be used for many tasks but need good input text to elicit desired outcomes. Prompt engineering is now taking over.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 03 What is a Prompt -->
+        <section id="prompt">
+          <h2><span class="h2-num">03</span> What is a Prompt?</h2>
+          <div class="callout">
+            <strong>A prompt is a Natural Language input that is given to a Large Language Model to perform a task.</strong>
+            The prompt can be a question, a statement, or a partial sentence. The quality of the prompt
+            greatly affects the quality of the generated output. A well-crafted prompt can improve the
+            accuracy and relevance of the generated text.
+          </div>
+
+          <h3>Basic Elements of a Prompt</h3>
+          <div class="elements-list">
+            <div class="element-row">
+              <div class="element-icon blue">📋</div>
+              <div>
+                <div class="element-label">Instructions</div>
+                <div class="element-desc">How to achieve the task — the method, constraints, and format you want the model to follow. <strong>Required.</strong></div>
+              </div>
+            </div>
+            <div class="element-row">
+              <div class="element-icon purple">❓</div>
+              <div>
+                <div class="element-label">Question</div>
+                <div class="element-desc">What to do — the specific query or task. <strong>Required.</strong> Either a question or instructions must be present.</div>
+              </div>
+            </div>
+            <div class="element-row">
+              <div class="element-icon pink">📄</div>
+              <div>
+                <div class="element-label">Input Data</div>
+                <div class="element-desc">Data to be used while answering the question and performing the task. <em>Optional.</em></div>
+              </div>
+            </div>
+            <div class="element-row">
+              <div class="element-icon teal">💡</div>
+              <div>
+                <div class="element-label">Examples</div>
+                <div class="element-desc">What to expect in a task — few-shot examples that show the model the desired output format. <em>Optional.</em></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 04 What is Prompt Engineering -->
+        <section id="pe">
+          <h2><span class="h2-num">04</span> What is Prompt Engineering?</h2>
+          <div class="callout purple">
+            <strong>Prompt engineering is the process of crafting a well-defined and structured prompt to get the desired output given a Large Language Model and a goal.</strong>
+          </div>
+          <p>
+            Prompt engineering is needed because Large Language Models generate text based on the input
+            they receive. If the input is vague, unclear, or incomplete, the generated output will also
+            be vague, unclear, or incomplete. By engineering a good prompt, you can improve the quality
+            of the generated output.
+          </p>
+          <p>Prompt engineering requires:</p>
+          <div class="elements-list">
+            <div class="element-row">
+              <div class="element-icon blue">🧠</div>
+              <div>
+                <div class="element-label">Understanding of the model</div>
+                <div class="element-desc">Different models will react differently to the same prompt.</div>
+              </div>
+            </div>
+            <div class="element-row">
+              <div class="element-icon purple">🎯</div>
+              <div>
+                <div class="element-label">Understanding of the domain</div>
+                <div class="element-desc">To incorporate the goal into the prompt — e.g. what good and bad outcomes should look like.</div>
+              </div>
+            </div>
+            <div class="element-row">
+              <div class="element-icon pink">⚙️</div>
+              <div>
+                <div class="element-label">A programmatic approach</div>
+                <div class="element-desc">Like generating prompt templates that can be modified according to some dataset or context.</div>
+              </div>
+            </div>
+            <div class="element-row">
+              <div class="element-icon teal">🔄</div>
+              <div>
+                <div class="element-label">Exploration</div>
+                <div class="element-desc">The process is iterative — you test, observe, and refine.</div>
+              </div>
+            </div>
+          </div>
+          <div class="callout pink">
+            We need prompt engineering because as smart as these models are, they have quirks and are
+            only trained to predict the next word. A bad prompt can make stuff up — or <strong>Hallucinate</strong>.
+          </div>
+        </section>
+
+        <!-- 05 Best Practices -->
+        <section id="best-practices">
+          <h2><span class="h2-num">05</span> Best Practices for Writing Prompts</h2>
+          <div class="practices-grid">
+            <div class="practice-card">
+              <div class="practice-card-title">
+                <div class="practice-dot" style="background:var(--accent)"></div>
+                Be clear and specific
+              </div>
+              <p>A clear and specific prompt helps the model understand what is required. Avoid vague or ambiguous prompts.</p>
+            </div>
+            <div class="practice-card">
+              <div class="practice-card-title">
+                <div class="practice-dot" style="background:var(--accent-mid)"></div>
+                Use context
+              </div>
+              <p>Use the context of the task to craft the prompt — including the topic, target audience, and purpose.</p>
+            </div>
+            <div class="practice-card">
+              <div class="practice-card-title">
+                <div class="practice-dot" style="background:var(--accent-hot)"></div>
+                Use affordances
+              </div>
+              <p>Functions defined in the prompt that the model is explicitly instructed to use — for example, a <code>calc()</code> function to compute results inline.</p>
+            </div>
+            <div class="practice-card">
+              <div class="practice-card-title">
+                <div class="practice-dot" style="background:#14b8a6"></div>
+                Use formatting
+              </div>
+              <p>Bullet points, headings, and subheadings help the model understand the structure of the prompt.</p>
+            </div>
+            <div class="practice-card">
+              <div class="practice-card-title">
+                <div class="practice-dot" style="background:var(--accent)"></div>
+                Use examples
+              </div>
+              <p>Provide few-shot examples to illustrate the desired output format and help the model understand the requirements.</p>
+            </div>
+            <div class="practice-card">
+              <div class="practice-card-title">
+                <div class="practice-dot" style="background:var(--accent-mid)"></div>
+                Use constraints
+              </div>
+              <p>Limit the scope of output — specify length, language type, or format to keep responses on target.</p>
+            </div>
+            <div class="practice-card" style="grid-column: 1 / -1;">
+              <div class="practice-card-title">
+                <div class="practice-dot" style="background:var(--accent-hot)"></div>
+                Test and refine
+              </div>
+              <p>Test the prompt with the model and refine based on the output. Identify issues and improve iteratively — prompt engineering is not a one-shot task.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 06 Examples -->
+        <section id="examples">
+          <h2><span class="h2-num">06</span> Prompt Examples</h2>
+
+          <!-- CoT -->
+          <div class="example-block">
+            <div class="example-header">
+              <div class="example-num">1</div>
+              <div class="example-title">Chain of Thought Prompting</div>
+            </div>
+            <div class="example-body">
+              <p>Encourage AI models to be factually correct by following a series of steps in their reasoning.</p>
+              <div class="code-wrap">
+                <div class="code-label">prompt</div>
+                <div class="code-block">What European soccer team won the Champions League the year Barcelona
+hosted the Olympic games?
+Use this format:
+Q: &lt;repeat question&gt;
+A: Let's think step by step &lt;give_reasoning&gt;.
+Therefore, the answer is &lt;final_answer&gt;
+Avoid Hallucination</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cite sources -->
+          <div class="example-block">
+            <div class="example-header">
+              <div class="example-num">2</div>
+              <div class="example-title">Cite Sources to Avoid Hallucination</div>
+            </div>
+            <div class="example-body">
+              <p>Ask the model to ground answers in reliable sources and make them cite those sources explicitly.</p>
+              <div class="code-wrap">
+                <div class="code-label">prompt</div>
+                <div class="code-block">What are the top 3 most important discoveries that the
+Hubble Space Telescope has enabled? Answer only using reliable
+sources and cite those sources.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- endofprompt -->
+          <div class="example-block">
+            <div class="example-header">
+              <div class="example-num">3</div>
+              <div class="example-title">Using &lt;|endofprompt|&gt; to Continue the Conversation</div>
+            </div>
+            <div class="example-body">
+              <p>Ask the model to continue from a specific point using the special token that signals the end of the instruction block.</p>
+              <div class="code-wrap">
+                <div class="code-label">prompt</div>
+                <div class="code-block">Write a scary short story. &lt;|endofprompt|&gt; It was a beautiful winter day</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Forceful language -->
+          <div class="example-block">
+            <div class="example-header">
+              <div class="example-num pink">4</div>
+              <div class="example-title">Forceful Language</div>
+            </div>
+            <div class="example-body">
+              <p>
+                Language <strong>models do not always react well to nice, friendly language</strong>.
+                If you really want them to follow some instructions, you might want to use forceful language.
+                <strong>All caps and exclamation marks work.</strong>
+              </p>
+              <p>If your model is giving you a hard time following instructions, use:</p>
+              <div class="code-wrap">
+                <div class="code-label">prompt</div>
+                <div class="code-block">NO! That's 11! WRITE A SENTENCE WITH EXACTLY 12 WORDS! NOW!</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Factual correctness -->
+          <div class="example-block">
+            <div class="example-header">
+              <div class="example-num pink">5</div>
+              <div class="example-title">Checking Factual Correctness</div>
+            </div>
+            <div class="example-body">
+              <p>Ask the model to audit an article or piece of text for factual inaccuracies.</p>
+              <div class="code-wrap">
+                <div class="code-label">prompt</div>
+                <div class="code-block">Is there any factually incorrect information in this article: &lt;article&gt;</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Persona -->
+          <div class="example-block">
+            <div class="example-header">
+              <div class="example-num pink">6</div>
+              <div class="example-title">Having a Conversation as a Person</div>
+            </div>
+            <div class="example-body">
+              <p>
+                Make sure to include the person's name in <strong>ALL CAPS</strong> to ask the model
+                to remember the character they are supposed to be.
+              </p>
+              <div class="code-wrap">
+                <div class="code-label">prompt</div>
+                <div class="code-block">I will ask you questions and from now on you respond as if
+you were Buzz Lightyear from the movie Toy Story.
+It is REALLY IMPORTANT that you answer all questions
+as if you were Buzz, ok?</div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Conclusion -->
+        <section id="conclusion">
+          <h2><span class="h2-num">07</span> Conclusion</h2>
+          <p>
+            Prompt engineering is a critical component of using Large Language Models effectively.
+            By crafting clear, specific, and well-structured prompts, you can improve the quality
+            and relevance of the generated output.
+          </p>
+          <p>
+            By following the best practices for writing prompts, you can ensure that your prompts
+            are effective and efficient in generating the desired output.
+          </p>
+          <div class="callout">
+            The key insight: models are only trained to predict the next word. <strong>The quality of the prompt
+            is the quality of the output.</strong> Invest in the input.
+          </div>
+        </section>
+
+        <!-- References -->
+        <section id="references">
+          <h2><span class="h2-num">08</span> References</h2>
+          <ul class="ref-list">
+            <li><a href="https://www.linkedin.com/learning/prompt-engineering-how-to-talk-to-the-ais/talking-to-the-ais" target="_blank" rel="noopener">Prompt Engineering: How to Talk to the AIs — LinkedIn Learning</a></li>
+            <li><a href="https://youtu.be/5ef83Wljm-M" target="_blank" rel="noopener">CMU Advanced NLP 2022 (9): Prompting — YouTube</a></li>
+          </ul>
+        </section>
+
+      </article>
+
+      <!-- ─── TOC ────────────────────────────────────── -->
+      <aside class="post-toc">
+        <p class="toc-label">On this page</p>
+        <ul class="toc-list">
+          <li><a href="#llms">What are LLMs?</a></li>
+          <li><a href="#paradigms">Four Paradigms of NLP</a></li>
+          <li class="toc-sub"><a href="#paradigms">Feature Engineering</a></li>
+          <li class="toc-sub"><a href="#paradigms">Architecture Engineering</a></li>
+          <li class="toc-sub"><a href="#paradigms">Objective Engineering</a></li>
+          <li class="toc-sub"><a href="#paradigms">Prompt Engineering</a></li>
+          <li><a href="#prompt">What is a Prompt?</a></li>
+          <li class="toc-sub"><a href="#prompt">Basic Elements</a></li>
+          <li><a href="#pe">What is Prompt Engineering?</a></li>
+          <li><a href="#best-practices">Best Practices</a></li>
+          <li><a href="#examples">Prompt Examples</a></li>
+          <li class="toc-sub"><a href="#examples">Chain of Thought</a></li>
+          <li class="toc-sub"><a href="#examples">Cite Sources</a></li>
+          <li class="toc-sub"><a href="#examples">Forceful Language</a></li>
+          <li class="toc-sub"><a href="#examples">Persona Prompting</a></li>
+          <li><a href="#conclusion">Conclusion</a></li>
+          <li><a href="#references">References</a></li>
+        </ul>
+      </aside>
+
+    </div><!-- /post-layout -->
+  </main>
+
+  <footer class="page" style="padding-top:20px">
+    <span>© 2026 Sumit Kant</span>
+    <!-- <div style="display:flex;gap:16px">
+      <a href="https://sumitkant.github.io/">Website</a>
+      <a href="https://sumitkant.github.io/about.html">Full CV</a>
+      <a href="mailto:sumit.kant@iiml.org">Email</a> -->
+    </div>
+  </footer>
+
+</body>
+</html>
