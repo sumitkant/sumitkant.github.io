@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Deep-dive course notes on Generative AI use cases, Transformer architecture, prompting, project lifecycle, quantization, scaling laws and Chinchilla." />
+  <title>GenAI Use Cases, Lifecycle &amp; Pre-training — Sumit Kant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Palette ─────────────────────────────────────────
+       #937AFF  Periwinkle lavender
+       #F8DB46  Electric yellow
+       #FF3D9A  Hot pink
+       #5627FF  Deep violet
+    ─────────────────────────────────────────────────── */
+    :root {
+      --lavender: #937AFF;
+      --yellow:   #F8DB46;
+      --pink:     #FF3D9A;
+      --violet:   #5627FF;
+      --dark:     #12073a;
+
+      --bg:           #faf8ff;
+      --bg-surface:   #f0ecff;
+      --bg-raised:    #e4dbff;
+      --border:       rgba(86,39,255,0.10);
+      --border-hover: rgba(86,39,255,0.25);
+      --text-primary:   #12073a;
+      --text-secondary: #3a2875;
+      --text-tertiary:  #9580cc;
+
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --nav-h: 72px; --content-w: 1100px; --prose-w: 720px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-primary); font-family: var(--font); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Nav ─────────────────────────────────────────── */
+    nav { position: sticky; top: 0; z-index: 100; height: var(--nav-h); border-bottom: 1px solid var(--border); background: rgba(250,248,255,0.93); backdrop-filter: blur(14px); }
+    .nav-inner { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+    .nav-monogram { width: 30px; height: 30px; background: var(--violet); color: var(--yellow); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 13.5px; color: var(--text-secondary); transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+    .nav-links a.active { font-weight: 500; }
+
+    /* ─── Page ────────────────────────────────────────── */
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+    /* ─── Post hero ───────────────────────────────────── */
+    .post-hero { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); max-width: var(--prose-w); }
+    .hero-eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px; }
+    .hero-title { font-size: clamp(1.9rem,4vw,2.8rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 14px; }
+    .hero-title strong { color: var(--violet); }
+    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.75; }
+
+    /* ─── Meta ────────────────────────────────────────── */
+    .post-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
+    .meta-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono); letter-spacing: 0.03em; background: var(--bg-surface); }
+    .meta-tag.v { background: var(--violet);  color: var(--yellow); border-color: transparent; font-weight: 600; }
+    .meta-tag.l { background: var(--lavender); color: #fff;         border-color: transparent; font-weight: 600; }
+    .meta-tag.p { background: var(--pink);    color: #fff;          border-color: transparent; font-weight: 600; }
+    .meta-dot { color: var(--text-tertiary); font-size: 10px; }
+
+    /* ─── Layout ──────────────────────────────────────── */
+    .post-layout { display: grid; grid-template-columns: var(--prose-w) 1fr; gap: 0 3rem; align-items: start; padding-top: 3rem; }
+    .post-prose { min-width: 0; }
+    .post-toc { position: sticky; top: calc(var(--nav-h) + 1.5rem); padding-left: 1.5rem; border-left: 2px solid var(--lavender); }
+    .toc-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .toc-list a { font-size: 12px; color: var(--text-secondary); transition: color 0.15s; display: block; line-height: 1.4; }
+    .toc-list a:hover { color: var(--violet); }
+    .toc-sub { padding-left: 12px; }
+    .toc-sub a { font-size: 11px; color: var(--text-tertiary); }
+
+    /* ─── Prose ───────────────────────────────────────── */
+    .post-prose section { margin-bottom: 3rem; }
+    .post-prose h2 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.025em; color: var(--text-primary); margin-bottom: 1rem; padding-top: 2.5rem; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .post-prose h2:first-child { border-top: none; padding-top: 0; }
+    .h2-num { font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.12em; padding: 3px 7px; border-radius: var(--radius-sm); background: var(--violet); color: var(--yellow); white-space: nowrap; }
+    .post-prose h3 { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 1.75rem 0 0.6rem; display: flex; align-items: center; gap: 8px; }
+    .h3-pip { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .h3-pip.lav { background: var(--lavender); }
+    .h3-pip.pk  { background: var(--pink); }
+    .h3-pip.yw  { background: var(--yellow); }
+    .post-prose p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; }
+    .post-prose p:last-child { margin-bottom: 0; }
+    .post-prose strong { color: var(--text-primary); font-weight: 600; }
+    .post-prose em { font-style: italic; }
+    .post-prose a { color: var(--violet); text-decoration: underline; text-decoration-color: rgba(86,39,255,0.3); }
+
+    /* ─── NEW: Quote / callout blocks ─────────────────── */
+    /* Solid-band highlight quote — no left border, full-colour panel */
+    .highlight-quote {
+      background: var(--violet); border-radius: var(--radius-lg);
+      padding: 1.5rem 1.75rem; margin: 1.5rem 0; position: relative; overflow: hidden;
+    }
+    .highlight-quote::after {
+      content: ''; position: absolute; right: -20px; bottom: -20px;
+      width: 100px; height: 100px; border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .highlight-quote p { color: rgba(248,219,70,0.95); font-size: 15px; font-weight: 600; line-height: 1.7; margin-bottom: 0; font-style: italic; }
+    .highlight-quote strong { color: #fff; font-style: normal; }
+
+    .highlight-quote.pink { background: var(--pink); }
+    .highlight-quote.pink p { color: #fff; }
+    .highlight-quote.yellow { background: var(--yellow); }
+    .highlight-quote.yellow p { color: var(--dark); }
+    .highlight-quote.yellow strong { color: var(--violet); }
+    .highlight-quote.lav { background: var(--lavender); }
+    .highlight-quote.lav p { color: #fff; }
+
+    /* Standard side-border callout for non-emphasis notes */
+    .callout { border-left: 3px solid var(--lavender); background: var(--bg-surface); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1rem 1.25rem; margin: 1.25rem 0; font-size: 14px; color: var(--text-secondary); line-height: 1.75; }
+    .callout.pk { border-left-color: var(--pink); }
+    .callout.yw { border-left-color: var(--yellow); background: #fffbea; }
+    .callout strong { color: var(--text-primary); }
+
+    /* ─── Inline list ─────────────────────────────────── */
+    .ilist { list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 0.75rem 0 1rem; }
+    .ilist li { font-size: 14px; color: var(--text-secondary); padding-left: 18px; position: relative; line-height: 1.65; }
+    .ilist li::before { content: '▸'; position: absolute; left: 0; color: var(--lavender); font-size: 10px; top: 3px; }
+    .ilist li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Glossary cards ──────────────────────────────── */
+    .glossary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 1.25rem 0; }
+    .gloss-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; border-left: 3px solid var(--lavender); }
+    .gloss-card:nth-child(2) { border-left-color: var(--pink); }
+    .gloss-card:nth-child(3) { border-left-color: var(--yellow); }
+    .gloss-card:nth-child(4) { border-left-color: var(--violet); }
+    .gloss-term { font-size: 12px; font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); letter-spacing: 0.04em; margin-bottom: 4px; }
+    .gloss-def { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
+
+    /* ─── Model variation cards ───────────────────────── */
+    .model-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1.25rem 0; }
+    .model-card { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+    .model-card-head { padding: 12px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-mono); }
+    .model-card-head.enc  { background: var(--lavender); color: #fff; }
+    .model-card-head.encdec { background: var(--violet);  color: var(--yellow); }
+    .model-card-head.dec  { background: var(--pink);    color: #fff; }
+    .model-card-body { background: #fff; padding: 12px 14px; }
+    .model-card-objective { font-size: 11px; font-family: var(--font-mono); color: var(--lavender); font-weight: 700; margin-bottom: 6px; }
+    .model-card-body ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .model-card-body li { font-size: 12.5px; color: var(--text-secondary); padding-left: 12px; position: relative; line-height: 1.4; }
+    .model-card-body li::before { content: '·'; position: absolute; left: 3px; color: var(--lavender); font-weight: 700; }
+    .model-card-examples { font-size: 11.5px; margin-top: 8px; color: var(--text-tertiary); font-style: italic; }
+
+    /* ─── Shot inference cards ────────────────────────── */
+    .shot-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1.25rem 0; }
+    .shot-card { border-radius: var(--radius-md); padding: 1rem 1.1rem; border: 1px solid var(--border); }
+    .shot-card.zero  { background: linear-gradient(135deg, rgba(147,122,255,0.12), rgba(147,122,255,0.04)); }
+    .shot-card.one   { background: linear-gradient(135deg, rgba(255,61,154,0.12), rgba(255,61,154,0.04)); }
+    .shot-card.few   { background: linear-gradient(135deg, rgba(86,39,255,0.12), rgba(86,39,255,0.04)); }
+    .shot-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 6px; }
+    .shot-card.zero .shot-label { color: var(--lavender); }
+    .shot-card.one  .shot-label { color: var(--pink); }
+    .shot-card.few  .shot-label { color: var(--violet); }
+    .shot-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+
+    /* ─── Table ───────────────────────────────────────── */
+    .tbl-wrap { overflow-x: auto; margin: 1.25rem 0; border-radius: var(--radius-md); border: 1px solid var(--border); }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th { background: var(--violet); color: var(--yellow); padding: 10px 14px; text-align: left; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+    .tbl td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; line-height: 1.5; }
+    .tbl tr:last-child td { border-bottom: none; }
+    .tbl tr:nth-child(even) td { background: var(--bg-surface); }
+    .tbl td:first-child { font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); font-size: 12px; }
+    .tbl .hl { color: var(--violet); font-weight: 600; }
+    .tbl .good { color: #16a34a; font-weight: 600; }
+    .tbl .warn { color: var(--pink); font-weight: 600; }
+
+    /* ─── Steps list ──────────────────────────────────── */
+    .steps { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 1.25rem 0; }
+    .step { display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; background: var(--violet); color: var(--yellow); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .step-body { font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; }
+    .step-body strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Pipeline ────────────────────────────────────── */
+    .pipeline { display: flex; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); margin: 1.25rem 0; }
+    .pipe { flex: 1; padding: 1rem; background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+    .pipe:last-child { border-right: none; }
+    .pipe.active { background: var(--violet); }
+    .pipe-name { font-size: 12px; font-weight: 700; color: var(--text-primary); }
+    .pipe.active .pipe-name { color: var(--yellow); }
+    .pipe-desc { font-size: 11.5px; color: var(--text-tertiary); line-height: 1.4; }
+    .pipe.active .pipe-desc { color: rgba(248,219,70,0.55); }
+
+    /* ─── Code / mono block ───────────────────────────── */
+    .mono-block { background: var(--dark); color: #d4c8ff; border-radius: var(--radius-md); padding: 1.1rem 1.3rem; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.75; overflow-x: auto; white-space: pre; margin: 1rem 0; border: 1px solid rgba(255,255,255,0.04); }
+    .mk { color: #937AFF; } .ms { color: #F8DB46; } .mp { color: #FF3D9A; }
+    code { font-family: var(--font-mono); font-size: 12px; background: var(--bg-raised); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; color: var(--violet); }
+
+    /* ─── Quantization comparison ─────────────────────── */
+    .quant-grid { display: flex; flex-direction: column; gap: 0; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); margin: 1.25rem 0; }
+    .quant-row { display: grid; grid-template-columns: 80px 60px 70px 80px 1fr; align-items: center; border-bottom: 1px solid var(--border); background: #fff; }
+    .quant-row:last-child { border-bottom: none; }
+    .quant-row:nth-child(even) { background: var(--bg-surface); }
+    .quant-row.header { background: var(--violet); }
+    .quant-cell { padding: 9px 12px; font-size: 12px; color: var(--text-secondary); }
+    .quant-row.header .quant-cell { color: var(--yellow); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-mono); }
+    .quant-cell:first-child { font-family: var(--font-mono); font-weight: 700; color: var(--violet); }
+    .quant-row.header .quant-cell:first-child { color: var(--yellow); }
+    .quant-bar-cell { padding: 6px 12px; }
+    .quant-bar-bg { height: 10px; border-radius: 99px; background: var(--bg-raised); overflow: hidden; }
+    .quant-bar-fill { height: 100%; border-radius: 99px; }
+    .best-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--lavender); color: #fff; margin-left: 6px; vertical-align: middle; }
+
+    /* ─── ZeRO stages ─────────────────────────────────── */
+    .zero-stages { display: flex; flex-direction: column; gap: 0; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); margin: 1.25rem 0; }
+    .zero-row { display: flex; align-items: center; border-bottom: 1px solid var(--border); background: #fff; }
+    .zero-row:last-child { border-bottom: none; }
+    .zero-label { width: 110px; flex-shrink: 0; padding: 12px 14px; font-size: 12px; font-weight: 700; font-family: var(--font-mono); border-right: 1px solid var(--border); }
+    .zero-label.base { color: var(--text-tertiary); }
+    .zero-label.s1 { color: var(--lavender); }
+    .zero-label.s2 { color: var(--pink); }
+    .zero-label.s3 { color: var(--violet); }
+    .zero-bars { flex: 1; padding: 10px 14px; display: flex; gap: 6px; align-items: center; }
+    .zero-seg { height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; letter-spacing: 0.04em; }
+    .z-param { background: var(--violet); }
+    .z-grad  { background: var(--lavender); }
+    .z-opt   { background: var(--pink); }
+    .z-empty { background: var(--bg-raised); }
+    .zero-desc { font-size: 11.5px; color: var(--text-tertiary); padding: 0 14px 0 0; min-width: 140px; line-height: 1.4; }
+
+    /* ─── Chinchilla triangle ─────────────────────────── */
+    .chinchilla-note { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin: 1.25rem 0; display: flex; gap: 1.5rem; align-items: center; }
+    .chinchilla-note p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0; }
+    .chinchilla-note strong { color: var(--text-primary); }
+
+    /* ─── Resource list ───────────────────────────────── */
+    .ref-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 1rem 0; }
+    .ref-list li { font-size: 13.5px; color: var(--text-secondary); padding-left: 20px; position: relative; line-height: 1.6; }
+    .ref-list li::before { content: '↗'; position: absolute; left: 0; color: var(--violet); font-size: 12px; top: 1px; }
+    .ref-list a { color: var(--violet); text-decoration: underline; text-decoration-color: rgba(86,39,255,0.3); }
+
+    /* ─── Footer ──────────────────────────────────────── */
+    footer { border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-tertiary); flex-wrap: wrap; gap: 10px; }
+    footer a { color: var(--text-tertiary); transition: color 0.15s; }
+    footer a:hover { color: var(--text-primary); }
+
+    /* ─── Responsive ──────────────────────────────────── */
+    @media (max-width: 900px) { .post-layout { grid-template-columns: 1fr; } .post-toc { display: none; } .model-cards, .shot-grid { grid-template-columns: 1fr; } .glossary { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) { .nav-links { display: none; } .page { padding: 0 1rem 4rem; } .nav-inner { padding: 0 1rem; } .pipeline { flex-direction: column; } .pipe { border-right: none; border-bottom: 1px solid var(--border); } .chinchilla-note { flex-direction: column; } }
+  </style>
+</head>
+<body>
+
+<!-- ─── Nav ──────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+    <ul class="nav-links">
+      <li><a href="https://sumitkant.github.io/blog.html" class="active">Blog</a></li>
+      <li><a href="https://sumitkant.github.io/bookshelf.html">Books &amp; Reading</a></li>
+      <li><a href="https://sumitkant.github.io/johnnysmusiclab.html">Music Lab</a></li>
+      <li><a href="https://sumitkant.github.io/deep-learning.html">AI Lab</a></li>
+      <li><a href="https://sumitkant.github.io/neuralnotework.html">My Second Brain</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ─── Banner ────────────────────────────────────────── -->
+  <div style="margin:3rem 0 0;border-radius:14px;overflow:hidden;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="100%" style="display:block;">
+      <defs>
+        <linearGradient id="vb" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"   stop-color="#12073a"/>
+          <stop offset="45%"  stop-color="#5627FF"/>
+          <stop offset="80%"  stop-color="#937AFF"/>
+          <stop offset="100%" stop-color="#FF3D9A" stop-opacity="0.9"/>
+        </linearGradient>
+        <pattern id="vp" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="11" cy="11" r="1" fill="#F8DB46" opacity="0.18"/>
+        </pattern>
+      </defs>
+      <rect width="1100" height="300" fill="url(#vb)"/>
+      <rect width="1100" height="300" fill="url(#vp)"/>
+      <!-- Attention web — simulating a transformer attention map -->
+      <g opacity="0.14" stroke="#F8DB46" stroke-width="0.6">
+        <!-- left column tokens -->
+        <line x1="820" y1="60"  x2="980" y2="60"/>  <line x1="820" y1="60"  x2="980" y2="100"/>
+        <line x1="820" y1="60"  x2="980" y2="140"/> <line x1="820" y1="60"  x2="980" y2="180"/>
+        <line x1="820" y1="100" x2="980" y2="60"/>  <line x1="820" y1="100" x2="980" y2="100"/>
+        <line x1="820" y1="100" x2="980" y2="140"/> <line x1="820" y1="100" x2="980" y2="180"/>
+        <line x1="820" y1="140" x2="980" y2="60"/>  <line x1="820" y1="140" x2="980" y2="100"/>
+        <line x1="820" y1="140" x2="980" y2="140"/> <line x1="820" y1="140" x2="980" y2="180"/>
+        <line x1="820" y1="180" x2="980" y2="60"/>  <line x1="820" y1="180" x2="980" y2="100"/>
+        <line x1="820" y1="180" x2="980" y2="140"/> <line x1="820" y1="180" x2="980" y2="180"/>
+        <line x1="820" y1="220" x2="980" y2="60"/>  <line x1="820" y1="220" x2="980" y2="180"/>
+      </g>
+      <!-- Highlighted attention connections (stronger) -->
+      <g stroke="#F8DB46" stroke-width="1.5" opacity="0.45">
+        <line x1="820" y1="100" x2="980" y2="140"/>
+        <line x1="820" y1="140" x2="980" y2="60"/>
+        <line x1="820" y1="180" x2="980" y2="100"/>
+      </g>
+      <!-- Token nodes left -->
+      <g fill="#937AFF">
+        <circle cx="820" cy="60"  r="6"/> <circle cx="820" cy="100" r="6"/>
+        <circle cx="820" cy="140" r="6"/> <circle cx="820" cy="180" r="6"/>
+        <circle cx="820" cy="220" r="6"/>
+      </g>
+      <!-- Token labels left -->
+      <g font-family="'Plus Jakarta Sans',system-ui" font-size="9.5" fill="#937AFF" opacity="0.7">
+        <text x="788" y="63"  text-anchor="end">The</text>
+        <text x="788" y="103" text-anchor="end">teacher</text>
+        <text x="788" y="143" text-anchor="end">taught</text>
+        <text x="788" y="183" text-anchor="end">the</text>
+        <text x="788" y="223" text-anchor="end">student</text>
+      </g>
+      <!-- Token nodes right -->
+      <g fill="#FF3D9A">
+        <circle cx="980" cy="60"  r="6"/> <circle cx="980" cy="100" r="6"/>
+        <circle cx="980" cy="140" r="6"/> <circle cx="980" cy="180" r="6"/>
+      </g>
+      <g font-family="'Plus Jakarta Sans',system-ui" font-size="9.5" fill="#FF3D9A" opacity="0.7">
+        <text x="992" y="63">The</text>  <text x="992" y="103">teacher</text>
+        <text x="992" y="143">taught</text><text x="992" y="183">student</text>
+      </g>
+      <!-- Attention label -->
+      <text x="900" y="248" font-family="'Plus Jakarta Sans',system-ui" font-size="9" font-weight="600" fill="#F8DB46" opacity="0.45" text-anchor="middle" letter-spacing="1.5">SELF ATTENTION MAP</text>
+      <!-- Title -->
+      <text x="58" y="100" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" letter-spacing="3" fill="#937AFF" opacity="0.75">GENERATIVE AI WITH LLMs · COURSERA</text>
+      <text x="56" y="158" font-family="'Plus Jakarta Sans',system-ui" font-size="48" font-weight="800" letter-spacing="-2" fill="#fff" opacity="0.97">Transformers &amp;</text>
+      <text x="56" y="210" font-family="'Plus Jakarta Sans',system-ui" font-size="48" font-weight="800" letter-spacing="-2" fill="#F8DB46" opacity="0.97">Pre-training</text>
+      <rect x="56" y="220" width="360" height="3" rx="1.5" fill="#FF3D9A" opacity="0.75"/>
+      <text x="56" y="256" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="400" letter-spacing="1.5" fill="#fff" opacity="0.3">USE CASES · LIFECYCLE · SCALING LAWS · WEEK 1</text>
+    </svg>
+  </div>
+
+  <!-- ─── Hero ──────────────────────────────────────────── -->
+  <header class="post-hero">
+    <p class="hero-eyebrow">Course Notes · Generative AI with LLMs · Coursera</p>
+    <h1 class="hero-title"><strong>Transformers, Pre-training</strong> &amp; the GenAI Lifecycle</h1>
+    <p class="hero-sub">Week 1 deep-dive: what LLMs are, how the Transformer architecture works from tokenisation through softmax, three model variants, prompting strategies, generative configuration, the project lifecycle, quantization, distributed training, and Chinchilla scaling laws.</p>
+  </header>
+
+  <!-- ─── Meta ─────────────────────────────────────────── -->
+  <div class="post-meta">
+    <span class="meta-tag v">Transformers</span>
+    <span class="meta-tag l">Pre-training</span>
+    <span class="meta-tag p">Scaling Laws</span>
+    <span class="meta-tag">Coursera</span>
+    <span class="meta-dot">·</span>
+    <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--text-tertiary);padding-left:0;">Generative AI with LLMs · Week 1</span>
+  </div>
+
+  <div class="post-layout">
+  <article class="post-prose">
+
+    <!-- 01 Generative AI & LLMs -->
+    <section id="genai">
+      <h2><span class="h2-num">01</span> Generative AI &amp; Large Language Models</h2>
+      <p><strong>Generative AI</strong> — machines capable of creating content that mimics human ability — is a subset of traditional machine learning. The models learn by finding statistical patterns in massive datasets of human-created content.</p>
+      <p><strong>Large Language Models (LLMs)</strong> are trained on billions of words from the internet. Base models include GPT, FLAN-T5, BERT, LLaMA, BLOOM, and PaLM. Models are differentiated by <strong>parameter count</strong> — larger models have more memory and can tackle more complex tasks. Smaller models can be fine-tuned for narrow, focused tasks.</p>
+
+      <div class="highlight-quote">
+        <p>The subjective understanding of language the model has <strong>increases as the number of parameters increases</strong> — this is what processes and solves the task the user has prompted.</p>
+      </div>
+
+      <h3><span class="h3-pip lav"></span>Key Terminology</h3>
+      <div class="glossary">
+        <div class="gloss-card"><div class="gloss-term">Prompt</div><div class="gloss-def">Human input to the model to perform a task</div></div>
+        <div class="gloss-card"><div class="gloss-term">Context Window</div><div class="gloss-def">Memory available to the prompt — typically a few thousand words; differs per model</div></div>
+        <div class="gloss-card"><div class="gloss-term">Completion</div><div class="gloss-def">The output the model generates in response to a prompt</div></div>
+        <div class="gloss-card"><div class="gloss-term">Inference</div><div class="gloss-def">The act of using a trained model to generate text</div></div>
+      </div>
+
+      <h3><span class="h3-pip pk"></span>LLM Use Cases &amp; Tasks</h3>
+      <p>Predicting the next word is the basis of all LLM output. From this single objective, a vast range of tasks emerge:</p>
+      <ul class="ilist">
+        <li>Essay and long-form writing</li>
+        <li>Summarise long text into short output</li>
+        <li>Machine translation between languages</li>
+        <li>Generate code from natural language</li>
+        <li>Information retrieval — named entity extraction</li>
+        <li><strong>Augmenting LLMs</strong> by interacting with external APIs and databases — providing information not available at pre-training time</li>
+      </ul>
+    </section>
+
+    <!-- 02 Transformer Architecture -->
+    <section id="transformer">
+      <h2><span class="h2-num">02</span> Transformer Architecture</h2>
+
+      <h3><span class="h3-pip lav"></span>Before Transformers — RNNs</h3>
+      <p>Recurrent Neural Networks (RNNs) were powerful for their time but limited by computing and memory requirements. Even after scaling, they struggled to look beyond immediately previous words to understand language in the context of an entire sentence, paragraph, or document.</p>
+      <p>The breakthrough came in 2017 with <strong>"Attention is All You Need"</strong>, published by Google and the University of Toronto. Transformers allowed efficient scaling, parallel processing of input data, and the ability to learn which words to pay attention to.</p>
+
+      <div class="highlight-quote pink">
+        <p>The power of the Transformer lies in its ability to learn the <strong>mapping between every word in a sentence and every other word</strong> — simultaneously, not sequentially. This is Self-Attention.</p>
+      </div>
+
+      <!-- Transformer block diagram SVG -->
+      <svg viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:540px;margin:1.25rem auto;border-radius:12px;background:#fff;border:1px solid var(--border);">
+        <defs><marker id="va" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#5627FF" stroke-width="1.2"/></marker></defs>
+        <!-- Encoder side -->
+        <rect x="30" y="30" width="220" height="240" rx="8" fill="#f0ecff" stroke="#937AFF" stroke-width="1.5"/>
+        <text x="140" y="22" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" fill="#937AFF" text-anchor="middle" letter-spacing="1">ENCODER</text>
+        <!-- Encoder layers -->
+        <rect x="50"  y="50"  width="180" height="30" rx="5" fill="#937AFF" opacity="0.85"/>
+        <text x="140" y="70" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">Multi-Head Attention</text>
+        <rect x="50"  y="96" width="180" height="30" rx="5" fill="#b09dff" opacity="0.7"/>
+        <text x="140" y="116" font-family="'Plus Jakarta Sans',system-ui" font-size="11" fill="#fff" text-anchor="middle">Feed Forward Network</text>
+        <rect x="50"  y="142" width="180" height="30" rx="5" fill="#d4caff" opacity="0.8"/>
+        <text x="140" y="162" font-family="'Plus Jakarta Sans',system-ui" font-size="11" fill="#5627FF" font-weight="600" text-anchor="middle">Positional Encoding</text>
+        <rect x="50"  y="188" width="180" height="30" rx="5" fill="#e4dbff"/>
+        <text x="140" y="208" font-family="'Plus Jakarta Sans',system-ui" font-size="11" fill="#5627FF" text-anchor="middle">Embedding Layer</text>
+        <text x="140" y="255" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="600" fill="#937AFF" text-anchor="middle">Inputs</text>
+        <line x1="140" y1="245" x2="140" y2="220" stroke="#937AFF" stroke-width="1.5" marker-end="url(#va)"/>
+        <!-- Decoder side -->
+        <rect x="310" y="30" width="220" height="240" rx="8" fill="#fff0f7" stroke="#FF3D9A" stroke-width="1.5"/>
+        <text x="420" y="22" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" fill="#FF3D9A" text-anchor="middle" letter-spacing="1">DECODER</text>
+        <rect x="330" y="50"  width="180" height="30" rx="5" fill="#FF3D9A" opacity="0.85"/>
+        <text x="420" y="70" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">Softmax Output</text>
+        <rect x="330" y="96" width="180" height="30" rx="5" fill="#ff7dc2" opacity="0.7"/>
+        <text x="420" y="116" font-family="'Plus Jakarta Sans',system-ui" font-size="11" fill="#fff" text-anchor="middle">Feed Forward Network</text>
+        <rect x="330" y="142" width="180" height="30" rx="5" fill="#ffa8d8" opacity="0.8"/>
+        <text x="420" y="162" font-family="'Plus Jakarta Sans',system-ui" font-size="11" fill="#5627FF" font-weight="600" text-anchor="middle">Cross-Attention (Enc→Dec)</text>
+        <rect x="330" y="188" width="180" height="30" rx="5" fill="#ffd4eb"/>
+        <text x="420" y="208" font-family="'Plus Jakarta Sans',system-ui" font-size="11" fill="#FF3D9A" text-anchor="middle">Masked Self-Attention</text>
+        <text x="420" y="255" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="600" fill="#FF3D9A" text-anchor="middle">Inputs + &lt;SOS&gt;</text>
+        <line x1="420" y1="245" x2="420" y2="220" stroke="#FF3D9A" stroke-width="1.5" marker-end="url(#va)"/>
+        <!-- Cross arrow enc→dec -->
+        <path d="M240 115 L320 115" stroke="#F8DB46" stroke-width="2" stroke-dasharray="4 3"/>
+        <path d="M316 111 L324 115 L316 119" fill="#F8DB46"/>
+        <text x="280" y="109" font-family="'Plus Jakarta Sans',system-ui" font-size="8.5" fill="#F8DB46" text-anchor="middle" font-weight="700">encoding</text>
+      </svg>
+
+      <h3><span class="h3-pip yw"></span>Step-by-step: How data flows</h3>
+      <ol class="steps">
+        <li class="step"><div class="step-num">1</div><div class="step-body"><strong>Tokeniser</strong> — converts text to integer token IDs. Must use the same tokeniser for training and inference.</div></li>
+        <li class="step"><div class="step-num">2</div><div class="step-body"><strong>Embedding layer</strong> — maps each token ID to a high-dimensional vector. Vectors encode meaning and context. Original Transformer uses 512-dimensional vectors.</div></li>
+        <li class="step"><div class="step-num">3</div><div class="step-body"><strong>Positional encoding</strong> — added to embeddings to preserve word order, since input is processed in parallel (not sequentially).</div></li>
+        <li class="step"><div class="step-num">4</div><div class="step-body"><strong>Self-Attention</strong> — the model analyses relationships between all tokens simultaneously. Attention weights identify how much each word depends on every other word.</div></li>
+        <li class="step"><div class="step-num">5</div><div class="step-body"><strong>Multi-Head Attention</strong> — multiple sets of attention weights learned in parallel (12–100 heads are common). Each head learns a different linguistic aspect — one head for named entities, another for activities, etc. Weights are randomly initialised and emerge from training.</div></li>
+        <li class="step"><div class="step-num">6</div><div class="step-body"><strong>Feed-forward network</strong> — processes the attended representations into a vector of logits, one per token in the vocabulary.</div></li>
+        <li class="step"><div class="step-num">7</div><div class="step-body"><strong>Softmax layer</strong> — converts logits into probabilities over the full vocabulary — one probability per possible next token.</div></li>
+      </ol>
+    </section>
+
+    <!-- 03 Model Variants -->
+    <section id="variants">
+      <h2><span class="h2-num">03</span> Transformer Model Variants</h2>
+      <p>The encoder and decoder components can be used independently or together, giving rise to three distinct model families:</p>
+      <div class="model-cards">
+        <div class="model-card">
+          <div class="model-card-head enc">Encoder-Only</div>
+          <div class="model-card-body">
+            <div class="model-card-objective">Autoencoding · MLM</div>
+            <ul>
+              <li>Masked language modeling — predict masked tokens (denoising)</li>
+              <li>Builds bidirectional context representations</li>
+              <li>Sentiment analysis, NER, word classification</li>
+            </ul>
+            <div class="model-card-examples">BERT, RoBERTa</div>
+          </div>
+        </div>
+        <div class="model-card">
+          <div class="model-card-head encdec">Encoder-Decoder</div>
+          <div class="model-card-body">
+            <div class="model-card-objective">Seq2Seq · Span Corruption</div>
+            <ul>
+              <li>Input and output sequences can have different lengths</li>
+              <li>T5 uses span corruption: mask spans, reconstruct via decoder</li>
+              <li>Translation, summarisation, Q&amp;A</li>
+            </ul>
+            <div class="model-card-examples">T5, BART, BARD</div>
+          </div>
+        </div>
+        <div class="model-card">
+          <div class="model-card-head dec">Decoder-Only</div>
+          <div class="model-card-body">
+            <div class="model-card-objective">Autoregressive · CLM</div>
+            <ul>
+              <li>Causal language modeling — predict next token from previous tokens</li>
+              <li>Unidirectional context only</li>
+              <li>Text generation, zero-shot capabilities</li>
+            </ul>
+            <div class="model-card-examples">GPT, BLOOM, LLaMA, Jurassic</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Prompting -->
+    <section id="prompting">
+      <h2><span class="h2-num">04</span> Prompting &amp; In-context Learning</h2>
+      <p>Developing and improving a prompt is <strong>Prompt Engineering</strong>. Providing examples inside the prompt is <strong>In-context Learning (ICL)</strong> — it helps the model learn the task at hand without updating any weights.</p>
+
+      <div class="shot-grid">
+        <div class="shot-card zero">
+          <div class="shot-label">Zero-shot</div>
+          <div class="shot-desc">Only the task description is provided. Large models can often predict correctly; smaller models may fail.</div>
+        </div>
+        <div class="shot-card one">
+          <div class="shot-label">One-shot</div>
+          <div class="shot-desc">One example is included in the prompt alongside the task. Helps smaller models understand the required format.</div>
+        </div>
+        <div class="shot-card few">
+          <div class="shot-label">Few-shot</div>
+          <div class="shot-desc">Multiple examples provided. Even smaller models that fail at one-shot can succeed with more examples — up to the context window limit.</div>
+        </div>
+      </div>
+
+      <div class="callout pk">
+        Larger models generally understand tasks better from the description alone. Smaller models <strong>benefit significantly from few-shot examples</strong>, as long as the examples fit within the context window.
+      </div>
+    </section>
+
+    <!-- 05 Generative Configuration -->
+    <section id="config">
+      <h2><span class="h2-num">05</span> Generative Configuration</h2>
+      <p>Configuration parameters invoked at <strong>inference time</strong> to influence next-token selection:</p>
+
+      <h3><span class="h3-pip lav"></span>Max New Tokens</h3>
+      <p>Limits the number of tokens the model generates. Does not guarantee the model will reach that limit — it may emit an <code>&lt;EOS&gt;</code> token earlier.</p>
+
+      <h3><span class="h3-pip pk"></span>Greedy vs Random Sampling</h3>
+      <ul class="ilist">
+        <li><strong>Greedy (default)</strong> — always selects the word with highest probability. Susceptible to repetitive sequences.</li>
+        <li><strong>Random sampling</strong> — selects based on probability distribution, sounds more natural. Model can wander and lose coherence.</li>
+        <li><strong>Top-K sampling</strong> — randomly sample from the top K highest-probability tokens. Keeps responses relevant without repetition.</li>
+        <li><strong>Top-p sampling</strong> — sample from the smallest set of tokens whose cumulative probability ≤ p. Adapts the candidate pool dynamically.</li>
+      </ul>
+
+      <h3><span class="h3-pip yw"></span>Temperature</h3>
+      <p>A scaling factor applied to the softmax layer that shapes the probability distribution:</p>
+
+      <!-- Temperature SVG diagram -->
+      <svg viewBox="0 0 560 130" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:520px;margin:1rem 0;border-radius:10px;background:#fff;border:1px solid var(--border);">
+        <!-- Cold temp bars -->
+        <text x="155" y="18" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" fill="#937AFF" text-anchor="middle">Temp &lt; 1 (cold)</text>
+        <text x="155" y="32" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="#9580cc" text-anchor="middle">Strongly peaked</text>
+        <g>
+          <rect x="55"  y="40" width="16" height="65" rx="3" fill="#937AFF" opacity="0.3"/>
+          <rect x="76"  y="40" width="16" height="65" rx="3" fill="#937AFF" opacity="0.3"/>
+          <rect x="97"  y="13" width="16" height="92" rx="3" fill="#937AFF"/>
+          <rect x="118" y="55" width="16" height="50" rx="3" fill="#937AFF" opacity="0.3"/>
+          <rect x="139" y="70" width="16" height="35" rx="3" fill="#937AFF" opacity="0.2"/>
+          <rect x="160" y="80" width="16" height="25" rx="3" fill="#937AFF" opacity="0.15"/>
+          <rect x="181" y="88" width="16" height="17" rx="3" fill="#937AFF" opacity="0.1"/>
+          <rect x="202" y="93" width="16" height="12" rx="3" fill="#937AFF" opacity="0.1"/>
+        </g>
+        <line x1="40" y1="108" x2="230" y2="108" stroke="#e4dbff" stroke-width="1"/>
+        <text x="105" y="120" font-family="ui-monospace,monospace" font-size="8.5" fill="#937AFF" text-anchor="middle" font-weight="700">→ "cake"</text>
+
+        <!-- Divider -->
+        <line x1="280" y1="10" x2="280" y2="120" stroke="#f0ecff" stroke-width="1.5"/>
+
+        <!-- Hot temp bars -->
+        <text x="415" y="18" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" fill="#FF3D9A" text-anchor="middle">Temp &gt; 1 (warm)</text>
+        <text x="415" y="32" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="#9580cc" text-anchor="middle">Broader, flatter</text>
+        <g>
+          <rect x="310" y="58" width="16" height="47" rx="3" fill="#FF3D9A" opacity="0.55"/>
+          <rect x="331" y="52" width="16" height="53" rx="3" fill="#FF3D9A" opacity="0.55"/>
+          <rect x="352" y="45" width="16" height="60" rx="3" fill="#FF3D9A" opacity="0.7"/>
+          <rect x="373" y="42" width="16" height="63" rx="3" fill="#FF3D9A"/>
+          <rect x="394" y="50" width="16" height="55" rx="3" fill="#FF3D9A" opacity="0.65"/>
+          <rect x="415" y="58" width="16" height="47" rx="3" fill="#FF3D9A" opacity="0.5"/>
+          <rect x="436" y="65" width="16" height="40" rx="3" fill="#FF3D9A" opacity="0.4"/>
+          <rect x="457" y="70" width="16" height="35" rx="3" fill="#FF3D9A" opacity="0.35"/>
+        </g>
+        <line x1="300" y1="108" x2="490" y2="108" stroke="#ffd4eb" stroke-width="1"/>
+        <text x="395" y="120" font-family="ui-monospace,monospace" font-size="8.5" fill="#FF3D9A" text-anchor="middle" font-weight="700">→ more creative variety</text>
+      </svg>
+
+      <div class="callout yw">
+        <strong>Temperature = 1</strong> — default softmax distribution. <strong>&gt; 1</strong> — broader, flatter, more creative. <strong>&lt; 1</strong> — strongly peaked, more deterministic and conservative.
+      </div>
+    </section>
+
+    <!-- 06 Project Lifecycle -->
+    <section id="lifecycle">
+      <h2><span class="h2-num">06</span> Generative AI Project Lifecycle</h2>
+      <div class="pipeline">
+        <div class="pipe active"><div class="pipe-name">1. Scope</div><div class="pipe-desc">Define function — single task or many? Compute budget?</div></div>
+        <div class="pipe"><div class="pipe-name">2. Select</div><div class="pipe-desc">Existing foundation model or train your own?</div></div>
+        <div class="pipe"><div class="pipe-name">3. Adapt &amp; Align</div><div class="pipe-desc">In-context learning → fine-tuning → RLHF</div></div>
+        <div class="pipe"><div class="pipe-name">4. Integrate</div><div class="pipe-desc">Optimise for deployment, build LLM-powered app</div></div>
+      </div>
+      <ul class="ilist">
+        <li><strong>Scope:</strong> decide the function — single task models may only require small models</li>
+        <li><strong>Select:</strong> in general, starting with an existing foundation model is better than training from scratch</li>
+        <li><strong>Adapt &amp; Align:</strong> start with in-context learning; add fine-tuning and RLHF if performance isn't satisfactory</li>
+        <li><strong>Application integration:</strong> optimise for inference, build additional infrastructure as required</li>
+      </ul>
+    </section>
+
+    <!-- 07 Pre-training -->
+    <section id="pretraining">
+      <h2><span class="h2-num">07</span> LLM Pre-training</h2>
+      <p>LLMs encode deep statistical representations of language during pre-training. Model weights are updated to minimise the loss function. LLMs require massive amounts of unstructured text — web scrapes require extensive cleaning, resulting in only <strong>1–3% of original tokens</strong> actually being used for training.</p>
+
+      <div class="highlight-quote lav">
+        <p><strong>Model Cards</strong> — read them. They document how the model was trained, what it's good for, its known limitations, and its architecture and pre-training objectives.</p>
+      </div>
+
+      <h3><span class="h3-pip lav"></span>Three Pre-training Architectures</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Architecture</th><th>Training Objective</th><th>Context</th><th>Best For</th><th>Examples</th></tr></thead>
+          <tbody>
+            <tr><td>Encoder-only</td><td>Masked Language Modeling (MLM) — predict masked tokens</td><td>Bidirectional</td><td class="hl">Classification, NER, sentiment</td><td>BERT, RoBERTa</td></tr>
+            <tr><td>Decoder-only</td><td>Causal Language Modeling (CLM) — predict next token</td><td>Unidirectional</td><td class="hl">Text generation, zero-shot</td><td>GPT, BLOOM, LLaMA</td></tr>
+            <tr><td>Encoder-Decoder</td><td>Span corruption — mask spans, reconstruct</td><td>Both</td><td class="hl">Translation, summarisation, Q&amp;A</td><td>T5, BART</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 08 Quantization -->
+    <section id="quantization">
+      <h2><span class="h2-num">08</span> Computation Challenges &amp; Quantization</h2>
+      <p>Training a 1B parameter model requires <strong>at minimum ~24GB of GPU memory</strong> — 4 bytes per parameter for weights + 8 bytes for Adam optimizer states + 4 bytes for gradients + 8 bytes for activations = ~20 extra bytes per parameter during training.</p>
+      <p><strong>Quantization</strong> reduces memory by lowering numerical precision:</p>
+
+      <div class="quant-grid">
+        <div class="quant-row header">
+          <div class="quant-cell">Format</div>
+          <div class="quant-cell">Bits</div>
+          <div class="quant-cell">Exponent</div>
+          <div class="quant-cell">Fraction</div>
+          <div class="quant-cell">Memory / value</div>
+        </div>
+        <div class="quant-row">
+          <div class="quant-cell">FP32</div>
+          <div class="quant-cell">32</div>
+          <div class="quant-cell">8 bits</div>
+          <div class="quant-cell">23 bits</div>
+          <div class="quant-bar-cell"><div class="quant-bar-bg"><div class="quant-bar-fill" style="width:100%;background:var(--violet)"></div></div><small style="font-size:11px;color:var(--text-secondary)">4 bytes — default precision</small></div>
+        </div>
+        <div class="quant-row">
+          <div class="quant-cell">FP16</div>
+          <div class="quant-cell">16</div>
+          <div class="quant-cell">5 bits</div>
+          <div class="quant-cell">10 bits</div>
+          <div class="quant-bar-cell"><div class="quant-bar-bg"><div class="quant-bar-fill" style="width:50%;background:var(--lavender)"></div></div><small style="font-size:11px;color:var(--text-secondary)">2 bytes — half memory<span class="best-tag" style="background:var(--lavender)">½ memory</span></small></div>
+        </div>
+        <div class="quant-row">
+          <div class="quant-cell">BFloat16</div>
+          <div class="quant-cell">16</div>
+          <div class="quant-cell">8 bits</div>
+          <div class="quant-cell">7 bits</div>
+          <div class="quant-bar-cell"><div class="quant-bar-bg"><div class="quant-bar-fill" style="width:50%;background:var(--pink)"></div></div><small style="font-size:11px;color:var(--text-secondary)">2 bytes — training stable<span class="best-tag" style="background:var(--pink)">recommended</span></small></div>
+        </div>
+        <div class="quant-row">
+          <div class="quant-cell">INT8</div>
+          <div class="quant-cell">8</div>
+          <div class="quant-cell">—</div>
+          <div class="quant-cell">7 bits</div>
+          <div class="quant-bar-cell"><div class="quant-bar-bg"><div class="quant-bar-fill" style="width:25%;background:var(--yellow)"></div></div><small style="font-size:11px;color:var(--text-secondary)">1 byte — quarter memory<span class="best-tag" style="background:var(--yellow);color:var(--dark)">¼ memory</span></small></div>
+        </div>
+      </div>
+
+      <p><strong>BFloat16 (Google Brain's format)</strong> is a hybrid of FP32 and FP16 — it keeps the full 8-bit exponent of FP32 (preserving range) but truncates the fraction from 23 to 7 bits. This leads to training stability while halving memory. Most modern models are trained with BFloat16.</p>
+
+      <div class="highlight-quote yellow">
+        <p>Impact: FP16/BF16 reduces GPU memory from <strong>24GB → 12GB</strong> for a 1B model. INT8 reduces it to <strong>6GB</strong>. But 100B+ parameter models still require 100s of GPUs — enter distributed training.</p>
+      </div>
+    </section>
+
+    <!-- 09 Multi-GPU Strategies -->
+    <section id="distributed">
+      <h2><span class="h2-num">09</span> Multi-GPU Training Strategies</h2>
+
+      <h3><span class="h3-pip lav"></span>Distributed Data Parallel (DDP)</h3>
+      <p>PyTorch's DDP copies the full model onto each GPU and sends different data batches in parallel. Each GPU processes its batch independently, then a synchronisation step combines gradients and updates all GPU copies identically.</p>
+      <div class="callout">Requires: weights + optimizer states + gradients all fit on a <strong>single GPU</strong>. Best for: parallel training when model fits on one GPU but you want a speed boost.</div>
+
+      <h3><span class="h3-pip pk"></span>Fully Sharded Data Parallel (FSDP) &amp; ZeRO</h3>
+      <p>When the model doesn't fit on a single GPU, use model sharding. PyTorch's FSDP is motivated by Microsoft's <strong>ZeRO (Zero Redundancy Optimizer)</strong> paper (2019), which distributes model states across GPUs with zero data overlap.</p>
+      <p>In DDP, weights, optimizer states, and gradients are all stored redundantly on every GPU. ZeRO eliminates this redundancy in three stages:</p>
+
+      <div class="zero-stages">
+        <div class="zero-row">
+          <div class="zero-label base">Baseline (DDP)</div>
+          <div class="zero-bars">
+            <div class="zero-seg z-param" style="width:100px">Params</div>
+            <div class="zero-seg z-grad"  style="width:80px">Grads</div>
+            <div class="zero-seg z-opt"   style="width:120px">Optimizer</div>
+          </div>
+          <div class="zero-desc">All redundant on every GPU</div>
+        </div>
+        <div class="zero-row">
+          <div class="zero-label s1">Stage 1</div>
+          <div class="zero-bars">
+            <div class="zero-seg z-param" style="width:100px">Params</div>
+            <div class="zero-seg z-grad"  style="width:80px">Grads</div>
+            <div class="zero-seg z-opt"   style="width:40px;opacity:0.4">⅓</div>
+          </div>
+          <div class="zero-desc">Shard optimizer states only (2× savings)</div>
+        </div>
+        <div class="zero-row">
+          <div class="zero-label s2">Stage 2</div>
+          <div class="zero-bars">
+            <div class="zero-seg z-param" style="width:100px">Params</div>
+            <div class="zero-seg z-grad"  style="width:26px;opacity:0.4">⅓</div>
+            <div class="zero-seg z-opt"   style="width:40px;opacity:0.4">⅓</div>
+          </div>
+          <div class="zero-desc">Shard grads + optimizer states</div>
+        </div>
+        <div class="zero-row">
+          <div class="zero-label s3">Stage 3</div>
+          <div class="zero-bars">
+            <div class="zero-seg z-param" style="width:34px;opacity:0.5">⅓</div>
+            <div class="zero-seg z-grad"  style="width:26px;opacity:0.4">⅓</div>
+            <div class="zero-seg z-opt"   style="width:40px;opacity:0.4">⅓</div>
+          </div>
+          <div class="zero-desc">Shard everything — linear savings with GPU count</div>
+        </div>
+      </div>
+
+      <div class="callout pk">
+        More GPUs ≠ better indefinitely. Communication overhead between GPUs causes <strong>~7% performance decrease</strong> as GPU count increases. Hybrid sharding finds the best tradeoff.
+      </div>
+    </section>
+
+    <!-- 10 Scaling Laws -->
+    <section id="scaling">
+      <h2><span class="h2-num">10</span> Scaling Laws &amp; Chinchilla</h2>
+      <p>Performance (minimising loss) can be improved by increasing <strong>dataset size</strong> (tokens) or <strong>model size</strong> (parameters), subject to a <strong>compute budget</strong> (GPUs × time × cost). Both follow power-law relationships with compute.</p>
+
+      <!-- Scaling triangle SVG -->
+      <svg viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:480px;margin:1rem 0;border-radius:10px;background:#fff;border:1px solid var(--border);">
+        <text x="280" y="24" font-family="'Plus Jakarta Sans',system-ui" font-size="12" font-weight="700" fill="#12073a" text-anchor="middle">Goal: Minimize Loss (Maximize Performance)</text>
+        <!-- Triangle -->
+        <polygon points="280,50 120,160 440,160" fill="#f0ecff" stroke="#937AFF" stroke-width="1.5"/>
+        <!-- Centre -->
+        <circle cx="280" cy="120" r="30" fill="#5627FF" opacity="0.15"/>
+        <text x="280" y="115" font-family="'Plus Jakarta Sans',system-ui" font-size="10" font-weight="700" fill="#5627FF" text-anchor="middle">Model</text>
+        <text x="280" y="128" font-family="'Plus Jakarta Sans',system-ui" font-size="10" font-weight="700" fill="#5627FF" text-anchor="middle">performance</text>
+        <!-- Three vertices -->
+        <rect x="218" y="30" width="124" height="26" rx="6" fill="#937AFF"/>
+        <text x="280" y="47" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Compute budget ↑</text>
+        <rect x="50" y="158" width="116" height="26" rx="6" fill="#FF3D9A"/>
+        <text x="108" y="175" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Dataset size ↑</text>
+        <rect x="394" y="158" width="110" height="26" rx="6" fill="#F8DB46"/>
+        <text x="449" y="175" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" fill="#12073a" text-anchor="middle">Model size ↑</text>
+      </svg>
+
+      <p>1 petaFLOP/s-day = number of floating point operations at 1 petaFLOP/sec for one full day = <strong>8 NVIDIA V100 GPUs</strong> or <strong>2 NVIDIA A100s</strong>.</p>
+
+      <div class="highlight-quote">
+        <p>The <strong>Chinchilla paper</strong> (DeepMind, 2022) found that most large models are over-parameterised and <em>under-trained</em>. The compute-optimal training dataset size is approximately <strong>20× the number of parameters</strong>. GPT-3 (175B params) would need ~3.5T tokens — it was only trained on 300B.</p>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Model</th><th># Parameters</th><th>Compute-optimal tokens (~20×)</th><th>Actual tokens</th></tr></thead>
+          <tbody>
+            <tr><td>Chinchilla</td><td>70B</td><td class="good">~1.4T</td><td class="good">1.4T ✓</td></tr>
+            <tr><td>LLaMA-65B</td><td>65B</td><td>~1.3T</td><td class="good">1.4T ≈ ✓</td></tr>
+            <tr><td>GPT-3</td><td>175B</td><td>~3.5T</td><td class="warn">300B — under-trained</td></tr>
+            <tr><td>OPT-175B</td><td>175B</td><td>~3.5T</td><td class="warn">180B — under-trained</td></tr>
+            <tr><td>BLOOM</td><td>176B</td><td>~3.5T</td><td class="warn">350B — under-trained</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Compute-optimal Chinchilla models outperform larger but under-trained models on a wide range of downstream evaluation tasks. <strong>Smaller, well-trained models can outperform larger ones.</strong></p>
+    </section>
+
+    <!-- 11 Domain Adaptation -->
+    <section id="domain">
+      <h2><span class="h2-num">11</span> Pre-training for Domain Adaptation</h2>
+      <p>Existing LLMs may not suit specialised domains like <strong>legal</strong> (rare vocabulary used in different context than general understanding) or <strong>medicine</strong> (abundant abbreviations and uncommon terms).</p>
+
+      <div class="chinchilla-note">
+        <svg viewBox="0 0 80 80" width="80" height="80" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg">
+          <rect width="80" height="80" rx="12" fill="#5627FF"/>
+          <text x="40" y="48" font-family="'Plus Jakarta Sans',system-ui" font-size="28" font-weight="800" fill="#F8DB46" text-anchor="middle">BB</text>
+          <text x="40" y="68" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="rgba(248,219,70,0.6)" text-anchor="middle" letter-spacing="1">GPT</text>
+        </svg>
+        <p><strong>BloombergGPT</strong> — a large decoder-only model pre-trained for finance. Trained on 51% financial data (news, reports, market data) and 49% public data. Used Chinchilla scaling laws as guidance. Target: 50B params × 1.4T tokens. Reality: 700B tokens acquired, training stopped at 569B due to data scarcity — a good illustration of real-world pre-training tradeoffs.</p>
+      </div>
+
+      <div class="callout pk">
+        BloombergGPT demonstrates that <strong>domain-specific pre-training is powerful but constrained in practice</strong>. The team couldn't acquire the compute-optimal 1.4T finance tokens, so early stopping was necessary — trading compute-optimality for domain coverage.
+      </div>
+    </section>
+
+    <!-- 12 Resources -->
+    <section id="resources">
+      <h2><span class="h2-num">12</span> Key Papers &amp; Resources</h2>
+      <ul class="ref-list">
+        <li><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">Attention is All You Need</a> — the 2017 paper that introduced the Transformer architecture</li>
+        <li><a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">Language Models are Few-Shot Learners</a> — the GPT-3 paper on few-shot learning</li>
+        <li><a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener">Training Compute-Optimal Large Language Models</a> — the Chinchilla paper by DeepMind</li>
+        <li><a href="https://arxiv.org/abs/2302.02083" target="_blank" rel="noopener">BloombergGPT: A Large Language Model for Finance</a></li>
+        <li><a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener">Scaling Laws for Neural Language Models</a> — OpenAI empirical study</li>
+        <li><a href="https://huggingface.co/tasks" target="_blank" rel="noopener">HuggingFace Tasks and Model Hub</a> — practical resources for all ML tasks</li>
+        <li><a href="https://arxiv.org/abs/2302.13971" target="_blank" rel="noopener">LLaMA: Open and Efficient Foundation Language Models</a> — Meta AI, 13B outperforms GPT-3 175B on most benchmarks</li>
+      </ul>
+    </section>
+
+  </article>
+
+  <!-- ─── TOC ─────────────────────────────────────────── -->
+  <aside class="post-toc">
+    <p class="toc-label">On this page</p>
+    <ul class="toc-list">
+      <li><a href="#genai">Generative AI &amp; LLMs</a></li>
+      <li class="toc-sub"><a href="#genai">Key terminology</a></li>
+      <li class="toc-sub"><a href="#genai">LLM use cases</a></li>
+      <li><a href="#transformer">Transformer Architecture</a></li>
+      <li class="toc-sub"><a href="#transformer">Before Transformers (RNNs)</a></li>
+      <li class="toc-sub"><a href="#transformer">Self-Attention</a></li>
+      <li class="toc-sub"><a href="#transformer">Data flow step-by-step</a></li>
+      <li><a href="#variants">Model Variants</a></li>
+      <li class="toc-sub"><a href="#variants">Encoder-only · BERT</a></li>
+      <li class="toc-sub"><a href="#variants">Encoder-Decoder · T5</a></li>
+      <li class="toc-sub"><a href="#variants">Decoder-only · GPT</a></li>
+      <li><a href="#prompting">Prompting &amp; In-context Learning</a></li>
+      <li class="toc-sub"><a href="#prompting">Zero / One / Few-shot</a></li>
+      <li><a href="#config">Generative Configuration</a></li>
+      <li class="toc-sub"><a href="#config">Greedy vs sampling</a></li>
+      <li class="toc-sub"><a href="#config">Temperature</a></li>
+      <li><a href="#lifecycle">Project Lifecycle</a></li>
+      <li><a href="#pretraining">LLM Pre-training</a></li>
+      <li class="toc-sub"><a href="#pretraining">Three architectures</a></li>
+      <li><a href="#quantization">Quantization</a></li>
+      <li class="toc-sub"><a href="#quantization">FP32 → BF16 → INT8</a></li>
+      <li><a href="#distributed">Multi-GPU Training</a></li>
+      <li class="toc-sub"><a href="#distributed">DDP &amp; FSDP / ZeRO</a></li>
+      <li><a href="#scaling">Scaling Laws &amp; Chinchilla</a></li>
+      <li><a href="#domain">Domain Adaptation</a></li>
+      <li class="toc-sub"><a href="#domain">BloombergGPT</a></li>
+      <li><a href="#resources">Key Papers</a></li>
+    </ul>
+  </aside>
+  </div>
+</main>
+
+<footer class="page" style="padding-top:20px">
+  <span>© 2026 Sumit Kant</span>
+ 
+</footer>
+</body>
+</html>
