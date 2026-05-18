@@ -557,6 +557,94 @@
         </div>
       </a>
 
+      <!-- Finetuning Large Language Models -->
+      <a class="item post-card" href="https://sumitkant.github.io/Blogs/AI-ML/finetuning-llms.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+          <defs>
+            <linearGradient id="ft-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#052e16" />
+              <stop offset="45%" stop-color="#14532d" />
+              <stop offset="80%" stop-color="#166534" />
+              <stop offset="100%" stop-color="#059669" />
+            </linearGradient>
+            <pattern id="ft-grid" width="18" height="18" patternUnits="userSpaceOnUse">
+              <path d="M 18 0 L 0 0 0 18" fill="none" stroke="#fff" stroke-width="0.4" opacity="0.13" />
+            </pattern>
+          </defs>
+
+          <!-- Background -->
+          <rect width="320" height="200" fill="url(#ft-bg)" />
+          <rect width="320" height="200" fill="url(#ft-grid)" />
+
+          <!-- Decorative arc -->
+          <circle cx="280" cy="-20" r="160" fill="none" stroke="#34d399" stroke-width="0.7" opacity="0.1" />
+          <circle cx="280" cy="-20" r="220" fill="none" stroke="#34d399" stroke-width="0.6" opacity="0.06" />
+
+          <!-- Weight matrix — left (base) -->
+          <g opacity="0.22">
+            <rect x="14" y="54" width="72" height="88" rx="4" fill="none" stroke="#6ee7b7" stroke-width="0.9" />
+            <line x1="14" y1="76" x2="86" y2="76" stroke="#6ee7b7" stroke-width="0.45" />
+            <line x1="14" y1="98" x2="86" y2="98" stroke="#6ee7b7" stroke-width="0.45" />
+            <line x1="14" y1="120" x2="86" y2="120" stroke="#6ee7b7" stroke-width="0.45" />
+            <line x1="38" y1="54" x2="38" y2="142" stroke="#6ee7b7" stroke-width="0.45" />
+            <line x1="62" y1="54" x2="62" y2="142" stroke="#6ee7b7" stroke-width="0.45" />
+            <!-- Sparse highlights -->
+            <rect x="15" y="77" width="22" height="20" rx="2" fill="#34d399" opacity="0.4" />
+            <rect x="63" y="99" width="22" height="20" rx="2" fill="#34d399" opacity="0.3" />
+            <rect x="39" y="121" width="22" height="20" rx="2" fill="#34d399" opacity="0.25" />
+          </g>
+          <text x="50" y="154" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5" fill="#6ee7b7"
+            opacity="0.45" text-anchor="middle" letter-spacing="0.8">BASE</text>
+
+          <!-- Arrow -->
+          <line x1="92" y1="98" x2="112" y2="98" stroke="#34d399" stroke-width="1.2" opacity="0.35" />
+          <path d="M109 94 L115 98 L109 102" fill="none" stroke="#34d399" stroke-width="1.2" opacity="0.35" />
+          <text x="103" y="91" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="5.5" fill="#34d399"
+            opacity="0.4" text-anchor="middle" letter-spacing="0.3">+DATA</text>
+
+          <!-- Weight matrix — right (finetuned) -->
+          <g opacity="0.32">
+            <rect x="118" y="54" width="72" height="88" rx="4" fill="none" stroke="#34d399" stroke-width="0.9" />
+            <line x1="118" y1="76" x2="190" y2="76" stroke="#34d399" stroke-width="0.45" />
+            <line x1="118" y1="98" x2="190" y2="98" stroke="#34d399" stroke-width="0.45" />
+            <line x1="118" y1="120" x2="190" y2="120" stroke="#34d399" stroke-width="0.45" />
+            <line x1="142" y1="54" x2="142" y2="142" stroke="#34d399" stroke-width="0.45" />
+            <line x1="166" y1="54" x2="166" y2="142" stroke="#34d399" stroke-width="0.45" />
+            <!-- Dense highlights — more cells lit -->
+            <rect x="119" y="55" width="22" height="20" rx="2" fill="#34d399" opacity="0.6" />
+            <rect x="143" y="77" width="22" height="20" rx="2" fill="#34d399" opacity="0.55" />
+            <rect x="167" y="99" width="22" height="20" rx="2" fill="#34d399" opacity="0.5" />
+            <rect x="119" y="121" width="22" height="20" rx="2" fill="#34d399" opacity="0.45" />
+            <rect x="143" y="99" width="22" height="20" rx="2" fill="#34d399" opacity="0.35" />
+          </g>
+          <text x="154" y="154" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5" fill="#34d399"
+            opacity="0.6" text-anchor="middle" letter-spacing="0.8">FINETUNED</text>
+
+          <!-- Wordmark -->
+          <text x="255" y="112" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="13.5"
+            font-weight="800" letter-spacing="-0.4" fill="#fff" opacity="0.93" text-anchor="middle">Fine-tuning</text>
+          <text x="255" y="128" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" font-weight="500"
+            letter-spacing="1.6" fill="#6ee7b7" opacity="0.65" text-anchor="middle">LLMs</text>
+
+          <!-- Sub label -->
+          <text x="255" y="160" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6" font-weight="400"
+            letter-spacing="1" fill="#fff" opacity="0.3" text-anchor="middle">DEEPLEARNING.AI · SHARON ZHOU</text>
+
+          <!-- Glow nodes -->
+          <circle cx="296" cy="68" r="3.5" fill="#34d399" opacity="0.75" />
+          <circle cx="310" cy="100" r="5" fill="#059669" opacity="0.65" />
+          <circle cx="298" cy="132" r="3" fill="#6ee7b7" opacity="0.7" />
+          <line x1="296" y1="68" x2="310" y2="100" stroke="#34d399" stroke-width="0.7" opacity="0.2" />
+          <line x1="310" y1="100" x2="298" y2="132" stroke="#34d399" stroke-width="0.7" opacity="0.2" />
+        </svg>
+        <div class="post-body">
+          <div class="post-tags"><span class="p">Finetuning</span>, LLMs, PyTorch</div>
+          <span class="post-title">Notes: Finetuning Large Language Models — DeepLearning.ai</span>
+          <p class="post-desc">When to finetune vs prompt vs RAG, how to prep data, run the training loop, evaluate
+            results, and use LoRA for parameter-efficient finetuning.</p>
+        </div>
+      </a>
+
       <!-- Prompt Engineering -->
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/AI-ML/prompt-engineering.html">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
@@ -626,7 +714,7 @@
             and more.</p>
         </div>
       </a>
-      
+
       <!-- Quote: Neil DeGrasse Tyson — dark -->
       <div class="item quote-card">
         <div class="quote-icon"><svg viewBox="0 0 24 24">

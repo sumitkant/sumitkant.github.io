@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Course notes from Finetuning Large Language Models by DeepLearning.ai — what finetuning is, when to use it, and how to go from pretraining to instruction tuning." />
+  <title>Finetuning Large Language Models — Sumit Kant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Design tokens — green palette ─────────────── */
+    :root {
+      --bg:            #f0f8f2;
+      --bg-surface:    #e4f1e8;
+      --bg-raised:     #d5e9db;
+      --bg-hover:      #c6e0ce;
+      --border:        rgba(22, 101, 52, 0.11);
+      --border-hover:  rgba(22, 101, 52, 0.28);
+      --text-primary:  #0e1f14;
+      --text-secondary:#3a5e49;
+      --text-tertiary: #7aaa8a;
+      --accent:        #16a34a;   /* green-600 */
+      --accent-mid:    #059669;   /* emerald-600 */
+      --accent-light:  #34d399;   /* emerald-400 */
+      --accent-dark:   #14532d;   /* green-900 */
+      --dark-bg:       #0f2318;
+      --dark-text:     #ecfdf5;
+      --radius-sm:  6px;
+      --radius-md:  10px;
+      --radius-lg:  14px;
+      --nav-h:      72px;
+      --content-w:  1100px;
+      --prose-w:    720px;
+      --font:       'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono:  ui-monospace, 'Cascadia Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text-primary);
+      font-family: var(--font); font-size: 15px; line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Nav ─────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100; height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(240, 248, 242, 0.92);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    }
+    .nav-inner {
+      max-width: var(--content-w); margin: 0 auto; padding: 0 2rem;
+      height: 100%; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+    .nav-monogram {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+      color: #fff; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; letter-spacing: -0.02em; flex-shrink: 0;
+    }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 13.5px; color: var(--text-secondary); transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+    .nav-links a.active { font-weight: 500; }
+
+    /* ─── Page ────────────────────────────────────────── */
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+    /* ─── Banner ──────────────────────────────────────── */
+    .post-banner { margin: 3rem 0 0; border-radius: var(--radius-lg); overflow: hidden; }
+
+    /* ─── Post hero ───────────────────────────────────── */
+    .post-hero { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); max-width: var(--prose-w); }
+    .hero-eyebrow {
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.03em; color: var(--text-primary); margin-bottom: 14px;
+    }
+    .hero-title strong { color: var(--accent); }
+    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.75; }
+
+    /* ─── Meta ────────────────────────────────────────── */
+    .post-meta {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+      padding: 1.25rem 0; border-bottom: 1px solid var(--border);
+    }
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border);
+      font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono);
+      letter-spacing: 0.03em; background: var(--bg-surface);
+    }
+    .meta-tag.accent-tag { background: var(--accent); color: #fff; border-color: transparent; font-weight: 600; }
+    .meta-tag.mid-tag    { background: var(--accent-mid); color: #fff; border-color: transparent; font-weight: 600; }
+    .meta-dot { color: var(--text-tertiary); font-size: 10px; }
+
+    /* ─── Layout ──────────────────────────────────────── */
+    .post-layout {
+      display: grid; grid-template-columns: var(--prose-w) 1fr;
+      gap: 0 3rem; align-items: start; padding-top: 3rem;
+    }
+    .post-prose { min-width: 0; }
+    .post-toc {
+      position: sticky; top: calc(var(--nav-h) + 1.5rem);
+      padding-left: 1.5rem; border-left: 2px solid var(--border);
+    }
+    .toc-label {
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px;
+    }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .toc-list a { font-size: 12.5px; color: var(--text-secondary); transition: color 0.15s; display: block; line-height: 1.4; }
+    .toc-list a:hover { color: var(--accent); }
+    .toc-list .toc-sub { padding-left: 12px; }
+    .toc-list .toc-sub a { font-size: 11.5px; color: var(--text-tertiary); }
+
+    /* ─── Prose ───────────────────────────────────────── */
+    .post-prose section { margin-bottom: 3rem; }
+    .post-prose h2 {
+      font-size: 1.35rem; font-weight: 800; letter-spacing: -0.025em;
+      color: var(--text-primary); margin-bottom: 1rem;
+      padding-top: 2.5rem; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .post-prose h2:first-child { border-top: none; padding-top: 0; }
+    .h2-num {
+      font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary);
+      letter-spacing: 0.12em; padding: 3px 7px; border-radius: var(--radius-sm);
+      background: var(--bg-raised); white-space: nowrap;
+    }
+    .post-prose h3 { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 1.75rem 0 0.6rem; }
+    .post-prose p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; }
+    .post-prose p:last-child { margin-bottom: 0; }
+    .post-prose strong { color: var(--text-primary); font-weight: 600; }
+    .post-prose em { font-style: italic; }
+    .post-prose a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(22,163,74,0.3); }
+    .post-prose a:hover { text-decoration-color: var(--accent); }
+
+    /* ─── Callout ─────────────────────────────────────── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--bg-surface); border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 1rem 1.25rem; margin: 1.25rem 0;
+      font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+    }
+    .callout.mid  { border-left-color: var(--accent-mid); }
+    .callout.dark { border-left-color: var(--accent-dark); background: var(--bg-raised); }
+    .callout strong { color: var(--text-primary); }
+
+    /* ─── Analogy card ────────────────────────────────── */
+    .analogy-card {
+      background: var(--dark-bg); color: var(--dark-text);
+      border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin: 1.25rem 0;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .analogy-icon { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+    .analogy-body { }
+    .analogy-label {
+      font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent-light); margin-bottom: 8px;
+    }
+    .analogy-text { font-size: 14px; line-height: 1.7; color: rgba(236,253,245,0.8); }
+    .analogy-text strong { color: var(--accent-light); font-weight: 600; }
+
+    /* ─── Comparison table ────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 1.25rem 0; border-radius: var(--radius-md); border: 1px solid var(--border); }
+    .comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .comp-table th {
+      background: var(--dark-bg); color: var(--dark-text);
+      padding: 10px 16px; text-align: left;
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    }
+    .comp-table th:first-child { width: 100px; }
+    .comp-table td {
+      padding: 11px 16px; border-bottom: 1px solid var(--border);
+      color: var(--text-secondary); vertical-align: top; line-height: 1.55;
+    }
+    .comp-table tr:last-child td { border-bottom: none; }
+    .comp-table tr:nth-child(even) td { background: var(--bg-surface); }
+    .comp-table td:first-child { font-weight: 700; color: var(--text-primary); white-space: nowrap; }
+    .comp-table .pro  { color: #16a34a; }
+    .comp-table .con  { color: #dc2626; }
+    .comp-table .hl   { color: var(--accent); font-weight: 500; }
+
+    /* ─── Benefits grid ───────────────────────────────── */
+    .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1.25rem 0; }
+    .benefit-card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 1rem 1.1rem; border-top: 3px solid var(--accent);
+    }
+    .benefit-card.mid  { border-top-color: var(--accent-mid); }
+    .benefit-card.dark { border-top-color: var(--accent-dark); }
+    .benefit-card.lite { border-top-color: var(--accent-light); }
+    .benefit-title { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .benefit-card ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .benefit-card li { font-size: 12.5px; color: var(--text-secondary); padding-left: 14px; position: relative; line-height: 1.45; }
+    .benefit-card li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 10px; top: 2px; }
+
+    /* ─── Stage cards ─────────────────────────────────── */
+    .stage-row { display: flex; flex-direction: column; gap: 8px; margin: 1.25rem 0; }
+    .stage-card {
+      display: flex; border-radius: var(--radius-md);
+      border: 1px solid var(--border); overflow: hidden; background: #fff;
+    }
+    .stage-stripe {
+      width: 6px; flex-shrink: 0;
+    }
+    .stage-stripe.s1 { background: var(--accent-dark); }
+    .stage-stripe.s2 { background: var(--accent); }
+    .stage-stripe.s3 { background: var(--accent-mid); }
+    .stage-stripe.s4 { background: var(--accent-light); }
+    .stage-body { padding: 12px 16px; flex: 1; }
+    .stage-name { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .stage-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+
+    /* ─── Code blocks ─────────────────────────────────── */
+    .code-wrap { margin: 1rem 0; }
+    .code-label {
+      display: inline-block; font-family: var(--font-mono); font-size: 11px;
+      background: var(--dark-bg); color: rgba(236,253,245,0.4);
+      padding: 5px 14px 4px; border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      letter-spacing: 0.04em;
+    }
+    .code-block {
+      background: var(--dark-bg); color: #d4f0dd;
+      border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
+      padding: 1.15rem 1.4rem; font-family: var(--font-mono); font-size: 12.5px;
+      line-height: 1.75; overflow-x: auto; white-space: pre;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .code-block.r { border-radius: var(--radius-md); }
+    .ck  { color: #86efac; }  /* keyword — green */
+    .cs  { color: #6ee7b7; }  /* string  — emerald */
+    .cc  { color: #4d7a5a; }  /* comment — muted green */
+    .cf  { color: #a7f3d0; }  /* function */
+    .cn  { color: #d4f0dd; }  /* normal */
+    code {
+      font-family: var(--font-mono); font-size: 12px;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      padding: 1px 6px; border-radius: 4px; color: var(--accent);
+    }
+
+    /* ─── Pipeline ────────────────────────────────────── */
+    .pipeline { display: flex; align-items: stretch; margin: 1.25rem 0; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); }
+    .pipe-step { flex: 1; background: var(--bg-surface); padding: 1rem; display: flex; flex-direction: column; gap: 4px; }
+    .pipe-step + .pipe-step { border-left: 1px solid var(--border); }
+    .pipe-step-name { font-size: 12px; font-weight: 700; color: var(--text-primary); }
+    .pipe-step-desc { font-size: 11.5px; color: var(--text-tertiary); line-height: 1.4; }
+    .pipe-step.active { background: var(--dark-bg); }
+    .pipe-step.active .pipe-step-name { color: var(--accent-light); }
+    .pipe-step.active .pipe-step-desc { color: rgba(236,253,245,0.5); }
+
+    /* ─── Numbered steps ──────────────────────────────── */
+    .steps-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 1.25rem 0; }
+    .step-item {
+      display: flex; gap: 14px; align-items: flex-start;
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 12px 16px;
+    }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+      color: #fff; font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-content { font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; }
+    .step-content strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Benchmark cards ─────────────────────────────── */
+    .benchmark-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1.25rem 0; }
+    .benchmark-card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 12px 14px;
+    }
+    .benchmark-name { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .benchmark-badge {
+      font-size: 9px; font-family: var(--font-mono); font-weight: 700;
+      letter-spacing: 0.08em; padding: 2px 7px; border-radius: 999px;
+      background: var(--bg-raised); color: var(--text-tertiary);
+    }
+    .benchmark-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
+
+    /* ─── GPU table ───────────────────────────────────── */
+    .gpu-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 1.25rem 0; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); }
+    .gpu-table th { background: var(--dark-bg); color: rgba(236,253,245,0.7); padding: 9px 14px; text-align: left; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+    .gpu-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .gpu-table tr:last-child td { border-bottom: none; }
+    .gpu-table tr:nth-child(even) td { background: var(--bg-surface); }
+    .gpu-table td:first-child { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); }
+    .gpu-table .hl { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Inline list ─────────────────────────────────── */
+    .inline-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 0.75rem 0 1rem; }
+    .inline-list li { font-size: 14px; color: var(--text-secondary); padding-left: 18px; position: relative; line-height: 1.6; }
+    .inline-list li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 10px; top: 3px; }
+    .inline-list li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Footer ──────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--text-tertiary); flex-wrap: wrap; gap: 10px;
+    }
+    footer a { color: var(--text-tertiary); transition: color 0.15s; }
+    footer a:hover { color: var(--text-primary); }
+
+    /* ─── Responsive ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .post-layout { grid-template-columns: 1fr; }
+      .post-toc { display: none; }
+      .benefits-grid, .benchmark-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .page { padding: 0 1rem 4rem; }
+      .nav-inner { padding: 0 1rem; }
+      .pipeline { flex-direction: column; }
+      .pipe-step + .pipe-step { border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Nav ───────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://sumitkant.github.io/blog.html" class="active">Blog</a></li>
+        <li><a href="https://sumitkant.github.io/bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="https://sumitkant.github.io/johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="https://sumitkant.github.io/deep-learning.html">AI Lab</a></li>
+        <li><a href="https://sumitkant.github.io/neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+
+    <!-- ─── Banner ────────────────────────────────────── -->
+    <div class="post-banner">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="100%" style="display:block;border-radius:14px;">
+        <defs>
+          <linearGradient id="ft-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stop-color="#052e16"/>
+            <stop offset="40%"  stop-color="#14532d"/>
+            <stop offset="75%"  stop-color="#166534"/>
+            <stop offset="100%" stop-color="#059669"/>
+          </linearGradient>
+          <linearGradient id="ft-shine" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0.06"/>
+            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <pattern id="ft-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#fff" stroke-width="0.4" opacity="0.12"/>
+          </pattern>
+          <filter id="ft-glow">
+            <feGaussianBlur stdDeviation="5" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect width="1100" height="300" fill="url(#ft-bg)"/>
+        <rect width="1100" height="300" fill="url(#ft-grid)"/>
+        <rect width="1100" height="300" fill="url(#ft-shine)"/>
+
+        <!-- Decorative arcs -->
+        <circle cx="950" cy="-40" r="280" fill="none" stroke="#34d399" stroke-width="0.7" opacity="0.08"/>
+        <circle cx="950" cy="-40" r="380" fill="none" stroke="#34d399" stroke-width="0.7" opacity="0.05"/>
+        <circle cx="150" cy="340" r="240" fill="none" stroke="#6ee7b7" stroke-width="0.6" opacity="0.07"/>
+
+        <!-- Model weights / matrix visualisation -->
+        <g opacity="0.18">
+          <!-- Left matrix — base -->
+          <rect x="52" y="80" width="120" height="140" rx="6" fill="none" stroke="#6ee7b7" stroke-width="1"/>
+          <line x1="52" y1="108" x2="172" y2="108" stroke="#6ee7b7" stroke-width="0.5"/>
+          <line x1="52" y1="136" x2="172" y2="136" stroke="#6ee7b7" stroke-width="0.5"/>
+          <line x1="52" y1="164" x2="172" y2="164" stroke="#6ee7b7" stroke-width="0.5"/>
+          <line x1="52" y1="192" x2="172" y2="192" stroke="#6ee7b7" stroke-width="0.5"/>
+          <line x1="92" y1="80"  x2="92"  y2="220" stroke="#6ee7b7" stroke-width="0.5"/>
+          <line x1="132" y1="80" x2="132" y2="220" stroke="#6ee7b7" stroke-width="0.5"/>
+          <!-- Highlight a few cells -->
+          <rect x="53"  y="109" width="38" height="26" rx="2" fill="#34d399" opacity="0.4"/>
+          <rect x="93"  y="165" width="38" height="26" rx="2" fill="#34d399" opacity="0.3"/>
+          <rect x="133" y="137" width="38" height="26" rx="2" fill="#34d399" opacity="0.25"/>
+        </g>
+        <text x="112" y="242" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="9" fill="#6ee7b7" opacity="0.45" text-anchor="middle" letter-spacing="1">BASE MODEL</text>
+
+        <!-- Arrow -->
+        <g opacity="0.35">
+          <line x1="192" y1="150" x2="248" y2="150" stroke="#34d399" stroke-width="1.5"/>
+          <path d="M244 144 L252 150 L244 156" fill="none" stroke="#34d399" stroke-width="1.5"/>
+        </g>
+        <text x="220" y="140" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="8" fill="#34d399" opacity="0.4" text-anchor="middle" letter-spacing="0.5">+ DATA</text>
+
+        <!-- Right matrix — finetuned -->
+        <g opacity="0.28">
+          <rect x="252" y="80" width="120" height="140" rx="6" fill="none" stroke="#34d399" stroke-width="1"/>
+          <line x1="252" y1="108" x2="372" y2="108" stroke="#34d399" stroke-width="0.5"/>
+          <line x1="252" y1="136" x2="372" y2="136" stroke="#34d399" stroke-width="0.5"/>
+          <line x1="252" y1="164" x2="372" y2="164" stroke="#34d399" stroke-width="0.5"/>
+          <line x1="252" y1="192" x2="372" y2="192" stroke="#34d399" stroke-width="0.5"/>
+          <line x1="292" y1="80"  x2="292" y2="220" stroke="#34d399" stroke-width="0.5"/>
+          <line x1="332" y1="80"  x2="332" y2="220" stroke="#34d399" stroke-width="0.5"/>
+          <rect x="253" y="81"  width="38" height="26" rx="2" fill="#34d399" opacity="0.55"/>
+          <rect x="293" y="109" width="38" height="26" rx="2" fill="#34d399" opacity="0.5"/>
+          <rect x="333" y="137" width="38" height="26" rx="2" fill="#34d399" opacity="0.45"/>
+          <rect x="253" y="165" width="38" height="26" rx="2" fill="#34d399" opacity="0.4"/>
+          <rect x="293" y="193" width="38" height="26" rx="2" fill="#34d399" opacity="0.35"/>
+        </g>
+        <text x="312" y="242" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="9" fill="#34d399" opacity="0.55" text-anchor="middle" letter-spacing="1">FINETUNED</text>
+
+        <!-- Central wordmark -->
+        <text x="620" y="162" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="46" font-weight="800" letter-spacing="-1.5" fill="#fff" opacity="0.92"
+              text-anchor="middle">Fine-tuning</text>
+        <text x="620" y="196" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="14" font-weight="500" letter-spacing="3.5" fill="#6ee7b7" opacity="0.7"
+              text-anchor="middle">LARGE LANGUAGE MODELS</text>
+        <text x="620" y="228" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="10" font-weight="400" letter-spacing="1.5" fill="#fff" opacity="0.35"
+              text-anchor="middle">DeepLearning.ai · Sharon Zhou · Lamini · July 2025</text>
+
+        <!-- Glowing nodes right -->
+        <g filter="url(#ft-glow)">
+          <circle cx="970" cy="90"  r="5"   fill="#34d399" opacity="0.8"/>
+          <circle cx="1020" cy="150" r="7"  fill="#059669" opacity="0.7"/>
+          <circle cx="985"  cy="210" r="4"  fill="#6ee7b7" opacity="0.75"/>
+          <circle cx="1048" cy="230" r="5"  fill="#34d399" opacity="0.6"/>
+          <line x1="970" y1="90"   x2="1020" y2="150" stroke="#34d399" stroke-width="0.8" opacity="0.2"/>
+          <line x1="1020" y1="150" x2="985"  y2="210" stroke="#34d399" stroke-width="0.8" opacity="0.2"/>
+          <line x1="985"  y1="210" x2="1048" y2="230" stroke="#34d399" stroke-width="0.8" opacity="0.2"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- ─── Post Hero ──────────────────────────────────── -->
+    <header class="post-hero">
+      <p class="hero-eyebrow">Course Notes · Finetuning · July 2025</p>
+      <h1 class="hero-title"><strong>Finetuning</strong> Large Language Models</h1>
+      <p class="hero-sub">
+        My notes from the DeepLearning.ai short course by Sharon Zhou (Lamini). Covers what
+        finetuning actually is, when it beats prompting and RAG, how to prepare data, run
+        training, evaluate results, and use LoRA for parameter-efficient finetuning.
+      </p>
+    </header>
+
+    <!-- ─── Meta ───────────────────────────────────────── -->
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">Finetuning</span>
+      <span class="meta-tag mid-tag">LLMs</span>
+      <span class="meta-tag">PyTorch</span>
+      <span class="meta-tag">HuggingFace</span>
+      <span class="meta-tag">Lamini</span>
+      <span class="meta-dot">·</span>
+      <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--text-tertiary);padding-left:0;">
+        Sharon Zhou · DeepLearning.ai · July 28, 2025
+      </span>
+    </div>
+
+    <!-- ─── Post Layout ────────────────────────────────── -->
+    <div class="post-layout">
+
+      <article class="post-prose">
+
+        <!-- 01 What is finetuning -->
+        <section id="what-is">
+          <h2><span class="h2-num">01</span> What is Finetuning?</h2>
+          <p>
+            Finetuning is the process of taking a general-purpose pre-trained model and
+            <strong>specialising it for a specific domain or task</strong>. The analogy that
+            Sharon uses — and it really clicked for me — is turning a primary care physician
+            into a specialist.
+          </p>
+          <div class="analogy-card">
+            <div class="analogy-icon">🩺</div>
+            <div class="analogy-body">
+              <div class="analogy-label">The Physician Analogy</div>
+              <div class="analogy-text">
+                A <strong>base model</strong> is like a primary care physician. Describe skin irritation,
+                redness, and itching — it'll say "probably acne." A model <strong>finetuned on
+                dermatology data</strong> gives you: "You have a mix of non-inflammatory comedonal acne
+                and inflammatory papulopustular acne." Same question, radically more specific answer.
+              </div>
+            </div>
+          </div>
+          <p>What does finetuning actually do for the model?</p>
+          <ul class="inline-list">
+            <li>Steers the model toward <strong>more consistent output</strong></li>
+            <li><strong>Reduces hallucinations</strong> on domain-specific content</li>
+            <li>Customises the model to a specific use-case and voice</li>
+            <li>Uses the same training objective as the original pre-training — <strong>just with different data</strong></li>
+          </ul>
+        </section>
+
+        <!-- 02 Prompting vs Finetuning -->
+        <section id="vs-prompting">
+          <h2><span class="h2-num">02</span> Prompting vs Finetuning vs RAG</h2>
+          <p>
+            Before reaching for finetuning, it's worth knowing exactly where it sits relative to
+            prompt engineering and retrieval-augmented generation (RAG). They're not mutually
+            exclusive — in fact, you can and often should combine them.
+          </p>
+
+          <div class="table-wrap">
+            <table class="comp-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Prompting</th>
+                  <th>Finetuning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Pros</td>
+                  <td class="pro">
+                    No data needed to start<br>
+                    Smaller upfront cost<br>
+                    No technical knowledge<br>
+                    Can connect data via RAG
+                  </td>
+                  <td class="pro">
+                    Nearly unlimited data fits<br>
+                    Learns new information<br>
+                    Corrects incorrect information<br>
+                    Lower cost per request (smaller model)<br>
+                    Can use RAG too
+                  </td>
+                </tr>
+                <tr>
+                  <td>Cons</td>
+                  <td class="con">
+                    Much less data fits in context<br>
+                    Forgets data between sessions<br>
+                    Hallucinations<br>
+                    RAG can miss or return wrong data
+                  </td>
+                  <td class="con">
+                    Requires high-quality labelled data<br>
+                    Upfront compute cost<br>
+                    Needs some technical knowledge
+                  </td>
+                </tr>
+                <tr>
+                  <td>Usage</td>
+                  <td>Generic, side projects, prototypes</td>
+                  <td class="hl">Domain-specific, enterprise, production, privacy-sensitive</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            The mental model I use: <strong>prompting is for exploration</strong>, RAG is for
+            connecting live external data, and finetuning is for when you need a model that
+            reliably behaves a certain way — every single time.
+          </p>
+        </section>
+
+        <!-- 03 Benefits -->
+        <section id="benefits">
+          <h2><span class="h2-num">03</span> Why Finetune Your Own LLM?</h2>
+          <p>
+            The case for finetuning goes well beyond accuracy. Once you have a finetuned model,
+            you gain control across four dimensions that matter a lot in production.
+          </p>
+          <div class="benefits-grid">
+            <div class="benefit-card">
+              <div class="benefit-title">⚡ Performance</div>
+              <ul>
+                <li>Stops hallucinations on domain content</li>
+                <li>Increases consistency and reliability</li>
+                <li>Reduces unwanted or off-topic output</li>
+              </ul>
+            </div>
+            <div class="benefit-card mid">
+              <div class="benefit-title">🔒 Privacy</div>
+              <ul>
+                <li>Deploy on-prem or in your own VPC</li>
+                <li>Prevent data leakage to third-party APIs</li>
+                <li>No risk of data breaches via external calls</li>
+              </ul>
+            </div>
+            <div class="benefit-card dark">
+              <div class="benefit-title">💰 Cost</div>
+              <ul>
+                <li>Lower cost per request — finetune a smaller model that matches a larger one's task performance</li>
+                <li>Greater transparency into what you're running</li>
+                <li>Greater control over model behaviour</li>
+              </ul>
+            </div>
+            <div class="benefit-card lite">
+              <div class="benefit-title">🛡️ Reliability</div>
+              <ul>
+                <li>Control your own uptime SLAs</li>
+                <li>Lower latency — no remote API calls</li>
+                <li>Moderation baked in — guardrails and custom responses</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3>Tools</h3>
+          <ul class="inline-list">
+            <li><strong>PyTorch</strong> — the standard for custom training loops</li>
+            <li><strong>HuggingFace Transformers</strong> — open source models, tokenizers, datasets</li>
+            <li><strong>Lamini (Llama library)</strong> — abstracts away boilerplate for fast iteration</li>
+          </ul>
+
+          <div class="code-wrap">
+            <div class="code-label">python · setup</div>
+            <div class="code-block"><ck>import</ck> os
+<ck>import</ck> lamini
+
+lamini.api_url = os.getenv(<cs>"POWERML__PRODUCTION__URL"</cs>)
+lamini.api_key = os.getenv(<cs>"POWERML__PRODUCTION__KEY"</cs>)
+
+<ck>from</ck> llama <ck>import</ck> BasicModelRunner
+
+<cc># Base model — no instruction tuning</cc>
+non_finetuned = BasicModelRunner(<cs>"meta-llama/Llama-2-7b-hf"</cs>)
+non_finetuned_output = non_finetuned(<cs>"Tell me how to train my dog to sit"</cs>)
+
+<cc># Finetuned (chat) model</cc>
+finetuned_model = BasicModelRunner(<cs>"meta-llama/Llama-2-7b-chat-hf"</cs>)
+finetuned_output = finetuned_model(<cs>"Tell me how to train my dog to sit"</cs>)
+
+<cc># Wrap with [INST] tags to avoid autocomplete behaviour</cc>
+finetuned_model(<cs>"[INST]Tell me how to train my dog to sit[/INST]"</cs>)</div>
+          </div>
+        </section>
+
+        <!-- 04 Pretraining vs Finetuning -->
+        <section id="pretraining">
+          <h2><span class="h2-num">04</span> Pretraining vs Finetuning Data</h2>
+          <p>
+            Understanding the difference between pretraining and finetuning data is fundamental —
+            they serve completely different purposes and look nothing alike.
+          </p>
+
+          <h3>Pretraining</h3>
+          <p>
+            A model starts life with zero knowledge. It can't form words, knows nothing about the
+            world. Pretraining teaches it language and knowledge through sheer scale.
+          </p>
+          <ul class="inline-list">
+            <li>Next-word prediction on a <strong>giant corpus</strong> of text</li>
+            <li>Often scraped from the internet — "unlabelled" data</li>
+            <li>Open-source example: <strong>"The Pile"</strong> — 22 diverse datasets from the internet</li>
+            <li><strong>Expensive and time-consuming</strong> — self-supervised learning at massive scale</li>
+          </ul>
+
+          <div class="code-wrap">
+            <div class="code-label">python · pretraining data sample (C4)</div>
+            <div class="code-block"><ck>from</ck> datasets <ck>import</ck> load_dataset
+<ck>import</ck> itertools
+
+pretrained_dataset = load_dataset(<cs>"c4"</cs>, <cs>"en"</cs>, split=<cs>"train"</cs>, streaming=<cf>True</cf>)
+top_n = itertools.islice(pretrained_dataset, <cf>1</cf>)
+<ck>for</ck> i <ck>in</ck> top_n:
+    <cf>print</cf>(i)
+
+<cc># Output — raw web text, no structure:</cc>
+<cc># {'text': 'Beginners BBQ Class Taking Place in Missoula!\nDo you</cc>
+<cc>#  want to get better at making delicious BBQ? ...',</cc>
+<cc>#  'timestamp': '2019-04-25T12:57:54Z', 'url': '...'}</cc></div>
+          </div>
+
+          <h3>Finetuning after pre-training</h3>
+          <p>
+            After pretraining, a model knows the world — but it isn't a chatbot yet. Finetuning
+            takes that knowledge and shapes the behaviour. Some key points worth remembering:
+          </p>
+          <ul class="inline-list">
+            <li>Uses <strong>much less data</strong> than pretraining — quality matters far more than quantity</li>
+            <li>Can be self-supervised (unlabelled) or curated labelled pairs</li>
+            <li>Updates the <strong>entire model</strong>, not just part of it</li>
+            <li>Same objective as pretraining: next token prediction — just on different data</li>
+          </ul>
+        </section>
+
+        <!-- 05 What finetuning is doing -->
+        <section id="what-doing">
+          <h2><span class="h2-num">05</span> What Is Finetuning Actually Doing?</h2>
+          <p>
+            Finetuning drives two types of change inside the model, and it helps to be clear
+            about which one you're targeting before you write a single line of training code.
+          </p>
+
+          <div class="stage-row">
+            <div class="stage-card">
+              <div class="stage-stripe s1"></div>
+              <div class="stage-body">
+                <div class="stage-name">Behaviour Change</div>
+                <div class="stage-desc">Teach the model to respond more consistently, focus on specific topics (e.g. moderation), or tease out a capability it already has but doesn't show by default — like being better at conversation.</div>
+              </div>
+            </div>
+            <div class="stage-card">
+              <div class="stage-stripe s2"></div>
+              <div class="stage-body">
+                <div class="stage-name">Knowledge Gain</div>
+                <div class="stage-desc">Teach the model new domain-specific facts it wasn't trained on, or correct outdated or incorrect information baked in during pretraining.</div>
+              </div>
+            </div>
+            <div class="stage-card">
+              <div class="stage-stripe s3"></div>
+              <div class="stage-body">
+                <div class="stage-name">Both</div>
+                <div class="stage-desc">Most real-world finetuning does both — domain knowledge + expected output format and tone. A customer support bot, for example, needs domain facts AND a consistent helpful tone.</div>
+              </div>
+            </div>
+          </div>
+
+          <h3>Tasks to finetune</h3>
+          <p>All finetuning is ultimately text-in, text-out. Tasks break into two families:</p>
+          <ul class="inline-list">
+            <li><strong>Extraction (text in, less text out)</strong> — reading, keyword extraction, topic classification, routing, agents that reason, plan, self-critique, or use tools</li>
+            <li><strong>Expansion (text in, more text out)</strong> — writing, conversation, summarisation, code generation</li>
+          </ul>
+          <div class="callout">
+            <strong>Task clarity is the key indicator of success.</strong> Before writing any training code, make sure you can clearly articulate what "bad", "OK", and "better" look like for your specific task. Vague success criteria produce vague models.
+          </div>
+
+          <h3>First time finetuning — the practical path</h3>
+          <ol class="steps-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-content"><strong>Identify candidate tasks</strong> by prompt engineering a base LLM and watching what it does</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-content"><strong>Find tasks the LLM does OK at</strong> — you need a performance baseline to improve on</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-content"><strong>Pick one task</strong> — scope creep kills finetuning experiments</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-content"><strong>Get ~1000 input/output pairs</strong> for that task — better than the "OK" output the base LLM gives</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-content"><strong>Finetune a small model</strong> (400M–1B parameters) and evaluate</div></li>
+          </ol>
+        </section>
+
+        <!-- 06 Instruction Finetuning -->
+        <section id="instruction">
+          <h2><span class="h2-num">06</span> Instruction Finetuning — GPT-3 → ChatGPT</h2>
+          <p>
+            Instruction finetuning is a specific subset of finetuning that teaches a model to
+            <strong>follow instructions and behave like a chatbot</strong>. This is the technique
+            that turned the raw completion engine of GPT-3 into ChatGPT — and scaled AI adoption
+            from thousands of researchers to hundreds of millions of people.
+          </p>
+
+          <h3>Where does instruction data come from?</h3>
+          <ul class="inline-list">
+            <li><strong>Existing datasets</strong> — FAQs, customer support threads, Slack messages — anything that's naturally instruction + response shaped</li>
+            <li><strong>Convert your own data</strong> — take a README, internal docs, or product description and reformat as Q&amp;A pairs using a prompt template</li>
+            <li><strong>Use another LLM to generate it</strong> — the Alpaca technique uses ChatGPT to convert raw text into instruction/response pairs automatically</li>
+          </ul>
+
+          <div class="code-wrap">
+            <div class="code-label">python · alpaca dataset sample</div>
+            <div class="code-block"><ck>from</ck> datasets <ck>import</ck> load_dataset
+instruction_tuned_dataset = load_dataset(
+    <cs>"tatsu-lab/alpaca"</cs>, split=<cs>"train"</cs>, streaming=<cf>True</cf>
+)
+
+<cc># Structure of one example:</cc>
+{
+  <cs>'instruction'</cs>: <cs>'Give three tips for staying healthy.'</cs>,
+  <cs>'input'</cs>: <cs>''</cs>,
+  <cs>'output'</cs>: <cs>'1. Eat a balanced diet...\n2. Exercise regularly...\n3. Get enough sleep...'</cs>
+}</div>
+          </div>
+
+          <h3>Prompt templates</h3>
+          <p>
+            How you format your data before training matters a lot. There are two standard templates —
+            one for tasks that include additional input context, one for those that don't.
+          </p>
+          <div class="code-wrap">
+            <div class="code-label">python · prompt templates</div>
+            <div class="code-block">prompt_template_with_input = <cs>"""Below is an instruction that describes \
+a task, paired with an input that provides further context. \
+Write a response that appropriately completes the request.
+
+### Instruction:
+{instruction}
+
+### Input:
+{input}
+
+### Response:"""</cs>
+
+prompt_template_without_input = <cs>"""Below is an instruction that describes \
+a task. Write a response that appropriately completes the request.
+
+### Instruction:
+{instruction}
+
+### Response:"""</cs></div>
+          </div>
+
+          <h3>Finetuning steps at a glance</h3>
+          <p>Instruction finetuning is an iterative cycle — not a one-shot process:</p>
+          <div class="pipeline">
+            <div class="pipe-step active">
+              <div class="pipe-step-name">Data Prep</div>
+              <div class="pipe-step-desc">Collect pairs, format, tokenise, split</div>
+            </div>
+            <div class="pipe-step active">
+              <div class="pipe-step-name">Training</div>
+              <div class="pipe-step-desc">Forward pass, loss, backprop, update weights</div>
+            </div>
+            <div class="pipe-step active">
+              <div class="pipe-step-name">Evaluation</div>
+              <div class="pipe-step-desc">Human review, benchmarks, error analysis</div>
+            </div>
+          </div>
+          <p>
+            If evaluation reveals problems, you go back to data prep — more examples, better
+            quality, different formatting — and run the cycle again.
+          </p>
+        </section>
+
+        <!-- 07 Data Preparation -->
+        <section id="data-prep">
+          <h2><span class="h2-num">07</span> Data Preparation</h2>
+          <p>
+            Garbage in, garbage out — nowhere is this truer than in finetuning.
+            Data quality trumps data quantity almost every time.
+          </p>
+
+          <div class="benefits-grid">
+            <div class="benefit-card">
+              <div class="benefit-title">✅ Higher Quality</div>
+              <ul><li>Errors in your data become errors in your model. Every example should be one you'd be proud of the model replicating.</li></ul>
+            </div>
+            <div class="benefit-card mid">
+              <div class="benefit-title">🌈 Diversity</div>
+              <ul><li>Low diversity leads to memorisation, not generalisation. Vary phrasing, topics, lengths.</li></ul>
+            </div>
+            <div class="benefit-card dark">
+              <div class="benefit-title">📋 Real</div>
+              <ul><li>Real examples from your actual use-case outperform synthetic data, especially for writing tasks.</li></ul>
+            </div>
+            <div class="benefit-card lite">
+              <div class="benefit-title">📈 More (but less critical)</div>
+              <ul><li>More data helps, but it's the fourth priority. Fix quality and diversity first.</li></ul>
+            </div>
+          </div>
+
+          <h3>Steps to data preparation</h3>
+          <ol class="steps-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-content">Collect <strong>instruction-response pairs</strong></div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-content">Concatenate pairs and add a prompt template where applicable</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-content"><strong>Tokenise</strong> — pad short sequences, truncate long ones</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-content">Split into <strong>train and test</strong> sets</div></li>
+          </ol>
+
+          <h3>Tokenisation</h3>
+          <p>
+            Tokenisation converts human-readable strings into the integer sequences the model
+            actually sees. Always use the tokenizer that was paired with your base model — using
+            a mismatched tokenizer will confuse the model at inference time.
+          </p>
+
+          <div class="code-wrap">
+            <div class="code-label">python · tokenization with HuggingFace</div>
+            <div class="code-block"><ck>from</ck> transformers <ck>import</ck> AutoTokenizer
+
+<cc># AutoTokenizer finds the right tokenizer automatically</cc>
+tokenizer = AutoTokenizer.from_pretrained(<cs>'EleutherAI/pythia-70m'</cs>)
+
+<cc># Encode → decode round-trip</cc>
+text = <cs>'Hi!! How are you?'</cs>
+encoded = tokenizer(text)[<cs>'input_ids'</cs>]
+decoded = tokenizer.decode(encoded)
+
+<cc># Padding — set pad token to eos token</cc>
+tokenizer.pad_token = tokenizer.eos_token
+encoded_padded = tokenizer(list_texts, padding=<cf>True</cf>)
+
+<cc># Truncation — gets rid of everything on the right by default</cc>
+encoded_truncated = tokenizer(list_texts, max_length=<cf>3</cf>, truncation=<cf>True</cf>)
+
+<cc># Left-side truncation — retains the right side (end of sequence)</cc>
+tokenizer.truncation_side = <cs>"left"</cs>
+encoded_left = tokenizer(list_texts, max_length=<cf>3</cf>, truncation=<cf>True</cf>)</div>
+          </div>
+
+          <h3>Storing your data</h3>
+          <ul class="inline-list">
+            <li>Save as <strong>JSONL files</strong> — one JSON object per line, easy to stream</li>
+            <li>Upload to <strong>HuggingFace Datasets</strong> for sharing and reuse</li>
+          </ul>
+
+          <div class="code-wrap">
+            <div class="code-label">python · save and load finetuning dataset</div>
+            <div class="code-block"><ck>import</ck> jsonlines
+
+<ck>with</ck> jsonlines.open(<cs>'lamini_docs_processed.jsonl'</cs>, <cs>'w'</cs>) <ck>as</ck> writer:
+    writer.write_all(finetuning_dataset_question_answer)
+
+<cc># Or load directly from HuggingFace</cc>
+<ck>from</ck> datasets <ck>import</ck> load_dataset
+finetuning_dataset = load_dataset(<cs>"lamini/lamini_docs"</cs>)</div>
+          </div>
+        </section>
+
+        <!-- 08 Training -->
+        <section id="training">
+          <h2><span class="h2-num">08</span> Training</h2>
+          <p>
+            The training loop itself is standard gradient descent — the same as any neural
+            network. What's different is the data you feed it and the starting point (a
+            pre-trained model rather than random weights).
+          </p>
+
+          <ol class="steps-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-content">Feed a batch of training data into the model</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-content"><strong>Predict</strong> the next token at each position</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-content"><strong>Calculate loss</strong> — cross-entropy between prediction and ground truth</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-content"><strong>Backpropagate</strong> through the entire model</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-content"><strong>Update weights</strong> via the optimizer</div></li>
+          </ol>
+
+          <h3>Key hyperparameters</h3>
+          <ul class="inline-list">
+            <li><strong>Learning rate</strong> — how large each gradient step is</li>
+            <li><strong>Learning rate scheduler (LRS)</strong> — controls how the learning rate decays over time</li>
+            <li><strong>Optimizer hyperparameters</strong> — e.g. beta values in AdamW</li>
+          </ul>
+
+          <div class="code-wrap">
+            <div class="code-label">python · training loop</div>
+            <div class="code-block"><ck>for</ck> each <ck>in</ck> range(num_epochs):
+    <ck>for</ck> batch <ck>in</ck> train_dataloader:
+        outputs = model(**batch)
+        loss = outputs.loss
+        loss.backward()
+        optimizer.step()    <cc># update weights</cc></div>
+          </div>
+
+          <h3>Lamini in 3 lines</h3>
+          <p>
+            If you want to skip the boilerplate and get to results fast, Lamini's library
+            wraps the full training loop into three lines:
+          </p>
+          <div class="code-wrap">
+            <div class="code-label">python · lamini shortcut</div>
+            <div class="code-block"><ck>from</ck> llama <ck>import</ck> BasicModelRunner
+
+model = BasicModelRunner(<cs>"EleutherAI/pythia-410m"</cs>)
+model.load_data_from_jsonlines(<cs>"lamini_docs.jsonl"</cs>, input_key=<cs>"question"</cs>, output_key=<cs>"answer"</cs>)
+model.train(is_public=<cf>True</cf>)</div>
+          </div>
+        </section>
+
+        <!-- 09 Evaluation -->
+        <section id="evaluation">
+          <h2><span class="h2-num">09</span> Evaluation</h2>
+          <p>
+            Evaluating generative models is genuinely hard. Unlike classification, there's no
+            clean accuracy metric. <strong>Human expert evaluation remains the most reliable method</strong>,
+            which is expensive and slow — hence the need for proxy benchmarks.
+          </p>
+
+          <div class="callout mid">
+            Good test data must be: <strong>high quality, accurate, generalised, and not seen in
+            the training data</strong>. If your test set leaks into training, you'll get
+            misleadingly good numbers.
+          </div>
+
+          <p>
+            Elo-style comparisons are gaining traction — A/B tests or model tournaments where
+            responses are ranked against each other rather than scored absolutely.
+          </p>
+
+          <h3>LLM Benchmarks (by EleutherAI)</h3>
+          <p>Benchmarks average multiple evaluation methods to give a comparable score across models:</p>
+          <div class="benchmark-grid">
+            <div class="benchmark-card">
+              <div class="benchmark-name">ARC <span class="benchmark-badge">Science QA</span></div>
+              <div class="benchmark-desc">Grade school science multiple-choice questions — tests basic reasoning and knowledge recall.</div>
+            </div>
+            <div class="benchmark-card">
+              <div class="benchmark-name">HellaSwag <span class="benchmark-badge">Common Sense</span></div>
+              <div class="benchmark-desc">Tests commonsense NLI — given a partial sentence, can the model pick the correct continuation?</div>
+            </div>
+            <div class="benchmark-card">
+              <div class="benchmark-name">MMLU <span class="benchmark-badge">Multitask</span></div>
+              <div class="benchmark-desc">Massive Multitask Language Understanding — elementary maths, US history, CS, law, and more.</div>
+            </div>
+            <div class="benchmark-card">
+              <div class="benchmark-name">TruthfulQA <span class="benchmark-badge">Factuality</span></div>
+              <div class="benchmark-desc">Measures a model's propensity to reproduce falsehoods commonly found on the internet.</div>
+            </div>
+          </div>
+
+          <div class="callout dark">
+            <strong>Important:</strong> finetuning on a domain-specific task will often <em>drop</em>
+            ARC scores — because the model is being optimised for something ARC doesn't test.
+            That's expected, not a failure. ARC scores recover if you also train on general tasks like Alpaca.
+          </div>
+
+          <h3>Error Analysis</h3>
+          <p>Before finetuning, spend time understanding what the base model gets wrong. Categorise the failures so you can fix them in your data:</p>
+          <ul class="inline-list">
+            <li><strong>Misspellings</strong> — surprisingly common in base models</li>
+            <li><strong>Too verbose</strong> — model answers with an essay when a sentence would do</li>
+            <li><strong>Repetitive</strong> — curb with stop tokens; also ensure your training data doesn't repeat heavily</li>
+          </ul>
+        </section>
+
+        <!-- 10 Practical approach -->
+        <section id="practical">
+          <h2><span class="h2-num">10</span> Practical Approach to Finetuning</h2>
+          <p>
+            This is the workflow I'm keeping close to hand. It's deliberately conservative — start
+            small, validate fast, scale only when you have evidence it's working.
+          </p>
+          <ol class="steps-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-content"><strong>Define your task</strong> — be precise about inputs, outputs, and what "good" looks like</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-content"><strong>Collect data</strong> related to those inputs and outputs</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-content"><strong>Generate synthetic data</strong> with a larger LLM if you don't have enough real examples</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-content"><strong>Finetune a small model</strong> (400M–1B parameters) — fast feedback, low cost</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-content"><strong>Vary the data volume</strong> — learn how sensitive your task is to data quantity</div></li>
+            <li class="step-item"><div class="step-num">6</div><div class="step-content"><strong>Evaluate rigorously</strong> — human review + relevant benchmarks</div></li>
+            <li class="step-item"><div class="step-num">7</div><div class="step-content"><strong>Collect more data</strong> and iterate if performance isn't satisfactory</div></li>
+            <li class="step-item"><div class="step-num">8</div><div class="step-content"><strong>Increase task complexity</strong> gradually</div></li>
+            <li class="step-item"><div class="step-num">9</div><div class="step-content"><strong>Scale model size</strong> only for genuinely complex tasks — bigger isn't always better</div></li>
+          </ol>
+
+          <h3>Task complexity vs model size</h3>
+          <ul class="inline-list">
+            <li><strong>Writing tasks</strong> are harder — they require more output tokens, and typically need larger models</li>
+            <li><strong>Harder tasks + multiple simultaneous tasks</strong> require larger models</li>
+          </ul>
+
+          <h3>Model size and GPU memory</h3>
+          <p>
+            Training needs <em>far</em> more memory than inference. A 16GB GPU can only train a
+            ~1B parameter model. Here's a quick reference:
+          </p>
+          <table class="gpu-table">
+            <thead>
+              <tr>
+                <th>AWS Instance</th>
+                <th>GPUs</th>
+                <th>GPU Memory</th>
+                <th>Max inference (params)</th>
+                <th>Max training (tokens)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>p3.2xlarge</td><td>1× V100</td><td>16GB</td><td class="hl">7B</td><td>1B</td></tr>
+              <tr><td>p3.8xlarge</td><td>4× V100</td><td>64GB</td><td class="hl">7B</td><td>1B</td></tr>
+              <tr><td>p3.16xlarge</td><td>8× V100</td><td>128GB</td><td class="hl">7B</td><td>1B</td></tr>
+              <tr><td>p3dn.24xlarge</td><td>8× V100</td><td>256GB</td><td class="hl">14B</td><td>2B</td></tr>
+              <tr><td>p4d.24xlarge</td><td>8× A100</td><td>320GB HBM2</td><td class="hl">18B</td><td>2.5B</td></tr>
+              <tr><td>p4de.24xlarge</td><td>8× A100</td><td>640GB HBM2e</td><td class="hl">32B</td><td>5B</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- 11 LoRA & PEFT -->
+        <section id="lora">
+          <h2><span class="h2-num">11</span> LoRA &amp; Parameter-Efficient Finetuning (PEFT)</h2>
+          <p>
+            Full finetuning updates every weight in the model — which is powerful but expensive.
+            <strong>Parameter-Efficient Finetuning (PEFT)</strong> techniques train only a fraction
+            of the parameters, dramatically reducing memory requirements while keeping most of the
+            accuracy benefit.
+          </p>
+
+          <div class="analogy-card">
+            <div class="analogy-icon">🧬</div>
+            <div class="analogy-body">
+              <div class="analogy-label">Three families of PEFT</div>
+              <div class="analogy-text">
+                <strong>Addition-based</strong> — add new layers/adapters and train only those.<br>
+                <strong>Selection-based</strong> — freeze most weights, select a sparse subset to update.<br>
+                <strong>Reparametrisation-based (LoRA)</strong> — decompose weight updates into low-rank matrices and train those instead.
+              </div>
+            </div>
+          </div>
+
+          <h3>LoRA — Low-Rank Adaptation</h3>
+          <p>
+            LoRA is the most widely used PEFT technique. Instead of modifying the original weights
+            directly, it trains a pair of small matrices whose product approximates the weight
+            update. At inference, these are merged back into the main weights — so there's
+            <strong>no additional latency</strong> compared to the full finetuned model.
+          </p>
+          <ul class="inline-list">
+            <li>For GPT-3, trainable parameters reduced by <strong>10,000×</strong> vs full finetuning</li>
+            <li>Accuracy is <strong>slightly below</strong> full finetuning — an acceptable tradeoff in most cases</li>
+            <li><strong>Same inference latency</strong> — LoRA weights merge with base weights at inference</li>
+            <li>Train new low-rank matrices, freeze the main weights</li>
+            <li>The new weights are <strong>rank decomposition matrices</strong> of the original weights' change</li>
+            <li>Train separately, merge at inference time</li>
+          </ul>
+
+          <div class="callout">
+            <strong>When to use LoRA:</strong> any time you want to finetune a model larger than your GPU can accommodate for full finetuning. It's also great for rapid experimentation — train multiple LoRA adapters for different tasks and swap them at inference time without keeping multiple full model copies.
+          </div>
+        </section>
+
+      </article>
+
+      <!-- ─── TOC ─────────────────────────────────────── -->
+      <aside class="post-toc">
+        <p class="toc-label">On this page</p>
+        <ul class="toc-list">
+          <li><a href="#what-is">What is Finetuning?</a></li>
+          <li><a href="#vs-prompting">Prompting vs Finetuning vs RAG</a></li>
+          <li><a href="#benefits">Why Finetune Your Own LLM?</a></li>
+          <li class="toc-sub"><a href="#benefits">Performance, Privacy, Cost, Reliability</a></li>
+          <li><a href="#pretraining">Pretraining vs Finetuning Data</a></li>
+          <li class="toc-sub"><a href="#pretraining">Pretraining</a></li>
+          <li class="toc-sub"><a href="#pretraining">Finetuning after pre-training</a></li>
+          <li><a href="#what-doing">What Is Finetuning Doing?</a></li>
+          <li class="toc-sub"><a href="#what-doing">Behaviour change vs knowledge gain</a></li>
+          <li class="toc-sub"><a href="#what-doing">Tasks to finetune</a></li>
+          <li><a href="#instruction">Instruction Finetuning</a></li>
+          <li class="toc-sub"><a href="#instruction">GPT-3 → ChatGPT</a></li>
+          <li class="toc-sub"><a href="#instruction">Prompt templates</a></li>
+          <li><a href="#data-prep">Data Preparation</a></li>
+          <li class="toc-sub"><a href="#data-prep">Quality, diversity, real data</a></li>
+          <li class="toc-sub"><a href="#data-prep">Tokenisation</a></li>
+          <li><a href="#training">Training</a></li>
+          <li class="toc-sub"><a href="#training">Training loop</a></li>
+          <li class="toc-sub"><a href="#training">Hyperparameters</a></li>
+          <li><a href="#evaluation">Evaluation</a></li>
+          <li class="toc-sub"><a href="#evaluation">Benchmarks (ARC, MMLU…)</a></li>
+          <li class="toc-sub"><a href="#evaluation">Error analysis</a></li>
+          <li><a href="#practical">Practical Approach</a></li>
+          <li class="toc-sub"><a href="#practical">9-step workflow</a></li>
+          <li class="toc-sub"><a href="#practical">GPU memory table</a></li>
+          <li><a href="#lora">LoRA &amp; PEFT</a></li>
+        </ul>
+      </aside>
+
+    </div>
+  </main>
+
+  <footer class="page" style="padding-top:20px">
+    <span>© 2026 Sumit Kant</span>
+  </footer>
+
+</body>
+</html>
