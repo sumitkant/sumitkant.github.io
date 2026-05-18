@@ -982,9 +982,9 @@
       const total = books.length;
       const notes = books.filter(b => b.notes).length;
       const rec = books.filter(b => b.recommended).length;
-      document.getElementById('stat-total').innerHTML = `${total}<span class="accent">+</span>`;
-      document.getElementById('stat-notes').innerHTML = `${notes}<span class="accent">+</span>`;
-      document.getElementById('stat-rec').innerHTML = `${rec}<span class="accent">+</span>`;
+      document.getElementById('stat-total').innerHTML = `${total}<span class="accent"></span>`;
+      document.getElementById('stat-notes').innerHTML = `${notes}<span class="accent"></span>`;
+      document.getElementById('stat-rec').innerHTML = `${rec}<span class="accent"></span>`;
     }
 
     /* ──────────────────────────────────────────────────
