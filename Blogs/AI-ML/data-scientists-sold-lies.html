@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="2 learnings in 4 years as a data scientist in a financial MNC — the expectation mismatch between academic data science and the real world." />
+  <title>Data Scientists… We've Been Sold Lies — Sumit Kant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Palette ────────────────────────────────────────
+       #003049  navy
+       #D62828  red
+       #F77F00  orange
+       #FCBF49  amber
+       #EAE2B7  cream
+    ──────────────────────────────────────────────────── */
+    :root {
+      --navy:    #003049;
+      --red:     #D62828;
+      --orange:  #F77F00;
+      --amber:   #FCBF49;
+      --cream:   #EAE2B7;
+
+      --bg:            #f5f0dc;        /* slightly warmer than cream */
+      --bg-surface:    #EAE2B7;
+      --bg-raised:     #dfd7a3;
+      --border:        rgba(0, 48, 73, 0.12);
+      --border-hover:  rgba(0, 48, 73, 0.28);
+      --text-primary:  #001e2e;
+      --text-secondary:#2a4a5e;
+      --text-tertiary: #7a99aa;
+      --accent:        var(--orange);
+      --accent2:       var(--red);
+      --dark-bg:       var(--navy);
+      --dark-text:     var(--cream);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --nav-h:     72px;
+      --content-w: 1100px;
+      --prose-w:   720px;
+      --font:      'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Nav ────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100; height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(245, 240, 220, 0.93);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    }
+    .nav-inner {
+      max-width: var(--content-w); margin: 0 auto; padding: 0 2rem;
+      height: 100%; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+    .nav-monogram {
+      width: 30px; height: 30px;
+      background: var(--navy); color: var(--cream);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; letter-spacing: -0.02em; flex-shrink: 0;
+    }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 13.5px; color: var(--text-secondary); transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+    .nav-links a.active { font-weight: 500; }
+
+    /* ─── Page ───────────────────────────────────────── */
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+    /* ─── Banner ─────────────────────────────────────── */
+    .post-banner { margin: 3rem 0 0; border-radius: var(--radius-lg); overflow: hidden; }
+
+    /* ─── Post hero ──────────────────────────────────── */
+    .post-hero {
+      padding: 2.5rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+      max-width: var(--prose-w);
+    }
+    .hero-eyebrow {
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 14px;
+    }
+    .hero-title strong { color: var(--orange); }
+    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.75; }
+
+    /* ─── Meta ───────────────────────────────────────── */
+    .post-meta {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+      padding: 1.25rem 0; border-bottom: 1px solid var(--border);
+    }
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border);
+      font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono);
+      letter-spacing: 0.03em; background: var(--bg-surface);
+    }
+    .meta-tag.navy  { background: var(--navy);  color: var(--cream); border-color: transparent; font-weight: 600; }
+    .meta-tag.red   { background: var(--red);   color: #fff;         border-color: transparent; font-weight: 600; }
+    .meta-tag.orange{ background: var(--orange); color: #fff;        border-color: transparent; font-weight: 600; }
+    .meta-dot { color: var(--text-tertiary); font-size: 10px; }
+
+    /* ─── Layout ─────────────────────────────────────── */
+    .post-layout {
+      display: grid; grid-template-columns: var(--prose-w) 1fr;
+      gap: 0 3rem; align-items: start; padding-top: 3rem;
+    }
+    .post-prose { min-width: 0; }
+    .post-toc {
+      position: sticky; top: calc(var(--nav-h) + 1.5rem);
+      padding-left: 1.5rem; border-left: 3px solid var(--amber);
+    }
+    .toc-label {
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px;
+    }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .toc-list a { font-size: 12.5px; color: var(--text-secondary); transition: color 0.15s; display: block; line-height: 1.4; }
+    .toc-list a:hover { color: var(--orange); }
+    .toc-list .toc-sub { padding-left: 12px; }
+    .toc-list .toc-sub a { font-size: 11.5px; color: var(--text-tertiary); }
+
+    /* ─── Prose ──────────────────────────────────────── */
+    .post-prose section { margin-bottom: 3rem; }
+    .post-prose h2 {
+      font-size: 1.35rem; font-weight: 800; letter-spacing: -0.025em;
+      color: var(--text-primary); margin-bottom: 1rem;
+      padding-top: 2.5rem; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .post-prose h2:first-child { border-top: none; padding-top: 0; }
+    .h2-num {
+      font-size: 10px; font-family: var(--font-mono);
+      letter-spacing: 0.12em; padding: 3px 7px; border-radius: var(--radius-sm);
+      background: var(--navy); color: var(--amber); white-space: nowrap;
+    }
+    .post-prose h3 { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 1.75rem 0 0.6rem; }
+    .post-prose p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; }
+    .post-prose p:last-child { margin-bottom: 0; }
+    .post-prose strong { color: var(--text-primary); font-weight: 600; }
+    .post-prose em { font-style: italic; color: var(--text-secondary); }
+
+    /* ─── Callout ────────────────────────────────────── */
+    .callout {
+      border-left: 3px solid var(--orange); background: var(--bg-surface);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 1rem 1.25rem; margin: 1.25rem 0;
+      font-size: 14.5px; color: var(--text-secondary); line-height: 1.75;
+      font-style: italic;
+    }
+    .callout.red    { border-left-color: var(--red); }
+    .callout.navy   { border-left-color: var(--navy); background: var(--bg-raised); }
+    .callout.amber  { border-left-color: var(--amber); }
+    .callout strong { color: var(--text-primary); font-style: normal; }
+
+    /* ─── Big pull quote ─────────────────────────────── */
+    .pull-quote {
+      background: var(--cream); color: var(--cream);
+      border-radius: var(--radius-lg); padding: 2rem 2rem 1.75rem;
+      margin: 1.75rem 0; position: relative; overflow: hidden;
+    }
+    .pull-quote::before {
+      content: '"';
+      position: absolute; top: -10px; left: 16px;
+      font-size: 8rem; font-weight: 800; line-height: 1;
+      color: var(--orange); opacity: 0.7; font-family: Georgia, serif;
+      pointer-events: none;
+    }
+    .pull-quote-text {
+      font-size: 1.15rem; font-weight: 700; line-height: 1.55;
+      letter-spacing: -0.01em; color: var(--cream); position: relative; z-index: 1; opacity: 1; font-style: normal;
+    }
+    .pull-quote-text em { color: var(--red); font-style: normal; }
+    .pull-quote-attr {
+      display: block; margin-top: 12px; font-size: 11.5px;
+      color: var(--red); font-family: var(--font-mono);
+      letter-spacing: 0.08em; position: relative; z-index: 1;
+
+    }
+
+    /* ─── Inline list ────────────────────────────────── */
+    .inline-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin: 0.75rem 0 1rem; }
+    .inline-list li { font-size: 14px; color: var(--text-secondary); padding-left: 20px; position: relative; line-height: 1.65; }
+    .inline-list li::before { content: '▸'; position: absolute; left: 0; color: var(--orange); font-size: 11px; top: 2px; }
+    .inline-list li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Kaggle vs Real World comparison ───────────── */
+    .vs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+    .vs-col { }
+    .vs-header {
+      padding: 12px 18px; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase; font-family: var(--font-mono);
+    }
+    .vs-header.kaggle { background: var(--amber); color: var(--navy); }
+    .vs-header.real   { background: var(--navy);  color: var(--amber); }
+    .vs-body { padding: 16px 18px; background: #fff;}
+    .vs-col + .vs-col .vs-body { border-left: 1px solid var(--border); }
+    .vs-body ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .vs-body li { font-size: 13px; color: var(--text-secondary); padding-left: 16px; position: relative; line-height: 1.55; }
+    .vs-body li::before { content: '·'; position: absolute; left: 4px; color: var(--orange); font-weight: 700; }
+    .vs-col + .vs-col .vs-body li::before { color: var(--navy); }
+
+    /* ─── Lifecycle phase cards ──────────────────────── */
+    .phase-list { display: flex; flex-direction: column; gap: 0; margin: 1.25rem 0; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+    .phase-card { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); background: #fff; }
+    .phase-card:last-child { border-bottom: none; }
+    .phase-stripe { width: 5px; flex-shrink: 0; }
+    .phase-stripe.s1 { background: var(--red); }
+    .phase-stripe.s2 { background: var(--orange); }
+    .phase-stripe.s3 { background: var(--amber); }
+    .phase-stripe.s4 { background: var(--navy); }
+    .phase-num {
+      width: 48px; flex-shrink: 0; display: flex; align-items: center;
+      justify-content: center; font-size: 18px; font-weight: 800;
+      letter-spacing: -0.03em; color: var(--bg-raised); border-right: 1px solid var(--border);
+    }
+    .phase-num.n1 { color: var(--red); }
+    .phase-num.n2 { color: var(--orange); }
+    .phase-num.n3 { color: var(--amber); }
+    .phase-num.n4 { color: var(--navy); }
+    .phase-body { padding: 16px 18px; flex: 1; }
+    .phase-title { font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .phase-desc ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .phase-desc li { font-size: 13px; color: var(--text-secondary); line-height: 1.55; padding-left: 14px; position: relative; }
+    .phase-desc li::before { content: '→'; position: absolute; left: 0; color: var(--text-tertiary); font-size: 10px; top: 2px; }
+    .phase-desc strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ─── Stat strip ─────────────────────────────────── */
+    .stat-strip {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      background: var(--navy); border-radius: var(--radius-lg);
+      overflow: hidden; margin: 1.5rem 0;
+    }
+    .stat-cell {
+      padding: 1.75rem 1.5rem; text-align: center;
+      border-right: 1px solid rgba(234,226,183,0.1);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val {
+      font-size: 2.4rem; font-weight: 800; letter-spacing: -0.04em;
+      line-height: 1; margin-bottom: 8px;
+    }
+    .stat-val.orange { color: var(--orange); }
+    .stat-val.amber  { color: var(--amber); }
+    .stat-val.cream  { color: var(--cream); }
+    .stat-lbl {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+      font-family: var(--font-mono); color: rgba(234,226,183,0.45);
+    }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--text-tertiary); flex-wrap: wrap; gap: 10px;
+    }
+    footer a { color: var(--text-tertiary); transition: color 0.15s; }
+    footer a:hover { color: var(--text-primary); }
+
+    /* ─── Responsive ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .post-layout { grid-template-columns: 1fr; }
+      .post-toc { display: none; }
+      .vs-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .page { padding: 0 1rem 4rem; }
+      .nav-inner { padding: 0 1rem; }
+      .stat-strip { grid-template-columns: 1fr; }
+      .stat-cell { border-right: none; border-bottom: 1px solid rgba(234,226,183,0.1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Nav ───────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://sumitkant.github.io/blog.html" class="active">Blog</a></li>
+        <li><a href="https://sumitkant.github.io/bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="https://sumitkant.github.io/johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="https://sumitkant.github.io/deep-learning.html">AI Lab</a></li>
+        <li><a href="https://sumitkant.github.io/neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+
+    <!-- ─── Banner ────────────────────────────────────── -->
+    <div class="post-banner">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="100%" style="display:block;border-radius:14px;">
+        <defs>
+          <linearGradient id="ds-bg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="#003049"/>
+            <stop offset="100%" stop-color="#001e2e"/>
+          </linearGradient>
+          <!-- Halftone-like dot pattern -->
+          <pattern id="ds-dots" width="24" height="24" patternUnits="userSpaceOnUse">
+            <circle cx="12" cy="12" r="1.2" fill="#EAE2B7" opacity="0.12"/>
+          </pattern>
+          <!-- Diagonal stripe accent -->
+          <pattern id="ds-stripe" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="12" stroke="#F77F00" stroke-width="1.5" opacity="0.18"/>
+          </pattern>
+        </defs>
+
+        <!-- Base -->
+        <rect width="1100" height="300" fill="url(#ds-bg)"/>
+        <rect width="1100" height="300" fill="url(#ds-dots)"/>
+
+        <!-- Left orange stripe block -->
+        <rect x="0" y="0" width="18" height="300" fill="#F77F00" opacity="0.9"/>
+        <!-- Amber accent stripe -->
+        <rect x="18" y="0" width="7" height="300" fill="#FCBF49" opacity="0.7"/>
+
+        <!-- Right diagonal pattern block -->
+        <rect x="760" y="0" width="340" height="300" fill="url(#ds-stripe)"/>
+
+        <!-- Stacked colour swatches — the palette itself as art -->
+        <rect x="820" y="40" width="44" height="220" rx="4" fill="#D62828" opacity="0.85"/>
+        <rect x="874" y="40" width="44" height="220" rx="4" fill="#F77F00" opacity="0.85"/>
+        <rect x="928" y="40" width="44" height="220" rx="4" fill="#FCBF49" opacity="0.85"/>
+        <rect x="982" y="40" width="44" height="220" rx="4" fill="#EAE2B7" opacity="0.75"/>
+        <!-- Swatch label dots -->
+        <circle cx="842" cy="238" r="4" fill="#fff" opacity="0.5"/>
+        <circle cx="896" cy="238" r="4" fill="#fff" opacity="0.5"/>
+        <circle cx="950" cy="238" r="4" fill="#fff" opacity="0.5"/>
+        <circle cx="1004" cy="238" r="4" fill="#001e2e" opacity="0.4"/>
+
+        <!-- Large bold number "4" — years of experience -->
+        <text x="130" y="240" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="220" font-weight="800" fill="#F77F00" opacity="0.12"
+              letter-spacing="-8">4</text>
+
+        <!-- Main headline block -->
+        <text x="58" y="108" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="13" font-weight="700" letter-spacing="3.5"
+              fill="#FCBF49" opacity="0.75" text-anchor="start">DATA SCIENTISTS…</text>
+        <text x="56" y="165" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="52" font-weight="800" letter-spacing="-2"
+              fill="#EAE2B7" opacity="0.97" text-anchor="start">We've Been</text>
+        <text x="56" y="222" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="52" font-weight="800" letter-spacing="-2"
+              fill="#F77F00" opacity="0.97" text-anchor="start">Sold Lies.</text>
+
+        <!-- Sub label -->
+        <text x="58" y="258" font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+              font-size="11" font-weight="400" letter-spacing="1.5"
+              fill="#EAE2B7" opacity="0.35" text-anchor="start">2 LEARNINGS · 4 YEARS · FINANCIAL MNC · JAN 2023</text>
+
+        <!-- Red accent bar under headline -->
+        <rect x="56" y="232" width="340" height="3" rx="1.5" fill="#D62828" opacity="0.7"/>
+      </svg>
+    </div>
+
+    <!-- ─── Post Hero ───────────────────────────────── -->
+    <header class="post-hero">
+      <p class="hero-eyebrow">Opinion · Data Science · Jan 2023</p>
+      <h1 class="hero-title">Data Scientists… <strong>We've Been Sold Lies.</strong></h1>
+      <p class="hero-sub">
+        I've been building machine learning models for a large financial MNC for about 4 years.
+        My understanding of data science — shaped entirely by online courses and Kaggle
+        competitions — turned out to be grossly misrepresented when I stepped into the real world.
+        Here's my attempt to share what actually happened.
+      </p>
+    </header>
+
+    <!-- ─── Meta ───────────────────────────────────── -->
+    <div class="post-meta">
+      <span class="meta-tag red">Data Science</span>
+      <span class="meta-tag navy">Machine Learning</span>
+      <span class="meta-tag orange">Experience</span>
+      <span class="meta-dot">·</span>
+      <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--text-tertiary);padding-left:0;">
+        Sumit Kant &nbsp;·&nbsp; Jan 14, 2023 &nbsp;·&nbsp; 5 min read
+      </span>
+    </div>
+
+    <!-- ─── Layout ─────────────────────────────────── -->
+    <div class="post-layout">
+      <article class="post-prose">
+
+        <!-- Intro -->
+        <section id="intro">
+          <h2><span class="h2-num">00</span> The Setup</h2>
+
+          <div class="stat-strip">
+            <div class="stat-cell">
+              <div class="stat-val orange">4</div>
+              <div class="stat-lbl">Years in Industry</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val amber">1</div>
+              <div class="stat-lbl">Large Financial MNC</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val cream">2</div>
+              <div class="stat-lbl">Hard Learnings</div>
+            </div>
+          </div>
+
+          <p>
+            I have been building machine learning models for a large financial MNC for about 4 years.
+            Over time, I have gained knowledge and experience in building and improving machine-learning
+            solutions to real-world data science problems. Throughout this tenure, I have observed that
+            my understanding of data science and machine learning — which I gained through online
+            learning on dummy datasets and Kaggle competitions — when I stepped foot in this field is
+            <strong>grossly misrepresented in the real world</strong>.
+          </p>
+          <p>And this is my attempt to share them with you.</p>
+        </section>
+
+        <!-- Learning 1 -->
+        <section id="learning-1">
+          <h2><span class="h2-num">01</span> You Will Not Build Cutting-Edge Machine-Learning Models</h2>
+
+          <p>
+            As soon as you get your first data science job, you are excited to build your first model.
+            So was I. I was too eager to run the best machine-learning algorithm on real-world datasets
+            and reach accuracy levels of ~95% — remember the iris/adult/titanic datasets?
+          </p>
+
+          <div class="pull-quote">
+            <p class="pull-quote-text">
+              Businesses are in the business of doing business,
+              <em>not building cutting-edge models.</em>
+            </p>
+            <span class="pull-quote-attr">— a hard truth, year one</span>
+          </div>
+
+          <p>
+            Businesses want solutions to problems that improve revenue, profitability, productivity,
+            or save cost. This means sometimes, <strong>good enough solutions that do not rely on
+            machine learning</strong> can be used to solve business problems. Some of these solutions
+            are 1st generation and act as a launchpad, especially for new marketing solutions where
+            data is limited.
+          </p>
+
+          <p>
+            So, if you are not building top-notch best-in-class models within your job, it is for a
+            good reason — timelines, limited data, or a limited understanding of new products within
+            the market. Over time, the problems may saturate and may require innovation. It is then
+            where business understanding combined with best-in-industry models will help improve model
+            performance and subsequently business outcomes.
+          </p>
+
+          <div class="callout amber">
+            <strong>Note to self:</strong> The job isn't to build the most sophisticated model.
+            The job is to solve the business problem — and sometimes the simplest solution is the right one.
+          </div>
+        </section>
+
+        <!-- Learning 2 -->
+        <section id="learning-2">
+          <h2><span class="h2-num">02</span> Modeling Is More Than Running Just an Algorithm</h2>
+
+          <p>
+            At the beginning of your data science journey, you are exposed to toy datasets like
+            iris/titanic/adult. Once you gain confidence, you participate in Kaggle competitions.
+            These toy problems and competitions create an illusion that modeling is running an
+            algorithm on datasets and improving a pre-defined score — at least, I had that expectation.
+          </p>
+          <p>
+            Much of what goes inside the model building process is hidden, and you won't know it
+            unless you are given a real-world problem that requires <strong>generating or saving real
+            dollars</strong>. To compare and contrast, let's look at a typical Kaggle competition
+            versus the modeling development cycle I followed.
+          </p>
+
+          <!-- Kaggle vs Real -->
+          <h3>Kaggle vs. The Real World</h3>
+          <div class="vs-grid">
+            <div class="vs-col">
+              <div class="vs-header kaggle">🏆 Typical Kaggle Competition</div>
+              <div class="vs-body">
+                <ul>
+                  <li>Given well-prepared datasets and a pre-defined performance metric</li>
+                  <li>Compete via feature engineering, hyperparameter tuning, trying multiple algorithms</li>
+                  <li>Submit to a leaderboard; scored on private datasets you improve over time</li>
+                  <li>Defining the dependent variable, data prep, and scoring metric are already done for you</li>
+                </ul>
+              </div>
+            </div>
+            <div class="vs-col">
+              <div class="vs-header real">🏢 Modeling in Real World</div>
+              <div class="vs-body">
+                <ul>
+                  <li>Business requests a <em>solution</em>, not a model — the problem definition is yours to figure out</li>
+                  <li>Feasibility assessment, alignment on observations, and gathering business context</li>
+                  <li>Single-model solutions preferred — deployability and maintainability matter</li>
+                  <li>Governance, compliance, and sign-off can make or break everything</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <p>
+            While Kaggle is the best simulation available for budding data scientists, much of the
+            effort that goes into <strong>defining the dependent variable, preparing the datasets,
+            and identifying the best scoring metric</strong> is already out of the picture.
+          </p>
+        </section>
+
+        <!-- The Real Cycle -->
+        <section id="real-cycle">
+          <h2><span class="h2-num">03</span> The Real Modeling Development Cycle</h2>
+          <p>
+            Here is what I found building ML models for a large financial MNC with a dedicated team
+            of data scientists providing solutions to multiple internal partners.
+          </p>
+
+          <div class="phase-list">
+            <div class="phase-card">
+              <div class="phase-stripe s1"></div>
+              <div class="phase-num n1">1</div>
+              <div class="phase-body">
+                <div class="phase-title">Requirement Planning</div>
+                <div class="phase-desc">
+                  <ul>
+                    <li>Business partners reach out to request a <strong>solution for a problem</strong> — e.g. identify customers to target for a new product due to a limited marketing budget.</li>
+                    <li>The modeling team assesses requirements and checks the feasibility of building an ML model.</li>
+                    <li>Both business and modeling teams align on relevant observations and gather business context. This becomes the foundation of defining the <strong>dependent variable, modeling approach, and the performance metric</strong>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="phase-card">
+              <div class="phase-stripe s2"></div>
+              <div class="phase-num n2">2</div>
+              <div class="phase-body">
+                <div class="phase-title">Data Prep &amp; Modeling</div>
+                <div class="phase-desc">
+                  <ul>
+                    <li>The modeling team prepares datasets, explores data across relevant business segments, and <strong>verifies observations with business teams</strong>.</li>
+                    <li>Builds a first-cut solution and measures performance at an overall level and against important business segments.</li>
+                    <li>Performance is compared with a benchmark or production solution, if any.</li>
+                    <li>The model is improved with <strong>feature engineering, hyperparameter tuning</strong>, and, if time permits, exploring alternate algorithms or approaches.</li>
+                    <li>Unlike Kaggle, modeling teams try to build <strong>single-model solutions wherever possible</strong> — solutions must be simple enough to deploy and maintain.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="phase-card">
+              <div class="phase-stripe s3"></div>
+              <div class="phase-num n3">3</div>
+              <div class="phase-body">
+                <div class="phase-title">Partner &amp; Governance Approvals</div>
+                <div class="phase-desc">
+                  <ul>
+                    <li>The final model is presented to the business team, highlighting <strong>lifts generated from the production solution</strong>, if any.</li>
+                    <li>An impact estimation is conducted to size the business benefit.</li>
+                    <li>Once partners approve, <strong>model documentation</strong> is prepared according to enterprise standards and submitted for governance approvals.</li>
+                    <li>This step is <strong>critical in the financial space</strong> — highly regulated. This step can make or break everything above.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="phase-card">
+              <div class="phase-stripe s4"></div>
+              <div class="phase-num n4">4</div>
+              <div class="phase-body">
+                <div class="phase-title">Deployment &amp; Tracking</div>
+                <div class="phase-desc">
+                  <ul>
+                    <li>Once the model passes internal governance checks, it is deployed in production and generates scores at a frequency relevant to the business teams.</li>
+                    <li>The job doesn't end at deployment. The model is now live and needs to be <strong>tracked for performance deterioration over time</strong> according to governance rules.</li>
+                    <li>Deterioration is addressed by adjustment or a full model rebuild.</li>
+                    <li>(Just like getting into a top college — you can't chill for the rest of your life. Another lie we've been sold. More on that some other time.)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout red">
+            It doesn't take a data scientist to figure out that the model development cycle has
+            <strong>much more to it than running your favourite algorithm.</strong>
+          </div>
+        </section>
+
+        <!-- Final Thoughts -->
+        <section id="final-thoughts">
+          <h2><span class="h2-num">04</span> Final Thoughts</h2>
+
+          <p>
+            Don't take this as a rant on competitions or on the iris dataset. One has to start
+            somewhere. The idea is that there is an <strong>expectation mismatch between academic
+            data science learning and data science for real-world problems</strong> — at least I
+            felt it — and that you should not fret if you find yourself on the fence about
+            data science.
+          </p>
+
+          <div class="pull-quote">
+            <p class="pull-quote-text">
+              Some of the best parts lie in the <em>initial phases</em> of the model development
+              cycle — brainstorming with business teams. You learn much about the business, which
+              gives you higher disposable knowledge.
+            </p>
+          </div>
+
+          <p>
+            Hence, working with a <strong>problem-solving mindset</strong> is the best way forward.
+            There will be times when the problems will mirror a streamlined view of data science.
+            So, take that opportunity to do all what you wanted to do when you started as a
+            data scientist.
+          </p>
+
+          <p>I hope you found this useful.</p>
+
+        </section>
+
+      </article>
+
+      <!-- ─── TOC ──────────────────────────────────── -->
+      <aside class="post-toc">
+        <p class="toc-label">On this page</p>
+        <ul class="toc-list">
+          <li><a href="#intro">The Setup</a></li>
+          <li><a href="#learning-1">Learning #1</a></li>
+          <li class="toc-sub"><a href="#learning-1">No cutting-edge models</a></li>
+          <li class="toc-sub"><a href="#learning-1">Business ≠ academia</a></li>
+          <li><a href="#learning-2">Learning #2</a></li>
+          <li class="toc-sub"><a href="#learning-2">Kaggle vs Real World</a></li>
+          <li><a href="#real-cycle">The Real Dev Cycle</a></li>
+          <li class="toc-sub"><a href="#real-cycle">Requirement Planning</a></li>
+          <li class="toc-sub"><a href="#real-cycle">Data Prep &amp; Modeling</a></li>
+          <li class="toc-sub"><a href="#real-cycle">Governance Approvals</a></li>
+          <li class="toc-sub"><a href="#real-cycle">Deployment &amp; Tracking</a></li>
+          <li><a href="#final-thoughts">Final Thoughts</a></li>
+        </ul>
+      </aside>
+
+    </div>
+  </main>
+
+  <footer class="page" style="padding-top:20px">
+    <span>© 2026 Sumit Kant</span>
+    
+  </footer>
+
+</body>
+</html>
