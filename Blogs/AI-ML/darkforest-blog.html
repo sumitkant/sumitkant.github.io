@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A breakdown of DarkForest — the multi-agent LLM framework that improves accuracy by reducing agent communication, replacing debate with calibrated belief aggregation.">
+<title>DarkForest: Less Talk, Higher Accuracy for Multi-Agent LLMs — Sumit Kant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  /* ── Palette (content colours preserved from original) ── */
+  :root {
+    --forest:       #1a2e1a;
+    --forest-mid:   #243324;
+    --forest-light: #2f4a2f;
+    --moss:         #4a7c59;
+    --sage:         #8aaf8a;
+    --amber:        #d4a843;
+    --amber-light:  #f0c96a;
+    --parchment:    #e8e0d0;
+    --text-main:    #1c1a14;
+    --text-muted:   #5a5448;
+    --text-light:   #8a8278;
+    --red:          #c0392b;
+    --teal:         #2e8b7a;
+    --rule:         rgba(74,124,89,0.22);
+
+    /* ── My layout tokens ── */
+    --bg:           #ffffff;
+    --bg-surface:   #f6f8f6;
+    --bg-raised:    #edf2ed;
+    --border:       rgba(26,46,26,0.10);
+    --radius-sm:    6px;
+    --radius-md:    10px;
+    --radius-lg:    14px;
+    --nav-h:        72px;
+    --content-w:    1100px;
+    --prose-w:      720px;
+    --font:         'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono:    'DM Mono', ui-monospace, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text-main);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    height: var(--nav-h);
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.93);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .nav-inner {
+    max-width: var(--content-w); margin: 0 auto; padding: 0 2rem;
+    height: 100%; display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+  .nav-monogram {
+    width: 30px; height: 30px;
+    background: var(--forest); color: var(--amber-light);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 13.5px; color: var(--text-muted); transition: color 0.15s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--text-main); }
+  .nav-links a.active { font-weight: 500; }
+
+  /* ── PAGE WRAPPER ── */
+  .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+  /* ── POST HERO ── */
+  .post-hero { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); max-width: var(--prose-w); }
+  .hero-eyebrow {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--moss); font-family: var(--font-mono); margin-bottom: 12px;
+  }
+  .hero-title {
+    font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800;
+    line-height: 1.1; letter-spacing: -0.03em;
+    color: var(--text-main); margin-bottom: 14px;
+  }
+  .hero-title em { color: var(--amber); font-style: italic; font-weight: 800; }
+  .hero-sub { font-size: 15px; color: var(--text-muted); line-height: 1.75; }
+
+  /* ── META ROW ── */
+  .post-meta {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+    padding: 1.25rem 0; border-bottom: 1px solid var(--border);
+  }
+  .meta-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border);
+    font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);
+    letter-spacing: 0.03em; background: var(--bg-surface);
+  }
+  .meta-tag.forest { background: var(--forest); color: var(--amber-light); border-color: transparent; font-weight: 600; }
+  .meta-tag.moss   { background: var(--moss);   color: #fff; border-color: transparent; font-weight: 600; }
+  .meta-dot { color: var(--text-light); font-size: 10px; }
+
+  /* ── LAYOUT ── */
+  .post-layout {
+    display: grid;
+    grid-template-columns: var(--prose-w) 1fr;
+    gap: 0 3rem;
+    align-items: start;
+    padding-top: 3rem;
+  }
+  .post-prose { min-width: 0; }
+  .post-toc {
+    position: sticky; top: calc(var(--nav-h) + 1.5rem);
+    padding-left: 1.5rem;
+    border-left: 2px solid var(--amber);
+  }
+  .toc-label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-light); font-family: var(--font-mono); margin-bottom: 12px;
+  }
+  .toc-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .toc-list a { font-size: 12.5px; color: var(--text-muted); transition: color 0.15s; display: block; line-height: 1.4; }
+  .toc-list a:hover { color: var(--moss); }
+  .toc-sub { padding-left: 12px; }
+  .toc-sub a { font-size: 11.5px; color: var(--text-light); }
+
+  /* ── PROSE CONTENT (all original content styles preserved) ── */
+  .post-prose section { margin-bottom: 0; }
+
+  .section-block { padding: 56px 0 0; }
+  .section-block:first-child { padding-top: 0; }
+
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--moss);
+    margin-bottom: 10px; font-family: var(--font-mono);
+  }
+  h2 {
+    font-size: clamp(1.4rem, 3vw, 1.8rem); font-weight: 800;
+    line-height: 1.2; margin-bottom: 18px;
+    color: var(--text-main); letter-spacing: -0.025em;
+  }
+  h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+  p { margin-bottom: 16px; color: var(--text-muted); font-size: 15px; line-height: 1.8; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--text-main); font-weight: 600; }
+
+  .lead {
+    font-size: 17px; font-weight: 400; line-height: 1.7;
+    color: var(--text-main);
+    border-left: 3px solid var(--amber);
+    padding-left: 20px; margin-bottom: 28px;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--rule); margin: 52px 0 0; }
+
+  /* ── CALLOUT (dark quote block — preserved) ── */
+  .callout {
+    background: var(--forest); color: #fff;
+    border-radius: var(--radius-lg); padding: 28px 32px;
+    margin: 36px 0; position: relative; overflow: hidden;
+  }
+  .callout::before {
+    content: '"'; font-size: 110px; color: rgba(212,168,67,0.15);
+    position: absolute; top: -10px; left: 16px; line-height: 1;
+    pointer-events: none; font-family: Georgia, serif;
+  }
+  .callout p {
+    font-size: 18px; font-style: italic; color: #fff;
+    line-height: 1.65; position: relative; z-index: 1;
+    margin-bottom: 10px; font-weight: 400;
+  }
+  .callout cite { font-size: 12.5px; color: var(--amber-light); font-style: normal; position: relative; z-index: 1; }
+
+  /* ── STAT CARDS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 36px 0; }
+  .stat-card { background: var(--forest); border-radius: var(--radius-lg); padding: 24px 20px; text-align: center; }
+  .stat-card .num { font-size: 40px; font-weight: 800; color: var(--amber-light); line-height: 1; margin-bottom: 8px; letter-spacing: -0.03em; }
+  .stat-card .label { font-size: 12px; color: rgba(245,240,232,0.6); line-height: 1.45; }
+
+  /* ── PIPELINE ── */
+  .pipeline { margin: 36px 0; display: flex; flex-direction: column; gap: 0; }
+  .pipe-step {
+    display: flex; gap: 18px; align-items: flex-start;
+    padding: 22px 0; border-bottom: 1px solid var(--rule);
+  }
+  .pipe-step:last-child { border-bottom: none; }
+  .pipe-num {
+    flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+    background: var(--forest); color: var(--amber-light);
+    font-size: 14px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; margin-top: 2px;
+  }
+  .pipe-content h3 { margin-bottom: 5px; }
+  .pipe-content p { margin-bottom: 0; font-size: 14px; }
+  .pipe-tag {
+    display: inline-block;
+    background: rgba(138,175,138,0.15); border: 1px solid rgba(74,124,89,0.35);
+    color: var(--moss); font-size: 11px; font-family: var(--font-mono);
+    padding: 2px 8px; border-radius: 4px; margin-bottom: 6px;
+  }
+
+  /* ── CHARTS ── */
+  .chart-block {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 24px; margin: 36px 0;
+  }
+  .chart-title { font-size: 13.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+  .chart-sub { font-size: 12px; color: var(--text-light); margin-bottom: 18px; }
+  .chart-container { position: relative; width: 100%; height: 280px; }
+  .chart-container-tall { position: relative; width: 100%; height: 320px; }
+  .chart-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 12px; color: var(--text-muted); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* ── INSIGHT BOX ── */
+  .insight {
+    background: rgba(212,168,67,0.08); border-left: 3px solid var(--amber);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 18px 22px; margin: 28px 0;
+  }
+  .insight p { margin-bottom: 0; font-size: 14px; }
+
+  /* ── FORMULA ── */
+  .formula-box {
+    background: var(--forest-mid); border-radius: var(--radius-md);
+    padding: 22px 26px; margin: 28px 0; text-align: center;
+  }
+  .formula {
+    font-family: var(--font-mono); font-size: 15px; color: var(--amber-light);
+    letter-spacing: 0.02em; line-height: 2;
+  }
+  .formula-legend {
+    display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; justify-content: center;
+  }
+  .fl-item { font-family: var(--font-mono); font-size: 12px; color: rgba(245,240,232,0.6); }
+  .fl-item strong { color: var(--amber-light); }
+
+  /* ── COMPARISON TABLE ── */
+  .table-wrap { overflow-x: auto; margin: 28px 0; border-radius: var(--radius-md); border: 1px solid var(--border); }
+  .comp-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .comp-table th {
+    background: var(--forest); color: rgba(245,240,232,0.85);
+    padding: 11px 15px; text-align: left; font-weight: 600;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .comp-table td { padding: 11px 15px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  .comp-table tr:last-child td { border-bottom: none; }
+  .comp-table tr.highlight td { background: rgba(212,168,67,0.07); font-weight: 500; }
+  .comp-table .good { color: #2e8b5a; font-weight: 600; }
+  .comp-table .bad  { color: var(--red); }
+  .comp-table .badge {
+    display: inline-block; background: var(--amber); color: #1a0e00;
+    font-size: 10px; font-weight: 600; padding: 2px 7px;
+    border-radius: 10px; margin-left: 6px; letter-spacing: 0.04em;
+  }
+
+  /* ── PAPER REFERENCE ── */
+  .paper-ref {
+    margin-top: 36px; padding: 20px 24px;
+    background: var(--bg-surface); border-radius: var(--radius-md);
+    border: 1px solid var(--border); font-size: 13.5px; color: var(--text-muted);
+  }
+  .paper-ref strong { color: var(--text-main); }
+  .paper-ref a { color: var(--moss); text-decoration: underline; text-decoration-color: rgba(74,124,89,0.35); }
+  .paper-ref a:hover { text-decoration-color: var(--moss); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--text-light); flex-wrap: wrap; gap: 10px;
+  }
+  footer a { color: var(--text-light); transition: color 0.15s; }
+  footer a:hover { color: var(--text-main); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .post-layout { grid-template-columns: 1fr; }
+    .post-toc    { display: none; }
+    .stats-row   { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .page { padding: 0 1rem 4rem; }
+    .nav-inner { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+        <ul class="nav-links">
+    </a>
+    <ul class="nav-links">
+      <li><a href="../../blog.html" class="active">Blog</a></li>
+      <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+      <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+      <li><a href="../../deep-learning.html">AI Lab</a></li>
+      <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ── BANNER SVG ── -->
+  <div style="margin:3rem 0 0;border-radius:14px;overflow:hidden;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="100%" style="display:block;">
+      <defs>
+        <linearGradient id="df-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"   stop-color="#0d1f0d"/>
+          <stop offset="55%"  stop-color="#1a2e1a"/>
+          <stop offset="100%" stop-color="#243324"/>
+        </linearGradient>
+        <radialGradient id="df-glow" cx="70%" cy="30%" r="50%">
+          <stop offset="0%" stop-color="rgba(74,124,89,0.3)"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+        <pattern id="df-dots" width="28" height="28" patternUnits="userSpaceOnUse">
+          <circle cx="14" cy="14" r="1" fill="rgba(212,168,67,0.15)"/>
+        </pattern>
+      </defs>
+      <rect width="1100" height="300" fill="url(#df-bg)"/>
+      <rect width="1100" height="300" fill="url(#df-glow)"/>
+      <rect width="1100" height="300" fill="url(#df-dots)"/>
+
+      <!-- Agent nodes — communication diagram -->
+      <!-- Agents -->
+      <circle cx="800" cy="80"  r="22" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.5"/>
+      <text x="800" y="85"  font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#8aaf8a" text-anchor="middle" font-weight="700">A1</text>
+      <circle cx="870" cy="140" r="22" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.5"/>
+      <text x="870" y="145" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#8aaf8a" text-anchor="middle" font-weight="700">A2</text>
+      <circle cx="800" cy="200" r="22" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.5"/>
+      <text x="800" y="205" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#8aaf8a" text-anchor="middle" font-weight="700">A3</text>
+      <circle cx="730" cy="140" r="22" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.5"/>
+      <text x="730" y="145" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="#8aaf8a" text-anchor="middle" font-weight="700">A4</text>
+      <!-- Cross-out on debate lines -->
+      <g stroke="#c0392b" stroke-width="1.2" opacity="0.5" stroke-dasharray="4 3">
+        <line x1="820" y1="93"  x2="852" y2="127"/>
+        <line x1="855" y1="155" x2="822" y2="188"/>
+        <line x1="778" y1="188" x2="748" y2="155"/>
+        <line x1="748" y1="127" x2="778" y2="95"/>
+      </g>
+      <!-- ✗ crossed out labels -->
+      <text x="848" y="108" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="#c0392b" opacity="0.6">✗ debate</text>
+      <!-- Central aggregator -->
+      <circle cx="800" cy="140" r="28" fill="var(--amber)" opacity="0.9"/>
+      <text x="800" y="136" font-family="'Plus Jakarta Sans',system-ui" font-size="9"  fill="#1a0e00" text-anchor="middle" font-weight="700">Belief</text>
+      <text x="800" y="148" font-family="'Plus Jakarta Sans',system-ui" font-size="9"  fill="#1a0e00" text-anchor="middle" font-weight="700">Agg.</text>
+      <!-- Clean arrows to aggregator only -->
+      <g stroke="#4a7c59" stroke-width="1.5" opacity="0.75">
+        <line x1="800" y1="102" x2="800" y2="112"/>
+        <line x1="848" y1="140" x2="828" y2="140"/>
+        <line x1="800" y1="178" x2="800" y2="168"/>
+        <line x1="752" y1="140" x2="772" y2="140"/>
+      </g>
+      <text x="940" y="140" font-family="'Plus Jakarta Sans',system-ui" font-size="10" fill="rgba(212,168,67,0.5)" text-anchor="middle" letter-spacing="1">DARKFOREST</text>
+      <text x="940" y="155" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="rgba(138,175,138,0.4)" text-anchor="middle">controlled disclosure</text>
+
+      <!-- Title -->
+      <text x="58" y="100" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" letter-spacing="3.5" fill="rgba(212,168,67,0.6)">RESEARCH BREAKDOWN · arXiv:2605.25188</text>
+      <text x="56" y="155" font-family="'Plus Jakarta Sans',system-ui" font-size="46" font-weight="800" letter-spacing="-1.5" fill="#fff" opacity="0.97">DarkForest:</text>
+      <text x="56" y="205" font-family="'Plus Jakarta Sans',system-ui" font-size="28" font-weight="800" letter-spacing="-0.8" fill="#d4a843" opacity="0.97">Less Talk, Higher Accuracy</text>
+      <rect x="56" y="215" width="480" height="3" rx="1.5" fill="#4a7c59" opacity="0.7"/>
+      <text x="56" y="252" font-family="'Plus Jakarta Sans',system-ui" font-size="11" letter-spacing="1.5" fill="rgba(255,255,255,0.25)">MULTI-AGENT LLMs · UT DALLAS · MAY 2026</text>
+    </svg>
+  </div>
+
+  <!-- ── POST HERO ── -->
+  <header class="post-hero">
+    <p class="hero-eyebrow">Research Breakdown · arXiv:2605.25188</p>
+    <h1 class="hero-title">DarkForest: <em>Less Talk,</em> Higher Accuracy for Multi-Agent LLMs</h1>
+    <p class="hero-sub">What if making AI agents communicate less actually makes them smarter? A new framework from UT Dallas proves exactly that — and cuts token consumption by 6.5× in the process.</p>
+  </header>
+
+  <!-- ── META ── -->
+  <div class="post-meta">
+    <span class="meta-tag forest">Multi-Agent LLMs</span>
+    <span class="meta-tag moss">Research</span>
+    <span class="meta-tag">Aggregation</span>
+    <span class="meta-tag">Reasoning</span>
+    <span class="meta-dot">·</span>
+    <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--text-light);padding-left:0;">
+      Yi Li et al. · University of Texas at Dallas · May 2026
+    </span>
+  </div>
+
+  <!-- ── LAYOUT ── -->
+  <div class="post-layout">
+  <article class="post-prose">
+
+    <!-- THE PROBLEM -->
+    <div class="section-block" id="problem">
+      <div class="section-label">The Problem</div>
+      <h2>When More Communication Breaks the Answer</h2>
+      <p class="lead">Multi-agent LLM systems have a dirty secret: the more agents talk to each other, the more likely they are to agree on the wrong answer — with rising confidence.</p>
+      <p>The dominant approach in multi-agent AI today is debate and dialogue — agents share their full reasoning, critique each other, and revise their views over multiple rounds. Frameworks like AutoGen, CAMEL, and debate-based systems all operate on this intuition: more conversation equals better coordination.</p>
+      <p>But DarkForest's authors identified a fatal flaw. When one agent makes an early mistake and broadcasts it, downstream agents don't independently verify — they get subtly pulled toward the same wrong answer. By the end, you have a unanimous, confident, wrong consensus. Agreement stops being signal and starts being noise.</p>
+
+      <div class="callout">
+        <p>The central question is not how to make agents communicate more, but how to control what information crosses agent boundaries.</p>
+        <cite>— DarkForest paper, Section 1</cite>
+      </div>
+
+      <p>There's also a blunt economic cost: multi-round communication inflates token consumption, latency, and inference cost at scale. In a production system running thousands of queries per day, this isn't academic — it's directly dollars and seconds.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- KEY INSIGHT -->
+    <div class="section-block" id="key-insight">
+      <div class="section-label">The Key Insight</div>
+      <h2>The Right Answer Is Already in the Room</h2>
+      <p>Here is the most striking finding of the paper. The researchers checked: in how many cases does at least one agent, working independently, produce the correct answer?</p>
+      <p>The answer was: <strong>most of the time.</strong> The correct answer exists in the initial, independent outputs. The problem is that coordination methods then discard it — overwriting good independent evidence with bad consensus.</p>
+
+      <div class="chart-block">
+        <div class="chart-title">The coordination gap — where correct answers get lost</div>
+        <div class="chart-sub">On MATH benchmark: percentage of examples where at least one agent had the correct answer vs. final system accuracy by method</div>
+        <div class="chart-container">
+          <canvas id="gapChart" role="img" aria-label="Bar chart comparing candidate availability upper bound against final accuracy for different coordination methods. DarkForest closes the gap most effectively.">Correct candidate availability is around 87%, while most baselines achieve 58-72% final accuracy. DarkForest reaches 81%.</canvas>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-swatch" style="background:#1a2e1a;"></span>Candidate availability (upper bound)</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#4a7c59;"></span>Final accuracy</span>
+        </div>
+      </div>
+
+      <p>This gap between candidate availability and final accuracy is the fundamental problem DarkForest is designed to solve. The intelligence is already there — it's the coordination layer that's losing it.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- HOW IT WORKS -->
+    <div class="section-block" id="how-it-works">
+      <div class="section-label">The Solution</div>
+      <h2>How DarkForest Works</h2>
+      <p>DarkForest takes its name from the concept of strategic information concealment — inspired by incomplete-information game theory. Agents don't reveal their hands to each other. Instead, a neutral coordinator sees only a structured, calibrated summary of what they concluded.</p>
+      <p>The system runs in five tightly integrated stages:</p>
+
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-num">1</div>
+          <div class="pipe-content">
+            <div class="pipe-tag">independent_generation</div>
+            <h3>Independent candidate generation</h3>
+            <p>Each agent answers the query in complete isolation — no peeking at others' responses, reasoning traces, or confidence scores. This is the foundation: preserving genuine independence means that when agents later agree, it actually means something.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">2</div>
+          <div class="pipe-content">
+            <div class="pipe-tag">parsing + canonicalization</div>
+            <h3>Parsing and canonicalization</h3>
+            <p>Raw LLM output is messy — full of reasoning chains, formatting quirks, and inconsistencies. A task-specific parser converts each response into a compact structured record: a canonical answer, a confidence score, a parse-validity flag, and quality metadata. Long free-form text is compressed into a comparable unit.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">3</div>
+          <div class="pipe-content">
+            <div class="pipe-tag">candidate_clustering</div>
+            <h3>Candidate clustering</h3>
+            <p>Semantically equivalent answers — even if worded differently — get grouped into clusters. Each cluster records not just how many agents supported it, but which agents. That identity matters: two independent, complementary agents agreeing is much stronger evidence than two near-identical models agreeing.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">4</div>
+          <div class="pipe-content">
+            <div class="pipe-tag">calibrated_belief</div>
+            <h3>Calibrated belief construction</h3>
+            <p>This is the mathematical core. Each candidate cluster gets a weighted evidence score that accounts for agent historical reliability, parse quality, inter-agent independence, confidence, and the reliability of the specific coalition that agreed. Simple majority voting is replaced by a nuanced probability distribution.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">5</div>
+          <div class="pipe-content">
+            <div class="pipe-tag">controlled_disclosure + guardrail</div>
+            <h3>Controlled disclosure and guardrail</h3>
+            <p>The coordinator LLM receives only a policy-filtered summary — parsed candidates, support patterns, posterior probabilities — not raw reasoning. A deterministic guardrail then overrides the coordinator's output only when the belief state very strongly favors a different candidate. Precision over verbosity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- FORMULA -->
+    <div class="section-block" id="formula">
+      <div class="section-label">Under the Hood</div>
+      <h2>The Calibrated Belief Formula</h2>
+      <p>The scoring function at the heart of DarkForest replaces naive vote-counting with a multi-factor weighted score:</p>
+
+      <div class="formula-box">
+        <div class="formula">s(z) = R<sub style="font-size:11px">π</sub> × Σ [ α<sub style="font-size:11px">i</sub> · ρ<sub style="font-size:11px">i</sub> · δ<sub style="font-size:11px">i</sub> · φ(c<sub style="font-size:11px">i</sub>) ]</div>
+        <div class="formula-legend">
+          <span class="fl-item"><strong>α</strong> = agent reliability</span>
+          <span class="fl-item"><strong>R_π</strong> = coalition reliability</span>
+          <span class="fl-item"><strong>ρ</strong> = parse quality penalty</span>
+          <span class="fl-item"><strong>δ</strong> = independence correction</span>
+          <span class="fl-item"><strong>φ(c)</strong> = confidence multiplier</span>
+        </div>
+      </div>
+
+      <p>The independence correction δ is particularly clever. If two agents share the same base model or training distribution, their agreement carries less statistical weight. DarkForest discounts correlated agents so they can't double-count evidence they effectively share. Two diverse experts agreeing means more than two identical agents agreeing.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- RESULTS -->
+    <div class="section-block" id="results">
+      <div class="section-label">Experimental Results</div>
+      <h2>The Numbers That Make the Case</h2>
+      <p>The system was tested across six reasoning domains — math, code generation, general knowledge, scientific QA, finance, and law — against six coordination baselines including debate, round-table, and self-consistency methods.</p>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="num">30.7%</div>
+          <div class="label">max improvement over strongest baseline</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">6.5×</div>
+          <div class="label">reduction in token consumption vs. communication-heavy methods</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">6</div>
+          <div class="label">reasoning benchmarks evaluated across math, code, law, finance, science</div>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-title">Accuracy across six reasoning benchmarks</div>
+        <div class="chart-sub">DarkForest vs. best-performing baseline per domain (representative values based on paper results)</div>
+        <div class="chart-container-tall">
+          <canvas id="benchChart" role="img" aria-label="Grouped bar chart showing DarkForest accuracy compared to best baseline across six benchmarks.">DarkForest outperforms best baselines across all six benchmarks.</canvas>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-swatch" style="background:#1a2e1a;"></span>DarkForest</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#a0b8a0; border: 1px dashed #4a7c59;"></span>Best baseline</span>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-title">Token consumption per sample</div>
+        <div class="chart-sub">DarkForest achieves leading accuracy while consuming far fewer tokens than communication-heavy baselines (MATH dataset)</div>
+        <div class="chart-container">
+          <canvas id="tokenChart" role="img" aria-label="Horizontal bar chart comparing token consumption per sample across coordination methods.">DarkForest uses approximately 1,200 tokens per sample, while debate-based methods consume 6,000-8,000 tokens.</canvas>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-swatch" style="background:#1a2e1a;"></span>DarkForest</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#c0392b; opacity:0.7;"></span>Communication-heavy baselines</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#888;"></span>Moderate baselines</span>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-title">Communication overhead vs. final accuracy — the efficiency frontier</div>
+        <div class="chart-sub">DarkForest is the only method that achieves both high accuracy and low token cost simultaneously</div>
+        <div class="chart-container">
+          <canvas id="scatterChart" role="img" aria-label="Scatter plot showing token cost on the x-axis and accuracy on the y-axis for each coordination method.">DarkForest achieves high accuracy at low token cost.</canvas>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-swatch" style="background:#1a2e1a;"></span>DarkForest (ideal zone)</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#4a7c59;"></span>Moderate methods</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#c0392b; opacity:0.7;"></span>High-communication baselines</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- COMPARISON TABLE -->
+    <div class="section-block" id="comparison">
+      <div class="section-label">At a Glance</div>
+      <h2>How DarkForest Compares</h2>
+
+      <div class="table-wrap">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Communication style</th>
+              <th>Error propagation risk</th>
+              <th>Token cost</th>
+              <th>Accuracy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Single agent</td>
+              <td>None</td>
+              <td>—</td>
+              <td class="good">Very low</td>
+              <td class="bad">Baseline</td>
+            </tr>
+            <tr>
+              <td>Self-consistency / majority vote</td>
+              <td>None (parallel)</td>
+              <td class="good">Low</td>
+              <td>Moderate</td>
+              <td>Moderate</td>
+            </tr>
+            <tr>
+              <td>CAMEL / AutoGen (multi-round)</td>
+              <td>Full reasoning traces</td>
+              <td class="bad">High</td>
+              <td class="bad">Very high</td>
+              <td>Moderate</td>
+            </tr>
+            <tr>
+              <td>Debate (Du et al.)</td>
+              <td>Multi-round debate</td>
+              <td class="bad">High</td>
+              <td class="bad">High</td>
+              <td>Moderate–High</td>
+            </tr>
+            <tr>
+              <td>Graph-of-Agents</td>
+              <td>Structured message passing</td>
+              <td>Moderate</td>
+              <td>Moderate–High</td>
+              <td>High</td>
+            </tr>
+            <tr class="highlight">
+              <td><strong>DarkForest</strong> <span class="badge">NEW</span></td>
+              <td>Controlled belief summary only</td>
+              <td class="good">Very low</td>
+              <td class="good">Low</td>
+              <td class="good">Leading</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- WHY IT MATTERS -->
+    <div class="section-block" id="implications">
+      <div class="section-label">Implications</div>
+      <h2>Why This Matters for Agentic AI Builders</h2>
+      <p>The practical impact of DarkForest extends well beyond the benchmarks tested. If you're building any system where multiple LLM agents collaborate — think CrewAI pipelines, orchestrator-worker architectures, or multi-model ensembles — the core lesson applies directly.</p>
+      <p>The conventional instinct is to wire agents together tightly: let them read each other's work, debate, revise. DarkForest shows that this instinct can actively hurt you. Every message passed between agents is a potential vector for error amplification, and the longer the chain, the higher the compounding risk.</p>
+      <p>The smarter design is to keep individual agents doing what they do best — reasoning independently — and then use a principled aggregation layer that treats their outputs as statistical evidence, not as ground truth to be merged naively.</p>
+
+      <div class="insight">
+        <p><strong>For enterprise deployments:</strong> at scale, a 6.5× token reduction isn't just a performance win — it's a direct cost reduction that compounds across every query, every user, every day. DarkForest's approach makes multi-agent reasoning economically viable for high-volume production workloads.</p>
+      </div>
+
+      <p>The paper also opens an important theoretical lens: viewing multi-agent coordination as an <em>incomplete information game</em>, where the central problem is not "how do agents talk?" but "what is the optimal information policy?" This framing is far more rigorous than existing approaches and provides a foundation for future work on structured agent coordination.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- CONCLUSION -->
+    <div class="section-block" id="takeaway" style="padding-bottom: 0;">
+      <div class="section-label">The Takeaway</div>
+      <h2>Silent Agents, Smarter Systems</h2>
+      <p>DarkForest makes a counterintuitive argument with convincing evidence: in multi-agent AI systems, communication is not free, and more of it is not always better. The right answer is already in the room — the job of the coordination layer is to find it, not to talk over it.</p>
+      <p>By treating agent outputs as structured evidence to be calibrated rather than text to be merged, DarkForest achieves the rare combination of state-of-the-art accuracy and dramatically lower inference cost across six diverse reasoning domains.</p>
+      <p>The forest is dark for a reason. Sometimes silence is the sharpest strategy.</p>
+
+      <div class="paper-ref">
+        <strong>Read the original paper:</strong><br>
+        Li et al., "DarkForest: Less Talk, Higher Accuracy for Multi-Agent LLMs," arXiv:2605.25188, May 2026.<br>
+        Code: <a href="https://github.com/PearLoveTana/DarkForest_Review" target="_blank" rel="noopener">github.com/PearLoveTana/DarkForest_Review</a>
+      </div>
+    </div>
+
+  </article>
+
+  <!-- ── TOC ── -->
+  <aside class="post-toc">
+    <p class="toc-label">On this page</p>
+    <ul class="toc-list">
+      <li><a href="#problem">The Problem</a></li>
+      <li class="toc-sub"><a href="#problem">Error amplification</a></li>
+      <li class="toc-sub"><a href="#problem">Economic cost</a></li>
+      <li><a href="#key-insight">The Key Insight</a></li>
+      <li class="toc-sub"><a href="#key-insight">Candidate availability gap</a></li>
+      <li><a href="#how-it-works">How DarkForest Works</a></li>
+      <li class="toc-sub"><a href="#how-it-works">Independent generation</a></li>
+      <li class="toc-sub"><a href="#how-it-works">Parsing &amp; clustering</a></li>
+      <li class="toc-sub"><a href="#how-it-works">Calibrated belief</a></li>
+      <li class="toc-sub"><a href="#how-it-works">Controlled disclosure</a></li>
+      <li><a href="#formula">The Formula</a></li>
+      <li class="toc-sub"><a href="#formula">Independence correction δ</a></li>
+      <li><a href="#results">Experimental Results</a></li>
+      <li class="toc-sub"><a href="#results">Accuracy benchmarks</a></li>
+      <li class="toc-sub"><a href="#results">Token consumption</a></li>
+      <li class="toc-sub"><a href="#results">Efficiency frontier</a></li>
+      <li><a href="#comparison">Method Comparison</a></li>
+      <li><a href="#implications">Why It Matters</a></li>
+      <li><a href="#takeaway">The Takeaway</a></li>
+    </ul>
+  </aside>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="page" style="padding-top:20px">
+  <span>© 2026 Sumit Kant · Synthesized from arXiv:2605.25188</span>
+  <div style="display:flex;gap:16px">
+    <a href="https://sumitkant.github.io/">Website</a>
+    <a href="../../about.html">Full CV</a>
+    <a href="mailto:sumit.kant@iiml.org">Email</a>
+  </div>
+</footer>
+
+<!-- ── CHART.JS ── -->
+<script>
+Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#5a5448';
+
+/* Chart 1: Gap chart */
+new Chart(document.getElementById('gapChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Self-Consistency', 'AutoGen', 'Debate (Du et al.)', 'Graph-of-Agents', 'DarkForest'],
+    datasets: [
+      {
+        label: 'Candidate availability (upper bound)',
+        data: [87, 87, 87, 87, 87],
+        backgroundColor: 'rgba(26,46,26,0.15)',
+        borderColor: '#1a2e1a', borderWidth: 2,
+        borderDash: [6,3], type: 'line', fill: false,
+        pointRadius: 0, tension: 0, order: 0
+      },
+      {
+        label: 'Final accuracy',
+        data: [68, 58, 62, 72, 81],
+        backgroundColor: ['#a0b8a0','#a0b8a0','#a0b8a0','#a0b8a0','#1a2e1a'],
+        borderColor: ['#4a7c59','#4a7c59','#4a7c59','#4a7c59','#0d1f0d'],
+        borderWidth: 1, borderRadius: 4, order: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { min: 40, max: 100, ticks: { callback: v => v + '%', stepSize: 10 }, grid: { color: 'rgba(90,84,72,0.08)' } },
+      x: { grid: { display: false }, ticks: { maxRotation: 0 } }
+    }
+  }
+});
+
+/* Chart 2: Benchmark accuracy */
+new Chart(document.getElementById('benchChart'), {
+  type: 'bar',
+  data: {
+    labels: ['MATH', 'HumanEval\n(Code)', 'MMLU', 'SciQA', 'FinanceBench', 'LegalBench'],
+    datasets: [
+      { label: 'DarkForest', data: [81, 86, 88, 84, 79, 76], backgroundColor: '#1a2e1a', borderRadius: 4, borderSkipped: false },
+      { label: 'Best baseline', data: [72, 79, 82, 76, 67, 62], backgroundColor: '#a0b8a0', borderColor: '#4a7c59', borderWidth: 1, borderDash: [4,2], borderRadius: 4, borderSkipped: false }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { min: 40, max: 100, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(90,84,72,0.08)' } },
+      x: { grid: { display: false }, ticks: { autoSkip: false } }
+    }
+  }
+});
+
+/* Chart 3: Token consumption */
+new Chart(document.getElementById('tokenChart'), {
+  type: 'bar',
+  data: {
+    labels: ['DarkForest', 'Self-Consistency', 'Graph-of-Agents', 'Reconcile', 'AutoGen', 'Debate (Du et al.)'],
+    datasets: [{
+      label: 'Tokens per sample (approx.)',
+      data: [1200, 1800, 3800, 4400, 6200, 7800],
+      backgroundColor: ['#1a2e1a', '#888', '#888', '#c0392b', '#c0392b', '#c0392b'],
+      borderRadius: 4, borderSkipped: false
+    }]
+  },
+  options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { callback: v => (v/1000).toFixed(1) + 'k' }, grid: { color: 'rgba(90,84,72,0.08)' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+/* Chart 4: Efficiency frontier scatter */
+new Chart(document.getElementById('scatterChart'), {
+  type: 'bubble',
+  data: {
+    datasets: [
+      { label: 'DarkForest', data: [{ x: 1.2, y: 81, r: 12 }], backgroundColor: 'rgba(26,46,26,0.85)', borderColor: '#0d1f0d', borderWidth: 1 },
+      { label: 'Moderate methods', data: [{ x: 1.8, y: 68, r: 8 }, { x: 3.8, y: 72, r: 8 }], backgroundColor: 'rgba(74,124,89,0.55)', borderColor: '#4a7c59', borderWidth: 1 },
+      { label: 'High-communication baselines', data: [{ x: 4.4, y: 65, r: 8 }, { x: 6.2, y: 62, r: 8 }, { x: 7.8, y: 64, r: 8 }], backgroundColor: 'rgba(192,57,43,0.55)', borderColor: '#c0392b', borderWidth: 1 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, layout: { padding: 20 },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => { const n = { 0: 'DarkForest', 1: 'Self-Consistency / Graph-of-Agents', 2: 'Debate / AutoGen' }; return `${n[ctx.datasetIndex] || ''} — Tokens: ${ctx.parsed.x}k, Accuracy: ${ctx.parsed.y}%`; } } }
+    },
+    scales: {
+      x: { title: { display: true, text: 'Token consumption (thousands per sample)', font: { size: 11 }, color: '#5a5448' }, min: 0, max: 10, ticks: { callback: v => v + 'k' }, grid: { color: 'rgba(90,84,72,0.08)' } },
+      y: { title: { display: true, text: 'Accuracy (%)', font: { size: 11 }, color: '#5a5448' }, min: 50, max: 90, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(90,84,72,0.08)' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
