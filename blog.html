@@ -261,20 +261,42 @@
     }
 
     /* Grid */
-    .grid {
+    /*.grid {
       columns: 4 220px;
       column-gap: var(--gap);
+    }*/
+    .grid {
+      display: block;
+      gap: var(--gap);
+      /* grid-template-columns: repeat(4, 1fr);
+      
+      align-items: start;  */
     }
 
     /* Shared item — inline-block keeps it whole in CSS columns */
-    .item {
+    /*.item {
       display: inline-block;
       width: 100%;
       margin-bottom: var(--gap);
       border-radius: var(--radius-card);
       overflow: hidden;
       vertical-align: top;
+    }*/
+
+    .item {
+      display: inline-block;
+      width: calc(25% - 9px);
+      margin-bottom: var(--gap);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      vertical-align: top;
+
     }
+
+    .item.hidden {
+      display: none;
+    }
+
 
     /* Post card */
     .post-card {
@@ -366,7 +388,7 @@
       align-items: center;
       text-align: center;
       gap: 14px;
-      width: 100%;
+      /* width: 100%; */
     }
 
     .quote-card.accent {
@@ -471,11 +493,11 @@
         </object>
       </a>
       <ul class="nav-links">
-        <li><a href="https://sumitkant.github.io/blog.html" class="active">Blog</a></li>
-        <li><a href="https://sumitkant.github.io/bookshelf.html">Books &amp; Reading</a></li>
-        <li><a href="https://sumitkant.github.io/johnnysmusiclab.html">Music Lab</a></li>
-        <li><a href="https://sumitkant.github.io/deep-learning.html">AI Lab</a></li>
-        <li><a href="https://sumitkant.github.io/neuralnotework.html">My Second Brain</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="deep-learning.html">AI Lab</a></li>
+        <li><a href="neuralnotework.html">My Second Brain</a></li>
       </ul>
     </div>
   </nav>
@@ -486,7 +508,7 @@
       <p class="hero-eyebrow">Writing</p>
       <h1 class="hero-title">The <strong>Blog</strong></h1>
       <div class="hero-bottom">
-        <p class="hero-sub">Notes. Explorations. Projects.</p>
+        <p class="hero-sub">Notes. Explorations. Projects. Courses.</p>
         <div class="search-wrap">
           <svg viewBox="0 0 20 20">
             <circle cx="9" cy="9" r="6" />
@@ -597,7 +619,7 @@
             fill="#8aaf8a" text-anchor="middle">6 tasks</text>
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Multi-Agent LLMs</span>, Research, Reasoning</div>
+          <div class="post-tags"><span class="p">Research Paper</span>, Agentic AI</div>
           <span class="post-title">DarkForest: Less Talk, Higher Accuracy for Multi-Agent LLMs</span>
           <p class="post-desc">How controlled belief aggregation beats debate-based coordination — 6.5× fewer tokens,
             30.7% accuracy gain across six reasoning benchmarks.</p>
@@ -654,7 +676,7 @@
             letter-spacing="1.5" fill="#fff" opacity="0.55" text-anchor="middle">AGENT SKILLS · DEEPLEARNING.AI</text>
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Agentic AI</span>, Claude, Skills</div>
+          <div class="post-tags"><span class="p">Agentic AI</span>, Claude, Skills, Course</div>
           <span class="post-title">Agent Skills with Anthropic — DeepLearning.ai</span>
           <p class="post-desc">How skills work, when to use them, and how to combine them with MCP and sub-agents to
             build reliable agentic workflows.</p>
@@ -760,7 +782,7 @@
             1.0</text>
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Reinforcement Learning</span>, GRPO, Fine-tuning</div>
+<div class="post-tags"><span class="p">Fine-tuning</span>, Research Paper</div>
           <span class="post-title">How to Fine-tune LLMs with GRPO</span>
           <p class="post-desc">The algorithm behind DeepSeek-R1 — how GRPO compares to SFT, RLHF, and DPO, and how to
             build reward functions that teach reasoning.</p>
@@ -848,7 +870,7 @@
           <line x1="310" y1="100" x2="298" y2="132" stroke="#34d399" stroke-width="0.7" opacity="0.2" />
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Finetuning</span>, LLMs, PyTorch</div>
+          <div class="post-tags"><span class="p">Fine-tuning</span>, Course</div>
           <span class="post-title">Finetuning Large Language Models — DeepLearning.ai</span>
           <p class="post-desc">When to finetune vs prompt vs RAG, how to prep data, run the training loop, evaluate
             results, and use LoRA for parameter-efficient finetuning.</p>
@@ -918,7 +940,7 @@
           <line x1="18" y1="110" x2="32" y2="72" stroke="#fff" stroke-width="0.7" opacity="0.18" />
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Prompt Engineering</span>, LLMs, NLP</div>
+          <div class="post-tags"><span class="p">Prompt Engineering</span>, Gen AI</div>
           <span class="post-title">Crafting Irresistible Prompts for Large Language Models</span>
           <p class="post-desc">Best practices for prompt engineering — chain of thought, affordances, forceful language,
             and more.</p>
@@ -990,7 +1012,7 @@
             fill="#FCBF49" opacity="0.8" text-anchor="middle">2 lessons</text>
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Data Science</span>, Machine Learning</div>
+          <div class="post-tags"><span class="p">Data Science</span></div>
           <span class="post-title">Data Scientists… We've Been Sold Lies.</span>
           <p class="post-desc">2 learnings from 4 years building ML models at a financial MNC — the expectation gap
             between Kaggle and the real world.</p>
@@ -1200,7 +1222,7 @@
             text-anchor="middle" letter-spacing="1">ATTENTION MAP</text>
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Transformers</span>, LLMs, Pre-training</div>
+          <div class="post-tags"><span class="p">Gen AI</span>, Course</div>
           <span class="post-title">GenAI Use Cases, Lifecycle &amp; Model Pre-training</span>
           <p class="post-desc">Transformer architecture deep-dive — self-attention, model variants, prompting,
             quantization, ZeRO, and Chinchilla scaling laws.</p>
@@ -1212,7 +1234,7 @@
         <img src="https://sumitkant.github.io/images/Blogs/13.coherence/coherence.jpg" alt="Coherence"
           loading="eager" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Neuroscience</span>, Self Improvement</div>
+          <div class="post-tags"><span class="p">Neuroscience</span></div>
           <span class="post-title">Coherence: The key to unlocking full brain potential</span>
           <p class="post-desc">You have heard controlling your breathing as part of Meditation. But what if I told you
             breathing can make you a good leader — the key is understanding your heart beat variation and generating a
@@ -1224,7 +1246,7 @@
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/Investing/web3.html">
         <img src="https://sumitkant.github.io/images/Blogs/12.Web3/notes.jpg" alt="Web3" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Notes</span>, LinkedinLearning</div>
+          <div class="post-tags"><span class="p">Crypto</span>,Course</div>
           <span class="post-title">Web3 Fundamentals</span>
           <p class="post-desc">Web3.0 is not the same as Web3. Blockchain, CryptoCurrencies, DAOs and Smart Contracts —
             all covered in this LinkedIn Learning course.</p>
@@ -1245,7 +1267,7 @@
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/Python/creatingstreamlitapp.html">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/13.jpg" alt="Streamlit" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Python</span>, Streamlit</div>
+          <div class="post-tags"><span class="p">Apps</span>, Python</div>
           <span class="post-title">Build and deploy app within minutes with Streamlit</span>
           <p class="post-desc">Un-stacking the full stack developer with Streamlit. You only need basic Python to deploy
             the app you want.</p>
@@ -1257,7 +1279,8 @@
         href="https://sumitkant.github.io/Blogs/Psychology/intro-to-neuromarketing-coursera-notes.html">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/2.jpg" alt="Neuromarketing" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Marketing</span>, Neuroscience</div>
+<div class="post-tags"><span class="p">Neuroscience</span>, Course</div>
+
           <span class="post-title">An Introduction to Consumer Neuroscience &amp; Neuromarketing —
             Coursera</span>
           <p class="post-desc">How we make decisions as consumers — brain regions, activations, measurement, and
@@ -1282,7 +1305,8 @@
         <img src="https://sumitkant.github.io/images/Blogs/8.MoodieDashApp/MOODIE_APP.jpg" alt="Moodie"
           loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">App</span>, Python, TensorFlow</div>
+          <div class="post-tags"><span class="p">Apps</span>, Python</div>
+
           <span class="post-title">Moodie — A facial expression detection app using Dash</span>
           <p class="post-desc">A fun weekend project detecting facial expressions from images using a TensorFlow CNN
             model.</p>
@@ -1301,7 +1325,7 @@
         <img src="https://sumitkant.github.io/images/Blogs/7.CourseraAIforEveryone/background.jpg" alt="AI for Everyone"
           loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Deep Learning</span>, Python</div>
+          <div class="post-tags"><span class="p">Deep Learning</span>, Course</div>
           <span class="post-title">[Notes] AI for Everyone — Coursera</span>
           <p class="post-desc">A 4-week non-technical course by deeplearning.ai covering AI definitions, strategy and
             what AI broadly offers.</p>
@@ -1313,7 +1337,7 @@
         <img src="https://sumitkant.github.io/images/Blogs/6.IntrotoDeepLearningMITNotes/background.jpg"
           alt="MIT Deep Learning" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Deep Learning</span>, Python</div>
+          <div class="post-tags"><span class="p">Deep Learning</span>, Course</div>
           <span class="post-title">Intro to Deep Learning — MIT 6.S191</span>
           <p class="post-desc">Notes from the MIT course by Alexander Amini and Ava Soleimany. Watch on YouTube.</p>
         </div>
@@ -1334,7 +1358,7 @@
         style="cursor:pointer;">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/5.jpg" alt="Front Page News" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Automation</span>, Python</div>
+          <div class="post-tags"><span class="p">Apps</span>, Python</div>
           <span class="post-title">Front Page News — Dash Application</span>
           <p class="post-desc">A minimal, ad-free news app scraping front-page links from The Hindu, optimised for
             mobile.</p>
@@ -1352,7 +1376,8 @@
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/AI-ML/xgboostmultiprocessing.html">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/8.jpg" alt="XGBoost" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Parallel Processing</span>, Python</div>
+          <div class="post-tags"><span class="p">Data Science</span>, Python</div>
+
           <span class="post-title">Parallelize Grid-Search for XGBoost</span>
           <p class="post-desc">A five-liner that makes your ML workflow much faster — grid search XGBoost with
             multiprocessing for maximum iterations in minimum time.</p>
@@ -1363,7 +1388,7 @@
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/Design/gestalt-principles.html">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/6.jpg" alt="Gestalt" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Psychology</span>, HTML &amp; CSS</div>
+          <div class="post-tags"><span class="p">Neuroscience</span>, Data Visualization</div>
           <span class="post-title">Gestalt's Principles of Visual Perception</span>
           <p class="post-desc">A handy interactive tool to visualise Gestalt's principles of visual perception.</p>
         </div>
@@ -1383,7 +1408,7 @@
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/Python/amazon-wishlist-tracking.html">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/7.jpg" alt="Amazon Wishlist" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Automation</span>, Python</div>
+          <div class="post-tags"><span class="p">Apps</span>, Python</div>
           <span class="post-title">Tracking your Amazon Wishlist — Automatically</span>
           <p class="post-desc">Python + Google Sheets + Tableau + Windows Task Scheduler — never miss a deal on your
             wishlist again.</p>
@@ -1394,7 +1419,7 @@
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/Python/sentiment-analysis-legobatmanmovie.html">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/10.jpg" alt="Sentiment Analysis" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Twitter</span>, R</div>
+          <div class="post-tags"><span class="p">Data Science</span></div>
           <span class="post-title">Sentiment Analysis using R — Lego Batman Movie</span>
           <p class="post-desc">An intro to sentiment analysis in R — tweet preprocessing, sentiment computation, and
             word-cloud generation.</p>
@@ -1405,7 +1430,7 @@
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/Python/facebook-scraping-with-netvizz.html">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/11.jpg" alt="Facebook Scraping" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Web Scraping</span></div>
+          <div class="post-tags"><span class="p">Python</span></div>
           <span class="post-title">Facebook Scraping using Netvizz</span>
           <p class="post-desc">A step-by-step guide to scraping comments and posts from Facebook pages and public groups
             using Netvizz.</p>
@@ -1416,7 +1441,7 @@
       <a class="item post-card" href="https://sumitkant.github.io/Blogs/Python/Matplotlib_complete_guide.html">
         <img src="https://sumitkant.github.io/images/Blogs/AllBanners/9.jpg" alt="Matplotlib" loading="lazy" />
         <div class="post-body">
-          <div class="post-tags"><span class="p">Python</span>, Matplotlib</div>
+          <div class="post-tags"><span class="p">Python</span>, Data Visualization</div>
           <span class="post-title">The Complete Guide to Matplotlib</span>
           <p class="post-desc">From simple graphs to complex charts from scratch, inspired by <em>Matplotlib 3.0
               Cookbook</em> by Srinivasa Rao Poladi.</p>
@@ -1445,7 +1470,14 @@
     </div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
   <script>
+    var msnry = new Masonry('.grid', {
+      itemSelector: '.item:not(.hidden)',
+      percentPosition: true,
+      gutter: 12
+    });
+
     var activeTag = 'all';
     var searchQuery = '';
 
@@ -1493,6 +1525,22 @@
     });
 
     /* ── Apply both filters ─────────────────────── */
+    // function applyFilters() {
+    //   var q = searchQuery.toLowerCase();
+
+    //   cards.forEach(function (card) {
+    //     var tags = card.dataset.tags || '';
+    //     var text = card.innerText.toLowerCase();
+    //     var tagOk = activeTag === 'all' || tags.split('|').some(function (t) { return t === activeTag; });
+    //     var searchOk = !q || text.includes(q);
+    //     card.style.display = (tagOk && searchOk) ? '' : 'none';
+    //   });
+
+    //   /* hide quotes while any filter/search is active */
+    //   var filtering = activeTag !== 'all' || q;
+    //   quotes.forEach(function (q) { q.style.display = filtering ? 'none' : ''; });
+    // }
+
     function applyFilters() {
       var q = searchQuery.toLowerCase();
 
@@ -1501,12 +1549,21 @@
         var text = card.innerText.toLowerCase();
         var tagOk = activeTag === 'all' || tags.split('|').some(function (t) { return t === activeTag; });
         var searchOk = !q || text.includes(q);
-        card.style.display = (tagOk && searchOk) ? '' : 'none';
+        card.classList.toggle('hidden', !(tagOk && searchOk));
       });
 
-      /* hide quotes while any filter/search is active */
       var filtering = activeTag !== 'all' || q;
-      quotes.forEach(function (q) { q.style.display = filtering ? 'none' : ''; });
+      quotes.forEach(function (q) { q.classList.toggle('hidden', filtering); });
+
+      // destroy and reinit so Masonry only sees visible items
+      setTimeout(function () {
+        msnry.destroy();
+        msnry = new Masonry('.grid', {
+          itemSelector: '.item:not(.hidden)',
+          percentPosition: true,
+          gutter: 12
+        });
+      }, 0);
     }
 
     /* ── Search ─────────────────────────────────── */
@@ -1519,6 +1576,8 @@
       }, 180);
     });
   </script>
+
+
 </body>
 
 </html>
