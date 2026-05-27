@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="On the gap between decision quality and outcome quality — and why confusing the two might be the most expensive mistake we make." />
+  <title>The Outcome Trap — Sumit Kant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --amber:    #b5832a;
+      --amber-lt: #d4a84b;
+      --dark:     #1a1410;
+      --bg:       #ffffff;
+      --bg-warm:  #faf8f5;
+      --bg-raised:#f3ede6;
+      --border:   rgba(26,20,16,0.09);
+      --text:     #1c1810;
+      --muted:    #5a5040;
+      --light:    #9a8c7e;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --nav-h: 72px; --content-w: 1100px; --prose-w: 680px;
+      --font:      'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-serif:'Lora', Georgia, serif;
+      --font-mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.75; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Nav ──────────────────────────────────── */
+    nav { position: sticky; top: 0; z-index: 100; height: var(--nav-h); border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.93); backdrop-filter: blur(14px); }
+    .nav-inner { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 13.5px; color: var(--muted); transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+    .nav-links a.active { font-weight: 500; }
+
+    /* ─── Page ─────────────────────────────────── */
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+    /* ─── Banner ────────────────────────────────── */
+    .post-banner { margin: 3rem 0 0; border-radius: var(--radius-lg); overflow: hidden; }
+
+    /* ─── Post hero ─────────────────────────────── */
+    .post-hero { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); max-width: var(--prose-w); }
+    .hero-eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--light); font-family: var(--font-mono); margin-bottom: 12px; }
+    .hero-title { font-family: var(--font-serif); font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 16px; font-style: italic; }
+    .hero-title strong { color: var(--amber); font-style: normal; }
+    .hero-sub { font-size: 16px; color: var(--muted); line-height: 1.75; font-family: var(--font-serif); font-style: italic; }
+
+    /* ─── Meta ──────────────────────────────────── */
+    .post-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
+    .meta-tag { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; color: var(--muted); font-family: var(--font-mono); letter-spacing: 0.03em; background: var(--bg-warm); }
+    .meta-tag.amber { background: var(--amber); color: #fff; border-color: transparent; font-weight: 600; }
+    .meta-dot { color: var(--light); font-size: 10px; }
+
+    /* ─── Layout ────────────────────────────────── */
+    .post-layout { display: grid; grid-template-columns: var(--prose-w) 1fr; gap: 0 3.5rem; align-items: start; padding-top: 3rem; }
+    .post-prose { min-width: 0; }
+    .post-toc { position: sticky; top: calc(var(--nav-h) + 1.5rem); padding-left: 1.5rem; border-left: 2px solid var(--amber-lt); }
+    .toc-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--light); font-family: var(--font-mono); margin-bottom: 12px; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .toc-list a { font-size: 12.5px; color: var(--muted); transition: color 0.15s; display: block; line-height: 1.4; }
+    .toc-list a:hover { color: var(--amber); }
+    .toc-sub { padding-left: 12px; }
+    .toc-sub a { font-size: 11.5px; color: var(--light); }
+
+    /* ─── Prose ─────────────────────────────────── */
+    .post-prose section { margin-bottom: 0; }
+    .essay-block { padding-top: 2.75rem; }
+    .essay-block:first-child { padding-top: 0; }
+
+    .section-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); font-family: var(--font-mono); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .post-prose h2 { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600; letter-spacing: -0.015em; color: var(--text); margin-bottom: 1.25rem; line-height: 1.3; font-style: italic; }
+    .post-prose h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin: 1.75rem 0 0.5rem; letter-spacing: -0.01em; }
+    .post-prose p { color: var(--muted); line-height: 1.85; margin-bottom: 1.1rem; font-size: 16px; }
+    .post-prose p:last-child { margin-bottom: 0; }
+    .post-prose p.lede { font-family: var(--font-serif); font-size: 18px; font-style: italic; color: var(--text); line-height: 1.75; margin-bottom: 1.25rem; }
+    strong { color: var(--text); font-weight: 600; }
+    em { font-style: italic; }
+
+    /* ─── Blockquote ────────────────────────────── */
+    blockquote {
+      border-left: 3px solid var(--amber); padding: 1rem 1.25rem;
+      margin: 1.75rem 0; background: var(--bg-warm); border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+    blockquote p { font-family: var(--font-serif); font-size: 17px; font-style: italic; color: var(--text); line-height: 1.7; margin-bottom: 0.5rem; }
+    blockquote cite { font-size: 12px; color: var(--light); font-style: normal; font-family: var(--font-mono); letter-spacing: 0.04em; }
+
+    /* ─── Dark pull quote ───────────────────────── */
+    .pull-quote { background: var(--dark); border-radius: var(--radius-lg); padding: 1.75rem 2rem; margin: 2rem 0; position: relative; overflow: hidden; }
+    .pull-quote::before { content: '\201C'; font-family: var(--font-serif); font-size: 8rem; color: rgba(181,131,42,0.18); position: absolute; top: -16px; left: 14px; line-height: 1; pointer-events: none; }
+    .pull-quote p { font-family: var(--font-serif); font-size: 17px; font-style: italic; color: rgba(255,255,255,0.88); line-height: 1.7; position: relative; z-index: 1; margin-bottom: 0; }
+    .pull-quote strong { color: var(--amber-lt); font-style: normal; }
+    .pull-quote cite { display: block; margin-top: 12px; font-size: 11.5px; color: rgba(255,255,255,0.35); font-family: var(--font-mono); letter-spacing: 0.06em; font-style: normal; position: relative; z-index: 1; }
+
+    /* ─── Callout note ──────────────────────────── */
+    .note { background: var(--bg-raised); border-left: 3px solid var(--amber-lt); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 1rem 1.25rem; margin: 1.5rem 0; font-size: 14.5px; color: var(--muted); line-height: 1.7; }
+    .note strong { color: var(--text); }
+
+    /* ─── Concept box ───────────────────────────── */
+    .concept-box { border: 1.5px solid var(--amber); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin: 2rem 0; }
+    .concept-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); font-family: var(--font-mono); margin-bottom: 10px; }
+    .concept-name { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 600; font-style: italic; color: var(--text); margin-bottom: 8px; }
+    .concept-box p { font-size: 14.5px; color: var(--muted); line-height: 1.7; margin-bottom: 0; }
+
+    /* ─── Factor list ───────────────────────────── */
+    .factor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 1.25rem 0; }
+    .factor-card { background: var(--bg-warm); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; }
+    .factor-name { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .factor-desc { font-size: 12px; color: var(--light); line-height: 1.45; }
+
+    /* ─── Divider ───────────────────────────────── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 2.75rem 0 0; }
+
+    /* ─── Footer ────────────────────────────────── */
+    footer { border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--light); flex-wrap: wrap; gap: 10px; }
+    footer a { color: var(--light); transition: color 0.15s; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 900px) { .post-layout { grid-template-columns: 1fr; } .post-toc { display: none; } .factor-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) { .nav-links { display: none; } .page { padding: 0 1rem 4rem; } .nav-inner { padding: 0 1rem; } }
+  </style>
+</head>
+<body>
+
+<!-- ─── Nav ──────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+      <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;"></object>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../../blog.html" class="active">Blog</a></li>
+      <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+      <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+      <li><a href="../../deep-learning.html">AI Lab</a></li>
+      <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ─── Banner ───────────────────────────────── -->
+  <div class="post-banner">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="100%" style="display:block;">
+      <defs>
+        <linearGradient id="di-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"   stop-color="#1a1410"/>
+          <stop offset="60%"  stop-color="#241c14"/>
+          <stop offset="100%" stop-color="#2e2418"/>
+        </linearGradient>
+        <pattern id="di-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="rgba(181,131,42,0.07)" stroke-width="0.6"/>
+        </pattern>
+      </defs>
+      <rect width="1100" height="300" fill="url(#di-bg)"/>
+      <rect width="1100" height="300" fill="url(#di-grid)"/>
+
+      <!-- Compass rose — right side motif -->
+      <g transform="translate(900,150)" opacity="0.22">
+        <circle cx="0" cy="0" r="100" fill="none" stroke="#b5832a" stroke-width="1"/>
+        <circle cx="0" cy="0" r="70"  fill="none" stroke="#b5832a" stroke-width="0.6"/>
+        <circle cx="0" cy="0" r="40"  fill="none" stroke="#b5832a" stroke-width="0.6"/>
+        <!-- Cardinal ticks -->
+        <line x1="0" y1="-105" x2="0" y2="-72" stroke="#b5832a" stroke-width="1.5"/>
+        <line x1="0" y1="72"   x2="0" y2="105" stroke="#b5832a" stroke-width="1.5"/>
+        <line x1="-105" y1="0" x2="-72" y2="0" stroke="#b5832a" stroke-width="1.5"/>
+        <line x1="72"  y1="0"  x2="105" y2="0" stroke="#b5832a" stroke-width="1.5"/>
+        <!-- Off-by-a-degree needle — slightly rotated -->
+        <line x1="0" y1="0" x2="8"  y2="-95" stroke="#b5832a"  stroke-width="2.5"/>
+        <line x1="0" y1="0" x2="-4" y2="50"  stroke="#b5832a"  stroke-width="1.5" opacity="0.5"/>
+        <!-- True north faint ghost -->
+        <line x1="0" y1="0" x2="0" y2="-95" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 3"/>
+        <!-- Centre dot -->
+        <circle cx="0" cy="0" r="5" fill="#b5832a" opacity="0.8"/>
+        <!-- Label -->
+        <text x="0" y="-118" font-family="'Plus Jakarta Sans',system-ui" font-size="9" fill="rgba(181,131,42,0.5)" text-anchor="middle" letter-spacing="2">COMPASS</text>
+      </g>
+      <!-- Diverging path lines — the degree-off metaphor -->
+      <g stroke="rgba(181,131,42,0.3)" stroke-width="1" opacity="0.6">
+        <line x1="680" y1="150" x2="840" y2="80"/>
+        <line x1="680" y1="150" x2="840" y2="220"/>
+      </g>
+      <g stroke="rgba(255,255,255,0.08)" stroke-width="1">
+        <line x1="680" y1="150" x2="840" y2="150" stroke-dasharray="5 4"/>
+      </g>
+
+      <!-- Title -->
+      <text x="58" y="98" font-family="'Plus Jakarta Sans',system-ui" font-size="11" font-weight="700" letter-spacing="3.5" fill="rgba(181,131,42,0.6)">DECISION INTELLIGENCE · PERSONAL ESSAY</text>
+      <text x="55" y="158" font-family="Lora,Georgia,serif" font-size="52" font-weight="600" letter-spacing="-1" fill="#fff" opacity="0.96" font-style="italic">The Outcome Trap</text>
+      <rect x="55" y="170" width="420" height="2.5" rx="1.2" fill="#b5832a" opacity="0.6"/>
+      <text x="55" y="208" font-family="Lora,Georgia,serif" font-size="18" font-style="italic" fill="rgba(255,255,255,0.55)">On confusing good luck with good decisions</text>
+      <text x="55" y="252" font-family="'Plus Jakarta Sans',system-ui" font-size="11" letter-spacing="1.5" fill="rgba(255,255,255,0.2)">DECISION MAKING · COGNITIVE BIAS · LEADERSHIP</text>
+    </svg>
+  </div>
+
+  <!-- ─── Post Hero ─────────────────────────────── -->
+  <header class="post-hero">
+    <p class="hero-eyebrow">Personal Essay · Decision Intelligence</p>
+    <h1 class="hero-title"><em>The Outcome Trap</em></h1>
+    <p class="hero-sub">On confusing good luck with good decisions — and what it actually means to decide well.</p>
+  </header>
+
+  <!-- ─── Meta ─────────────────────────────────── -->
+  <div class="post-meta">
+    <span class="meta-tag amber">Decision Making</span>
+    <span class="meta-tag">Cognitive Bias</span>
+    <span class="meta-dot">·</span>
+    <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--light);padding-left:0;">Sumit Kant</span>
+    <span class="meta-dot">·</span>
+    <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--light);padding-left:0;">27th May 2026</span>
+  </div>
+
+  <!-- ─── Layout ───────────────────────────────── -->
+  <div class="post-layout">
+  <article class="post-prose">
+
+    <!-- Lede -->
+    <div class="essay-block" id="lede">
+      <p class="lede">There's an image that's stayed with me: a ship that leaves port off by just one degree. For the first hour, you wouldn't even notice. For the first day, you'd still be close to where you thought you were. But after weeks at sea, you'd miss your destination entirely. Not because you were careless — but because a small, persistent error compounded quietly, below the waterline.</p>
+
+      <p>I've been thinking about this a lot lately, specifically in the context of decision-making. Not the dramatic decisions — the ones where you obviously need to think hard. The everyday ones. The career moves. The hires. The bets. The choices that feel reasonable at the time and only reveal their drift later, when you're somewhere you didn't intend to be.</p>
+
+      <p>There's a whole field built around this called <strong>Decision Intelligence</strong> — and the premise is disarmingly simple.</p>
+
+      <blockquote>
+        <p>"Decision making is a bit of an art, a lot of science and a skill that you can get better at."</p>
+      </blockquote>
+
+      <p>Which means most of us are worse at it than we think. And that the gap between how we <em>evaluate</em> our decisions and how we <em>actually make</em> them is, in my experience, wider than we'd like to admit.</p>
+
+      <p>Let me start with the thing that bothers me most.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- The Outcome Trap -->
+    <div class="essay-block" id="outcome-trap">
+      <div class="section-label">The Central Problem</div>
+      <h2>The Outcome Trap</h2>
+
+      <p>Here is a definition I find clarifying: a decision is an <strong>irrevocable allocation of resources</strong>. When you choose one path, the others close. That's it. That's a decision.</p>
+
+      <p>And every decision has two components in its outcome: the quality of the decision itself, and randomness. Luck. The thing you had no control over.</p>
+
+      <p>The problem is that we almost never disentangle the two.</p>
+
+      <div class="concept-box">
+        <div class="concept-label">The Concept</div>
+        <div class="concept-name">Outcome Bias</div>
+        <p>We judge the quality of a decision based on what happened afterward. A good outcome makes us think it was a good decision. A bad outcome makes us doubt it. The result dictates our evaluation — even when the result was largely luck.</p>
+      </div>
+
+      <p>Think about what this does over time. If a decision worked out well, we might do it again — even if it was objectively a bad decision that happened to land well. And if a decision worked out poorly, we might never try it again — even if the reasoning was sound and we simply got unlucky.</p>
+
+      <p>The philosopher in the room might call this survivorship bias. A person who has never had a bad outcome from their decisions is either very lucky or inexperienced — they haven't had enough chances for the randomness to catch up with them.</p>
+
+      <div class="pull-quote">
+        <p>Outcome bias is <strong>society's favourite form of mass irrationality.</strong></p>
+      </div>
+
+      <p>The antidote, as far as I can tell, is to <strong>always evaluate a decision on what was known at that time</strong> — not with the benefit of hindsight. Which factors were considered? How was information gathered? Was the source reliable? Was there enough of it?</p>
+
+      <p>This sounds obvious. It is genuinely hard. Especially because if you don't document your reasoning, you'll rewrite history — unconsciously but reliably — to explain what actually happened. That's hindsight bias. And it means you end up learning exactly the wrong lessons from your own experience.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Hackable Human -->
+    <div class="essay-block" id="hackable">
+      <div class="section-label">The Biology Problem</div>
+      <h2>The Hackable Human</h2>
+
+      <p>About a hundred years ago, people believed you could willpower your way through anything. Discipline, grit, rationality — if you wanted to decide well, you just had to try harder.</p>
+
+      <p>Then the research caught up.</p>
+
+      <p>In a now-famous 2011 study of parole hearings, researchers found that the probability of a favourable ruling was highest right after a meal break — and collapsed to near-zero before one. The judges weren't corrupt. They weren't even aware of it. They were just hungry, and hunger made the decision cognitively harder, which made it easier to default to denial — the path of least resistance.</p>
+
+      <p>The implication is uncomfortable: we make systematically suboptimal decisions when our biological state is suboptimal. Tiredness, hunger, stress, emotional triggers — they all degrade decision quality. And we rarely account for this.</p>
+
+      <div class="note">
+        <strong>The practical takeaway:</strong> pre-hack yourself. If a decision matters, postpone it until your biological characteristics are better than suboptimal. Don't schedule difficult choices right before lunch or when you're already under pressure from three other things. The environment matters.
+      </div>
+
+      <p>This is what makes the <strong>Principal-Agent Problem</strong> personal. There's a version of you that exists long-term — that cares about your health, your relationships, your compounding choices. Call that the Principal. And then there's the short-term you — exhausted at 11pm, or hungry at 1pm — who makes decisions that the long-term you will have to live with. The agent and the principal often have very different incentives.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Difficulty -->
+    <div class="essay-block" id="difficulty">
+      <div class="section-label">What Makes a Decision Hard</div>
+      <h2>Not All Decisions Are Created Equal</h2>
+
+      <p>There's a useful exercise: think about the last ten decisions you made. Some felt effortless. Others were exhausting. Why?</p>
+
+      <p>The difficulty of a decision scales with a specific set of factors — and once you see the list, it becomes obvious why some decisions drain you and others don't:</p>
+
+      <div class="factor-grid">
+        <div class="factor-card"><div class="factor-name">Number of options</div><div class="factor-desc">More options, harder decision</div></div>
+        <div class="factor-card"><div class="factor-name">Similarity between options</div><div class="factor-desc">Very similar choices are especially exhausting</div></div>
+        <div class="factor-card"><div class="factor-name">Reversibility</div><div class="factor-desc">Can you course-correct? At what cost?</div></div>
+        <div class="factor-card"><div class="factor-name">Cognitive load</div><div class="factor-desc">How much do you need to hold in memory?</div></div>
+        <div class="factor-card"><div class="factor-name">Risk vs ambiguity</div><div class="factor-desc">Risk: probabilities are known. Ambiguity: they're not.</div></div>
+        <div class="factor-card"><div class="factor-name">Number of stakeholders</div><div class="factor-desc">More decision-makers, exponentially harder</div></div>
+        <div class="factor-card"><div class="factor-name">Emotional triggers</div><div class="factor-desc">Does the decision touch something personal?</div></div>
+        <div class="factor-card"><div class="factor-name">Internal conflict</div><div class="factor-desc">Do your short-term and long-term incentives align?</div></div>
+      </div>
+
+      <p>This list is also a prescription for decisiveness. When you find yourself stuck, ask which of these factors is actually driving the difficulty — and whether you can reduce it. Very similar options? If the differences are genuinely tiny, don't agonise. Save the decision energy for what matters.</p>
+
+      <p>And on indecisiveness specifically: there is no such thing as <em>not</em> making a decision. By failing to decide, you are implicitly either delaying or deprioritising. That is itself a choice, with its own consequences.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Value of Clairvoyance -->
+    <div class="essay-block" id="clairvoyance">
+      <div class="section-label">How Much to Invest</div>
+      <h2>The Value of Clairvoyance</h2>
+
+      <p>Decision analysis has a useful concept I've started applying to almost everything: the <strong>Value of Clairvoyance</strong>.</p>
+
+      <p>The question is simple: if someone could give you the perfect answer to your decision — the exact right choice with certainty — what is the most you'd be willing to spend to get it? In time, money, or effort?</p>
+
+      <p>If that value is very low, you already know what to do. Use intuition and move on.</p>
+
+      <p>If it's high, the decision deserves structure, data, analysis, and probably expert input.</p>
+
+      <blockquote>
+        <p>A good decision maker doesn't underspend <em>or</em> overspend on a decision. A good decision does justice to what's at stake.</p>
+      </blockquote>
+
+      <p>This reframes the perfectionism problem. We often overspend on low-stakes decisions — paralysed by minor choices while being strangely under-invested in the ones that compound. And we underspend on high-stakes decisions because they're uncomfortable to sit with.</p>
+
+      <p>Intuition, by the way, isn't the enemy of rigour here. Intuition is appropriate when you're an expert. When you lack expertise, when the decision is structurally unfamiliar, or when you have genuine time — that's when more effort is warranted.</p>
+
+      <p>The trick is knowing which situation you're actually in.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Goal layers -->
+    <div class="essay-block" id="goals">
+      <div class="section-label">Thinking Clearly</div>
+      <h2>Layers of Goals</h2>
+
+      <p>Before you decide anything, you need to know what you're actually trying to achieve. Which sounds trivial until you try it.</p>
+
+      <p>Most people make two goal-setting mistakes simultaneously: their goals are either too concrete (easy to overfocus, easy to follow in ways that harm your deeper intention) or too vague (easy to deprioritise entirely).</p>
+
+      <p>The fix is to hold three kinds of goals at once:</p>
+
+      <blockquote>
+        <p><strong>Outcome goals</strong> — the actual win you care about. Often vague and hard to measure. "Be as healthy as possible." This is the north star.</p>
+        <p><strong>Performance goals</strong> — an aspirational target that keeps you motivated. Measurable and largely in your control.</p>
+        <p><strong>Process goals</strong> — fully within your control, day to day. The habit, the routine, the daily behaviour.</p>
+        <cite>— Decision Intelligence framework</cite>
+      </blockquote>
+
+      <p>The important warning: <strong>never let the process goal become the most important thing.</strong> If running five kilometres every morning is your process goal and your knees start hurting, stop running. The process goal exists to serve the outcome goal, not the other way around. When it stops being useful, change it.</p>
+
+      <p>This sounds obvious when stated. I've watched intelligent people destroy outcome goals by rigidly defending process goals well past the point of usefulness.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Data and confirmation bias -->
+    <div class="essay-block" id="data">
+      <div class="section-label">The Data Problem</div>
+      <h2>Data Doesn't Set You Free</h2>
+
+      <p>Here's the thing about data-driven decisions. They're almost never as data-driven as they appear.</p>
+
+      <p>What you already believe affects how you perceive information — which facts you notice, how you remember them, how much weight you give them. This is confirmation bias, and it operates before you've even seen the data. The numbers don't cure it. They can deepen it.</p>
+
+      <div class="pull-quote">
+        <p>"Without data, you are just a person with an opinion."</p>
+        <p style="margin-top:8px;opacity:0.7;font-size:15px;">— W. Edwards Deming</p>
+        <p style="margin-top:8px;"><strong>With data, you are still a person with an opinion</strong> — because people interpret facts in the direction they were already leaning.</p>
+      </div>
+
+      <p>Decision-makers are prone to finding the conclusion they wanted and then selecting the numbers that support it. The more you can slice data, the more it becomes a breeding ground for exactly this. Every cut of the data reveals something that confirms what someone in the room already believed.</p>
+
+      <p>The antidote is blunt: <strong>set the goalposts before you look at the data.</strong> Decide in advance what would change your mind. Commit to it. Then look. If you move the goalposts after seeing the numbers, you haven't made a data-driven decision — you've made a rationalised one.</p>
+
+      <p>And if your decision-makers are doing the mathematical jiujitsu anyway, get to the simplest possible analysis without wasting time or money on complexity. Complicated analysis on top of bad decision instincts generates nothing but dissipated heat.</p>
+
+      <div class="note">
+        <strong>The data charlatan test:</strong> ask whether their success criteria were in place before they even looked at the data. If not, the analysis is decoration.
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- The career-making question -->
+    <div class="essay-block" id="career-question">
+      <div class="section-label">The Most Useful Question</div>
+      <h2>What Would It Take to Change Your Mind?</h2>
+
+      <p>I want to end with something I've started thinking of as the career-making question — useful whether you're the decision-maker, or trying to be useful to one.</p>
+
+      <blockquote>
+        <p>"What would it take to change your mind?"</p>
+      </blockquote>
+
+      <p>It sounds simple. It is precise. Ask it of a decision-maker — or of yourself — and it does several things at once.</p>
+
+      <p>First, it reveals whether a real decision is still open. Often by the time someone is "making a decision," the decision has already been made. The analysis is theatre. Knowing this saves you from doing a lot of careful work in the wrong direction.</p>
+
+      <p>Second, it identifies the default action — what happens if no new information arrives. This is the baseline. Everything else is measured against it.</p>
+
+      <p>Third, it tells you exactly what metrics and criteria matter. Not what people say they care about — what would actually move them.</p>
+
+      <p>The follow-ups are just as useful: <em>How scared are you?</em> — this surfaces the Value of Clairvoyance. <em>How important is this decision?</em> — calibrates how much effort is warranted. <em>How badly could it go if we just tossed a coin?</em> — reveals how close the options actually are.</p>
+
+      <p>Becoming useful to decision-makers at higher levels than yourself is a compound skill. You need to understand their priorities, their information sources, and — most importantly — what would actually change their minds. The people who figure this out early tend not to stay at lower levels for long.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Closing -->
+    <div class="essay-block" id="closing">
+      <div class="section-label">In Closing</div>
+      <h2>What Good Actually Looks Like</h2>
+
+      <p>A good decision-maker, it turns out, isn't someone who always gets the right outcome. It's someone who:</p>
+
+      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;margin:1rem 0;">
+        <li style="font-size:15px;color:var(--muted);padding-left:18px;position:relative;line-height:1.65;"><span style="position:absolute;left:0;color:var(--amber);">▸</span>Separates the decision from the outcome — and knows how to evaluate one without being hijacked by the other</li>
+        <li style="font-size:15px;color:var(--muted);padding-left:18px;position:relative;line-height:1.65;"><span style="position:absolute;left:0;color:var(--amber);">▸</span>Recognises their own confirmation bias — and pre-commits to what would change their mind before looking at data</li>
+        <li style="font-size:15px;color:var(--muted);padding-left:18px;position:relative;line-height:1.65;"><span style="position:absolute;left:0;color:var(--amber);">▸</span>Knows how to calibrate effort using the Value of Clairvoyance — neither underspending nor overspending on a decision</li>
+        <li style="font-size:15px;color:var(--muted);padding-left:18px;position:relative;line-height:1.65;"><span style="position:absolute;left:0;color:var(--amber);">▸</span>Understands the factors that make a decision hard — and actively reduces them before committing</li>
+        <li style="font-size:15px;color:var(--muted);padding-left:18px;position:relative;line-height:1.65;"><span style="position:absolute;left:0;color:var(--amber);">▸</span>Asks the career-making question — and can identify who the real decision-maker is in any room</li>
+      </ul>
+
+      <p>Most often, decision-makers lack the skill rather than the will to do the right thing. Which is actually reassuring — skill, unlike will, can be built.</p>
+
+      <p>The compass doesn't have to be off by much. But the earlier you correct it, the less ocean you have to cross to get back on course.</p>
+
+      <p>What decision have you been avoiding making that you already know the answer to?</p>
+    </div>
+
+  </article>
+
+  <!-- ─── TOC ───────────────────────────────────── -->
+  <aside class="post-toc">
+    <p class="toc-label">In this essay</p>
+    <ul class="toc-list">
+      <li><a href="#lede">The Compass</a></li>
+      <li><a href="#outcome-trap">The Outcome Trap</a></li>
+      <li class="toc-sub"><a href="#outcome-trap">Outcome vs decision quality</a></li>
+      <li class="toc-sub"><a href="#outcome-trap">Hindsight bias</a></li>
+      <li><a href="#hackable">The Hackable Human</a></li>
+      <li class="toc-sub"><a href="#hackable">Parole judge study</a></li>
+      <li class="toc-sub"><a href="#hackable">Principal-agent problem</a></li>
+      <li><a href="#difficulty">What Makes Decisions Hard</a></li>
+      <li><a href="#clairvoyance">Value of Clairvoyance</a></li>
+      <li class="toc-sub"><a href="#clairvoyance">Intuition vs rigour</a></li>
+      <li><a href="#goals">Layers of Goals</a></li>
+      <li class="toc-sub"><a href="#goals">Outcome → Performance → Process</a></li>
+      <li><a href="#data">Data Doesn't Set You Free</a></li>
+      <li class="toc-sub"><a href="#data">Confirmation bias</a></li>
+      <li class="toc-sub"><a href="#data">Setting goalposts in advance</a></li>
+      <li><a href="#career-question">The Career-Making Question</a></li>
+      <li><a href="#closing">What Good Looks Like</a></li>
+    </ul>
+  </aside>
+  </div>
+
+</main>
+
+<footer class="page" style="padding-top:20px">
+  <span>© 2026 Sumit Kant</span>
+  <div style="display:flex;gap:16px">
+    <a href="https://sumitkant.github.io/">Website</a>
+    <a href="../../about.html">Full CV</a>
+    <a href="mailto:sumit.kant@iiml.org">Email</a>
+  </div>
+</footer>
+
+</body>
+</html>
