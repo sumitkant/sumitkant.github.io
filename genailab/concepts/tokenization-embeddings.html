@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tokenization and Embedding Models: An End-to-End Field Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --paper: #fffdf8;
+      --ink: #191917;
+      --muted: #68655f;
+      --faint: #9b968c;
+      --line: rgba(25, 25, 23, 0.1);
+      --accent: #b8522b;
+      --accent-soft: rgba(184, 82, 43, 0.11);
+      --blue: #2563eb;
+      --green: #0f8f66;
+      --gold: #d08b12;
+      --red: #c2414b;
+      --violet: #7258cc;
+      --font: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --content: 1080px;
+      --article: 820px;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      line-height: 1.72;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; }
+    svg { max-width: 100%; height: auto; }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(244, 241, 234, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-inner {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      background: var(--ink);
+      color: var(--bg);
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255, 253, 248, 0.5);
+      transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+      border-color: rgba(25, 25, 23, 0.24);
+      background: var(--paper);
+    }
+
+    .hero {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 70px 24px 44px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 48px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.25rem, 6vw, 4.45rem);
+      line-height: 1.02;
+      max-width: 780px;
+    }
+
+    .lede {
+      max-width: 660px;
+      margin: 0 0 26px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .hero-visual {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 18px 50px rgba(25, 25, 23, 0.06);
+    }
+
+    .pipeline-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .pipeline-title strong { font-size: 13px; }
+    .pipeline-title span { color: var(--faint); font-size: 11px; font-family: var(--mono); }
+
+    .token-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 12px 0 18px;
+    }
+
+    .token {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 9px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #f9f6ef;
+    }
+
+    .token:nth-child(2n) { background: rgba(37, 99, 235, 0.08); }
+    .token:nth-child(3n) { background: rgba(15, 143, 102, 0.08); }
+    .token:nth-child(5n) { background: rgba(184, 82, 43, 0.1); }
+
+    .mini-axis {
+      position: relative;
+      height: 106px;
+      margin-top: 18px;
+      border-left: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dot {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transform: translate(-50%, 50%);
+      border: 2px solid var(--paper);
+      box-shadow: 0 0 0 1px rgba(25, 25, 23, 0.1);
+    }
+
+    .dot.blue { background: var(--blue); left: 20%; bottom: 31%; }
+    .dot.green { background: var(--green); left: 38%; bottom: 54%; }
+    .dot.gold { background: var(--gold); left: 59%; bottom: 47%; }
+    .dot.red { background: var(--red); left: 77%; bottom: 70%; }
+    .dot.violet { background: var(--violet); left: 66%; bottom: 24%; }
+
+    .axis-label {
+      position: absolute;
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .axis-label.x { right: 0; bottom: -28px; }
+    .axis-label.y { left: 8px; top: 4px; }
+
+    .page {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 34px 24px 90px;
+    }
+
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 14px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin-bottom: 48px;
+    }
+
+    .toc a {
+      text-decoration: none;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .toc a:hover {
+      color: var(--ink);
+      border-color: rgba(25, 25, 23, 0.24);
+    }
+
+    main { max-width: var(--article); }
+    section { margin: 0 0 58px; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--faint);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .label-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(1.65rem, 3vw, 2.15rem);
+      line-height: 1.14;
+    }
+
+    h3 {
+      margin: 28px 0 10px;
+      font-size: 1.1rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    strong { color: var(--ink); }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.92em;
+      background: rgba(25, 25, 23, 0.06);
+      padding: 2px 5px;
+      border-radius: 5px;
+      color: var(--ink);
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 16px;
+      margin: 20px 0;
+      color: #71331f;
+      font-size: 14px;
+    }
+
+    .callout.blue {
+      border-color: var(--blue);
+      background: rgba(37, 99, 235, 0.08);
+      color: #163b85;
+    }
+
+    .callout.green {
+      border-color: var(--green);
+      background: rgba(15, 143, 102, 0.08);
+      color: #0b513d;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .card h3 {
+      margin: 0 0 7px;
+      font-size: 0.98rem;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.62;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-top: 12px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(25, 25, 23, 0.06);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .table-wrap {
+      margin: 22px 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 720px;
+      font-size: 13px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 13px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--ink);
+      font-size: 11px;
+      text-transform: uppercase;
+      background: rgba(25, 25, 23, 0.035);
+    }
+
+    td { color: var(--muted); }
+    tr:last-child td { border-bottom: 0; }
+
+    .chart {
+      margin: 24px 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .chart-head strong { font-size: 13px; }
+    .chart-head span { color: var(--faint); font-family: var(--mono); font-size: 11px; }
+
+    .bars { display: grid; gap: 12px; }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 52px;
+      gap: 12px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .bar-track {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(25, 25, 23, 0.07);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+
+    .bar-fill.blue { background: var(--blue); }
+    .bar-fill.green { background: var(--green); }
+    .bar-fill.gold { background: var(--gold); }
+    .bar-fill.violet { background: var(--violet); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 24px 0;
+    }
+
+    .flow-step {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 13px;
+      min-height: 122px;
+      position: relative;
+    }
+
+    .flow-step::after {
+      content: "→";
+      position: absolute;
+      right: -14px;
+      top: 42px;
+      color: var(--faint);
+      font-weight: 800;
+      z-index: 2;
+    }
+
+    .flow-step:last-child::after { content: ""; }
+    .flow-step b { display: block; font-size: 12px; margin-bottom: 7px; }
+    .flow-step span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 22px 0;
+    }
+
+    .compare-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      padding: 18px;
+    }
+
+    .compare-panel h3 { margin-top: 0; }
+
+    ul, ol {
+      margin: 0 0 18px 20px;
+      padding: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    li { margin-bottom: 8px; }
+
+    .resource-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .resource {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      padding: 16px;
+    }
+
+    .resource a {
+      color: var(--ink);
+      font-weight: 800;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .resource p { margin: 7px 0 0; font-size: 13px; }
+
+    .footnotes {
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+      color: var(--faint);
+      font-size: 12px;
+    }
+
+    .footnotes a { color: var(--muted); }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 46px;
+        gap: 28px;
+      }
+
+      .nav-inner {
+        height: auto;
+        padding-top: 14px;
+        padding-bottom: 14px;
+        align-items: flex-start;
+      }
+
+      .nav-links { display: none; }
+      .grid, .compare, .flow { grid-template-columns: 1fr; }
+      .flow-step::after { display: none; }
+      .bar-row { grid-template-columns: 94px 1fr 42px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero, .toc, section { animation: rise 520ms ease both; }
+      section:nth-of-type(2) { animation-delay: 80ms; }
+      section:nth-of-type(3) { animation-delay: 120ms; }
+      @keyframes rise {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="Article navigation">
+    <div class="nav-inner">
+      <div class="brand"><span class="mark">TE</span><span>Tokenization + Embeddings Field Guide</span></div>
+      <div class="nav-links">
+        <a href="#mental-model">Mental Model</a>
+        <a href="#tokenization">Tokenization</a>
+        <a href="#embeddings">Embeddings</a>
+        <a href="#compare">Compare</a>
+        <a href="#best-practices">Best Practices</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <div class="eyebrow">End-to-end technical guide</div>
+      <h1>Tokenization and Embedding Models</h1>
+      <p class="lede">
+        Modern language systems begin by turning text into discrete symbols and then into continuous geometry.
+        Tokenization decides what the model can see. Embeddings decide what the system can compare, retrieve,
+        cluster, classify, and reason over. This guide connects both halves into one practical mental model.
+      </p>
+      <div class="hero-meta">
+        <span class="pill">Intermediate NLP / GenAI</span>
+        <span class="pill">Includes diagrams and comparisons</span>
+        <span class="pill">Sources: official docs and primary papers</span>
+      </div>
+    </div>
+
+    <aside class="hero-visual" aria-label="Tokenization to embedding diagram">
+      <div class="pipeline-title">
+        <strong>From text to geometry</strong>
+        <span>tokens → vectors → search</span>
+      </div>
+      <div class="token-row" aria-hidden="true">
+        <span class="token">Token</span>
+        <span class="token">ization</span>
+        <span class="token">turns</span>
+        <span class="token">text</span>
+        <span class="token">into</span>
+        <span class="token">IDs</span>
+      </div>
+      <svg viewBox="0 0 460 130" role="img" aria-label="Pipeline from raw text to tokens to embedding vectors">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#9b968c"></path>
+          </marker>
+        </defs>
+        <rect x="5" y="18" width="95" height="54" rx="8" fill="#f4f1ea" stroke="rgba(25,25,23,.14)"></rect>
+        <text x="52" y="40" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#191917">raw text</text>
+        <text x="52" y="58" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#68655f">"bank"</text>
+        <line x1="105" y1="45" x2="155" y2="45" stroke="#9b968c" stroke-width="1.4" marker-end="url(#arrow)"></line>
+        <rect x="160" y="18" width="110" height="54" rx="8" fill="#fffdf8" stroke="rgba(25,25,23,.14)"></rect>
+        <text x="215" y="40" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#191917">token IDs</text>
+        <text x="215" y="58" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#68655f">[9137]</text>
+        <line x1="275" y1="45" x2="325" y2="45" stroke="#9b968c" stroke-width="1.4" marker-end="url(#arrow)"></line>
+        <rect x="330" y="18" width="120" height="54" rx="8" fill="#f4f1ea" stroke="rgba(25,25,23,.14)"></rect>
+        <text x="390" y="40" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#191917">vector</text>
+        <text x="390" y="58" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#68655f">[.12, -.04, ...]</text>
+        <path d="M70 110 C120 88, 153 100, 194 91 S287 84, 343 98 S416 96, 442 82" fill="none" stroke="#b8522b" stroke-width="3"></path>
+        <circle cx="194" cy="91" r="5" fill="#2563eb"></circle>
+        <circle cx="343" cy="98" r="5" fill="#0f8f66"></circle>
+      </svg>
+      <div class="mini-axis" aria-hidden="true">
+        <span class="axis-label y">meaning</span>
+        <span class="axis-label x">similarity →</span>
+        <span class="dot blue"></span>
+        <span class="dot green"></span>
+        <span class="dot gold"></span>
+        <span class="dot red"></span>
+        <span class="dot violet"></span>
+      </div>
+    </aside>
+  </header>
+
+  <div class="page">
+    <div class="toc" aria-label="Table of contents">
+      <a href="#mental-model">1. Mental model</a>
+      <a href="#tokenization">2. Tokenization types</a>
+      <a href="#token-charts">3. Token charts</a>
+      <a href="#embeddings">4. Embedding families</a>
+      <a href="#compare">5. Compare and contrast</a>
+      <a href="#best-practices">6. Best practices</a>
+      <a href="#resources">7. Learning path</a>
+    </div>
+
+    <main>
+      <section id="mental-model">
+        <div class="section-label"><span class="label-dot"></span> First principles</div>
+        <h2>The quiet contract between text and models</h2>
+        <p>
+          A language model does not receive words in the human sense. It receives <strong>token IDs</strong>:
+          integers selected from a model-specific vocabulary. Those IDs are then looked up in an embedding
+          table or passed through an embedding model, producing dense vectors. From there, attention layers,
+          retrieval indexes, classifiers, clustering algorithms, and ranking systems operate on numbers.
+        </p>
+        <p>
+          That means tokenization and embeddings are not housekeeping details. They define the system's
+          representational budget. A tokenizer decides whether <code>unbelievable</code> is one symbol,
+          three subwords, or twelve characters. An embedding model decides whether two pieces of text land
+          near each other because they share exact wording, semantic intent, domain context, language, or
+          some mix of those signals.
+        </p>
+        <div class="callout">
+          <strong>The key distinction:</strong> tokenization is a compression and segmentation problem;
+          embeddings are a representation and similarity problem. They are connected, but they optimize
+          for different things.
+        </div>
+
+        <div class="flow" aria-label="End-to-end text representation workflow">
+          <div class="flow-step"><b>1. Normalize</b><span>Apply casing, Unicode, whitespace, or model-specific text rules.</span></div>
+          <div class="flow-step"><b>2. Tokenize</b><span>Split text into vocabulary units and map each unit to an ID.</span></div>
+          <div class="flow-step"><b>3. Embed</b><span>Convert IDs, words, sentences, chunks, images, or other objects into vectors.</span></div>
+          <div class="flow-step"><b>4. Compare</b><span>Use cosine similarity, dot product, distance, or a learned ranker.</span></div>
+          <div class="flow-step"><b>5. Act</b><span>Retrieve, classify, cluster, recommend, route, deduplicate, or ground generation.</span></div>
+        </div>
+      </section>
+
+      <section id="tokenization">
+        <div class="section-label"><span class="label-dot" style="background: var(--blue);"></span> Tokenization</div>
+        <h2>Tokenization types, from simple splits to subword systems</h2>
+        <p>
+          Tokenization is the process of converting raw text into a sequence of units from a finite
+          vocabulary. Early NLP systems often used words. Modern neural models usually use subwords,
+          bytes, or sentencepiece-style units because they handle rare words, misspellings, morphology,
+          code, and multilingual text more gracefully.
+        </p>
+
+        <div class="grid">
+          <article class="card">
+            <h3>Word-level</h3>
+            <p>Splits on words or linguistic boundaries. Easy to interpret, but vocabulary grows quickly and unknown words become a problem.</p>
+            <span class="tag">Readable</span>
+          </article>
+          <article class="card">
+            <h3>Character-level</h3>
+            <p>Uses characters as tokens. Excellent coverage, but sequences become long and the model must learn larger semantic units from scratch.</p>
+            <span class="tag">High coverage</span>
+          </article>
+          <article class="card">
+            <h3>Byte-level</h3>
+            <p>Starts from bytes, so any text can be represented. Byte-level BPE is common in GPT-style tokenizers and avoids unknown Unicode characters.</p>
+            <span class="tag">Robust</span>
+          </article>
+          <article class="card">
+            <h3>Byte Pair Encoding</h3>
+            <p>Begins with small units and repeatedly merges frequent adjacent pairs until a target vocabulary size is reached.</p>
+            <span class="tag">Frequent merges</span>
+          </article>
+          <article class="card">
+            <h3>WordPiece</h3>
+            <p>Popularized by BERT-style models. Similar in spirit to BPE, but merge choices are based on a likelihood-style objective rather than raw pair frequency.</p>
+            <span class="tag">BERT lineage</span>
+          </article>
+          <article class="card">
+            <h3>Unigram / SentencePiece</h3>
+            <p>Starts with many candidate subwords, then prunes toward a compact vocabulary. SentencePiece can train directly from raw sentences.</p>
+            <span class="tag">Language-flexible</span>
+          </article>
+        </div>
+
+        <h3>Why subwords became the default</h3>
+        <p>
+          Word-level tokenizers are intuitive but brittle. A production model cannot afford to treat
+          every rare chemical name, new product, typo, username, URL, or agglutinative word as unknown.
+          Character-level tokenization solves coverage but increases sequence length, which can make
+          attention and training more expensive. Subword tokenization is the compromise: keep frequent
+          words whole, split rare words into reusable fragments, and preserve open-vocabulary behavior.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tokenizer family</th>
+                <th>Core idea</th>
+                <th>Strengths</th>
+                <th>Tradeoffs</th>
+                <th>Common examples</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Word-level</strong></td>
+                <td>Vocabulary item per word or normalized word form.</td>
+                <td>Human-readable, simple, useful for classic pipelines.</td>
+                <td>Large vocabularies, poor rare-word handling, language-specific preprocessing.</td>
+                <td>Classic bag-of-words, TF-IDF, older NLP systems.</td>
+              </tr>
+              <tr>
+                <td><strong>Character-level</strong></td>
+                <td>Each Unicode character, grapheme, or character-like unit becomes a token.</td>
+                <td>Excellent spelling and OOV coverage.</td>
+                <td>Long sequences; semantics emerge over many steps.</td>
+                <td>Some text generation, spelling-aware, low-resource experiments.</td>
+              </tr>
+              <tr>
+                <td><strong>Byte-level BPE</strong></td>
+                <td>Start with 256 byte values, then learn frequent merges.</td>
+                <td>Can represent arbitrary text without unknown Unicode tokens.</td>
+                <td>Token counts may vary strongly across scripts and formatting.</td>
+                <td>GPT-2-style tokenization; OpenAI's <code>tiktoken</code> is a fast BPE tokenizer.</td>
+              </tr>
+              <tr>
+                <td><strong>BPE</strong></td>
+                <td>Iteratively merge frequent neighboring symbols.</td>
+                <td>Efficient, deterministic, good rare-word handling.</td>
+                <td>Frequency can favor dominant languages or domains in training data.</td>
+                <td>GPT-family and RoBERTa-style tokenizers.</td>
+              </tr>
+              <tr>
+                <td><strong>WordPiece</strong></td>
+                <td>Build subword vocabulary with a likelihood-inspired merge criterion.</td>
+                <td>Strong fit for masked-language-model encoders.</td>
+                <td>Usually tied tightly to the model that was pretrained with it.</td>
+                <td>BERT and many BERT-derived encoders.</td>
+              </tr>
+              <tr>
+                <td><strong>Unigram / SentencePiece</strong></td>
+                <td>Train a probabilistic inventory of subwords and select likely segmentations.</td>
+                <td>Works directly on raw text; strong for multilingual settings.</td>
+                <td>Less transparent than simple merge rules.</td>
+                <td>T5, ALBERT, XLNet-style ecosystems; many multilingual models.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="token-charts">
+        <div class="section-label"><span class="label-dot" style="background: var(--gold);"></span> Charts and mechanics</div>
+        <h2>What tokenization changes in practice</h2>
+        <p>
+          The same text can produce dramatically different sequence lengths depending on the tokenizer.
+          That matters because many Transformer costs scale with sequence length, and API embedding
+          calls are usually priced by input tokens. The exact numbers below are illustrative, but the
+          shape is the practical lesson.
+        </p>
+
+        <div class="chart">
+          <div class="chart-head">
+            <strong>Chart 1: Sequence length pressure</strong>
+            <span>shorter is usually cheaper</span>
+          </div>
+          <div class="bars" aria-label="Illustrative sequence length comparison">
+            <div class="bar-row"><span>Word-level</span><div class="bar-track"><div class="bar-fill green" style="width: 38%;"></div></div><span>low</span></div>
+            <div class="bar-row"><span>Subword BPE</span><div class="bar-track"><div class="bar-fill blue" style="width: 54%;"></div></div><span>mid</span></div>
+            <div class="bar-row"><span>Unigram</span><div class="bar-track"><div class="bar-fill violet" style="width: 58%;"></div></div><span>mid</span></div>
+            <div class="bar-row"><span>Character</span><div class="bar-track"><div class="bar-fill gold" style="width: 92%;"></div></div><span>high</span></div>
+            <div class="bar-row"><span>Byte-level</span><div class="bar-track"><div class="bar-fill" style="width: 72%;"></div></div><span>varies</span></div>
+          </div>
+        </div>
+
+        <div class="chart">
+          <div class="chart-head">
+            <strong>Chart 2: Tokenizer design tradeoff map</strong>
+            <span>coverage vs compression</span>
+          </div>
+          <svg viewBox="0 0 760 330" role="img" aria-label="Scatter plot comparing tokenizer coverage and compression">
+            <rect x="58" y="30" width="640" height="240" rx="8" fill="#fbf8f0" stroke="rgba(25,25,23,.12)"></rect>
+            <line x1="96" y1="238" x2="660" y2="238" stroke="rgba(25,25,23,.18)"></line>
+            <line x1="96" y1="238" x2="96" y2="62" stroke="rgba(25,25,23,.18)"></line>
+            <text x="378" y="305" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#68655f">compression / shorter sequences →</text>
+            <text x="24" y="150" transform="rotate(-90 24 150)" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#68655f">coverage / OOV robustness →</text>
+
+            <circle cx="515" cy="186" r="18" fill="rgba(15,143,102,.16)" stroke="#0f8f66"></circle>
+            <text x="515" y="190" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#0b513d">Word</text>
+
+            <circle cx="215" cy="85" r="18" fill="rgba(208,139,18,.16)" stroke="#d08b12"></circle>
+            <text x="215" y="89" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6c4708">Char</text>
+
+            <circle cx="345" cy="105" r="18" fill="rgba(184,82,43,.16)" stroke="#b8522b"></circle>
+            <text x="345" y="109" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#71331f">Byte</text>
+
+            <circle cx="502" cy="107" r="18" fill="rgba(37,99,235,.16)" stroke="#2563eb"></circle>
+            <text x="502" y="111" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#163b85">BPE</text>
+
+            <circle cx="552" cy="124" r="22" fill="rgba(114,88,204,.16)" stroke="#7258cc"></circle>
+            <text x="552" y="128" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#36266f">Unigram</text>
+
+            <circle cx="575" cy="146" r="22" fill="rgba(194,65,75,.14)" stroke="#c2414b"></circle>
+            <text x="575" y="150" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#76252c">WordPiece</text>
+          </svg>
+        </div>
+
+        <h3>A small BPE story</h3>
+        <p>
+          Imagine a training corpus where <code>token</code>, <code>tokens</code>, <code>tokenize</code>,
+          and <code>tokenization</code> appear frequently. BPE-like algorithms begin with small symbols,
+          then merge frequent adjacent units. Over time, useful fragments such as <code>token</code>,
+          <code>ization</code>, or <code>ing</code> become reusable. Rare words can still be represented
+          because the tokenizer can fall back to smaller pieces.
+        </p>
+        <div class="callout blue">
+          <strong>Production rule:</strong> do not casually swap the tokenizer used by a pretrained model.
+          Token IDs are part of the model's learned interface. Changing them is closer to rewiring the input
+          layer than changing a text preprocessor.
+        </div>
+      </section>
+
+      <section id="embeddings">
+        <div class="section-label"><span class="label-dot" style="background: var(--green);"></span> Embedding models</div>
+        <h2>Embeddings turn symbols, text, and objects into useful geometry</h2>
+        <p>
+          An embedding is a dense numerical representation. In older NLP, embeddings usually meant
+          word vectors. In modern systems, embeddings may represent tokens inside a Transformer,
+          whole sentences, document chunks, images, audio, users, products, queries, or multimodal objects.
+          Similar items should land near one another in vector space.
+        </p>
+
+        <div class="compare">
+          <div class="compare-panel">
+            <h3>Internal model embeddings</h3>
+            <p>
+              These are learned lookup vectors for token IDs inside a model. In Transformers, token
+              embeddings are combined with positional information so the model can distinguish
+              <code>dog bites man</code> from <code>man bites dog</code>.
+            </p>
+          </div>
+          <div class="compare-panel">
+            <h3>Standalone embedding models</h3>
+            <p>
+              These produce vectors for external tasks: semantic search, clustering, recommendations,
+              deduplication, classification, RAG retrieval, and anomaly detection. They are often consumed
+              by vector databases or ranking pipelines.
+            </p>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Embedding type</th>
+                <th>What it represents</th>
+                <th>How it is learned</th>
+                <th>Best used for</th>
+                <th>Watch out for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>One-hot vectors</strong></td>
+                <td>Discrete vocabulary identity.</td>
+                <td>No learning; one dimension per vocabulary item.</td>
+                <td>Teaching, simple linear baselines.</td>
+                <td>Huge, sparse, no semantic similarity.</td>
+              </tr>
+              <tr>
+                <td><strong>Word2Vec</strong></td>
+                <td>Words or phrases.</td>
+                <td>Predicts context from word or word from context using shallow neural models.</td>
+                <td>Classic semantic similarity, analogy exploration, lightweight features.</td>
+                <td>Static meaning: one vector for <code>bank</code> regardless of sentence context.</td>
+              </tr>
+              <tr>
+                <td><strong>GloVe</strong></td>
+                <td>Words.</td>
+                <td>Factorizes global word co-occurrence statistics with a log-bilinear objective.</td>
+                <td>Interpretable classic word vectors and quick baselines.</td>
+                <td>Still static; vocabulary and corpus age matter.</td>
+              </tr>
+              <tr>
+                <td><strong>Contextual token embeddings</strong></td>
+                <td>Token in a specific sentence.</td>
+                <td>Transformer layers condition each token on surrounding tokens.</td>
+                <td>NER, extraction, classification, fine-tuning, language understanding.</td>
+                <td>Pooling token vectors into sentence vectors is not always optimal.</td>
+              </tr>
+              <tr>
+                <td><strong>Sentence / text embeddings</strong></td>
+                <td>Sentence, query, paragraph, or document chunk.</td>
+                <td>Often contrastive, siamese, dual-encoder, instruction-tuned, or task-tuned training.</td>
+                <td>Semantic search, RAG, clustering, routing, recommendations.</td>
+                <td>Must be evaluated on your task and domain; no universal winner.</td>
+              </tr>
+              <tr>
+                <td><strong>Multimodal embeddings</strong></td>
+                <td>Text, images, audio, video, or mixed objects.</td>
+                <td>Aligns different modalities into a shared space.</td>
+                <td>Image search, product matching, media retrieval, cross-modal discovery.</td>
+                <td>Similarity may reflect training data shortcuts or modality imbalance.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="chart">
+          <div class="chart-head">
+            <strong>Chart 3: Embedding families by task fit</strong>
+            <span>illustrative profile</span>
+          </div>
+          <svg viewBox="0 0 760 360" role="img" aria-label="Radar-style comparison of embedding families">
+            <g transform="translate(380 178)">
+              <circle r="40" fill="none" stroke="rgba(25,25,23,.1)"></circle>
+              <circle r="80" fill="none" stroke="rgba(25,25,23,.1)"></circle>
+              <circle r="120" fill="none" stroke="rgba(25,25,23,.1)"></circle>
+              <line x1="0" y1="-132" x2="0" y2="132" stroke="rgba(25,25,23,.12)"></line>
+              <line x1="-126" y1="-41" x2="126" y2="41" stroke="rgba(25,25,23,.12)"></line>
+              <line x1="-126" y1="41" x2="126" y2="-41" stroke="rgba(25,25,23,.12)"></line>
+
+              <text x="0" y="-146" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#68655f">semantic search</text>
+              <text x="150" y="-42" text-anchor="start" font-family="JetBrains Mono" font-size="11" fill="#68655f">context</text>
+              <text x="132" y="78" text-anchor="start" font-family="JetBrains Mono" font-size="11" fill="#68655f">multilingual</text>
+              <text x="0" y="156" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#68655f">efficiency</text>
+              <text x="-150" y="78" text-anchor="end" font-family="JetBrains Mono" font-size="11" fill="#68655f">interpretability</text>
+              <text x="-150" y="-42" text-anchor="end" font-family="JetBrains Mono" font-size="11" fill="#68655f">classic NLP</text>
+
+              <polygon points="0,-46 62,-20 54,36 0,84 -92,30 -100,-32" fill="rgba(208,139,18,.18)" stroke="#d08b12" stroke-width="2"></polygon>
+              <polygon points="0,-112 108,-35 86,62 0,66 -56,18 -40,-13" fill="rgba(37,99,235,.16)" stroke="#2563eb" stroke-width="2"></polygon>
+              <polygon points="0,-98 78,-25 114,72 0,52 -32,11 -30,-10" fill="rgba(15,143,102,.16)" stroke="#0f8f66" stroke-width="2"></polygon>
+            </g>
+            <g transform="translate(54 286)">
+              <rect width="14" height="14" fill="rgba(208,139,18,.18)" stroke="#d08b12"></rect>
+              <text x="22" y="12" font-family="Plus Jakarta Sans" font-size="12" fill="#68655f">classic static word vectors</text>
+              <rect x="210" width="14" height="14" fill="rgba(37,99,235,.16)" stroke="#2563eb"></rect>
+              <text x="232" y="12" font-family="Plus Jakarta Sans" font-size="12" fill="#68655f">modern text embeddings</text>
+              <rect x="444" width="14" height="14" fill="rgba(15,143,102,.16)" stroke="#0f8f66"></rect>
+              <text x="466" y="12" font-family="Plus Jakarta Sans" font-size="12" fill="#68655f">multimodal embeddings</text>
+            </g>
+          </svg>
+        </div>
+
+        <h3>Similarity is not meaning; it is a trained behavior</h3>
+        <p>
+          In a search system, an embedding model may be trained so that a query and a relevant passage
+          are close even if they use different words. In a classification system, the same text might be
+          embedded so that class boundaries are easy to learn. In a recommendation system, similarity may
+          reflect user behavior rather than semantic equivalence. Always ask: <strong>close according to what
+          training signal?</strong>
+        </p>
+      </section>
+
+      <section id="compare">
+        <div class="section-label"><span class="label-dot" style="background: var(--red);"></span> Compare and contrast</div>
+        <h2>How tokenization and embeddings influence each other</h2>
+        <p>
+          Tokenization and embeddings meet at the vocabulary. A tokenizer maps text into IDs; the model
+          learns vector representations for those IDs. But the highest-leverage choices happen at different
+          layers. Tokenizer decisions affect length, coverage, multilingual fairness, and out-of-vocabulary
+          behavior. Embedding-model decisions affect retrieval quality, clustering shape, domain transfer,
+          dimensionality, latency, and storage.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Tokenizer lens</th>
+                <th>Embedding lens</th>
+                <th>Practical decision</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Will rare terms survive?</strong></td>
+                <td>Subword and byte tokenizers can decompose rare terms instead of dropping them.</td>
+                <td>The embedding model still needs training signal for the domain meaning.</td>
+                <td>For technical domains, test retrieval on real acronyms, product IDs, citations, and code names.</td>
+              </tr>
+              <tr>
+                <td><strong>Will costs stay under control?</strong></td>
+                <td>More tokens mean more cost and shorter effective context.</td>
+                <td>Higher dimensions improve capacity but increase storage and index memory.</td>
+                <td>Measure tokens per document and bytes per vector before choosing chunk size and model size.</td>
+              </tr>
+              <tr>
+                <td><strong>Will multilingual text work?</strong></td>
+                <td>Token length can vary across scripts and languages.</td>
+                <td>Cross-lingual alignment depends on model training, not tokenization alone.</td>
+                <td>Evaluate by language; do not assume English benchmark wins transfer cleanly.</td>
+              </tr>
+              <tr>
+                <td><strong>Will exact terms matter?</strong></td>
+                <td>Tokenizers preserve surface form differently, especially punctuation, case, and whitespace.</td>
+                <td>Dense embeddings may blur exact lexical matches.</td>
+                <td>Use hybrid search when exact terms, part numbers, laws, or proper nouns are crucial.</td>
+              </tr>
+              <tr>
+                <td><strong>Can I change it later?</strong></td>
+                <td>Changing tokenizer requires retraining or careful compatibility handling.</td>
+                <td>Changing embedding model requires re-embedding your corpus and rebuilding indexes.</td>
+                <td>Version tokenizers, embedding models, dimensions, chunking, and index settings together.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="chart">
+          <div class="chart-head">
+            <strong>Chart 4: Cost surfaces to watch</strong>
+            <span>engineering impact</span>
+          </div>
+          <div class="bars" aria-label="Engineering cost comparison">
+            <div class="bar-row"><span>Token count</span><div class="bar-track"><div class="bar-fill" style="width: 88%;"></div></div><span>API + context</span></div>
+            <div class="bar-row"><span>Vector dimension</span><div class="bar-track"><div class="bar-fill blue" style="width: 72%;"></div></div><span>storage</span></div>
+            <div class="bar-row"><span>Corpus size</span><div class="bar-track"><div class="bar-fill green" style="width: 96%;"></div></div><span>index</span></div>
+            <div class="bar-row"><span>Chunk overlap</span><div class="bar-track"><div class="bar-fill gold" style="width: 61%;"></div></div><span>duplication</span></div>
+            <div class="bar-row"><span>Reranking depth</span><div class="bar-track"><div class="bar-fill violet" style="width: 47%;"></div></div><span>latency</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="best-practices">
+        <div class="section-label"><span class="label-dot" style="background: var(--violet);"></span> Production guidance</div>
+        <h2>Best practices for reliable tokenization and embedding systems</h2>
+
+        <h3>Tokenizer best practices</h3>
+        <ol>
+          <li><strong>Use the tokenizer that belongs to the model.</strong> For pretrained models, tokenization is part of the contract. Use the official tokenizer package or the model provider's documented tokenizer.</li>
+          <li><strong>Measure tokens on your real corpus.</strong> Count tokens for representative documents, languages, code snippets, tables, URLs, and noisy user text before setting chunk sizes.</li>
+          <li><strong>Preserve important structure.</strong> Markdown headings, table rows, code blocks, legal sections, and citations often carry retrieval value. Normalize carefully.</li>
+          <li><strong>Watch multilingual token inflation.</strong> Some scripts, mixed-language text, and underrepresented languages may require more tokens for the same semantic content.</li>
+          <li><strong>Version the tokenizer and vocabulary.</strong> Store tokenizer name, version, vocabulary hash if available, and preprocessing rules alongside model artifacts.</li>
+        </ol>
+
+        <h3>Embedding best practices</h3>
+        <ol>
+          <li><strong>Pick the model for the task, not the leaderboard alone.</strong> MTEB is useful because it spans many tasks, but its own findings show that no one method dominates everything.</li>
+          <li><strong>Evaluate with your own queries and judgments.</strong> Build a small gold set: query, relevant documents, hard negatives, language/domain tags, and expected ranking.</li>
+          <li><strong>Choose chunking based on answerability.</strong> Chunks should be large enough to contain a coherent answer, but small enough to avoid semantic dilution.</li>
+          <li><strong>Use hybrid retrieval when wording matters.</strong> Dense vectors are strong for meaning; keyword indexes are strong for exact terms. Together they often beat either alone.</li>
+          <li><strong>Separate retrieval from final ranking.</strong> A fast embedding search can retrieve candidates; a cross-encoder, LLM reranker, or metadata filter can make the final choice.</li>
+          <li><strong>Normalize and monitor vectors.</strong> Know whether your similarity metric expects normalized vectors. Track embedding drift, empty inputs, duplicates, and outlier norms.</li>
+          <li><strong>Re-embed intentionally.</strong> Changing embedding model, dimensions, preprocessing, or chunking creates a new vector space. Rebuild indexes and compare before migration.</li>
+        </ol>
+
+        <div class="callout green">
+          <strong>A practical default for RAG:</strong> use the provider's official tokenizer for counting,
+          split documents by semantic structure, embed chunks with a model evaluated on your domain,
+          retrieve with dense plus keyword search where exact terms matter, then rerank before generation.
+        </div>
+      </section>
+
+      <section id="resources">
+        <div class="section-label"><span class="label-dot"></span> Trusted learning path</div>
+        <h2>Curated resources to keep learning</h2>
+        <p>
+          These are the sources used to ground this article. They are either official documentation,
+          primary research papers, or highly regarded educational references.
+        </p>
+
+        <div class="resource-list">
+          <article class="resource">
+            <a href="https://huggingface.co/docs/transformers/tokenizer_summary">Hugging Face: Summary of the Tokenizers</a>
+            <p>Clear, implementation-oriented explanation of BPE, byte-level BPE, WordPiece, Unigram, and SentencePiece-style tokenization.</p>
+          </article>
+          <article class="resource">
+            <a href="https://github.com/google/sentencepiece">Google SentencePiece repository</a>
+            <p>Authoritative reference for SentencePiece, including its language-independent design and support for BPE and unigram language-model tokenization.</p>
+          </article>
+          <article class="resource">
+            <a href="https://github.com/openai/tiktoken">OpenAI tiktoken</a>
+            <p>Official OpenAI tokenizer library for OpenAI models; useful for counting tokens and understanding byte-pair tokenization in practice.</p>
+          </article>
+          <article class="resource">
+            <a href="https://developers.openai.com/api/docs/guides/embeddings">OpenAI Vector Embeddings Guide</a>
+            <p>Practical guide to text embeddings, dimensions, cosine similarity, supported models, and common embedding use cases.</p>
+          </article>
+          <article class="resource">
+            <a href="https://arxiv.org/abs/1301.3781">Mikolov et al.: Efficient Estimation of Word Representations in Vector Space</a>
+            <p>The foundational Word2Vec paper, useful for understanding why dense word vectors became so influential.</p>
+          </article>
+          <article class="resource">
+            <a href="https://aclanthology.org/D14-1162/">Pennington, Socher, Manning: GloVe</a>
+            <p>The primary ACL Anthology entry for GloVe, a classic model built from global word co-occurrence statistics.</p>
+          </article>
+          <article class="resource">
+            <a href="https://arxiv.org/abs/1810.04805">Devlin et al.: BERT</a>
+            <p>Important for understanding WordPiece in the context of masked-language-model encoders and contextual token representations.</p>
+          </article>
+          <article class="resource">
+            <a href="https://papers.neurips.cc/paper/7181-attention-is-all-you-need.pdf">Vaswani et al.: Attention Is All You Need</a>
+            <p>The Transformer paper explains learned token embeddings and positional encodings inside sequence models.</p>
+          </article>
+          <article class="resource">
+            <a href="https://arxiv.org/abs/1908.10084">Reimers and Gurevych: Sentence-BERT</a>
+            <p>A key paper for sentence embeddings, dual/siamese encoders, and efficient semantic similarity search.</p>
+          </article>
+          <article class="resource">
+            <a href="https://arxiv.org/abs/2210.07316">MTEB: Massive Text Embedding Benchmark</a>
+            <p>A broad benchmark showing why embedding evaluation must consider retrieval, clustering, classification, reranking, multilingual behavior, and task fit.</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label"><span class="label-dot" style="background: var(--green);"></span> Closing synthesis</div>
+        <h2>The engineering takeaway</h2>
+        <p>
+          Tokenizers make language computable by choosing the units. Embedding models make language useful
+          by arranging those units, sentences, documents, and objects in a space where distance can drive
+          product behavior. A strong system treats both as measurable infrastructure: count tokens, inspect
+          segmentation, evaluate embeddings on real tasks, version every representation choice, and avoid
+          assuming that a model trained for one kind of similarity will behave correctly for another.
+        </p>
+        <p>
+          The best practical stance is humble and empirical. Start with trusted model/tokenizer pairs,
+          build a small evaluation set that reflects your users, test across languages and domains, and
+          keep enough metadata to reproduce the vector space later.
+        </p>
+      </section>
+
+      <footer class="footnotes">
+        <p>
+          Source basis: official OpenAI documentation, OpenAI tiktoken, Hugging Face tokenizer documentation,
+          Google SentencePiece, ACL Anthology, arXiv primary papers, and NeurIPS paper proceedings. All charts
+          in this article are conceptual visualizations unless explicitly tied to a cited benchmark.
+        </p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

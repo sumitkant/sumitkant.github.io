@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fine-Tuning and Evaluating Large Language Models</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f1eb;
+      --paper: #fffdfa;
+      --ink: #181815;
+      --muted: #66645d;
+      --soft: #9c988d;
+      --line: rgba(24, 24, 21, 0.1);
+      --accent: #bd5627;
+      --accent-soft: rgba(189, 86, 39, 0.1);
+      --blue: #2563eb;
+      --blue-soft: rgba(37, 99, 235, 0.08);
+      --green: #059669;
+      --green-soft: rgba(5, 150, 105, 0.08);
+      --violet: #7c3aed;
+      --violet-soft: rgba(124, 58, 237, 0.08);
+      --amber: #d97706;
+      --amber-soft: rgba(217, 119, 6, 0.1);
+      --rose: #e11d48;
+      --rose-soft: rgba(225, 29, 72, 0.08);
+      --font: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --content: 1040px;
+      --article: 720px;
+      --radius: 14px;
+      --nav: 72px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--accent);
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.9em;
+      background: rgba(24, 24, 21, 0.06);
+      padding: 0.1rem 0.32rem;
+      border-radius: 5px;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: var(--nav);
+      border-bottom: 1px solid var(--line);
+      background: rgba(244, 241, 235, 0.9);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-inner {
+      max-width: var(--content);
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 0.72rem;
+      letter-spacing: 0;
+    }
+
+    .nav-note {
+      color: var(--muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .page {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    .hero {
+      min-height: calc(100svh - var(--nav));
+      display: grid;
+      align-items: center;
+      padding: 3.3rem 0 3rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      color: var(--accent);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 28px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    h1 {
+      margin: 0 0 1.1rem;
+      font-size: clamp(2.6rem, 6.4vw, 5.7rem);
+      letter-spacing: -0.04em;
+      line-height: 0.97;
+      max-width: 880px;
+    }
+
+    .hero-sub {
+      max-width: 680px;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.4vw, 1.15rem);
+      margin: 0 0 1.55rem;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .model-plate {
+      position: relative;
+      min-height: 420px;
+      border-left: 1px solid var(--line);
+      padding-left: 2rem;
+    }
+
+    .signal {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .signal:last-child {
+      border-bottom: 0;
+    }
+
+    .signal-num {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--soft);
+      letter-spacing: 0;
+    }
+
+    .signal strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 0.18rem;
+    }
+
+    .signal span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .formula {
+      margin-top: 2rem;
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      line-height: 1.65;
+      box-shadow: 0 22px 60px rgba(24, 24, 21, 0.18);
+    }
+
+    .formula .hot {
+      color: #f7b98f;
+    }
+
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.48rem;
+      padding: 1rem;
+      margin: 2.4rem 0 3.5rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+
+    .toc a {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.42rem 0.72rem;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 700;
+      transition: 150ms ease;
+    }
+
+    .toc a:hover {
+      color: var(--ink);
+      border-color: rgba(24, 24, 21, 0.24);
+      transform: translateY(-1px);
+    }
+
+    main {
+      display: grid;
+      justify-items: center;
+    }
+
+    section {
+      width: 100%;
+      max-width: var(--article);
+      margin-bottom: 4rem;
+      scroll-margin-top: 96px;
+    }
+
+    .wide {
+      max-width: var(--content);
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding-bottom: 0.7rem;
+      margin-bottom: 0.9rem;
+      border-bottom: 1px solid var(--line);
+      color: var(--soft);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.65rem;
+      font-weight: 800;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    h2 {
+      margin: 0 0 0.95rem;
+      font-size: clamp(1.55rem, 2.7vw, 2.25rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin: 2rem 0 0.65rem;
+      font-size: 1.05rem;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+    }
+
+    p {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    p strong,
+    li strong {
+      color: var(--ink);
+    }
+
+    ul,
+    ol {
+      margin: 0 0 1.15rem;
+      padding-left: 1.2rem;
+      color: var(--muted);
+    }
+
+    li {
+      margin-bottom: 0.55rem;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 0 12px 12px 0;
+      padding: 1rem 1.05rem;
+      margin: 1.25rem 0;
+      color: #743014;
+      font-size: 0.9rem;
+    }
+
+    .callout.blue {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #1e3a8a;
+    }
+
+    .callout.green {
+      border-color: var(--green);
+      background: var(--green-soft);
+      color: #064e3b;
+    }
+
+    .callout.violet {
+      border-color: var(--violet);
+      background: var(--violet-soft);
+      color: #4c1d95;
+    }
+
+    .callout.rose {
+      border-color: var(--rose);
+      background: var(--rose-soft);
+      color: #7f1d1d;
+    }
+
+    .path-grid,
+    .compare-grid,
+    .resource-grid {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .path-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .compare-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 1.25rem;
+    }
+
+    .resource-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .compare-card,
+    .resource-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.05rem;
+    }
+
+    .mini-card b,
+    .compare-card b,
+    .resource-card b {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.92rem;
+      line-height: 1.25;
+    }
+
+    .mini-card span,
+    .compare-card span,
+    .resource-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
+    .step {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+    }
+
+    .compare-card:nth-child(1) {
+      border-top: 3px solid var(--accent);
+    }
+
+    .compare-card:nth-child(2) {
+      border-top: 3px solid var(--blue);
+    }
+
+    .compare-card:nth-child(3) {
+      border-top: 3px solid var(--green);
+    }
+
+    .resource-card a {
+      color: var(--ink);
+    }
+
+    .resource-card a:hover {
+      color: var(--accent);
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-top: 0.75rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(24, 24, 21, 0.06);
+      color: var(--muted);
+      font-size: 0.66rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      margin: 1.25rem 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+    }
+
+    th,
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    th {
+      color: var(--ink);
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+    }
+
+    td {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--paper);
+      margin: 1.25rem 0;
+    }
+
+    .metric {
+      padding: 1rem;
+      border-right: 1px solid var(--line);
+    }
+
+    .metric:last-child {
+      border-right: 0;
+    }
+
+    .metric b {
+      display: block;
+      font-size: 0.88rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    .code-block {
+      background: #171714;
+      color: #f5efe6;
+      border-radius: var(--radius);
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.75;
+      margin: 1.25rem 0;
+    }
+
+    .code-block .dim {
+      color: #a9a398;
+    }
+
+    .code-block .accent {
+      color: #f6b28b;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+
+      .hero-copy,
+      .model-plate,
+      section {
+        animation: rise 700ms ease both;
+      }
+
+      .model-plate {
+        animation-delay: 120ms;
+      }
+
+      section {
+        animation-timeline: view();
+        animation-range: entry 0% cover 28%;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .model-plate {
+        border-left: 0;
+        padding-left: 0;
+        min-height: 0;
+      }
+
+      .path-grid,
+      .compare-grid,
+      .resource-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .metric {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .metric:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      :root {
+        --nav: 64px;
+      }
+
+      .page,
+      .nav-inner,
+      footer {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .nav-note {
+        display: none;
+      }
+
+      h1 {
+        font-size: 2.55rem;
+      }
+
+      .hero {
+        padding: 2rem 0;
+      }
+
+      .signal {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+      }
+
+      .toc {
+        margin-bottom: 2.5rem;
+      }
+    }
+
+  .nav-back {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-secondary);
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+      <a href="../../genai-lab.html" class="nav-back">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        LLM Concepts
+      </a>
+    </div>
+  </nav>
+
+  <div class="page" id="top">
+    <header class="hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">End-to-end tutorial</div>
+          <h1>Fine-tuning LLMs without losing the plot.</h1>
+          <p class="hero-sub">Fine-tuning is not just "train the model on my examples." It is a full adaptation loop:
+            choose the job, shape the dataset, decide what to update, measure behavior, and keep the base model's
+            general ability from being accidentally narrowed.</p>
+          <div class="meta-row">
+            <span class="pill">Intermediate level</span>
+            <span class="pill">15 minute read</span>
+            <span class="pill">Updated for modern PEFT workflows</span>
+          </div>
+        </div>
+        <aside class="model-plate" aria-label="Article overview">
+          <div class="signal">
+            <span class="signal-num">01 / DATA</span>
+            <div><strong>Prompt-completion examples</strong><span>Turn raw task data into instruction-shaped training
+                examples with train, validation, and test splits.</span></div>
+          </div>
+          <div class="signal">
+            <span class="signal-num">02 / TRAIN</span>
+            <div><strong>Full fine-tuning vs PEFT</strong><span>Decide whether to update every model weight or train
+                compact adapters while freezing the base model.</span></div>
+          </div>
+          <div class="signal">
+            <span class="signal-num">03 / ADAPT</span>
+            <div><strong>LoRA and soft prompts</strong><span>Use low-rank matrices or learned prompt embeddings to
+                specialize a model with far fewer trainable parameters.</span></div>
+          </div>
+          <div class="signal">
+            <span class="signal-num">04 / EVAL</span>
+            <div><strong>Metrics plus judgment</strong><span>Use ROUGE, BLEU, task tests, and benchmarks carefully, then
+                validate against the behavior users actually need.</span></div>
+          </div>
+          <div class="formula"><span class="dim">objective:</span> minimize cross_entropy(<span
+              class="hot">model_output</span>, reference_completion)<br /><span class="dim">constraint:</span> preserve
+            useful general behavior while adapting task behavior</div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="toc" aria-label="Table of contents">
+      <a href="#why">Why tune</a>
+      <a href="#data">Training data</a>
+      <a href="#single-multi">Single vs multi-task</a>
+      <a href="#evaluation">Evaluation</a>
+      <a href="#peft">PEFT</a>
+      <a href="#lora">LoRA</a>
+      <a href="#prompt-tuning">Prompt tuning</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#resources">Resources</a>
+    </div>
+
+    <main>
+      <section id="why">
+        <div class="section-label"><span class="dot"></span> The decision</div>
+        <h2>Fine-tuning starts when prompting stops being enough.</h2>
+        <p>In-context learning, one-shot examples, and few-shot prompts are often the fastest way to steer a large
+          language model. They are cheap to iterate on, they do not require training infrastructure, and they keep the
+          model flexible. But they have two natural limits: smaller models may not reliably infer the pattern from a
+          prompt, and every example you place in the prompt consumes context that could have been used for the user's
+          actual input.</p>
+        <p><strong>Fine-tuning</strong> addresses that problem by turning the desired behavior into supervised learning.
+          You collect labeled examples, usually prompt-completion pairs or chat-style instruction-response records, and
+          update the model so the desired response becomes part of the model's learned behavior rather than part of
+          every prompt.</p>
+        <div class="callout">A useful mental model: prompt engineering teaches the model inside the current
+          conversation; fine-tuning teaches the model before the conversation begins.</div>
+        <p>When every model weight is updated, the process is called <strong>full fine-tuning</strong>. It can be
+          powerful, but it is expensive because training must store the model weights, gradients, and optimizer states.
+          With modern LLMs, that memory requirement is often the deciding factor. This is why parameter-efficient
+          fine-tuning became central to practical adaptation.</p>
+      </section>
+
+      <section id="data">
+        <div class="section-label"><span class="dot" style="background:var(--blue)"></span> The dataset</div>
+        <h2>Your training data is the real product spec.</h2>
+        <p>The first engineering step is not choosing a GPU. It is defining the behavior you want the model to learn. If
+          the task is classification, each example should make the label boundary clear. If the task is summarization,
+          the reference summaries should consistently reflect the desired length, abstraction level, tone, and
+          omissions. If the task is generation, the completions should show the style and structure you want at
+          inference time.</p>
+        <p>Many useful instruction-tuning datasets are created by wrapping existing datasets in prompt templates. For
+          example, an Amazon product review can become a sentiment classification instruction, a conversation-summary
+          pair can become a summarization instruction, and a question-answer dataset can become a direct response task.
+          The template matters because it tells the model what task is being asked, not merely what text appeared in the
+          original dataset.</p>
+        <div class="path-grid wide" style="margin-top:1.4rem;">
+          <div class="mini-card">
+            <div class="step">STEP 1</div><b>Shape examples</b><span>Convert raw records into instruction-shaped inputs
+              and ideal outputs.</span>
+          </div>
+          <div class="mini-card">
+            <div class="step">STEP 2</div><b>Split data</b><span>Use training examples to update the model, validation
+              examples to tune decisions, and test examples to estimate final performance.</span>
+          </div>
+          <div class="mini-card">
+            <div class="step">STEP 3</div><b>Train against loss</b><span>Compare predicted tokens with target
+              completions, often using cross-entropy loss.</span>
+          </div>
+          <div class="mini-card">
+            <div class="step">STEP 4</div><b>Inspect failures</b><span>Read model outputs. Metrics can tell you where to
+              look, but examples tell you what went wrong.</span>
+          </div>
+        </div>
+        <h3>A tiny example of instruction formatting</h3>
+        <div class="code-block"><span class="dim">{</span><br /> <span class="accent">"instruction"</span>: "Summarize
+          the following customer support chat in one sentence.",<br /> <span class="accent">"input"</span>: "Agent: Can
+          you confirm the order ID? Customer: It is 9142...",<br /> <span class="accent">"output"</span>: "The customer
+          needs help tracking order 9142 and has provided the requested ID."<br /><span class="dim">}</span></div>
+        <p>That structure is intentionally boring. Boring is good here. Consistent examples let the model spend less
+          capacity inferring your format and more capacity learning the task.</p>
+      </section>
+
+      <section id="single-multi">
+        <div class="section-label"><span class="dot" style="background:var(--green)"></span> Scope</div>
+        <h2>Single-task tuning is focused. Multi-task tuning protects breadth.</h2>
+        <p>For a narrow application, a pre-trained model may only need to become very good at one thing: classify refund
+          reasons, summarize support tickets, convert medical dictation into structured notes, or write responses in a
+          specific product voice. In many practical cases, a few hundred to a thousand high-quality examples can
+          noticeably improve behavior on a single task.</p>
+        <p>The risk is <strong>catastrophic forgetting</strong>: the model improves on the fine-tuned task but degrades
+          on unrelated abilities that used to work. This does not always matter. If your deployed system only performs
+          one narrow function, losing broad ability may be acceptable. But if the model still needs general reasoning,
+          varied instruction following, or flexible conversation, you need to test for regression.</p>
+        <div class="compare-grid wide">
+          <div class="compare-card"><b>Single-task fine-tuning</b><span>Best when one workflow matters most and you can
+              define success tightly. It is simpler, cheaper, and easier to evaluate.</span></div>
+          <div class="compare-card"><b>Multi-task instruction tuning</b><span>Best when you need broad
+              instruction-following behavior across many task families. It often requires tens of thousands of
+              examples.</span></div>
+          <div class="compare-card"><b>PEFT adapters</b><span>Best when you want task-specific specialization while
+              preserving the frozen base model and swapping behaviors at inference time.</span></div>
+        </div>
+        <p>FLAN is the canonical learning example here. Google introduced FLAN as a family of instruction-tuned models
+          designed to generalize better to unseen tasks. Later work on Scaling Instruction-Finetuned Language Models and
+          the Flan Collection showed that instruction tuning improves with the number of tasks, model scale, and careful
+          use of prompt templates and reasoning data. The broad lesson is simple: diverse instructions teach a model the
+          shape of following instructions, not just the answers to one dataset.</p>
+      </section>
+
+      <section id="evaluation">
+        <div class="section-label"><span class="dot" style="background:var(--violet)"></span> Measurement</div>
+        <h2>Evaluation is where fine-tuning becomes engineering.</h2>
+        <p>Traditional accuracy is often too blunt for language models because generations can be valid in multiple
+          forms. A summary can be correct without matching the reference word for word. A translation can be fluent but
+          choose a different phrase. A customer-support response can be helpful while using different wording than the
+          label.</p>
+        <p>Automatic metrics are still useful, especially when they are tied to the task. The trick is to know what each
+          metric sees and what it misses.</p>
+        <div class="metric-strip">
+          <div class="metric"><b>ROUGE</b><span>Common for summarization. It measures overlap between generated text and
+              reference summaries through unigrams, n-grams, or longest common subsequences.</span></div>
+          <div class="metric"><b>BLEU</b><span>Common for machine translation. It focuses on n-gram precision against
+              one or more human reference translations.</span></div>
+          <div class="metric"><b>Benchmarks</b><span>GLUE, SuperGLUE, MMLU, BIG-bench, and HELM provide broader task
+              suites for comparing model behavior across scenarios.</span></div>
+        </div>
+        <h3>ROUGE in plain English</h3>
+        <p>ROUGE-1 recall asks: of the words in the reference summary, how many appeared in the model output? ROUGE-1
+          precision asks: of the words in the model output, how many appeared in the reference? F1 combines the two.
+          ROUGE-2 uses two-word sequences, and ROUGE-L uses the longest common subsequence, which gives some credit for
+          ordering.</p>
+        <div class="callout rose">Metric caution: ROUGE can be gamed by repetition unless word counts are clipped to the
+          maximum count in the reference. It can also miss meaning changes. A sentence with a crucial "not" may share
+          most words with the reference while saying the opposite.</div>
+        <p>Benchmarks have their own caution label. A model can perform well on MMLU or HELM and still fail your product
+          workflow. Use benchmarks to understand broad capability, then build task-specific evals that mirror your
+          users, your data distribution, and your cost constraints.</p>
+      </section>
+
+      <section id="peft">
+        <div class="section-label"><span class="dot" style="background:var(--amber)"></span> Efficiency</div>
+        <h2>PEFT changes the question from "Can we tune it?" to "What should we tune?"</h2>
+        <p><strong>Parameter-efficient fine-tuning</strong>, or PEFT, keeps most or all of the original LLM frozen and
+          trains a much smaller set of parameters. This usually reduces memory use, training cost, storage footprint,
+          and the risk of overwriting broad capabilities. It also creates a convenient deployment pattern: one base
+          model can serve multiple tasks by loading different small adapters.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>PEFT family</th>
+                <th>What changes</th>
+                <th>Typical trade-off</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Selective methods</td>
+                <td>Fine-tune only selected original parameters, such as particular layers or parameter types.</td>
+                <td>Simple idea, but results can vary and the compute savings are not always clean.</td>
+              </tr>
+              <tr>
+                <td>Reparameterization methods</td>
+                <td>Represent the update through a smaller transformation, as LoRA does with low-rank matrices.</td>
+                <td>Strong practical balance of performance, memory savings, and deployment convenience.</td>
+              </tr>
+              <tr>
+                <td>Additive methods</td>
+                <td>Add trainable components while freezing the base model, such as adapters or soft prompts.</td>
+                <td>Very modular, though some methods may add inference overhead or require careful tuning.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The trade-offs are not only about final score. A real system must balance parameter efficiency, memory
+          efficiency, training speed, model quality, inference latency, storage, and operational complexity. A small
+          adapter that is easy to swap may be more valuable than a full fine-tune that wins a benchmark by a fraction
+          but costs far more to maintain.</p>
+      </section>
+
+      <section id="lora">
+        <div class="section-label"><span class="dot"></span> LoRA</div>
+        <h2>LoRA trains the update, not the whole model.</h2>
+        <p><strong>LoRA</strong>, short for Low-Rank Adaptation, is a reparameterization method. Instead of updating a
+          large weight matrix directly, LoRA freezes the original matrix and learns two much smaller matrices whose
+          product represents the task-specific update. During inference, the learned update can be merged with or
+          applied alongside the original weights.</p>
+        <p>Imagine a transformer layer has a weight matrix with dimensions 512 x 64. Updating it directly means training
+          32,768 parameters. With a LoRA rank of 8, you train two smaller matrices: one with 8 x 64 parameters and one
+          with 512 x 8 parameters. That is 4,608 trainable parameters, roughly 86 percent fewer for that matrix, while
+          still producing an update with the same final shape.</p>
+        <div class="callout green">The rank is the compression dial. Lower ranks are cheaper but may underfit. Higher
+          ranks are more expressive but cost more. In practice, ranks such as 4, 8, 16, or 32 are common starting
+          points, and the best choice depends on model size, task complexity, target layers, and data quality.</div>
+        <p>LoRA became popular because it fits the practical needs of LLM adaptation: train fewer parameters, share
+          small adapter files, keep the base model intact, and often approach full fine-tuning performance. QLoRA pushes
+          the memory story further by combining LoRA with quantized base weights, enabling very large models to be
+          fine-tuned under tighter hardware constraints.</p>
+      </section>
+
+      <section id="prompt-tuning">
+        <div class="section-label"><span class="dot" style="background:var(--blue)"></span> Soft prompts</div>
+        <h2>Prompt tuning learns vectors instead of words.</h2>
+        <p>Prompt tuning is easy to confuse with prompt engineering. Prompt engineering changes the human-readable text:
+          the wording, examples, delimiters, role instructions, and output format. Prompt tuning keeps the model frozen
+          and learns additional trainable tokens, called a <strong>soft prompt</strong>, that are prepended to the input
+          at the embedding level.</p>
+        <p>These soft prompt tokens are not ordinary words. They are continuous vectors in the same embedding space as
+          the model's token embeddings, which means they can represent directions that do not map neatly to a single
+          vocabulary item. Research on prompt tuning found that performance becomes more competitive with full
+          fine-tuning as model scale increases, making it especially interesting when the base model is large and reuse
+          matters.</p>
+        <div class="compare-grid wide">
+          <div class="compare-card"><b>Prompt engineering</b><span>Manual, text-level steering. Fast to try, limited by
+              context length and human iteration.</span></div>
+          <div class="compare-card"><b>Prompt tuning</b><span>Learned embedding-level steering. The model is frozen, and
+              the learned prompt can be swapped by task.</span></div>
+          <div class="compare-card"><b>Full fine-tuning</b><span>Weight-level adaptation. Powerful, but expensive and
+              more likely to create separate full model copies.</span></div>
+        </div>
+      </section>
+
+      <section id="workflow">
+        <div class="section-label"><span class="dot" style="background:var(--green)"></span> Practical loop</div>
+        <h2>A sane fine-tuning workflow has five checkpoints.</h2>
+        <ol>
+          <li><strong>Define the behavior.</strong> Write down the task, acceptable outputs, unacceptable outputs,
+            target latency, and evaluation criteria before training.</li>
+          <li><strong>Build a small gold set.</strong> Curate high-quality examples manually enough to reveal the
+            desired behavior. Low-quality labels teach low-quality behavior efficiently.</li>
+          <li><strong>Choose the adaptation method.</strong> Start with prompting. If that fails or costs too much
+            context, try PEFT. Use full fine-tuning only when the quality gain justifies the operational cost.</li>
+          <li><strong>Evaluate in layers.</strong> Use automatic metrics for quick signal, benchmark suites for broad
+            context, and human or product-specific review for actual usefulness.</li>
+          <li><strong>Track regressions.</strong> Test the old behavior you still need. Catastrophic forgetting is not a
+            theory problem once it reaches production.</li>
+        </ol>
+        <div class="callout blue">For most teams, the first winning recipe is not exotic: a clean dataset, a strong base
+          model, LoRA or QLoRA, a held-out evaluation set, and careful failure review.</div>
+      </section>
+
+      <section id="resources" class="wide">
+        <div class="section-label"><span class="dot" style="background:var(--violet)"></span> Learning path</div>
+        <h2>Curated resources for going deeper.</h2>
+        <p style="max-width:720px;">These resources extend the PDF notes into a practical study path. Start with
+          instruction tuning and evaluation, then move into PEFT and LoRA once the training loop is clear.</p>
+        <div class="resource-grid">
+          <div class="resource-card"><b><a
+                href="https://research.google/blog/introducing-flan-more-generalizable-language-models-with-instruction-fine-tuning/">Introducing
+                FLAN: More generalizable Language Models with Instruction Fine-Tuning</a></b><span>Google Research's
+              accessible introduction to instruction tuning and why task phrasing can improve zero-shot
+              behavior.</span><span class="tag">Instruction tuning</span></div>
+          <div class="resource-card"><b><a href="https://arxiv.org/abs/2210.11416">Scaling Instruction-Finetuned
+                Language Models</a></b><span>The FLAN scaling paper, useful for understanding how task count, model
+              size, and chain-of-thought data change results.</span><span class="tag">Research paper</span></div>
+          <div class="resource-card"><b><a
+                href="https://research.google/pubs/the-flan-collection-designing-data-and-methods-for-effective-instruction-tuning/">The
+                Flan Collection</a></b><span>A strong next step for seeing how public instruction-tuning data,
+              templates, and mixture choices are organized.</span><span class="tag">Dataset design</span></div>
+          <div class="resource-card"><b><a href="https://aclanthology.org/D19-5409/">SAMSum Corpus</a></b><span>A useful
+              example of a dialogue summarization dataset, helpful when learning how task-specific corpora shape
+              evaluation.</span><span class="tag">Dataset</span></div>
+          <div class="resource-card"><b><a href="https://aclanthology.org/W04-1013/">ROUGE: A Package for Automatic
+                Evaluation of Summaries</a></b><span>The classic summarization metric reference. Read it to understand
+              what overlap-based scoring can and cannot tell you.</span><span class="tag">Evaluation</span></div>
+          <div class="resource-card"><b><a href="https://aclanthology.org/P02-1040/">BLEU: a Method for Automatic
+                Evaluation of Machine Translation</a></b><span>The foundational BLEU paper, still useful for
+              understanding n-gram precision and reference-based translation evaluation.</span><span
+              class="tag">Evaluation</span></div>
+          <div class="resource-card"><b><a href="https://gluebenchmark.com/">GLUE Benchmark</a> and <a
+                href="https://super.gluebenchmark.com/">SuperGLUE</a></b><span>Benchmark suites for natural language
+              understanding. Good context for how pre-LLM and early LLM evaluation evolved.</span><span
+              class="tag">Benchmarks</span></div>
+          <div class="resource-card"><b><a href="https://arxiv.org/abs/2009.03300">MMLU</a>, <a
+                href="https://arxiv.org/abs/2206.04615">BIG-bench</a>, and <a
+                href="https://crfm.stanford.edu/helm">HELM</a></b><span>Modern benchmark references for broad model
+              capability, task diversity, and transparent multi-metric comparison.</span><span
+              class="tag">Benchmarks</span></div>
+          <div class="resource-card"><b><a href="https://arxiv.org/abs/2303.15647">Scaling Down to Scale Up: A Guide to
+                Parameter-Efficient Fine-Tuning</a></b><span>A systematic overview of PEFT families and the trade-offs
+              behind selective, reparameterized, and additive methods.</span><span class="tag">PEFT</span></div>
+          <div class="resource-card"><b><a href="https://huggingface.co/docs/transformers/peft">Hugging Face PEFT
+                documentation</a></b><span>A practical implementation guide for loading, training, switching, and
+              sharing adapters in modern transformer workflows.</span><span class="tag">Practice</span></div>
+          <div class="resource-card"><b><a href="https://arxiv.org/abs/2106.09685">LoRA: Low-Rank Adaptation of Large
+                Language Models</a></b><span>The core LoRA paper. Best read after you understand why updating every
+              parameter is expensive.</span><span class="tag">LoRA</span></div>
+          <div class="resource-card"><b><a href="https://arxiv.org/abs/2305.14314">QLoRA: Efficient Finetuning of
+                Quantized LLMs</a></b><span>Explains how quantization and LoRA combine to make large-model fine-tuning
+              practical on far less memory.</span><span class="tag">QLoRA</span></div>
+          <div class="resource-card"><b><a href="https://arxiv.org/abs/2104.08691">The Power of Scale for
+                Parameter-Efficient Prompt Tuning</a></b><span>The key paper for learned soft prompts and why prompt
+              tuning becomes more competitive as models scale.</span><span class="tag">Prompt tuning</span></div>
+          <div class="resource-card"><b><a
+                href="https://books.google.com/books/about/Generative_AI_on_AWS.html?id=MOTiEAAAQBAJ">Generative AI on
+                AWS</a></b><span>A broad lifecycle book covering model selection, fine-tuning, evaluation, deployment,
+              optimization, RAG, LoRA, and related production concerns.</span><span class="tag">Lifecycle</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <span>Fine-tuning and evaluating LLMs: a self-contained article from course notes.</span>
+    <span>Use the resources as a study path, then test on your own task.</span>
+  </footer>
+</body>
+
+</html>
