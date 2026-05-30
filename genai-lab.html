@@ -439,6 +439,15 @@
       background: var(--bg);
       color: var(--text-tertiary);
       border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    a.skill-tag:hover {
+      color: var(--text-primary);
+      border-color: rgba(0,0,0,0.2);
     }
 
     .download-btn {
@@ -1073,245 +1082,15 @@
     </div>
 
     <!-- ════════════════════════════════════════════ -->
-    <!--  1. SKILLS LIBRARY                           -->
+    <!--  1. SKILLS LIBRARY  (dynamic)               -->
     <!-- ════════════════════════════════════════════ -->
     <section class="section active" id="section-skills">
       <div class="section-header">
         <h2 class="section-title">Skills Library</h2>
-        <span class="section-count">15 skills across 3 providers</span>
+        <span class="section-count" id="skills-count">Loading…</span>
       </div>
-
-      <!-- Anthropic / Claude Skills -->
-      <div class="theme-group">
-        <p class="theme-label">🟠 Anthropic · Claude Skills</p>
-        <div class="card-grid">
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">Document Creation Suite</span>
-              <span class="skill-provider-badge badge-anthropic">Anthropic</span>
-            </div>
-            <p class="skill-desc">Skills for creating Word (.docx), Excel (.xlsx), PowerPoint (.pptx), and PDF documents with production-quality output from Claude.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">docx</span>
-                <span class="skill-tag">xlsx</span>
-                <span class="skill-tag">pptx</span>
-                <span class="skill-tag">pdf</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">Frontend Design</span>
-              <span class="skill-provider-badge badge-anthropic">Anthropic</span>
-            </div>
-            <p class="skill-desc">Production-grade frontend component generation with distinctive aesthetics. Avoids generic AI-slop patterns — editorial, bold, characterful UI.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">HTML</span>
-                <span class="skill-tag">React</span>
-                <span class="skill-tag">CSS</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">File Reading Router</span>
-              <span class="skill-provider-badge badge-anthropic">Anthropic</span>
-            </div>
-            <p class="skill-desc">Routes Claude to the right tool for each file type — PDF, docx, xlsx, CSV, JSON, images, archives — so it reads the right amount the right way.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">files</span>
-                <span class="skill-tag">routing</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">Data Analysis</span>
-              <span class="skill-provider-badge badge-anthropic">Anthropic</span>
-            </div>
-            <p class="skill-desc">Structured approach to data analysis tasks — cleaning, charting, statistical summaries, and insight generation from tabular data.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">python</span>
-                <span class="skill-tag">charts</span>
-                <span class="skill-tag">EDA</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">Agent Skills (MCP)</span>
-              <span class="skill-provider-badge badge-anthropic">Anthropic</span>
-            </div>
-            <p class="skill-desc">How skills work in agentic workflows — combining with MCP and sub-agents for reliable multi-step tasks. From the DeepLearning.ai course.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">MCP</span>
-                <span class="skill-tag">agents</span>
-                <span class="skill-tag">tools</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- OpenAI Skills -->
-      <div class="theme-group">
-        <p class="theme-label">🟢 OpenAI Skills</p>
-        <div class="card-grid">
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">Function Calling</span>
-              <span class="skill-provider-badge badge-openai">OpenAI</span>
-            </div>
-            <p class="skill-desc">Structured function calling patterns for GPT-4o — JSON schema definitions, parallel calls, and error handling for reliable tool use.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">GPT-4o</span>
-                <span class="skill-tag">tools</span>
-                <span class="skill-tag">JSON</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">Assistants API Patterns</span>
-              <span class="skill-provider-badge badge-openai">OpenAI</span>
-            </div>
-            <p class="skill-desc">Thread management, file search, code interpreter integration, and streaming patterns for the OpenAI Assistants API.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">Assistants</span>
-                <span class="skill-tag">threads</span>
-                <span class="skill-tag">streaming</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">RAG Pipeline</span>
-              <span class="skill-provider-badge badge-openai">OpenAI</span>
-            </div>
-            <p class="skill-desc">Retrieval-Augmented Generation setup — chunking, embedding with text-embedding-3, FAISS indexing, and retrieval-then-generation pipelines.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">RAG</span>
-                <span class="skill-tag">embeddings</span>
-                <span class="skill-tag">FAISS</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Custom Skills -->
-      <div class="theme-group">
-        <p class="theme-label">🔵 Custom Skills</p>
-        <div class="card-grid">
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">First Principles Blog Style</span>
-              <span class="skill-provider-badge badge-custom">Custom</span>
-            </div>
-            <p class="skill-desc">Writes in the "First Principles" style from The Ken — mental models, personal reflection, and Indian startup wisdom blended into long-form essays.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">writing</span>
-                <span class="skill-tag">essays</span>
-                <span class="skill-tag">newsletter</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">Skill Creator</span>
-              <span class="skill-provider-badge badge-custom">Custom</span>
-            </div>
-            <p class="skill-desc">Meta-skill for creating, modifying, and evaluating other skills. Runs evals, benchmarks performance, and optimises skill descriptions for trigger accuracy.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">meta</span>
-                <span class="skill-tag">evals</span>
-                <span class="skill-tag">optimization</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-          <div class="skill-card">
-            <div class="skill-card-header">
-              <span class="skill-name">Product Self-Knowledge</span>
-              <span class="skill-provider-badge badge-custom">Custom</span>
-            </div>
-            <p class="skill-desc">Ensures Claude consults up-to-date facts about its own products — API schemas, pricing, SDK usage — instead of relying on stale training data.</p>
-            <div class="skill-footer">
-              <div class="skill-tags">
-                <span class="skill-tag">Claude API</span>
-                <span class="skill-tag">docs</span>
-              </div>
-              <a class="download-btn" href="https://github.com/sumitkant/skills/archive/refs/heads/main.zip" target="_blank" rel="noopener" download>
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                ZIP
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </div>
+      <!-- Dynamic groups injected here by JS -->
+      <div id="skills-root"></div>
     </section>
 
     <!-- ════════════════════════════════════════════ -->
@@ -1863,21 +1642,19 @@
   </footer>
 
   <script>
-    /* ── Tab switching ────────────────────────────── */
-    var tabs = document.querySelectorAll('.tab-btn');
+    /* ══════════════════════════════════════════════════
+       TAB SWITCHING
+    ══════════════════════════════════════════════════ */
+    var tabs     = document.querySelectorAll('.tab-btn');
     var sections = document.querySelectorAll('.section');
 
     tabs.forEach(function (btn) {
       btn.addEventListener('click', function () {
         var target = btn.dataset.section;
-
         tabs.forEach(function (b) { b.classList.remove('active'); });
         sections.forEach(function (s) { s.classList.remove('active'); });
-
         btn.classList.add('active');
         document.getElementById('section-' + target).classList.add('active');
-
-        // Smooth scroll to section
         document.getElementById('section-' + target).scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
@@ -1888,14 +1665,222 @@
         document.querySelectorAll('.bar-fill').forEach(function (bar) {
           var w = bar.style.width;
           bar.style.width = '0';
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              bar.style.width = w;
-            });
-          });
+          requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = w; }); });
         });
       }, 50);
     });
+
+    /* ══════════════════════════════════════════════════
+       SKILLS LIBRARY — manifest-based static loader
+       ──────────────────────────────────────────────
+       No GitHub API. No auth. Works with private repos.
+
+       How it works:
+         1. Fetches skills-manifest.json (static file
+            committed next to genai-lab.html).
+         2. For each skill, fetches its SKILL.md via a
+            relative URL — served by GitHub Pages.
+         3. Parses name + description from SKILL.md.
+
+       To update: run  python generate_skills_manifest.py
+       then commit skills-manifest.json.
+    ══════════════════════════════════════════════════ */
+
+    var GH_OWNER  = 'sumitkant';
+    var GH_REPO   = 'sumitkant.github.io';
+    var GH_BRANCH = 'master';
+
+    var PROVIDERS = {
+      'claude': { emoji: '🟠', badgeClass: 'badge-anthropic', badgeText: 'Anthropic' },
+      'openai': { emoji: '🟢', badgeClass: 'badge-openai',    badgeText: 'OpenAI'    },
+      'custom': { emoji: '🔵', badgeClass: 'badge-custom',    badgeText: 'Custom'    }
+    };
+
+    var PROVIDER_ORDER = ['claude', 'openai', 'custom'];
+
+    var DOWNLOAD_ICON = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+    var GH_ICON = '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:3px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>';
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function toTitle(slug) {
+      return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    }
+
+    /* ── Parse name + description from SKILL.md text ── */
+    function parseSkillMd(text) {
+      var name = '', desc = '';
+
+      // 1. YAML frontmatter between --- markers
+      var fm = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
+      if (fm) {
+        var fmText = fm[1];
+        var n = fmText.match(/^name\s*:\s*(.+)$/m);
+        var d = fmText.match(/^description\s*:\s*([\s\S]+?)(?=\n\w|\n---|\s*$)/m);
+        if (n) name = n[1].trim();
+        if (d) desc = d[1].replace(/\n\s+/g, ' ').trim();
+      }
+      // 2. Fallback: first # heading
+      if (!name) {
+        var h = text.match(/^#\s+(.+)$/m);
+        if (h) name = h[1].trim();
+      }
+      // 3. Fallback: first real paragraph
+      if (!desc) {
+        var body = text.replace(/^---[\s\S]*?---\s*/m, '').replace(/^#[^\n]*\n/m, '').trim();
+        var paras = body.split(/\n{2,}/);
+        for (var i = 0; i < paras.length; i++) {
+          var clean = paras[i].replace(/[*_`#>\[\]|\\]/g, '').replace(/\s+/g, ' ').trim();
+          if (clean.length > 20) { desc = clean; break; }
+        }
+      }
+      return { name: name, desc: desc };
+    }
+
+    /* ── Build a skill card DOM element ── */
+    function buildCard(skill, provider) {
+      var cfg = PROVIDERS[provider] || { emoji: '⚙️', badgeClass: 'badge-custom', badgeText: toTitle(provider) };
+      var folderUrl   = 'https://github.com/' + GH_OWNER + '/' + GH_REPO + '/tree/' + GH_BRANCH + '/' + skill.skill_md.replace('/SKILL.md', '');
+      var zipDownload = 'https://download-directory.github.io/?url=' + encodeURIComponent(folderUrl);
+
+      var card = document.createElement('div');
+      card.className = 'skill-card';
+      card.innerHTML =
+        '<div class="skill-card-header">' +
+          '<span class="skill-name">' + escHtml(skill.name || toTitle(skill.folder)) + '</span>' +
+          '<span class="skill-provider-badge ' + cfg.badgeClass + '">' + escHtml(cfg.badgeText) + '</span>' +
+        '</div>' +
+        '<p class="skill-desc">' + escHtml(skill.desc || skill.description || 'See SKILL.md for details.') + '</p>' +
+        '<div class="skill-footer">' +
+          '<a class="skill-tag" href="' + folderUrl + '" target="_blank" rel="noopener">' +
+            GH_ICON + 'View on GitHub' +
+          '</a>' +
+          '<a class="download-btn" href="' + zipDownload + '" target="_blank" rel="noopener">' +
+            DOWNLOAD_ICON + ' ZIP' +
+          '</a>' +
+        '</div>';
+      return card;
+    }
+
+    /* ── Skeleton shimmer group ── */
+    function buildSkeletonGroup(providerKey, count) {
+      var cfg = PROVIDERS[providerKey] || { emoji: '⚙️', badgeText: toTitle(providerKey) };
+      var group = document.createElement('div');
+      group.className = 'theme-group';
+      var lbl = document.createElement('p');
+      lbl.className = 'theme-label';
+      lbl.textContent = cfg.emoji + ' ' + cfg.badgeText + ' Skills';
+      group.appendChild(lbl);
+      var grid = document.createElement('div');
+      grid.className = 'card-grid';
+      for (var i = 0; i < (count || 3); i++) {
+        var s = document.createElement('div');
+        s.className = 'skill-card';
+        s.style.cssText = 'min-height:130px;animation:pulse 1.4s ease-in-out infinite;background:linear-gradient(90deg,#ebe8e1 25%,#f5f2ec 50%,#ebe8e1 75%);background-size:200% 100%;';
+        grid.appendChild(s);
+      }
+      group.appendChild(grid);
+      return group;
+    }
+
+    
+
+    /* ── Main loader — reads manifest, then fetches each SKILL.md ── */
+    async function loadSkills() {
+      var root    = document.getElementById('skills-root');
+      var countEl = document.getElementById('skills-count');
+
+      // Show shimmer skeletons immediately
+      PROVIDER_ORDER.forEach(function(p) { root.appendChild(buildSkeletonGroup(p, 3)); });
+
+      try {
+        /* Step 1 — fetch the manifest (a plain JSON file served by GitHub Pages) */
+        var res = await fetch('./genailab/skills-manifest.json');
+        if (!res.ok) throw new Error('manifest HTTP ' + res.status);
+        var manifest = await res.json();
+
+        root.innerHTML = '';
+        var totalSkills = 0;
+
+        /* Determine provider order: known first, then any extras alphabetically */
+        var allProviders = Object.keys(manifest);
+        var ordered = PROVIDER_ORDER.filter(function(k){ return manifest[k]; })
+          .concat(allProviders.filter(function(k){ return !PROVIDER_ORDER.includes(k); }).sort());
+
+        /* Step 2 — for each provider, build group and fetch SKILL.md files in parallel */
+        for (var pi = 0; pi < ordered.length; pi++) {
+          var providerKey = ordered[pi];
+          var skills      = manifest[providerKey];
+          if (!skills || skills.length === 0) continue;
+
+          var cfg = PROVIDERS[providerKey] || { emoji: '⚙️', badgeClass: 'badge-custom', badgeText: toTitle(providerKey) };
+
+          var group = document.createElement('div');
+          group.className = 'theme-group';
+          var lbl = document.createElement('p');
+          lbl.className = 'theme-label';
+          lbl.textContent = cfg.emoji + ' ' + cfg.badgeText + ' Skills';
+          group.appendChild(lbl);
+          var grid = document.createElement('div');
+          grid.className = 'card-grid';
+          group.appendChild(grid);
+          root.appendChild(group);
+
+          /* Fetch all SKILL.md files for this provider in parallel */
+          var enriched = await Promise.all(skills.map(async function(skill) {
+            if (skill.name && skill.description) return skill; // already parsed by manifest generator
+            try {
+              var mdRes = await fetch('./' + skill.skill_md);
+              if (mdRes.ok) {
+                var text   = await mdRes.text();
+                var parsed = parseSkillMd(text);
+                if (parsed.name)  skill.name        = parsed.name;
+                if (parsed.desc)  skill.description = parsed.desc;
+              }
+            } catch(e) { /* use whatever manifest already has */ }
+            return skill;
+          }));
+
+          enriched.forEach(function(skill) {
+            grid.appendChild(buildCard(skill, providerKey));
+            totalSkills++;
+          });
+
+          countEl.textContent = totalSkills + ' skill' + (totalSkills !== 1 ? 's' : '') + ' across ' + (pi + 1) + ' provider' + (pi > 0 ? 's' : '');
+        }
+
+        var np = ordered.length;
+        countEl.textContent = totalSkills + ' skills across ' + np + ' provider' + (np !== 1 ? 's' : '');
+
+        if (totalSkills === 0) {
+          root.innerHTML = '<div class="coming-soon-block" style="grid-column:1/-1"><span class="cs-icon">📁</span><p class="cs-title">No skills in manifest</p><p class="cs-desc">Run <code>python generate_skills_manifest.py</code> and commit <code>skills-manifest.json</code>.</p></div>';
+          countEl.textContent = '0 skills';
+        }
+
+      } catch(err) {
+        root.innerHTML =
+          '<div class="coming-soon-block" style="grid-column:1/-1">' +
+            '<span class="cs-icon">⚠️</span>' +
+            '<p class="cs-title">skills-manifest.json not found</p>' +
+            '<p class="cs-desc">' +
+              'Run the generator script once and commit the result:<br><br>' +
+              '<code style="background:var(--bg);padding:4px 10px;border-radius:6px;font-size:12px;">python generate_skills_manifest.py</code><br><br>' +
+              'Then commit <code>skills-manifest.json</code> next to <code>genai-lab.html</code>.' +
+            '</p>' +
+          '</div>';
+        countEl.textContent = 'Run generator first';
+        console.warn('[Skills Loader] Could not fetch skills-manifest.json:', err);
+      }
+    }
+
+    /* ── Pulse animation keyframe ── */
+    var _st = document.createElement('style');
+    _st.textContent = '@keyframes pulse{0%,100%{background-position:200% 0}50%{background-position:-200% 0}}';
+    document.head.appendChild(_st);
+
+    loadSkills();
   </script>
 
 </body>
