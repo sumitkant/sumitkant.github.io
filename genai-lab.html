@@ -1647,7 +1647,7 @@
     ══════════════════════════════════════════════════ */
     var tabs     = document.querySelectorAll('.tab-btn');
     var sections = document.querySelectorAll('.section');
-
+ 
     tabs.forEach(function (btn) {
       btn.addEventListener('click', function () {
         var target = btn.dataset.section;
@@ -1658,7 +1658,7 @@
         document.getElementById('section-' + target).scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
-
+ 
     /* ── Animate bars when model section activates ── */
     document.querySelector('[data-section="models"]').addEventListener('click', function () {
       setTimeout(function () {
@@ -1669,50 +1669,50 @@
         });
       }, 50);
     });
-
+ 
     /* ══════════════════════════════════════════════════
        SKILLS LIBRARY — manifest-based static loader
        ──────────────────────────────────────────────
        No GitHub API. No auth. Works with private repos.
-
+ 
        How it works:
          1. Fetches skills-manifest.json (static file
             committed next to genai-lab.html).
          2. For each skill, fetches its SKILL.md via a
             relative URL — served by GitHub Pages.
          3. Parses name + description from SKILL.md.
-
+ 
        To update: run  python generate_skills_manifest.py
        then commit skills-manifest.json.
     ══════════════════════════════════════════════════ */
-
+ 
     var GH_OWNER  = 'sumitkant';
     var GH_REPO   = 'sumitkant.github.io';
     var GH_BRANCH = 'master';
-
+ 
     var PROVIDERS = {
       'claude': { emoji: '🟠', badgeClass: 'badge-anthropic', badgeText: 'Anthropic' },
       'openai': { emoji: '🟢', badgeClass: 'badge-openai',    badgeText: 'OpenAI'    },
       'custom': { emoji: '🔵', badgeClass: 'badge-custom',    badgeText: 'Custom'    }
     };
-
+ 
     var PROVIDER_ORDER = ['claude', 'openai', 'custom'];
-
+ 
     var DOWNLOAD_ICON = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
     var GH_ICON = '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:3px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>';
-
+ 
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-
+ 
     function toTitle(slug) {
       return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
     }
-
+ 
     /* ── Parse name + description from SKILL.md text ── */
     function parseSkillMd(text) {
       var name = '', desc = '';
-
+ 
       // 1. YAML frontmatter between --- markers
       var fm = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
       if (fm) {
@@ -1738,13 +1738,13 @@
       }
       return { name: name, desc: desc };
     }
-
+ 
     /* ── Build a skill card DOM element ── */
     function buildCard(skill, provider) {
       var cfg = PROVIDERS[provider] || { emoji: '⚙️', badgeClass: 'badge-custom', badgeText: toTitle(provider) };
       var folderUrl   = 'https://github.com/' + GH_OWNER + '/' + GH_REPO + '/tree/' + GH_BRANCH + '/' + skill.skill_md.replace('/SKILL.md', '');
       var zipDownload = 'https://download-directory.github.io/?url=' + encodeURIComponent(folderUrl);
-
+ 
       var card = document.createElement('div');
       card.className = 'skill-card';
       card.innerHTML =
@@ -1763,7 +1763,7 @@
         '</div>';
       return card;
     }
-
+ 
     /* ── Skeleton shimmer group ── */
     function buildSkeletonGroup(providerKey, count) {
       var cfg = PROVIDERS[providerKey] || { emoji: '⚙️', badgeText: toTitle(providerKey) };
@@ -1784,39 +1784,37 @@
       group.appendChild(grid);
       return group;
     }
-
-    
-
+ 
     /* ── Main loader — reads manifest, then fetches each SKILL.md ── */
     async function loadSkills() {
       var root    = document.getElementById('skills-root');
       var countEl = document.getElementById('skills-count');
-
+ 
       // Show shimmer skeletons immediately
       PROVIDER_ORDER.forEach(function(p) { root.appendChild(buildSkeletonGroup(p, 3)); });
-
+ 
       try {
-        /* Step 1 — fetch the manifest (a plain JSON file served by GitHub Pages) */
+        /* Step 1 — fetch the manifest from genailab/ (same folder as the skills) */
         var res = await fetch('./genailab/skills-manifest.json');
         if (!res.ok) throw new Error('manifest HTTP ' + res.status);
         var manifest = await res.json();
-
+ 
         root.innerHTML = '';
         var totalSkills = 0;
-
+ 
         /* Determine provider order: known first, then any extras alphabetically */
         var allProviders = Object.keys(manifest);
         var ordered = PROVIDER_ORDER.filter(function(k){ return manifest[k]; })
           .concat(allProviders.filter(function(k){ return !PROVIDER_ORDER.includes(k); }).sort());
-
+ 
         /* Step 2 — for each provider, build group and fetch SKILL.md files in parallel */
         for (var pi = 0; pi < ordered.length; pi++) {
           var providerKey = ordered[pi];
           var skills      = manifest[providerKey];
           if (!skills || skills.length === 0) continue;
-
+ 
           var cfg = PROVIDERS[providerKey] || { emoji: '⚙️', badgeClass: 'badge-custom', badgeText: toTitle(providerKey) };
-
+ 
           var group = document.createElement('div');
           group.className = 'theme-group';
           var lbl = document.createElement('p');
@@ -1827,7 +1825,7 @@
           grid.className = 'card-grid';
           group.appendChild(grid);
           root.appendChild(group);
-
+ 
           /* Fetch all SKILL.md files for this provider in parallel */
           var enriched = await Promise.all(skills.map(async function(skill) {
             if (skill.name && skill.description) return skill; // already parsed by manifest generator
@@ -1842,46 +1840,45 @@
             } catch(e) { /* use whatever manifest already has */ }
             return skill;
           }));
-
+ 
           enriched.forEach(function(skill) {
             grid.appendChild(buildCard(skill, providerKey));
             totalSkills++;
           });
-
+ 
           countEl.textContent = totalSkills + ' skill' + (totalSkills !== 1 ? 's' : '') + ' across ' + (pi + 1) + ' provider' + (pi > 0 ? 's' : '');
         }
-ge
+ 
         var np = ordered.length;
         countEl.textContent = totalSkills + ' skills across ' + np + ' provider' + (np !== 1 ? 's' : '');
-
+ 
         if (totalSkills === 0) {
           root.innerHTML = '<div class="coming-soon-block" style="grid-column:1/-1"><span class="cs-icon">📁</span><p class="cs-title">No skills in manifest</p><p class="cs-desc">Run <code>python generate_skills_manifest.py</code> and commit <code>skills-manifest.json</code>.</p></div>';
           countEl.textContent = '0 skills';
         }
-
+ 
       } catch(err) {
         root.innerHTML =
           '<div class="coming-soon-block" style="grid-column:1/-1">' +
             '<span class="cs-icon">⚠️</span>' +
             '<p class="cs-title">skills-manifest.json not found</p>' +
             '<p class="cs-desc">' +
-              'Run the generator script once and commit the result:<br><br>' +
+              'Run the generator script once from your repo root:<br><br>' +
               '<code style="background:var(--bg);padding:4px 10px;border-radius:6px;font-size:12px;">python generate_skills_manifest.py</code><br><br>' +
-              'Then commit <code>skills-manifest.json</code> next to <code>genai-lab.html</code>.' +
+              'This writes <code>genailab/skills-manifest.json</code> — commit it and you\'re done.' +
             '</p>' +
           '</div>';
         countEl.textContent = 'Run generator first';
         console.warn('[Skills Loader] Could not fetch skills-manifest.json:', err);
       }
     }
-
+ 
     /* ── Pulse animation keyframe ── */
     var _st = document.createElement('style');
     _st.textContent = '@keyframes pulse{0%,100%{background-position:200% 0}50%{background-position:-200% 0}}';
     document.head.appendChild(_st);
-
+ 
     loadSkills();
   </script>
-
 </body>
 </html>
