@@ -1164,6 +1164,85 @@
       .skills-deepdive-tile { min-height: 220px; }
     }
 
+    /* ── LLM Concept Map ─────────────────────────── */
+    .concept-group.grp-foundation  .concept-card { border-left: 3px solid #6366f1; }
+    .concept-group.grp-memory      .concept-card { border-left: 3px solid #0ea5e9; }
+    .concept-group.grp-inference   .concept-card { border-left: 3px solid #10b981; }
+    .concept-group.grp-evaluation  .concept-card { border-left: 3px solid #f59e0b; }
+    .concept-group.grp-agentic     .concept-card { border-left: 3px solid #c85c2a; }
+
+    .concept-group { margin-bottom: 2rem; }
+
+    .concept-group-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .concept-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .concept-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    }
+
+    .concept-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-bottom: 2px;
+    }
+
+    .concept-icon svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .concept-name {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.25;
+    }
+
+    .concept-sub {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    @media (max-width: 820px) { .concept-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .concept-grid { grid-template-columns: 1fr; } }
+
     /* ── Responsive ──────────────────────────────── */
     @media (max-width: 900px) {
       .card-grid, .card-grid-4 { grid-template-columns: repeat(2, 1fr); }
@@ -1653,207 +1732,170 @@
     <section class="section" id="section-concepts">
       <div class="section-header">
         <h2 class="section-title">LLM Concepts</h2>
-        <span class="section-count">Posts from the blog, filtered for GenAI</span>
+        <span class="section-count">Click any concept to read a dedicated page</span>
       </div>
 
-      <div class="card-grid">
-
-        <!-- DarkForest -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/darkforest-blog.html" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
-            <defs>
-              <linearGradient id="df-bg2" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#0d1f0d"/>
-                <stop offset="60%" stop-color="#1a2e1a"/>
-                <stop offset="100%" stop-color="#243324"/>
-              </linearGradient>
-            </defs>
-            <rect width="320" height="200" fill="url(#df-bg2)"/>
-            <circle cx="238" cy="60" r="16" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.2"/>
-            <text x="238" y="64" font-family="system-ui" font-size="8.5" font-weight="700" fill="#8aaf8a" text-anchor="middle">A1</text>
-            <circle cx="284" cy="100" r="16" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.2"/>
-            <text x="284" y="104" font-family="system-ui" font-size="8.5" font-weight="700" fill="#8aaf8a" text-anchor="middle">A2</text>
-            <circle cx="238" cy="140" r="16" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.2"/>
-            <text x="238" y="144" font-family="system-ui" font-size="8.5" font-weight="700" fill="#8aaf8a" text-anchor="middle">A3</text>
-            <circle cx="192" cy="100" r="16" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.2"/>
-            <text x="192" y="104" font-family="system-ui" font-size="8.5" font-weight="700" fill="#8aaf8a" text-anchor="middle">A4</text>
-            <circle cx="238" cy="100" r="20" fill="#d4a843" opacity="0.92"/>
-            <text x="238" y="96" font-family="system-ui" font-size="7.5" fill="#1a0e00" text-anchor="middle" font-weight="700">Belief</text>
-            <text x="238" y="107" font-family="system-ui" font-size="7.5" fill="#1a0e00" text-anchor="middle" font-weight="700">Agg.</text>
-            <text x="18" y="42" font-family="system-ui" font-size="7" font-weight="700" letter-spacing="1.8" fill="rgba(212,168,67,0.6)">RESEARCH BREAKDOWN</text>
-            <text x="17" y="172" font-family="system-ui" font-size="21" font-weight="800" letter-spacing="-0.6" fill="#ffffff" opacity="0.97">DarkForest</text>
-          </svg>
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Research Paper</span>, Agentic AI</div>
-            <span class="post-title">DarkForest: Less Talk, Higher Accuracy for Multi-Agent LLMs</span>
-            <p class="post-desc">Controlled belief aggregation beats debate-based coordination — 6.5× fewer tokens, 30.7% accuracy gain across six reasoning benchmarks.</p>
+      <!-- ── FOUNDATION & TRAINING (indigo) ── -->
+      <div class="concept-group grp-foundation">
+        <h3 class="concept-group-label">Foundation &amp; Training</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/prompt-engineering.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            </div>
+            <span class="concept-name">Prompt engineering</span>
+            <p class="concept-sub">Zero-shot, few-shot, chain-of-thought, system prompts</p>
           </div>
-        </a>
-
-        <!-- Agent Skills -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/agent-skills-anthropic.html" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
-            <defs>
-              <linearGradient id="asg-bg2" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#c85c2a"/>
-                <stop offset="100%" stop-color="#7a3010"/>
-              </linearGradient>
-            </defs>
-            <rect width="320" height="200" fill="url(#asg-bg2)"/>
-            <g opacity="0.22" stroke="#fff" stroke-width="1.2">
-              <line x1="160" y1="92" x2="90" y2="52"/><line x1="160" y1="92" x2="230" y2="52"/>
-              <line x1="160" y1="108" x2="90" y2="148"/><line x1="160" y1="108" x2="230" y2="148"/>
-            </g>
-            <circle cx="160" cy="100" r="13" fill="#fff" opacity="0.95"/>
-            <circle cx="160" cy="100" r="8" fill="url(#asg-bg2)"/>
-            <text x="160" y="36" font-family="system-ui" font-size="20" font-weight="800" letter-spacing="3" fill="#fff" opacity="0.95" text-anchor="middle">ANTHROPIC</text>
-            <text x="160" y="175" font-family="system-ui" font-size="9.5" font-weight="500" letter-spacing="1.5" fill="#fff" opacity="0.55" text-anchor="middle">AGENT SKILLS · DEEPLEARNING.AI</text>
-          </svg>
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Agentic AI</span>, Claude, Skills</div>
-            <span class="post-title">Agent Skills with Anthropic — DeepLearning.ai</span>
-            <p class="post-desc">How skills work, when to use them, and how to combine them with MCP and sub-agents to build reliable agentic workflows.</p>
+          <div class="concept-card" data-href="genailab/concepts/fine-tuning.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+            </div>
+            <span class="concept-name">Fine-tuning</span>
+            <p class="concept-sub">LoRA, RLHF, instruction tuning, dataset curation</p>
           </div>
-        </a>
-
-        <!-- GRPO Fine-tuning -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/grpo-reinforcement-finetuning.html" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
-            <rect width="320" height="200" fill="#0d1117"/>
-            <rect x="210" y="36" width="58" height="24" rx="5" fill="#f97316"/>
-            <text x="239" y="52" font-family="system-ui" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">LLM</text>
-            <rect x="278" y="106" width="32" height="24" rx="5" fill="#22c55e"/>
-            <text x="294" y="122" font-family="system-ui" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">+Rwrd</text>
-            <rect x="210" y="106" width="58" height="24" rx="5" fill="#0ea5e9"/>
-            <text x="239" y="122" font-family="system-ui" font-size="8.5" fill="#fff" text-anchor="middle">Update</text>
-            <text x="18" y="46" font-family="system-ui" font-size="7" font-weight="700" letter-spacing="2" fill="rgba(249,115,22,0.6)">REINFORCEMENT FINE-TUNING</text>
-            <text x="17" y="82" font-family="system-ui" font-size="22" font-weight="800" letter-spacing="-0.7" fill="#ffffff" opacity="0.97">Fine-tune</text>
-            <text x="17" y="106" font-family="system-ui" font-size="22" font-weight="800" letter-spacing="-0.7" fill="#f97316">with GRPO</text>
-          </svg>
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Fine-tuning</span>, RL, LLMs</div>
-            <span class="post-title">Reinforcement Fine-tuning LLMs with GRPO</span>
-            <p class="post-desc">DeepSeek-R1's training recipe unpacked — reward functions, group relative policy optimisation, and training LLMs to reason.</p>
+          <div class="concept-card" data-href="genailab/concepts/tokenization-embeddings.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            </div>
+            <span class="concept-name">Tokenization &amp; embeddings</span>
+            <p class="concept-sub">BPE, token limits, vector spaces, semantic similarity</p>
           </div>
-        </a>
-
-        <!-- Prompt Engineering -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/prompt-engineering-llm.html" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
-            <defs>
-              <linearGradient id="pe-bg2" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#2d1b7a"/>
-                <stop offset="50%" stop-color="#5b50e8"/>
-                <stop offset="100%" stop-color="#ec4899"/>
-              </linearGradient>
-            </defs>
-            <rect width="320" height="200" fill="url(#pe-bg2)"/>
-            <text x="160" y="114" font-family="monospace" font-size="52" font-weight="700" fill="#fff" opacity="0.92" text-anchor="middle">&gt;_</text>
-            <text x="160" y="142" font-family="system-ui" font-size="11.5" font-weight="800" letter-spacing="2.2" fill="#fff" opacity="0.95" text-anchor="middle">PROMPT ENGINEERING</text>
-            <text x="160" y="160" font-family="system-ui" font-size="7.5" font-weight="500" letter-spacing="1.4" fill="#fff" opacity="0.45" text-anchor="middle">LLMs · BEST PRACTICES · 2023</text>
-          </svg>
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Prompt Engineering</span>, Gen AI</div>
-            <span class="post-title">Crafting Irresistible Prompts for Large Language Models</span>
-            <p class="post-desc">Best practices for prompt engineering — chain of thought, affordances, forceful language, and more from research and practice.</p>
+          <div class="concept-card" data-href="genailab/concepts/transformer-architecture.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>
+            </div>
+            <span class="concept-name">Transformer architecture</span>
+            <p class="concept-sub">Attention, MLP layers, positional encoding, KV cache</p>
           </div>
-        </a>
-
-        <!-- Generative AI for Everyone -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/generative-ai-for-everyone.html" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
-            <defs>
-              <linearGradient id="gai-bg2" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#1B4079"/>
-                <stop offset="100%" stop-color="#8FAD88"/>
-              </linearGradient>
-            </defs>
-            <rect width="320" height="200" fill="url(#gai-bg2)"/>
-            <circle cx="252" cy="100" r="88" fill="none" stroke="#CBDF90" stroke-width="0.7" opacity="0.1"/>
-            <circle cx="252" cy="100" r="38" fill="none" stroke="#CBDF90" stroke-width="0.9" opacity="0.18"/>
-            <circle cx="252" cy="100" r="7" fill="#CBDF90" opacity="0.6"/>
-            <text x="20" y="52" font-family="system-ui" font-size="7" font-weight="700" letter-spacing="2" fill="#CBDF90" opacity="0.6">ANDREW NG · COURSERA</text>
-            <text x="19" y="90" font-family="system-ui" font-size="22" font-weight="800" letter-spacing="-0.7" fill="#fff" opacity="0.96">Generative AI</text>
-            <text x="19" y="116" font-family="system-ui" font-size="22" font-weight="800" letter-spacing="-0.7" fill="#CBDF90" opacity="0.97">for Everyone</text>
-          </svg>
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Generative AI</span>, LLMs, Coursera</div>
-            <span class="post-title">Generative AI for Everyone — Andrew Ng</span>
-            <p class="post-desc">How GenAI works, what it can and cannot do, RAG, fine-tuning, business task analysis, responsible AI, and more.</p>
+          <div class="concept-card" data-href="genailab/concepts/pretraining-vs-posttraining.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+            </div>
+            <span class="concept-name">Pretraining vs post-training</span>
+            <p class="concept-sub">Pretraining, SFT, RLHF, DPO — how each shapes behavior</p>
           </div>
-        </a>
-
-        <!-- Transformers & Pre-training -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/genai-transformers-pretraining.html" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
-            <defs>
-              <linearGradient id="tr-bg2" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#12073a"/>
-                <stop offset="50%" stop-color="#5627FF"/>
-                <stop offset="100%" stop-color="#937AFF"/>
-              </linearGradient>
-            </defs>
-            <rect width="320" height="200" fill="url(#tr-bg2)"/>
-            <g fill="#937AFF">
-              <circle cx="214" cy="44" r="4.5"/><circle cx="214" cy="76" r="4.5"/>
-              <circle cx="214" cy="108" r="4.5"/><circle cx="214" cy="140" r="4.5"/>
-            </g>
-            <text x="17" y="84" font-family="system-ui" font-size="19.5" font-weight="800" letter-spacing="-0.6" fill="#fff" opacity="0.97">Transformers &amp;</text>
-            <text x="17" y="108" font-family="system-ui" font-size="19.5" font-weight="800" letter-spacing="-0.6" fill="#F8DB46" opacity="0.97">Pre-training</text>
-            <rect x="17" y="114" width="145" height="2.5" rx="1.2" fill="#FF3D9A" opacity="0.75"/>
-            <text x="17" y="136" font-family="system-ui" font-size="7" font-weight="400" letter-spacing="1.1" fill="#fff" opacity="0.28">USE CASES · LIFECYCLE · SCALING LAWS</text>
-          </svg>
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Gen AI</span>, Transformers, Course</div>
-            <span class="post-title">GenAI Use Cases, Lifecycle &amp; Model Pre-training</span>
-            <p class="post-desc">Transformer architecture deep-dive — self-attention, model variants, prompting, quantization, ZeRO, and Chinchilla scaling laws.</p>
-          </div>
-        </a>
-
-        <!-- MIT Deep Learning -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/intro-to-deep-learning-mit-notes.html" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
-            <rect width="320" height="200" fill="#0a0a23"/>
-            <line x1="40" y1="160" x2="280" y2="160" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-            <polyline points="40,160 80,130 120,140 160,90 200,100 240,60 280,70" fill="none" stroke="#c85c2a" stroke-width="2.5"/>
-            <text x="160" y="40" font-family="system-ui" font-size="14" font-weight="800" letter-spacing="2" fill="#fff" opacity="0.9" text-anchor="middle">MIT 6.S191</text>
-            <text x="160" y="60" font-family="system-ui" font-size="9" font-weight="500" letter-spacing="1.5" fill="#c85c2a" opacity="0.9" text-anchor="middle">INTRO TO DEEP LEARNING</text>
-          </svg>
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Deep Learning</span>, Course</div>
-            <span class="post-title">Intro to Deep Learning — MIT 6.S191</span>
-            <p class="post-desc">Notes from the MIT course by Alexander Amini and Ava Soleimany — neural networks, CNNs, RNNs, and beyond.</p>
-          </div>
-        </a>
-
-        <!-- AI for Everyone -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/coursera-aiforeveryone.html" target="_blank" rel="noopener">
-          <img src="https://sumitkant.github.io/images/Blogs/7.CourseraAIforEveryone/background.jpg" alt="AI for Everyone" loading="lazy" />
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Deep Learning</span>, Coursera</div>
-            <span class="post-title">[Notes] AI for Everyone — Coursera</span>
-            <p class="post-desc">A 4-week non-technical course by deeplearning.ai covering AI definitions, strategy and what AI broadly offers to individuals and businesses.</p>
-          </div>
-        </a>
-
-        <!-- Data Scientists Sold Lies -->
-        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/data-scientists-sold-lies.html" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
-            <rect width="320" height="200" fill="#003049"/>
-            <rect x="0" y="0" width="14" height="200" fill="#F77F00" opacity="0.92"/>
-            <rect x="14" y="0" width="5" height="200" fill="#FCBF49" opacity="0.75"/>
-            <text x="28" y="60" font-family="system-ui" font-size="7.5" font-weight="700" letter-spacing="2.5" fill="#FCBF49" opacity="0.7">DATA SCIENTISTS…</text>
-            <text x="27" y="98" font-family="system-ui" font-size="24" font-weight="800" letter-spacing="-0.8" fill="#EAE2B7" opacity="0.95">We've Been</text>
-            <text x="27" y="126" font-family="system-ui" font-size="24" font-weight="800" letter-spacing="-0.8" fill="#F77F00" opacity="0.97">Sold Lies.</text>
-          </svg>
-          <div class="post-body">
-            <div class="post-tags"><span class="p">Data Science</span>, Reality Check</div>
-            <span class="post-title">Data Scientists… We've Been Sold Lies.</span>
-            <p class="post-desc">2 learnings from 4 years building ML models at a financial MNC — the expectation gap between Kaggle and the real world.</p>
-          </div>
-        </a>
-
+        </div>
       </div>
+
+      <!-- ── MEMORY & RETRIEVAL (sky blue) ── -->
+      <div class="concept-group grp-memory">
+        <h3 class="concept-group-label">Memory &amp; Retrieval</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/rag.html">
+            <div class="concept-icon" style="background:rgba(14,165,233,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#0ea5e9"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            </div>
+            <span class="concept-name">RAG</span>
+            <p class="concept-sub">Chunking, vector DBs, hybrid search, re-ranking</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/context-window-management.html">
+            <div class="concept-icon" style="background:rgba(14,165,233,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#0ea5e9"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+            <span class="concept-name">Context window management</span>
+            <p class="concept-sub">Token limits, lost-in-the-middle, chunking strategies</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/memory-state-for-agents.html">
+            <div class="concept-icon" style="background:rgba(14,165,233,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#0ea5e9"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <span class="concept-name">Memory &amp; state for agents</span>
+            <p class="concept-sub">Short-term, long-term, episodic, semantic memory patterns</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── INFERENCE & OUTPUT (emerald) ── -->
+      <div class="concept-group grp-inference">
+        <h3 class="concept-group-label">Inference &amp; Output</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/inference-sampling.html">
+            <div class="concept-icon" style="background:rgba(16,185,129,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#10b981"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <span class="concept-name">Inference &amp; sampling</span>
+            <p class="concept-sub">Temperature, top-p, top-k, greedy vs beam search</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/structured-outputs.html">
+            <div class="concept-icon" style="background:rgba(16,185,129,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#10b981"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <span class="concept-name">Structured outputs</span>
+            <p class="concept-sub">JSON mode, tool use, function calling, Pydantic validation</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/hallucination-grounding.html">
+            <div class="concept-icon" style="background:rgba(16,185,129,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#10b981"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <span class="concept-name">Hallucination &amp; grounding</span>
+            <p class="concept-sub">Causes, detection, mitigation, citation strategies</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/multimodal-inputs.html">
+            <div class="concept-icon" style="background:rgba(16,185,129,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#10b981"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <span class="concept-name">Multimodal inputs</span>
+            <p class="concept-sub">Vision, audio, PDF — how LLMs process non-text inputs</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── EVALUATION & PRODUCTION (amber) ── -->
+      <div class="concept-group grp-evaluation">
+        <h3 class="concept-group-label">Evaluation &amp; Production</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/evals-benchmarking.html">
+            <div class="concept-icon" style="background:rgba(245,158,11,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#f59e0b"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <span class="concept-name">Evals &amp; benchmarking</span>
+            <p class="concept-sub">MMLU, HumanEval, LLM-as-judge, custom evals</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/cost-latency-optimization.html">
+            <div class="concept-icon" style="background:rgba(245,158,11,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#f59e0b"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="concept-name">Cost &amp; latency optimization</span>
+            <p class="concept-sub">Caching, quantization, batching, prompt compression</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/safety-alignment-guardrails.html">
+            <div class="concept-icon" style="background:rgba(245,158,11,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#f59e0b"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="concept-name">Safety, alignment &amp; guardrails</span>
+            <p class="concept-sub">Constitutional AI, RLHF, prompt injection, jailbreaks</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── AGENTIC SYSTEMS (burnt orange) ── -->
+      <div class="concept-group grp-agentic">
+        <h3 class="concept-group-label">Agentic Systems</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/agent-architectures.html">
+            <div class="concept-icon" style="background:rgba(200,92,42,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#c85c2a"><circle cx="12" cy="12" r="2"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><line x1="6" y1="6" x2="10" y2="11"/><line x1="18" y1="6" x2="14" y2="11"/><line x1="6" y1="18" x2="10" y2="13"/><line x1="18" y1="18" x2="14" y2="13"/></svg>
+            </div>
+            <span class="concept-name">Agent architectures</span>
+            <p class="concept-sub">ReAct, tool use, planning loops, multi-agent coordination</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/mcp.html">
+            <div class="concept-icon" style="background:rgba(200,92,42,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#c85c2a"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <span class="concept-name">MCP</span>
+            <p class="concept-sub">Tool registration, server-client model, skill integration</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/agent-skills.html">
+            <div class="concept-icon" style="background:rgba(200,92,42,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#c85c2a"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <span class="concept-name">Agent skills</span>
+            <p class="concept-sub">SKILL.md pattern, composability, sub-agents, reliability</p>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <!-- ════════════════════════════════════════════ -->
@@ -2627,6 +2669,14 @@
     loadSkills();
   </script>
 
+  <!-- ── Concept card navigation ── -->
+  <script>
+    document.querySelectorAll('.concept-card[data-href]').forEach(function(card) {
+      card.addEventListener('click', function() {
+        window.location.href = card.dataset.href;
+      });
+    });
+  </script>
 
 </body>
 </html>
