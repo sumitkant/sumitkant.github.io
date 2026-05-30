@@ -57,7 +57,7 @@
       max-width: var(--content);
       margin: 0 auto;
       padding: 0 24px;
-      height: 68px;
+      height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -586,12 +586,23 @@
         to { opacity: 1; transform: translateY(0); }
       }
     }
+    .nav-back {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-secondary);
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
   </style>
 </head>
 <body>
   <nav class="nav" aria-label="Article navigation">
     <div class="nav-inner">
-      <div class="brand"><span class="mark">TE</span><span>Tokenization + Embeddings Field Guide</span></div>
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+      
       <div class="nav-links">
         <a href="#mental-model">Mental Model</a>
         <a href="#tokenization">Tokenization</a>
@@ -599,6 +610,13 @@
         <a href="#compare">Compare</a>
         <a href="#best-practices">Best Practices</a>
       </div>
+
+      <a href="../../genai-lab.html" class="nav-back">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        LLM Concepts
+      </a>
     </div>
   </nav>
 
