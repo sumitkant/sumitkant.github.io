@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sumit Kant's GenAI Lab — agents, skills, concepts, tools, research & model landscape." />
+  <title>GenAI Lab — Sumit Kant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #f2efe9;
+      --border: rgba(0, 0, 0, 0.08);
+      --text-primary: #1a1a18;
+      --text-secondary: #6b6b65;
+      --text-tertiary: #a8a8a0;
+      --accent: #c85c2a;
+      --card-bg: #ffffff;
+      --quote-bg: #111110;
+      --radius-card: 18px;
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --gap: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+
+    /* ── Nav ─────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(242, 239, 233, 0.92);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .nav-monogram {
+      width: 30px;
+      height: 30px;
+      background: var(--text-primary);
+      color: var(--bg);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+    .nav-links a.active { font-weight: 500; }
+
+    /* ── Page layout ─────────────────────────────── */
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    /* ── Hero ────────────────────────────────────── */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .hero-title strong { font-weight: 800; color: var(--accent); }
+
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 580px;
+    }
+
+    /* ── Section nav tiles ───────────────────────── */
+    .section-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 2.5rem;
+    }
+
+    .tab-btn {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 20px 18px 18px;
+      height: 148px;
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-color: rgba(0,0,0,0.14);
+    }
+
+    .tab-btn.active {
+      border-color: transparent;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.18);
+    }
+
+    /* SVG background layer */
+    .tab-btn .tile-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.9;
+      transition: opacity 0.2s;
+    }
+
+    .tab-btn:not(.active) .tile-bg { opacity: 0; }
+    .tab-btn:hover:not(.active) .tile-bg { opacity: 0.06; }
+
+    /* Decorative SVG illustration (always visible, dimmer when inactive) */
+    .tab-btn .tile-art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .tab-btn:not(.active) .tile-art { opacity: 0.35; }
+    .tab-btn.active .tile-art { opacity: 1; }
+    .tab-btn:hover:not(.active) .tile-art { opacity: 0.6; }
+
+    /* Text content sits above SVG */
+    .tile-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tile-eyebrow {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      line-height: 1;
+    }
+
+    .tile-label {
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .tab-btn:not(.active) .tile-eyebrow,
+    .tab-btn:not(.active) .tile-label {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active .tile-eyebrow,
+    .tab-btn.active .tile-label {
+      color: #fff;
+    }
+
+    @media (max-width: 900px) {
+      .section-tabs { grid-template-columns: repeat(3, 1fr); }
+      .tab-btn { height: 120px; }
+    }
+
+    @media (max-width: 540px) {
+      .section-tabs { grid-template-columns: repeat(2, 1fr); }
+      .tab-btn { height: 110px; }
+    }
+
+    /* ── Section ─────────────────────────────────── */
+    .section {
+      display: none;
+    }
+
+    .section.active { display: block; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-count {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+
+    /* ── Card grid (shared) ──────────────────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap);
+    }
+
+    .card-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--gap);
+    }
+
+    .card-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--gap);
+    }
+
+    /* ── Post card (matches blog style) ─────────── */
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: block;
+    }
+
+    .post-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .post-card img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-thumb {
+      width: 100%;
+      aspect-ratio: 16/10;
+      display: block;
+    }
+
+    .post-body {
+      padding: 14px 16px 18px;
+    }
+
+    .post-tags {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-bottom: 7px;
+    }
+
+    .post-tags .p { color: var(--accent); font-weight: 600; }
+
+    .post-title {
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--text-primary);
+      margin-bottom: 9px;
+      display: block;
+    }
+
+    .post-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ── Skills section ──────────────────────────── */
+    .theme-group {
+      margin-bottom: 2.5rem;
+    }
+
+    .theme-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skill-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.18s, box-shadow 0.18s;
+      position: relative;
+    }
+
+    .skill-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .skill-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .skill-provider-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    .badge-anthropic { background: rgba(200, 92, 42, 0.1); color: var(--accent); }
+    .badge-openai { background: rgba(16, 163, 127, 0.1); color: #10a37f; }
+    .badge-custom { background: rgba(90, 90, 180, 0.1); color: #5a5ab4; }
+
+    .skill-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--text-primary);
+    }
+
+    .skill-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .skill-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .skill-tag {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 500;
+      background: var(--bg);
+      color: var(--text-tertiary);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    a.skill-tag:hover {
+      color: var(--text-primary);
+      border-color: rgba(0,0,0,0.2);
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--text-primary);
+      color: var(--bg);
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .download-btn:hover { opacity: 0.8; }
+    .download-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+
+    /* ── LLM Concepts ────────────────────────────── */
+    /* reuses post-card + card-grid */
+
+    /* ── Tool Stack ──────────────────────────────── */
+    .tool-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform 0.18s, box-shadow 0.18s;
+      text-decoration: none;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .tool-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .tool-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .tool-category {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .tool-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .tool-link-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    .tool-link-row svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+
+    /* ── Research Digest ─────────────────────────── */
+    .digest-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+
+    .digest-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .digest-banner {
+      width: 100%;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .digest-body {
+      padding: 16px 18px 20px;
+    }
+
+    .digest-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .digest-type {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .digest-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--text-tertiary);
+    }
+
+    .digest-date {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .digest-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .digest-summary {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .coming-soon-block {
+      background: var(--card-bg);
+      border: 1px dashed rgba(0,0,0,0.15);
+      border-radius: var(--radius-card);
+      padding: 3rem 2rem;
+      text-align: center;
+      grid-column: 1 / -1;
+    }
+
+    .coming-soon-block .cs-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .coming-soon-block .cs-title {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .coming-soon-block .cs-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      max-width: 380px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    /* ── Model Landscape ─────────────────────────── */
+    .benchmark-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      margin-bottom: var(--gap);
+    }
+
+    .benchmark-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .benchmark-title span { font-size: 11px; color: var(--text-tertiary); font-weight: 400; }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .bar-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      width: 130px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bar-label strong { color: var(--text-primary); font-weight: 700; }
+
+    .bar-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(0,0,0,0.06);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+
+    .bar-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      width: 44px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .model-table-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      margin-bottom: var(--gap);
+    }
+
+    .model-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .model-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .model-table td {
+      padding: 11px 16px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .model-table tr:last-child td { border-bottom: none; }
+
+    .model-table tr:hover td { background: rgba(0,0,0,0.02); }
+
+    .model-table td:first-child { font-weight: 700; color: var(--text-primary); }
+
+    .model-badge {
+      display: inline-flex;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .badge-leader { background: rgba(200,92,42,0.1); color: var(--accent); }
+    .badge-open { background: rgba(16,163,127,0.1); color: #10a37f; }
+    .badge-mid { background: rgba(90,90,180,0.1); color: #5a5ab4; }
+
+    .score-num { font-weight: 700; color: var(--text-primary); }
+    .score-bar-mini {
+      display: inline-block;
+      height: 4px;
+      border-radius: 2px;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+
+    /* ── Footer ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 2rem 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    footer a { color: var(--text-tertiary); transition: color 0.15s; }
+    footer a:hover { color: var(--text-primary); }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 900px) {
+      .card-grid, .card-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 540px) {
+      .card-grid, .card-grid-4, .card-grid-2 { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .page { padding: 0 1rem 4rem; }
+      .model-table th:nth-child(n+4), .model-table td:nth-child(n+4) { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Nav ──────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <div class="nav-monogram">SK</div>
+        <span>Sumit Kant</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+
+    <!-- ── Hero ──────────────────────────────────── -->
+    <header class="hero">
+      <p class="hero-eyebrow">Exploration</p>
+      <h1 class="hero-title">The <strong>GenAI Lab</strong></h1>
+      <p class="hero-sub">A living workspace for agents, skills, LLM concepts, tools, research digests, and model comparisons. Updated as I learn.</p>
+    </header>
+
+    <!-- ── Section tiles ─────────────────────────── -->
+    <div class="section-tabs" role="tablist">
+
+      <!-- 1 · Skills Library -->
+      <button class="tab-btn active" data-section="skills" role="tab">
+        <!-- active bg gradient -->
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sk-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#c85c2a"/>
+              <stop offset="100%" stop-color="#7a2e10"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#sk-grad)"/>
+        </svg>
+        <!-- art — star cluster / skill nodes -->
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <g opacity="1">
+            <!-- grid lines -->
+            <pattern id="sk-grid" width="22" height="22" patternUnits="userSpaceOnUse">
+              <path d="M22 0L0 0 0 22" fill="none" stroke="#fff" stroke-width="0.35" opacity="0.18"/>
+            </pattern>
+            <rect width="220" height="148" fill="url(#sk-grid)"/>
+            <!-- central star burst -->
+            <circle cx="148" cy="60" r="38" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.2"/>
+            <circle cx="148" cy="60" r="22" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+            <circle cx="148" cy="60" r="8" fill="#fff" opacity="0.55"/>
+            <!-- spoke nodes -->
+            <line x1="148" y1="60" x2="185" y2="35" stroke="#fff" stroke-width="1" opacity="0.4"/>
+            <circle cx="185" cy="35" r="4" fill="#fff" opacity="0.5"/>
+            <line x1="148" y1="60" x2="192" y2="72" stroke="#fff" stroke-width="1" opacity="0.35"/>
+            <circle cx="192" cy="72" r="3" fill="#fff" opacity="0.4"/>
+            <line x1="148" y1="60" x2="168" y2="100" stroke="#fff" stroke-width="1" opacity="0.35"/>
+            <circle cx="168" cy="100" r="4" fill="#fff" opacity="0.45"/>
+            <line x1="148" y1="60" x2="115" y2="88" stroke="#fff" stroke-width="1" opacity="0.3"/>
+            <circle cx="115" cy="88" r="3.5" fill="#fff" opacity="0.4"/>
+            <line x1="148" y1="60" x2="112" y2="38" stroke="#fff" stroke-width="1" opacity="0.35"/>
+            <circle cx="112" cy="38" r="3" fill="#fff" opacity="0.4"/>
+          </g>
+        </svg>
+        <div class="tile-content">
+          <span class="tile-eyebrow">15 skills</span>
+          <span class="tile-label">Skills<br>Library</span>
+        </div>
+      </button>
+
+      <!-- 2 · LLM Concepts -->
+      <button class="tab-btn" data-section="concepts" role="tab">
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="llm-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2d1b7a"/>
+              <stop offset="50%" stop-color="#5b50e8"/>
+              <stop offset="100%" stop-color="#8b6ff7"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#llm-grad)"/>
+        </svg>
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- dot pattern -->
+          <pattern id="llm-dots" width="14" height="14" patternUnits="userSpaceOnUse">
+            <circle cx="7" cy="7" r="0.8" fill="#fff" opacity="0.2"/>
+          </pattern>
+          <rect width="220" height="148" fill="url(#llm-dots)"/>
+          <!-- transformer self-attention grid -->
+          <g opacity="0.6">
+            <g fill="#a89eff" opacity="0.7">
+              <rect x="110" y="18" width="9" height="9" rx="2"/>
+              <rect x="125" y="18" width="9" height="9" rx="2"/>
+              <rect x="140" y="18" width="9" height="9" rx="2"/>
+              <rect x="155" y="18" width="9" height="9" rx="2"/>
+              <rect x="170" y="18" width="9" height="9" rx="2"/>
+              <rect x="110" y="34" width="9" height="9" rx="2" opacity="0.8"/>
+              <rect x="125" y="34" width="9" height="9" rx="2" fill="#fff"/>
+              <rect x="140" y="34" width="9" height="9" rx="2" opacity="0.5"/>
+              <rect x="155" y="34" width="9" height="9" rx="2" opacity="0.3"/>
+              <rect x="170" y="34" width="9" height="9" rx="2" opacity="0.6"/>
+              <rect x="110" y="50" width="9" height="9" rx="2" opacity="0.4"/>
+              <rect x="125" y="50" width="9" height="9" rx="2" opacity="0.7"/>
+              <rect x="140" y="50" width="9" height="9" rx="2" fill="#fff"/>
+              <rect x="155" y="50" width="9" height="9" rx="2" opacity="0.5"/>
+              <rect x="170" y="50" width="9" height="9" rx="2" opacity="0.3"/>
+              <rect x="110" y="66" width="9" height="9" rx="2" opacity="0.2"/>
+              <rect x="125" y="66" width="9" height="9" rx="2" opacity="0.45"/>
+              <rect x="140" y="66" width="9" height="9" rx="2" opacity="0.8"/>
+              <rect x="155" y="66" width="9" height="9" rx="2" fill="#fff"/>
+              <rect x="170" y="66" width="9" height="9" rx="2" opacity="0.4"/>
+              <rect x="110" y="82" width="9" height="9" rx="2" opacity="0.15"/>
+              <rect x="125" y="82" width="9" height="9" rx="2" opacity="0.3"/>
+              <rect x="140" y="82" width="9" height="9" rx="2" opacity="0.6"/>
+              <rect x="155" y="82" width="9" height="9" rx="2" opacity="0.85"/>
+              <rect x="170" y="82" width="9" height="9" rx="2" fill="#fff"/>
+            </g>
+            <!-- label -->
+            <text x="185" y="18" font-family="monospace" font-size="6" fill="#fff" opacity="0.35" writing-mode="tb">ATTENTION</text>
+          </g>
+          <!-- prompt terminal -->
+          <rect x="12" y="90" width="82" height="40" rx="5" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+          <text x="18" y="107" font-family="monospace" font-size="7.5" fill="#fff" opacity="0.55">&gt;_ prompt</text>
+          <text x="18" y="120" font-family="monospace" font-size="7.5" fill="#a89eff" opacity="0.7">token · token</text>
+        </svg>
+        <div class="tile-content">
+          <span class="tile-eyebrow">9 articles</span>
+          <span class="tile-label">LLM<br>Concepts</span>
+        </div>
+      </button>
+
+      <!-- 3 · Tool Stack -->
+      <button class="tab-btn" data-section="tools" role="tab">
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ts-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0f2027"/>
+              <stop offset="50%" stop-color="#203a43"/>
+              <stop offset="100%" stop-color="#2c5364"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#ts-grad)"/>
+        </svg>
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- circuit-board pattern -->
+          <g stroke="#4dd9ac" stroke-width="0.8" fill="none" opacity="0.5">
+            <line x1="100" y1="20" x2="100" y2="50"/>
+            <line x1="100" y1="50" x2="130" y2="50"/>
+            <line x1="130" y1="50" x2="130" y2="30"/>
+            <line x1="130" y1="30" x2="180" y2="30"/>
+            <line x1="180" y1="30" x2="180" y2="75"/>
+            <line x1="180" y1="75" x2="205" y2="75"/>
+            <line x1="100" y1="50" x2="100" y2="90"/>
+            <line x1="100" y1="90" x2="155" y2="90"/>
+            <line x1="155" y1="90" x2="155" y2="120"/>
+            <line x1="155" y1="120" x2="200" y2="120"/>
+            <line x1="130" y1="50" x2="130" y2="110"/>
+            <line x1="130" y1="110" x2="108" y2="110"/>
+            <line x1="108" y1="110" x2="108" y2="135"/>
+          </g>
+          <!-- nodes -->
+          <g fill="#4dd9ac" opacity="0.75">
+            <circle cx="100" cy="20" r="3.5"/>
+            <circle cx="100" cy="50" r="3.5"/>
+            <circle cx="130" cy="50" r="3.5"/>
+            <circle cx="130" cy="30" r="3.5"/>
+            <circle cx="180" cy="30" r="3.5"/>
+            <circle cx="180" cy="75" r="3.5"/>
+            <circle cx="100" cy="90" r="3.5"/>
+            <circle cx="155" cy="90" r="3.5"/>
+            <circle cx="155" cy="120" r="3.5"/>
+            <circle cx="130" cy="110" r="3.5"/>
+          </g>
+          <!-- glow dot -->
+          <circle cx="180" cy="75" r="7" fill="#4dd9ac" opacity="0.2"/>
+          <!-- stack layers -->
+          <rect x="12" y="30" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.15" stroke="#4dd9ac" stroke-width="0.6"/>
+          <text x="20" y="40" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.8">API Layer</text>
+          <rect x="12" y="50" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.1" stroke="#4dd9ac" stroke-width="0.6"/>
+          <text x="20" y="60" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.7">Models</text>
+          <rect x="12" y="70" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.07" stroke="#4dd9ac" stroke-width="0.6"/>
+          <text x="20" y="80" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.6">Frameworks</text>
+          <rect x="12" y="90" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.05" stroke="#4dd9ac" stroke-width="0.6"/>
+          <text x="20" y="100" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.5">Resources</text>
+        </svg>
+        <div class="tile-content">
+          <span class="tile-eyebrow">12 links</span>
+          <span class="tile-label">Tool<br>Stack</span>
+        </div>
+      </button>
+
+      <!-- 4 · Research Digest -->
+      <button class="tab-btn" data-section="research" role="tab">
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rd-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#111110"/>
+              <stop offset="100%" stop-color="#2a2820"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#rd-grad)"/>
+        </svg>
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- paper lines -->
+          <g stroke="#d4a84b" stroke-width="0.7" opacity="0.45">
+            <line x1="105" y1="18" x2="200" y2="18"/>
+            <line x1="105" y1="28" x2="200" y2="28"/>
+            <line x1="105" y1="38" x2="170" y2="38"/>
+            <line x1="105" y1="58" x2="200" y2="58"/>
+            <line x1="105" y1="68" x2="200" y2="68"/>
+            <line x1="105" y1="78" x2="188" y2="78"/>
+            <line x1="105" y1="88" x2="200" y2="88"/>
+            <line x1="105" y1="98" x2="200" y2="98"/>
+            <line x1="105" y1="108" x2="158" y2="108"/>
+            <line x1="105" y1="128" x2="200" y2="128"/>
+            <line x1="105" y1="138" x2="178" y2="138"/>
+          </g>
+          <!-- paper border -->
+          <rect x="100" y="10" width="108" height="135" rx="4" fill="none" stroke="#d4a84b" stroke-width="0.7" opacity="0.25"/>
+          <!-- arXiv label -->
+          <text x="108" y="50" font-family="monospace" font-size="7" fill="#d4a84b" opacity="0.6">arXiv</text>
+          <rect x="100" y="44" width="108" height="10" fill="#d4a84b" opacity="0.06"/>
+          <!-- highlight bar -->
+          <rect x="100" y="118" width="108" height="10" fill="#d4a84b" opacity="0.08"/>
+          <!-- icon -->
+          <circle cx="50" cy="55" r="28" fill="none" stroke="#d4a84b" stroke-width="1" opacity="0.25"/>
+          <circle cx="50" cy="55" r="18" fill="none" stroke="#d4a84b" stroke-width="0.8" opacity="0.35"/>
+          <text x="50" y="52" font-family="monospace" font-size="9" fill="#d4a84b" opacity="0.7" text-anchor="middle">∑</text>
+          <text x="50" y="64" font-family="monospace" font-size="7" fill="#d4a84b" opacity="0.45" text-anchor="middle">digest</text>
+          <!-- dots around circle -->
+          <circle cx="50" cy="27" r="2.5" fill="#d4a84b" opacity="0.5"/>
+          <circle cx="78" cy="55" r="2.5" fill="#d4a84b" opacity="0.5"/>
+          <circle cx="50" cy="83" r="2.5" fill="#d4a84b" opacity="0.5"/>
+          <circle cx="22" cy="55" r="2.5" fill="#d4a84b" opacity="0.5"/>
+        </svg>
+        <div class="tile-content">
+          <span class="tile-eyebrow">Papers read</span>
+          <span class="tile-label">Research<br>Digest</span>
+        </div>
+      </button>
+
+      <!-- 5 · Model Landscape -->
+      <button class="tab-btn" data-section="models" role="tab">
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ml-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#003049"/>
+              <stop offset="100%" stop-color="#0a4a6e"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#ml-grad)"/>
+        </svg>
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- bar chart -->
+          <line x1="100" y1="15" x2="100" y2="128" stroke="#FCBF49" stroke-width="0.7" opacity="0.4"/>
+          <line x1="100" y1="128" x2="210" y2="128" stroke="#FCBF49" stroke-width="0.7" opacity="0.4"/>
+          <!-- bars -->
+          <rect x="106" y="38" width="16" height="90" rx="2" fill="#F77F00" opacity="0.85"/>
+          <rect x="126" y="48" width="16" height="80" rx="2" fill="#FCBF49" opacity="0.7"/>
+          <rect x="146" y="55" width="16" height="73" rx="2" fill="#F77F00" opacity="0.55"/>
+          <rect x="166" y="68" width="16" height="60" rx="2" fill="#FCBF49" opacity="0.45"/>
+          <rect x="186" y="80" width="16" height="48" rx="2" fill="#F77F00" opacity="0.35"/>
+          <!-- bar labels -->
+          <text x="114" y="34" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.7" text-anchor="middle">91</text>
+          <text x="134" y="44" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.6" text-anchor="middle">89</text>
+          <text x="154" y="51" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.5" text-anchor="middle">86</text>
+          <text x="174" y="64" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.45" text-anchor="middle">84</text>
+          <text x="194" y="76" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.4" text-anchor="middle">81</text>
+          <!-- wave line chart -->
+          <polyline points="100,95 120,78 140,85 160,65 180,72 200,55 210,58" fill="none" stroke="#fff" stroke-width="1.4" opacity="0.35" stroke-dasharray="3 2"/>
+          <!-- left side label -->
+          <text x="15" y="60" font-family="monospace" font-size="7.5" fill="#FCBF49" opacity="0.55" text-anchor="middle">MMLU</text>
+          <text x="15" y="72" font-family="monospace" font-size="6" fill="#FCBF49" opacity="0.35" text-anchor="middle">Bench</text>
+          <!-- model dots -->
+          <circle cx="20" cy="100" r="3" fill="#c85c2a" opacity="0.9"/>
+          <text x="28" y="104" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">Claude</text>
+          <circle cx="20" cy="113" r="3" fill="#10a37f" opacity="0.9"/>
+          <text x="28" y="117" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">GPT-4o</text>
+          <circle cx="20" cy="126" r="3" fill="#5a5ab4" opacity="0.9"/>
+          <text x="28" y="130" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">Gemini</text>
+        </svg>
+        <div class="tile-content">
+          <span class="tile-eyebrow">7 models</span>
+          <span class="tile-label">Model<br>Landscape</span>
+        </div>
+      </button>
+
+    </div>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  1. SKILLS LIBRARY  (dynamic)               -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section active" id="section-skills">
+      <div class="section-header">
+        <h2 class="section-title">Skills Library</h2>
+        <span class="section-count" id="skills-count">Loading…</span>
+      </div>
+      <!-- Dynamic groups injected here by JS -->
+      <div id="skills-root"></div>
+    </section>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  2. LLM CONCEPTS                             -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section" id="section-concepts">
+      <div class="section-header">
+        <h2 class="section-title">LLM Concepts</h2>
+        <span class="section-count">Posts from the blog, filtered for GenAI</span>
+      </div>
+
+      <div class="card-grid">
+
+        <!-- DarkForest -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/darkforest-blog.html" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
+            <defs>
+              <linearGradient id="df-bg2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0d1f0d"/>
+                <stop offset="60%" stop-color="#1a2e1a"/>
+                <stop offset="100%" stop-color="#243324"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#df-bg2)"/>
+            <circle cx="238" cy="60" r="16" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.2"/>
+            <text x="238" y="64" font-family="system-ui" font-size="8.5" font-weight="700" fill="#8aaf8a" text-anchor="middle">A1</text>
+            <circle cx="284" cy="100" r="16" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.2"/>
+            <text x="284" y="104" font-family="system-ui" font-size="8.5" font-weight="700" fill="#8aaf8a" text-anchor="middle">A2</text>
+            <circle cx="238" cy="140" r="16" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.2"/>
+            <text x="238" y="144" font-family="system-ui" font-size="8.5" font-weight="700" fill="#8aaf8a" text-anchor="middle">A3</text>
+            <circle cx="192" cy="100" r="16" fill="#2f4a2f" stroke="#4a7c59" stroke-width="1.2"/>
+            <text x="192" y="104" font-family="system-ui" font-size="8.5" font-weight="700" fill="#8aaf8a" text-anchor="middle">A4</text>
+            <circle cx="238" cy="100" r="20" fill="#d4a843" opacity="0.92"/>
+            <text x="238" y="96" font-family="system-ui" font-size="7.5" fill="#1a0e00" text-anchor="middle" font-weight="700">Belief</text>
+            <text x="238" y="107" font-family="system-ui" font-size="7.5" fill="#1a0e00" text-anchor="middle" font-weight="700">Agg.</text>
+            <text x="18" y="42" font-family="system-ui" font-size="7" font-weight="700" letter-spacing="1.8" fill="rgba(212,168,67,0.6)">RESEARCH BREAKDOWN</text>
+            <text x="17" y="172" font-family="system-ui" font-size="21" font-weight="800" letter-spacing="-0.6" fill="#ffffff" opacity="0.97">DarkForest</text>
+          </svg>
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Research Paper</span>, Agentic AI</div>
+            <span class="post-title">DarkForest: Less Talk, Higher Accuracy for Multi-Agent LLMs</span>
+            <p class="post-desc">Controlled belief aggregation beats debate-based coordination — 6.5× fewer tokens, 30.7% accuracy gain across six reasoning benchmarks.</p>
+          </div>
+        </a>
+
+        <!-- Agent Skills -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/agent-skills-anthropic.html" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
+            <defs>
+              <linearGradient id="asg-bg2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#c85c2a"/>
+                <stop offset="100%" stop-color="#7a3010"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#asg-bg2)"/>
+            <g opacity="0.22" stroke="#fff" stroke-width="1.2">
+              <line x1="160" y1="92" x2="90" y2="52"/><line x1="160" y1="92" x2="230" y2="52"/>
+              <line x1="160" y1="108" x2="90" y2="148"/><line x1="160" y1="108" x2="230" y2="148"/>
+            </g>
+            <circle cx="160" cy="100" r="13" fill="#fff" opacity="0.95"/>
+            <circle cx="160" cy="100" r="8" fill="url(#asg-bg2)"/>
+            <text x="160" y="36" font-family="system-ui" font-size="20" font-weight="800" letter-spacing="3" fill="#fff" opacity="0.95" text-anchor="middle">ANTHROPIC</text>
+            <text x="160" y="175" font-family="system-ui" font-size="9.5" font-weight="500" letter-spacing="1.5" fill="#fff" opacity="0.55" text-anchor="middle">AGENT SKILLS · DEEPLEARNING.AI</text>
+          </svg>
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Agentic AI</span>, Claude, Skills</div>
+            <span class="post-title">Agent Skills with Anthropic — DeepLearning.ai</span>
+            <p class="post-desc">How skills work, when to use them, and how to combine them with MCP and sub-agents to build reliable agentic workflows.</p>
+          </div>
+        </a>
+
+        <!-- GRPO Fine-tuning -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/grpo-reinforcement-finetuning.html" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
+            <rect width="320" height="200" fill="#0d1117"/>
+            <rect x="210" y="36" width="58" height="24" rx="5" fill="#f97316"/>
+            <text x="239" y="52" font-family="system-ui" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">LLM</text>
+            <rect x="278" y="106" width="32" height="24" rx="5" fill="#22c55e"/>
+            <text x="294" y="122" font-family="system-ui" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">+Rwrd</text>
+            <rect x="210" y="106" width="58" height="24" rx="5" fill="#0ea5e9"/>
+            <text x="239" y="122" font-family="system-ui" font-size="8.5" fill="#fff" text-anchor="middle">Update</text>
+            <text x="18" y="46" font-family="system-ui" font-size="7" font-weight="700" letter-spacing="2" fill="rgba(249,115,22,0.6)">REINFORCEMENT FINE-TUNING</text>
+            <text x="17" y="82" font-family="system-ui" font-size="22" font-weight="800" letter-spacing="-0.7" fill="#ffffff" opacity="0.97">Fine-tune</text>
+            <text x="17" y="106" font-family="system-ui" font-size="22" font-weight="800" letter-spacing="-0.7" fill="#f97316">with GRPO</text>
+          </svg>
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Fine-tuning</span>, RL, LLMs</div>
+            <span class="post-title">Reinforcement Fine-tuning LLMs with GRPO</span>
+            <p class="post-desc">DeepSeek-R1's training recipe unpacked — reward functions, group relative policy optimisation, and training LLMs to reason.</p>
+          </div>
+        </a>
+
+        <!-- Prompt Engineering -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/prompt-engineering-llm.html" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
+            <defs>
+              <linearGradient id="pe-bg2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#2d1b7a"/>
+                <stop offset="50%" stop-color="#5b50e8"/>
+                <stop offset="100%" stop-color="#ec4899"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#pe-bg2)"/>
+            <text x="160" y="114" font-family="monospace" font-size="52" font-weight="700" fill="#fff" opacity="0.92" text-anchor="middle">&gt;_</text>
+            <text x="160" y="142" font-family="system-ui" font-size="11.5" font-weight="800" letter-spacing="2.2" fill="#fff" opacity="0.95" text-anchor="middle">PROMPT ENGINEERING</text>
+            <text x="160" y="160" font-family="system-ui" font-size="7.5" font-weight="500" letter-spacing="1.4" fill="#fff" opacity="0.45" text-anchor="middle">LLMs · BEST PRACTICES · 2023</text>
+          </svg>
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Prompt Engineering</span>, Gen AI</div>
+            <span class="post-title">Crafting Irresistible Prompts for Large Language Models</span>
+            <p class="post-desc">Best practices for prompt engineering — chain of thought, affordances, forceful language, and more from research and practice.</p>
+          </div>
+        </a>
+
+        <!-- Generative AI for Everyone -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/generative-ai-for-everyone.html" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
+            <defs>
+              <linearGradient id="gai-bg2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1B4079"/>
+                <stop offset="100%" stop-color="#8FAD88"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#gai-bg2)"/>
+            <circle cx="252" cy="100" r="88" fill="none" stroke="#CBDF90" stroke-width="0.7" opacity="0.1"/>
+            <circle cx="252" cy="100" r="38" fill="none" stroke="#CBDF90" stroke-width="0.9" opacity="0.18"/>
+            <circle cx="252" cy="100" r="7" fill="#CBDF90" opacity="0.6"/>
+            <text x="20" y="52" font-family="system-ui" font-size="7" font-weight="700" letter-spacing="2" fill="#CBDF90" opacity="0.6">ANDREW NG · COURSERA</text>
+            <text x="19" y="90" font-family="system-ui" font-size="22" font-weight="800" letter-spacing="-0.7" fill="#fff" opacity="0.96">Generative AI</text>
+            <text x="19" y="116" font-family="system-ui" font-size="22" font-weight="800" letter-spacing="-0.7" fill="#CBDF90" opacity="0.97">for Everyone</text>
+          </svg>
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Generative AI</span>, LLMs, Coursera</div>
+            <span class="post-title">Generative AI for Everyone — Andrew Ng</span>
+            <p class="post-desc">How GenAI works, what it can and cannot do, RAG, fine-tuning, business task analysis, responsible AI, and more.</p>
+          </div>
+        </a>
+
+        <!-- Transformers & Pre-training -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/genai-transformers-pretraining.html" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
+            <defs>
+              <linearGradient id="tr-bg2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#12073a"/>
+                <stop offset="50%" stop-color="#5627FF"/>
+                <stop offset="100%" stop-color="#937AFF"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#tr-bg2)"/>
+            <g fill="#937AFF">
+              <circle cx="214" cy="44" r="4.5"/><circle cx="214" cy="76" r="4.5"/>
+              <circle cx="214" cy="108" r="4.5"/><circle cx="214" cy="140" r="4.5"/>
+            </g>
+            <text x="17" y="84" font-family="system-ui" font-size="19.5" font-weight="800" letter-spacing="-0.6" fill="#fff" opacity="0.97">Transformers &amp;</text>
+            <text x="17" y="108" font-family="system-ui" font-size="19.5" font-weight="800" letter-spacing="-0.6" fill="#F8DB46" opacity="0.97">Pre-training</text>
+            <rect x="17" y="114" width="145" height="2.5" rx="1.2" fill="#FF3D9A" opacity="0.75"/>
+            <text x="17" y="136" font-family="system-ui" font-size="7" font-weight="400" letter-spacing="1.1" fill="#fff" opacity="0.28">USE CASES · LIFECYCLE · SCALING LAWS</text>
+          </svg>
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Gen AI</span>, Transformers, Course</div>
+            <span class="post-title">GenAI Use Cases, Lifecycle &amp; Model Pre-training</span>
+            <p class="post-desc">Transformer architecture deep-dive — self-attention, model variants, prompting, quantization, ZeRO, and Chinchilla scaling laws.</p>
+          </div>
+        </a>
+
+        <!-- MIT Deep Learning -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/intro-to-deep-learning-mit-notes.html" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
+            <rect width="320" height="200" fill="#0a0a23"/>
+            <line x1="40" y1="160" x2="280" y2="160" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <polyline points="40,160 80,130 120,140 160,90 200,100 240,60 280,70" fill="none" stroke="#c85c2a" stroke-width="2.5"/>
+            <text x="160" y="40" font-family="system-ui" font-size="14" font-weight="800" letter-spacing="2" fill="#fff" opacity="0.9" text-anchor="middle">MIT 6.S191</text>
+            <text x="160" y="60" font-family="system-ui" font-size="9" font-weight="500" letter-spacing="1.5" fill="#c85c2a" opacity="0.9" text-anchor="middle">INTRO TO DEEP LEARNING</text>
+          </svg>
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Deep Learning</span>, Course</div>
+            <span class="post-title">Intro to Deep Learning — MIT 6.S191</span>
+            <p class="post-desc">Notes from the MIT course by Alexander Amini and Ava Soleimany — neural networks, CNNs, RNNs, and beyond.</p>
+          </div>
+        </a>
+
+        <!-- AI for Everyone -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/coursera-aiforeveryone.html" target="_blank" rel="noopener">
+          <img src="https://sumitkant.github.io/images/Blogs/7.CourseraAIforEveryone/background.jpg" alt="AI for Everyone" loading="lazy" />
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Deep Learning</span>, Coursera</div>
+            <span class="post-title">[Notes] AI for Everyone — Coursera</span>
+            <p class="post-desc">A 4-week non-technical course by deeplearning.ai covering AI definitions, strategy and what AI broadly offers to individuals and businesses.</p>
+          </div>
+        </a>
+
+        <!-- Data Scientists Sold Lies -->
+        <a class="post-card" href="https://sumitkant.github.io/Blogs/AI-ML/data-scientists-sold-lies.html" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" class="card-thumb" viewBox="0 0 320 200">
+            <rect width="320" height="200" fill="#003049"/>
+            <rect x="0" y="0" width="14" height="200" fill="#F77F00" opacity="0.92"/>
+            <rect x="14" y="0" width="5" height="200" fill="#FCBF49" opacity="0.75"/>
+            <text x="28" y="60" font-family="system-ui" font-size="7.5" font-weight="700" letter-spacing="2.5" fill="#FCBF49" opacity="0.7">DATA SCIENTISTS…</text>
+            <text x="27" y="98" font-family="system-ui" font-size="24" font-weight="800" letter-spacing="-0.8" fill="#EAE2B7" opacity="0.95">We've Been</text>
+            <text x="27" y="126" font-family="system-ui" font-size="24" font-weight="800" letter-spacing="-0.8" fill="#F77F00" opacity="0.97">Sold Lies.</text>
+          </svg>
+          <div class="post-body">
+            <div class="post-tags"><span class="p">Data Science</span>, Reality Check</div>
+            <span class="post-title">Data Scientists… We've Been Sold Lies.</span>
+            <p class="post-desc">2 learnings from 4 years building ML models at a financial MNC — the expectation gap between Kaggle and the real world.</p>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  3. TOOL STACK                               -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section" id="section-tools">
+      <div class="section-header">
+        <h2 class="section-title">Tool Stack</h2>
+        <span class="section-count">Resources, platforms & tools I use and explore</span>
+      </div>
+
+      <div class="card-grid-4">
+
+        <a class="tool-card" href="https://docs.anthropic.com" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(200,92,42,0.1);">🧠</div>
+          <span class="tool-category">Documentation</span>
+          <span class="tool-name">Anthropic Docs</span>
+          <p class="tool-desc">Official docs for Claude — API reference, prompt engineering guides, model cards, and skill patterns.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>docs.anthropic.com</div>
+        </a>
+
+        <a class="tool-card" href="https://platform.openai.com/docs" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(16,163,127,0.1);">⚡</div>
+          <span class="tool-category">Documentation</span>
+          <span class="tool-name">OpenAI Platform</span>
+          <p class="tool-desc">GPT-4o, Assistants API, embeddings, fine-tuning, and function calling — OpenAI's developer hub.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>platform.openai.com</div>
+        </a>
+
+        <a class="tool-card" href="https://www.deeplearning.ai" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(90,90,180,0.1);">🎓</div>
+          <span class="tool-category">Learning</span>
+          <span class="tool-name">DeepLearning.AI</span>
+          <p class="tool-desc">Short courses on GenAI, agents, RAG, LangChain, and more from Andrew Ng and leading AI labs.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+        </a>
+
+        <a class="tool-card" href="https://huggingface.co" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(255,180,0,0.1);">🤗</div>
+          <span class="tool-category">Model Hub</span>
+          <span class="tool-name">Hugging Face</span>
+          <p class="tool-desc">Open-source models, datasets, Spaces demos, and the Transformers library for hands-on experimentation.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huggingface.co</div>
+        </a>
+
+        <a class="tool-card" href="https://arxiv.org/search/?searchtype=all&query=LLM+agents" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(180,30,30,0.1);">📄</div>
+          <span class="tool-category">Research</span>
+          <span class="tool-name">arXiv — AI/ML</span>
+          <p class="tool-desc">Pre-print server for AI research papers. Essential for staying current on LLM advances, agent frameworks, and benchmarks.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>arxiv.org</div>
+        </a>
+
+        <a class="tool-card" href="https://lmsys.org/blog/2023-05-03-arena/" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(0,120,200,0.1);">🏟️</div>
+          <span class="tool-category">Benchmarking</span>
+          <span class="tool-name">LM Arena</span>
+          <p class="tool-desc">Chatbot Arena by LMSYS — head-to-head model comparisons with ELO ratings from human preference votes.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>lmarena.ai</div>
+        </a>
+
+        <a class="tool-card" href="https://langchain.com" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(30,160,80,0.1);">🔗</div>
+          <span class="tool-category">Framework</span>
+          <span class="tool-name">LangChain</span>
+          <p class="tool-desc">Framework for building LLM applications — chains, agents, retrievers, memory, and integrations with 100+ tools.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>langchain.com</div>
+        </a>
+
+        <a class="tool-card" href="https://www.llamaindex.ai" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(180,80,200,0.1);">🦙</div>
+          <span class="tool-category">Framework</span>
+          <span class="tool-name">LlamaIndex</span>
+          <p class="tool-desc">Data framework for LLM applications — indexing, querying, and connecting private data to large language models.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>llamaindex.ai</div>
+        </a>
+
+        <a class="tool-card" href="https://simonwillison.net" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(200,150,30,0.1);">✍️</div>
+          <span class="tool-category">Blog / Reading</span>
+          <span class="tool-name">Simon Willison's Blog</span>
+          <p class="tool-desc">Hands-on LLM experiments, tool use, prompt injection research, and GenAI product analysis — one of the best technical voices.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>simonwillison.net</div>
+        </a>
+
+        <a class="tool-card" href="https://www.youtube.com/@AndrejKarpathy" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(255,0,0,0.08);">📺</div>
+          <span class="tool-category">Video / Learning</span>
+          <span class="tool-name">Andrej Karpathy</span>
+          <p class="tool-desc">Zero-to-hero neural network series, GPT from scratch, and state-of-LLM lectures — essential deep learning content.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@AndrejKarpathy</div>
+        </a>
+
+        <a class="tool-card" href="https://paperswithcode.com" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(30,80,200,0.1);">💻</div>
+          <span class="tool-category">Research</span>
+          <span class="tool-name">Papers With Code</span>
+          <p class="tool-desc">ML papers with code implementations, state-of-the-art benchmarks, and datasets — bridging research and practice.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>paperswithcode.com</div>
+        </a>
+
+        <a class="tool-card" href="https://claude.ai" target="_blank" rel="noopener">
+          <div class="tool-icon" style="background:rgba(200,92,42,0.1);">✦</div>
+          <span class="tool-category">AI Assistant</span>
+          <span class="tool-name">Claude (claude.ai)</span>
+          <p class="tool-desc">My primary AI work environment — coding, analysis, writing, and building skills and agentic workflows with Claude Sonnet.</p>
+          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>claude.ai</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  4. RESEARCH DIGEST                          -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section" id="section-research">
+      <div class="section-header">
+        <h2 class="section-title">Research Digest</h2>
+        <span class="section-count">Papers I read, summarised as blogs or decks</span>
+      </div>
+
+      <div class="card-grid">
+
+        <!-- DarkForest digest -->
+        <div class="digest-card">
+          <div class="digest-banner" style="background: linear-gradient(135deg, #0d1f0d, #243324);">
+            arXiv · 2605.25188
+          </div>
+          <div class="digest-body">
+            <div class="digest-meta">
+              <span class="digest-type">Blog</span>
+              <span class="digest-dot"></span>
+              <span class="digest-date">May 2025</span>
+            </div>
+            <p class="digest-title">DarkForest: Reducing Debate in Multi-Agent LLMs</p>
+            <p class="digest-summary">How belief aggregation without inter-agent debate yields 30.7% accuracy gains and 6.5× token savings across six reasoning tasks.</p>
+          </div>
+        </div>
+
+        <!-- GRPO digest -->
+        <div class="digest-card">
+          <div class="digest-banner" style="background: linear-gradient(135deg, #0d1117, #1e2430);">
+            arXiv · DeepSeek-R1
+          </div>
+          <div class="digest-body">
+            <div class="digest-meta">
+              <span class="digest-type">Blog</span>
+              <span class="digest-dot"></span>
+              <span class="digest-date">Feb 2025</span>
+            </div>
+            <p class="digest-title">GRPO: Group Relative Policy Optimisation for LLMs</p>
+            <p class="digest-summary">A breakdown of DeepSeek-R1's training recipe — how reward shaping and GRPO replace RLHF for reasoning model training.</p>
+          </div>
+        </div>
+
+        <!-- Coming soon -->
+        <div class="coming-soon-block" style="grid-column: span 1;">
+          <span class="cs-icon">📑</span>
+          <p class="cs-title">More digests coming soon</p>
+          <p class="cs-desc">I'm reading and summarising papers on attention mechanisms, MoE architectures, and agentic planning. Check back regularly.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  5. MODEL LANDSCAPE                          -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section" id="section-models">
+      <div class="section-header">
+        <h2 class="section-title">Model Landscape</h2>
+        <span class="section-count">Frontier models compared across key benchmarks</span>
+      </div>
+
+      <!-- Benchmark bars — MMLU -->
+      <div class="card-grid-2" style="margin-bottom:var(--gap);">
+
+        <div class="benchmark-wrap">
+          <div class="benchmark-title">
+            MMLU (5-shot) — General Knowledge
+            <span>Higher = better</span>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Claude Opus 4</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:91%;background:#c85c2a;"></div></div>
+            <div class="bar-val">91.0</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>GPT-4o</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:89%;background:#10a37f;"></div></div>
+            <div class="bar-val">89.0</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Gemini 1.5 Pro</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:86%;background:#5a5ab4;"></div></div>
+            <div class="bar-val">85.9</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Llama 3.1 405B</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:84%;background:#888;"></div></div>
+            <div class="bar-val">84.1</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Mistral Large 2</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:81%;background:#aaa;"></div></div>
+            <div class="bar-val">81.2</div>
+          </div>
+        </div>
+
+        <div class="benchmark-wrap">
+          <div class="benchmark-title">
+            HumanEval — Coding (pass@1)
+            <span>Higher = better</span>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Claude Opus 4</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:92%;background:#c85c2a;"></div></div>
+            <div class="bar-val">92.0</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>GPT-4o</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:90%;background:#10a37f;"></div></div>
+            <div class="bar-val">90.2</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>DeepSeek-V3</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:88%;background:#5a5ab4;"></div></div>
+            <div class="bar-val">88.5</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Gemini 1.5 Pro</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:83%;background:#888;"></div></div>
+            <div class="bar-val">83.3</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Llama 3.1 70B</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:72%;background:#aaa;"></div></div>
+            <div class="bar-val">72.6</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Comparison table -->
+      <div class="model-table-wrap">
+        <table class="model-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Provider</th>
+              <th>Context</th>
+              <th>MMLU</th>
+              <th>HumanEval</th>
+              <th>MATH</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Claude Opus 4</td>
+              <td>Anthropic</td>
+              <td>200K</td>
+              <td><span class="score-num">91.0</span><span class="score-bar-mini" style="width:46px;background:#c85c2a;opacity:0.4;"></span></td>
+              <td><span class="score-num">92.0</span></td>
+              <td><span class="score-num">—</span></td>
+              <td><span class="model-badge badge-leader">Frontier</span></td>
+            </tr>
+            <tr>
+              <td>Claude Sonnet 4</td>
+              <td>Anthropic</td>
+              <td>200K</td>
+              <td><span class="score-num">88.3</span></td>
+              <td><span class="score-num">88.7</span></td>
+              <td><span class="score-num">—</span></td>
+              <td><span class="model-badge badge-leader">Frontier</span></td>
+            </tr>
+            <tr>
+              <td>GPT-4o</td>
+              <td>OpenAI</td>
+              <td>128K</td>
+              <td><span class="score-num">89.0</span></td>
+              <td><span class="score-num">90.2</span></td>
+              <td><span class="score-num">76.6</span></td>
+              <td><span class="model-badge badge-leader">Frontier</span></td>
+            </tr>
+            <tr>
+              <td>Gemini 1.5 Pro</td>
+              <td>Google</td>
+              <td>1M</td>
+              <td><span class="score-num">85.9</span></td>
+              <td><span class="score-num">83.3</span></td>
+              <td><span class="score-num">67.7</span></td>
+              <td><span class="model-badge badge-mid">Established</span></td>
+            </tr>
+            <tr>
+              <td>DeepSeek-V3</td>
+              <td>DeepSeek</td>
+              <td>128K</td>
+              <td><span class="score-num">88.5</span></td>
+              <td><span class="score-num">88.5</span></td>
+              <td><span class="score-num">75.3</span></td>
+              <td><span class="model-badge badge-open">Open</span></td>
+            </tr>
+            <tr>
+              <td>Llama 3.1 405B</td>
+              <td>Meta</td>
+              <td>128K</td>
+              <td><span class="score-num">84.1</span></td>
+              <td><span class="score-num">—</span></td>
+              <td><span class="score-num">73.8</span></td>
+              <td><span class="model-badge badge-open">Open</span></td>
+            </tr>
+            <tr>
+              <td>Mistral Large 2</td>
+              <td>Mistral AI</td>
+              <td>128K</td>
+              <td><span class="score-num">81.2</span></td>
+              <td><span class="score-num">92.0</span></td>
+              <td><span class="score-num">—</span></td>
+              <td><span class="model-badge badge-mid">Established</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="font-size:11px;color:var(--text-tertiary);margin-top:10px;">
+        Benchmarks sourced from official model cards and papers. Scores reflect reported values at time of publication. Context window and scores may vary by version. — Updated May 2026
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>© 2026 Sumit Kant</span>
+    <div style="display:flex;gap:16px;">
+      <a href="https://sumitkant.github.io/">Website</a>
+      <a href="https://sumitkant.github.io/bookshelf.html">Bookshelf</a>
+      <a href="mailto:sumit.kant@iiml.org">Email</a>
+    </div>
+  </footer>
+
+  <script>
+    /* ══════════════════════════════════════════════════
+       TAB SWITCHING
+    ══════════════════════════════════════════════════ */
+    var tabs     = document.querySelectorAll('.tab-btn');
+    var sections = document.querySelectorAll('.section');
+
+    tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = btn.dataset.section;
+        tabs.forEach(function (b) { b.classList.remove('active'); });
+        sections.forEach(function (s) { s.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('section-' + target).classList.add('active');
+        document.getElementById('section-' + target).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* ── Animate bars when model section activates ── */
+    document.querySelector('[data-section="models"]').addEventListener('click', function () {
+      setTimeout(function () {
+        document.querySelectorAll('.bar-fill').forEach(function (bar) {
+          var w = bar.style.width;
+          bar.style.width = '0';
+          requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = w; }); });
+        });
+      }, 50);
+    });
+
+    /* ══════════════════════════════════════════════════
+       SKILLS LIBRARY — GitHub-powered dynamic loader
+       Repo structure:  sumitkant/genailab
+       Skills path:     genailab/skills/<provider>/<skill-name>/SKILL.md
+    ══════════════════════════════════════════════════ */
+
+    var GH_OWNER   = 'sumitkant';
+    var GH_REPO    = 'sumitkant.github.io';          // ← your repo name
+    var GH_BRANCH  = 'master';
+    var SKILLS_PATH = 'genailab/skills';  // ← path inside the repo to the skills folder
+
+    // Provider config: folder name → { label, emoji, badgeClass }
+    var PROVIDERS = {
+      'claude':  { label: 'Claude',  emoji: '🟠', badgeClass: 'badge-anthropic', badgeText: 'Anthropic' },
+      'openai':  { label: 'OpenAI',  emoji: '🟢', badgeClass: 'badge-openai',    badgeText: 'OpenAI'    },
+      'custom':  { label: 'Custom',  emoji: '🔵', badgeClass: 'badge-custom',     badgeText: 'Custom'    }
+    };
+
+    // Fallback order if repo doesn't define providers
+    var PROVIDER_ORDER = ['claude', 'openai', 'custom'];
+
+    var DOWNLOAD_ICON = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+    /* ── GitHub API helpers ── */
+    function ghAPI(path) {
+      return fetch('https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + path + '?ref=' + GH_BRANCH)
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); });
+    }
+
+    function fetchRaw(downloadUrl) {
+      return fetch(downloadUrl).then(function (r) { return r.ok ? r.text() : ''; });
+    }
+
+    /* ── SKILL.md parser ──
+       Reads the frontmatter-style block at the top of SKILL.md.
+       Supports two formats:
+         1. YAML-ish:  name: Foo\ndescription: Bar baz
+         2. Markdown:  # Foo\n\nBar baz...
+    ── */
+    function parseSkillMd(text) {
+      var name = '', desc = '';
+
+      // Try frontmatter between --- markers
+      var fmMatch = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
+      if (fmMatch) {
+        var fm = fmMatch[1];
+        var nMatch = fm.match(/^name\s*:\s*(.+)$/m);
+        var dMatch = fm.match(/^description\s*:\s*([\s\S]+?)(?=\n\w|\n---|\s*$)/m);
+        if (nMatch) name = nMatch[1].trim();
+        if (dMatch) desc = dMatch[1].replace(/\n\s+/g, ' ').trim();
+      }
+
+      // Fallback: first H1 as name, first paragraph after it as desc
+      if (!name) {
+        var h1 = text.match(/^#\s+(.+)$/m);
+        if (h1) name = h1[1].trim();
+      }
+      if (!desc) {
+        // Strip frontmatter & H1, grab first non-empty paragraph
+        var body = text.replace(/^---[\s\S]*?---\s*/m, '').replace(/^#[^\n]*\n/m, '').trim();
+        var firstPara = body.split(/\n{2,}/)[0].replace(/\n/g, ' ').replace(/[*_`#>]/g, '').trim();
+        if (firstPara) desc = firstPara;
+      }
+
+      return { name: name, desc: desc };
+    }
+
+    /* ── Slugify folder name for display ── */
+    function toTitle(slug) {
+      return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    }
+
+    /* ── Build a single skill card element ── */
+    function buildCard(skill, provider) {
+      var cfg    = PROVIDERS[provider] || { label: provider, badgeClass: 'badge-custom', badgeText: provider };
+      var zipUrl = 'https://github.com/' + GH_OWNER + '/' + GH_REPO + '/raw/' + GH_BRANCH + '/' + SKILLS_PATH + '/' + provider + '/' + skill.folder + '.zip';
+      // GitHub doesn't serve folder zips via raw — use the download-directory approach via the API zip endpoint
+      // Best cross-browser way: link to the GitHub UI zip which GitHub generates on the fly
+      var zipDownload = 'https://github.com/' + GH_OWNER + '/' + GH_REPO + '/archive/refs/heads/' + GH_BRANCH + '.zip';
+      // We use a filtered single-folder approach: point to the folder page and note the subtree zip
+      // GitHub's actual per-folder zip: /archive/<branch>/<path>.zip is not supported.
+      // Best option: link directly to the folder on GitHub + provide the full-repo zip as fallback.
+      var folderUrl = 'https://github.com/' + GH_OWNER + '/' + GH_REPO + '/tree/' + GH_BRANCH + '/' + SKILLS_PATH + '/' + provider + '/' + skill.folder;
+
+      var card = document.createElement('div');
+      card.className = 'skill-card';
+      card.innerHTML =
+        '<div class="skill-card-header">' +
+          '<span class="skill-name">' + escHtml(skill.name || toTitle(skill.folder)) + '</span>' +
+          '<span class="skill-provider-badge ' + cfg.badgeClass + '">' + escHtml(cfg.badgeText) + '</span>' +
+        '</div>' +
+        '<p class="skill-desc">' + escHtml(skill.desc || 'See SKILL.md for details.') + '</p>' +
+        '<div class="skill-footer">' +
+          '<a class="skill-tag" href="' + folderUrl + '" target="_blank" rel="noopener" style="text-decoration:none;">' +
+            '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:3px;">' +
+              '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>' +
+            '</svg>' +
+            'View on GitHub' +
+          '</a>' +
+          '<a class="download-btn" href="' + zipDownload + '" target="_blank" rel="noopener">' +
+            DOWNLOAD_ICON + ' ZIP' +
+          '</a>' +
+        '</div>';
+      return card;
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ── Skeleton loader cards ── */
+    function buildSkeletonGroup(providerKey, count) {
+      var cfg = PROVIDERS[providerKey] || { label: toTitle(providerKey), emoji: '⚙️', badgeClass: 'badge-custom', badgeText: providerKey };
+      var group = document.createElement('div');
+      group.className = 'theme-group';
+      var label = document.createElement('p');
+      label.className = 'theme-label';
+      label.textContent = cfg.emoji + ' ' + cfg.badgeText + ' Skills';
+      group.appendChild(label);
+      var grid = document.createElement('div');
+      grid.className = 'card-grid';
+      for (var i = 0; i < (count || 3); i++) {
+        var skeleton = document.createElement('div');
+        skeleton.className = 'skill-card';
+        skeleton.style.cssText = 'animation:pulse 1.4s ease-in-out infinite;background:linear-gradient(90deg,#ebe8e1 25%,#f5f2ec 50%,#ebe8e1 75%);background-size:200% 100%;';
+        skeleton.style.minHeight = '130px';
+        grid.appendChild(skeleton);
+      }
+      group.appendChild(grid);
+      return group;
+    }
+
+    /* ── Main loader ── */
+    async function loadSkills() {
+      var root = document.getElementById('skills-root');
+      var countEl = document.getElementById('skills-count');
+
+      // Show skeleton state
+      PROVIDER_ORDER.forEach(function (p) { root.appendChild(buildSkeletonGroup(p, 3)); });
+
+      try {
+        // 1. List top-level folders inside skills path (provider dirs)
+        var topLevel = await ghAPI(SKILLS_PATH);
+        var providerDirs = topLevel.filter(function (f) { return f.type === 'dir'; });
+
+        // Order by PROVIDER_ORDER, then any extra alphabetically
+        var knownKeys = PROVIDER_ORDER.filter(function (k) {
+          return providerDirs.some(function (d) { return d.name === k; });
+        });
+        var extraKeys = providerDirs.map(function (d) { return d.name; })
+          .filter(function (n) { return !PROVIDER_ORDER.includes(n); }).sort();
+        var orderedProviders = knownKeys.concat(extraKeys);
+
+        // Clear skeletons
+        root.innerHTML = '';
+
+        var totalSkills = 0;
+
+        // 2. For each provider, list skill sub-folders
+        for (var pi = 0; pi < orderedProviders.length; pi++) {
+          var providerKey = orderedProviders[pi];
+          var cfg = PROVIDERS[providerKey] || { label: toTitle(providerKey), emoji: '⚙️', badgeClass: 'badge-custom', badgeText: toTitle(providerKey) };
+
+          var skillFolders;
+          try {
+            var providerContents = await ghAPI(SKILLS_PATH + '/' + providerKey);
+            skillFolders = providerContents.filter(function (f) { return f.type === 'dir'; });
+          } catch (e) {
+            skillFolders = [];
+          }
+
+          if (skillFolders.length === 0) continue;
+
+          // Build group container immediately so page fills progressively
+          var group = document.createElement('div');
+          group.className = 'theme-group';
+          var lbl = document.createElement('p');
+          lbl.className = 'theme-label';
+          lbl.textContent = cfg.emoji + ' ' + cfg.badgeText + ' Skills';
+          group.appendChild(lbl);
+          var grid = document.createElement('div');
+          grid.className = 'card-grid';
+          group.appendChild(grid);
+          root.appendChild(group);
+
+          // 3. For each skill folder, try to find and fetch SKILL.md
+          var skillPromises = skillFolders.map(async function (folder) {
+            var mdInfo;
+            try {
+              var folderContents = await ghAPI(SKILLS_PATH + '/' + providerKey + '/' + folder.name);
+              mdInfo = folderContents.find(function (f) {
+                return f.type === 'file' && f.name.toLowerCase() === 'skill.md';
+              });
+            } catch (e) { mdInfo = null; }
+
+            var parsed = { name: '', desc: '' };
+            if (mdInfo && mdInfo.download_url) {
+              try {
+                var raw = await fetchRaw(mdInfo.download_url);
+                parsed = parseSkillMd(raw);
+              } catch (e) {}
+            }
+
+            return {
+              folder: folder.name,
+              name: parsed.name || toTitle(folder.name),
+              desc: parsed.desc
+            };
+          });
+
+          var skills = await Promise.all(skillPromises);
+          skills.forEach(function (skill) {
+            grid.appendChild(buildCard(skill, providerKey));
+            totalSkills++;
+          });
+
+          // Update count progressively
+          countEl.textContent = totalSkills + ' skill' + (totalSkills !== 1 ? 's' : '') + ' across ' + (pi + 1) + ' provider' + (pi + 1 !== 1 ? 's' : '');
+        }
+
+        // Final count
+        var numProviders = orderedProviders.length;
+        countEl.textContent = totalSkills + ' skills across ' + numProviders + ' provider' + (numProviders !== 1 ? 's' : '');
+
+        if (totalSkills === 0) {
+          root.innerHTML = '<div class="coming-soon-block"><span class="cs-icon">📁</span><p class="cs-title">No skills found</p><p class="cs-desc">Make sure the repo is public and the path <code>' + SKILLS_PATH + '</code> exists.</p></div>';
+        }
+
+      } catch (err) {
+        root.innerHTML =
+          '<div class="coming-soon-block">' +
+            '<span class="cs-icon">⚠️</span>' +
+            '<p class="cs-title">Could not load skills</p>' +
+            '<p class="cs-desc">The GitHub API returned an error. This usually means the repo is private or the path is incorrect. Check the console for details.<br><br>' +
+            '<a href="https://github.com/' + GH_OWNER + '/' + GH_REPO + '" target="_blank" rel="noopener" style="color:var(--accent);">Open repo on GitHub →</a></p>' +
+          '</div>';
+        countEl.textContent = 'Error loading';
+        console.error('[Skills Loader]', err);
+      }
+    }
+
+    /* ── Inject pulse keyframe ── */
+    var style = document.createElement('style');
+    style.textContent = '@keyframes pulse { 0%,100%{background-position:200% 0} 50%{background-position:-200% 0} }';
+    document.head.appendChild(style);
+
+    /* ── Kick off ── */
+    loadSkills();
+  </script>
+
+</body>
+</html>
