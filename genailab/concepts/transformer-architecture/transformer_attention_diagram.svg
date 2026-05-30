@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc">
+  <title id="title">Transformer architecture with multi-head and scaled dot-product attention zoom-ins</title>
+  <desc id="desc">A vector SVG recreation of the uploaded Transformer attention diagram, including encoder, decoder, multi-head attention, and scaled dot-product attention blocks.</desc>
+  <defs>
+    <style>
+      :root{
+        --bg:#f2efe9; --card:#ffffff; --border:rgba(0,0,0,0.08); --tp:#1a1a18; --ts:#6b6b65; --tt:#a8a8a0;
+        --accent:#c85c2a; --indigo:#6366f1; --sky:#0ea5e9; --emerald:#10b981; --amber:#f59e0b;
+        --violet:#8b5cf6; --rose:#f43f5e; --font:'Plus Jakarta Sans',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --r:14px;
+      }
+      svg{background:var(--bg);font-family:var(--font);color:var(--tp)}
+      text{fill:var(--tp);font-family:var(--font);font-size:22px;text-anchor:middle;dominant-baseline:middle}
+      .small{font-size:18px}.tiny{font-size:16px}.label{font-size:24px}.title{font-size:29px;font-weight:800}.bold{font-weight:800}.muted{fill:var(--ts)}.zoom{fill:var(--tt);font-size:23px;font-weight:800}
+      .panel{fill:var(--card);stroke:#d2d2ce;stroke-width:5}.panel-head{fill:#d0d0cd}.shell{fill:#fffdfa;stroke:var(--tp);stroke-width:3}.box{stroke:var(--tp);stroke-width:3;rx:var(--r);ry:var(--r)}
+      .norm{fill:#fef3c7}.ff{fill:#bae6fd}.attn{fill:#fed7aa}.emb{fill:#fee2e2}.soft{fill:#d1fae5}.lin{fill:#e0e7ff}.mask{fill:#fecdd3}.scale{fill:#fef3c7}.mat{fill:#ddd6fe}.mha{fill:#ddd6fe}
+      .arrow{fill:none;stroke:var(--tp);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .thin{stroke-width:2}.skip{fill:none;stroke:var(--tp);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .callout{fill:none;stroke:#c9c9c6;stroke-width:5;stroke-linejoin:round;stroke-linecap:round}.plus{fill:var(--card);stroke:var(--tp);stroke-width:2}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="var(--tp)"/>
+    </marker>
+  </defs>
+
+  <!-- Encoder stack -->
+  <g id="encoder" transform="translate(80,120)">
+    <path class="shell" d="M45 265 Q45 245 65 245 H235 Q255 245 255 265 V565 Q255 585 235 585 H65 Q45 585 45 565 Z"/>
+    <path class="shell" d="M65 245 Q65 225 85 225 H255 Q275 225 275 245 V545 Q275 565 255 565 H85 Q65 565 65 545 Z" opacity=".95"/>
+    <text class="label" x="4" y="405">N×</text>
+    <rect class="box attn" x="95" y="410" width="145" height="70"/>
+    <text x="168" y="434">Multi-Head</text><text x="168" y="461">Attention</text>
+    <rect class="box norm" x="95" y="360" width="145" height="38"/><text x="168" y="379" class="small">Add &amp; Norm</text>
+    <rect class="box ff" x="95" y="250" width="145" height="70"/><text x="168" y="274">Feed</text><text x="168" y="301">Forward</text>
+    <rect class="box norm" x="95" y="215" width="145" height="38"/><text x="168" y="234" class="small">Add &amp; Norm</text>
+    <path class="arrow" d="M168 760 V720"/><text class="label" x="168" y="790">Inputs</text>
+    <rect class="box emb" x="95" y="660" width="145" height="58"/><text x="168" y="682">Input</text><text x="168" y="707">Embedding</text>
+    <text class="label" x="42" y="615">Positional</text><text class="label" x="42" y="645">Encoding</text>
+    <path class="arrow" d="M168 660 V625"/>
+    <circle class="plus" cx="168" cy="625" r="11"/><path d="M158 625 H178 M168 615 V635" stroke="var(--tp)" stroke-width="2"/>
+    <path class="arrow" d="M110 625 C75 585 50 615 74 643 C96 667 132 649 122 616"/>
+    <path class="arrow" d="M168 614 V480"/><path class="arrow" d="M168 410 V398"/><path class="arrow" d="M168 360 V320"/><path class="arrow" d="M168 250 V253"/>
+    <path class="skip" d="M95 445 C55 445 55 480 95 480"/><path class="skip" d="M240 445 C270 445 270 480 240 480"/>
+    <path class="skip" d="M95 234 C58 234 58 250 95 250"/><path class="skip" d="M240 234 C270 234 270 250 240 250"/>
+  </g>
+
+  <!-- Decoder stack -->
+  <g id="decoder" transform="translate(360,70)">
+    <path class="shell" d="M15 235 Q15 215 35 215 H205 Q225 215 225 235 V655 Q225 675 205 675 H35 Q15 675 15 655 Z"/>
+    <path class="shell" d="M35 215 Q35 195 55 195 H225 Q245 195 245 215 V635 Q245 655 225 655 H55 Q35 655 35 635 Z" opacity=".95"/>
+    <text class="label" x="285" y="420">N×</text>
+    <rect class="box attn" x="60" y="510" width="145" height="78"/><text x="133" y="536">Masked</text><text x="133" y="563">Multi-Head</text><text x="133" y="589">Attention</text>
+    <rect class="box norm" x="60" y="468" width="145" height="36"/><text x="133" y="486" class="small">Add &amp; Norm</text>
+    <rect class="box attn" x="60" y="350" width="145" height="70"/><text x="133" y="374">Multi-Head</text><text x="133" y="401">Attention</text>
+    <rect class="box norm" x="60" y="310" width="145" height="36"/><text x="133" y="328" class="small">Add &amp; Norm</text>
+    <rect class="box ff" x="60" y="225" width="145" height="70"/><text x="133" y="249">Feed</text><text x="133" y="276">Forward</text>
+    <rect class="box norm" x="60" y="185" width="145" height="36"/><text x="133" y="203" class="small">Add &amp; Norm</text>
+    <path class="arrow" d="M133 825 V784"/><text class="label" x="133" y="860">Outputs</text><text class="label" x="133" y="888">(shifted right)</text>
+    <rect class="box emb" x="60" y="724" width="145" height="58"/><text x="133" y="746">Output</text><text x="133" y="771">Embedding</text>
+    <text class="label" x="240" y="675">Positional</text><text class="label" x="240" y="705">Encoding</text>
+    <path class="arrow" d="M133 724 V688"/>
+    <circle class="plus" cx="133" cy="688" r="11"/><path d="M123 688 H143 M133 678 V698" stroke="var(--tp)" stroke-width="2"/>
+    <path class="arrow" d="M190 688 C230 645 260 680 232 708 C207 731 177 711 183 681"/>
+    <path class="arrow" d="M133 677 V588"/><path class="arrow" d="M133 510 V504"/><path class="arrow" d="M133 468 V420"/><path class="arrow" d="M133 350 V346"/><path class="arrow" d="M133 310 V295"/>
+    <path class="arrow" d="M133 225 V221"/><path class="arrow" d="M133 185 V150"/>
+    <rect class="box lin" x="60" y="120" width="145" height="32"/><text class="small" x="133" y="136">Linear</text>
+    <path class="arrow" d="M133 120 V88"/>
+    <rect class="box soft" x="60" y="52" width="145" height="32"/><text class="small" x="133" y="68">Softmax</text>
+    <path class="arrow" d="M133 52 V18"/><text class="label" x="133" y="-12">Output</text><text class="label" x="133" y="18">Probabilities</text>
+    <path class="skip" d="M60 550 C35 550 35 588 60 588"/><path class="skip" d="M205 550 C230 550 230 588 205 588"/>
+    <path class="skip" d="M60 385 C35 385 35 420 60 420"/><path class="skip" d="M205 385 C230 385 230 420 205 420"/>
+    <path class="skip" d="M60 203 C35 203 35 225 60 225"/><path class="skip" d="M205 203 C230 203 230 225 205 225"/>
+  </g>
+
+  <!-- Callout connector from decoder attention to zoom panel -->
+  <path class="callout" d="M565 453 L735 360 V90 H1125 V675 H735 V580 L565 493"/>
+
+  <!-- Multi-head attention zoom -->
+  <g id="mha" transform="translate(735,90)">
+    <rect class="panel" x="0" y="0" width="390" height="585"/>
+    <rect class="panel-head" x="0" y="0" width="390" height="65"/><text class="title" x="195" y="33">Multi-head attention</text>
+    <path class="arrow" d="M195 515 V435"/><text class="label" x="195" y="548">K</text>
+    <path class="arrow" d="M95 515 V435"/><text class="label" x="95" y="548">V</text>
+    <path class="arrow" d="M295 515 V435"/><text class="label" x="295" y="548">Q</text>
+    <g opacity=".25"><rect class="box mha" x="60" y="246" width="285" height="65"/><rect class="box mha" x="72" y="232" width="285" height="65"/><rect class="box mha" x="84" y="218" width="285" height="65"/></g>
+    <rect class="box mha" x="35" y="246" width="285" height="65"/><text x="178" y="269">Scaled Dot-Product</text><text x="178" y="298">Attention</text>
+    <text class="label" x="355" y="282">h</text>
+    <path class="arrow" d="M95 390 V331"/><path class="arrow" d="M195 390 V331"/><path class="arrow" d="M295 390 V331"/>
+    <rect class="box" style="fill:var(--card)" x="55" y="390" width="80" height="40"/><text class="small" x="95" y="410">Linear</text>
+    <rect class="box" style="fill:var(--card)" x="155" y="390" width="80" height="40"/><text class="small" x="195" y="410">Linear</text>
+    <rect class="box" style="fill:var(--card)" x="255" y="390" width="80" height="40"/><text class="small" x="295" y="410">Linear</text>
+    <path class="arrow" d="M178 246 V195"/><rect class="box norm" x="130" y="155" width="130" height="40"/><text x="195" y="175">Concat</text>
+    <path class="arrow" d="M195 155 V120"/><rect class="box" style="fill:var(--card)" x="155" y="85" width="80" height="42"/><text class="small" x="195" y="106">Linear</text>
+    <path class="arrow" d="M195 85 V54"/>
+    <text class="zoom" x="195" y="625">Zoom-In!</text>
+  </g>
+
+  <!-- Callout connector from MHA scaled dot-product to second zoom panel -->
+  <path class="callout" d="M1065 385 L1205 510 V285 H1550 V725 H1205 V500 L1065 340"/>
+
+  <!-- Scaled dot product attention zoom -->
+  <g id="sdpa" transform="translate(1205,285)">
+    <rect class="panel" x="0" y="0" width="345" height="440"/>
+    <rect class="panel-head" x="0" y="0" width="345" height="65"/><text class="title" x="173" y="33">Scaled dot-product attention</text>
+    <path class="arrow" d="M173 400 V365"/><text class="label" x="173" y="405">K</text>
+    <path class="arrow" d="M105 400 V365"/><text class="label" x="105" y="405">Q</text>
+    <path class="arrow" d="M253 400 V130"/><text class="label" x="253" y="405">V</text>
+    <rect class="box mat" x="82" y="315" width="126" height="40"/><text x="145" y="335">MatMul</text>
+    <path class="arrow" d="M145 315 V280"/>
+    <rect class="box scale" x="98" y="245" width="94" height="38"/><text x="145" y="264">Scale</text>
+    <path class="arrow" d="M145 245 V210"/>
+    <rect class="box mask" x="74" y="175" width="142" height="38"/><text class="small" x="145" y="194">Mask (opt.)</text>
+    <path class="arrow" d="M145 175 V140"/>
+    <rect class="box soft" x="78" y="105" width="134" height="38"/><text x="145" y="124">SoftMax</text>
+    <path class="arrow" d="M145 105 V70"/>
+    <rect class="box mat" x="125" y="52" width="130" height="40"/><text x="190" y="72">MatMul</text>
+    <path class="arrow" d="M190 52 V28"/>
+    <text class="zoom" x="173" y="472">Zoom-In!</text>
+  </g>
+
+</svg>

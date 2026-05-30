@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transformer Architecture &mdash; GenAI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f2efe9;
+      --card: #ffffff;
+      --border: rgba(0,0,0,0.08);
+      --tp: #1a1a18;
+      --ts: #6b6b65;
+      --tt: #a8a8a0;
+      --accent: #c85c2a;
+      --indigo: #6366f1;
+      --sky: #0ea5e9;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --violet: #8b5cf6;
+      --rose: #f43f5e;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --r: 14px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--tp);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.6}
+    a{color:inherit;text-decoration:none}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:200;height:64px;background:rgba(242,239,233,0.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+    .nav-inner{max-width:860px;margin:0 auto;padding:0 2rem;height:100%;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600}
+    .nav-monogram{width:30px;height:30px;background:var(--tp);color:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+    .nav-back{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ts);transition:color .15s}
+    .nav-back:hover{color:var(--tp)}
+    .nav-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+    /* LAYOUT */
+    .wrap{max-width:860px;margin:0 auto;padding:0 2rem 6rem}
+
+    /* HERO */
+    .hero{padding:3.5rem 0 2.5rem;border-bottom:1px solid var(--border);margin-bottom:3rem}
+    .eyebrow{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--indigo);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .eyebrow::before{content:'';width:24px;height:2px;background:var(--indigo);border-radius:1px}
+    h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.035em;line-height:1.05;margin-bottom:16px}
+    .hero-sub{font-size:15px;color:var(--ts);line-height:1.75;max-width:620px;margin-bottom:20px}
+    .hero-meta{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--card);border:1px solid var(--border);border-radius:999px;font-size:11.5px;font-weight:500;color:var(--ts)}
+    .badge svg{width:12px;height:12px;stroke:var(--indigo);fill:none;stroke-width:2}
+
+    /* BODY TYPOGRAPHY */
+    .prose{max-width:720px}
+    .prose p{font-size:15px;color:var(--ts);line-height:1.8;margin-bottom:16px}
+    .prose p strong{color:var(--tp);font-weight:700}
+    .prose ul,.prose ol{padding-left:20px;margin-bottom:16px}
+    .prose li{font-size:14.5px;color:var(--ts);line-height:1.75;margin-bottom:6px}
+    .prose li strong{color:var(--tp);font-weight:700}
+
+    /* SECTION */
+    .section{margin-bottom:3.5rem}
+    .section-label{display:flex;align-items:center;gap:10px;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tt);margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+    .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    h2{font-size:1.6rem;font-weight:800;letter-spacing:-.025em;margin-bottom:12px}
+    h3{font-size:1.1rem;font-weight:800;letter-spacing:-.015em;margin:24px 0 10px}
+    h4{font-size:.95rem;font-weight:700;color:var(--tp);margin:18px 0 8px}
+
+    /* CALLOUT */
+    .callout{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;margin:16px 0;font-size:13.5px;line-height:1.65}
+    .callout.blue{background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2)}
+    .callout.green{background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2)}
+    .callout.orange{background:rgba(200,92,42,0.07);border:1px solid rgba(200,92,42,0.2)}
+    .callout.amber{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.22)}
+    .ci{font-size:15px;flex-shrink:0;margin-top:1px}
+    .callout-body strong{display:block;font-weight:700;color:var(--tp);margin-bottom:3px}
+    .callout-body span{color:var(--ts)}
+
+    /* FORMULA BOX */
+    .formula{background:#1a1a18;border-radius:12px;padding:20px 24px;margin:16px 0;text-align:center;overflow-x:auto}
+    .formula .eq{font-family:var(--mono);font-size:14px;color:#e8e4da;letter-spacing:.02em;line-height:1.8}
+    .formula .eq .var{color:#82aaff}
+    .formula .eq .op{color:#c792ea}
+    .formula .eq .fn{color:#f78c6c}
+    .formula .eq .num{color:#c3e88d}
+    .formula-caption{font-size:11.5px;color:var(--tt);text-align:center;margin-top:8px;font-style:italic}
+
+    /* DEFINITION GRID */
+    .def-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+    .def-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
+    .def-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+    .def-symbol{font-family:var(--mono);font-size:1.3rem;font-weight:700;margin-bottom:6px}
+    .def-text{font-size:12.5px;color:var(--ts);line-height:1.55}
+
+    /* PIPELINE STEPS */
+    .pipeline{margin:20px 0}
+    .pipe-step{display:flex;gap:0;margin-bottom:0}
+    .pipe-left{display:flex;flex-direction:column;align-items:center;width:44px;flex-shrink:0}
+    .pipe-num{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--indigo);flex-shrink:0;z-index:1}
+    .pipe-line{width:2px;flex:1;background:linear-gradient(to bottom,var(--indigo),rgba(99,102,241,0.15));min-height:16px;margin-top:2px}
+    .pipe-step:last-child .pipe-line{display:none}
+    .pipe-body{padding:4px 0 20px 12px;flex:1}
+    .pipe-body strong{display:block;font-size:13.5px;font-weight:700;margin-bottom:3px;color:var(--tp)}
+    .pipe-body p{font-size:13px;color:var(--ts);line-height:1.6}
+
+    /* ARCHITECTURE SVG DIAGRAMS */
+    .diagram-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px 24px;margin:20px 0;overflow-x:auto}
+    .diagram-caption{font-size:12px;color:var(--tt);text-align:center;margin-top:12px;font-style:italic}
+
+    /* MODEL VARIANT CARDS */
+    .variant-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+    .variant-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;transition:transform .15s,box-shadow .15s}
+    .variant-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.07)}
+    .variant-type{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+    .variant-name{font-size:.95rem;font-weight:800;margin-bottom:6px}
+    .variant-models{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+    .model-chip{padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:600;border:1px solid var(--border);background:var(--bg)}
+    .variant-desc{font-size:12px;color:var(--ts);line-height:1.55}
+
+    /* ATTENTION MAP VISUAL */
+    .attn-map{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:16px 0;max-width:400px}
+    .attn-cell{height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;transition:transform .15s}
+    .attn-cell:hover{transform:scale(1.05);z-index:10}
+
+    /* QKV TABLE */
+    .qkv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0}
+    .qkv-card{border-radius:var(--r);padding:16px 18px}
+    .qkv-card.q{background:rgba(99,102,241,0.08);border:1.5px solid rgba(99,102,241,0.25)}
+    .qkv-card.k{background:rgba(16,185,129,0.08);border:1.5px solid rgba(16,185,129,0.25)}
+    .qkv-card.v{background:rgba(245,158,11,0.08);border:1.5px solid rgba(245,158,11,0.25)}
+    .qkv-letter{font-family:var(--mono);font-size:1.6rem;font-weight:700;margin-bottom:6px}
+    .qkv-card.q .qkv-letter{color:var(--indigo)}
+    .qkv-card.k .qkv-letter{color:var(--emerald)}
+    .qkv-card.v .qkv-letter{color:var(--amber)}
+    .qkv-title{font-size:12px;font-weight:700;margin-bottom:4px}
+    .qkv-desc{font-size:12px;color:var(--ts);line-height:1.55}
+
+    /* INLINE CODE */
+    code{font-family:var(--mono);font-size:12px;background:rgba(0,0,0,0.05);border:1px solid var(--border);border-radius:5px;padding:1px 6px;color:var(--accent)}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);max-width:860px;margin:0 auto;padding:2rem;font-size:12px;color:var(--tt);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    footer a{color:var(--tt);transition:color .15s}
+    footer a:hover{color:var(--tp)}
+
+    @media(max-width:640px){
+      .def-grid,.variant-grid,.qkv-grid{grid-template-columns:1fr}
+      .attn-map{grid-template-columns:repeat(4,1fr)}
+    }
+  </style>
+  <!-- MathJax for formulas -->
+  <script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},svg:{fontCache:'global'}}</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+</head>
+<body>
+
+<!-- ── Global SVG marker defs (referenced by all inline SVGs on the page) ── -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden;" aria-hidden="true">
+  <defs>
+    <!-- Indigo arrow -->
+    <marker id="arr"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#6366f1"/></marker>
+    <!-- Green arrow -->
+    <marker id="arr2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#10b981"/></marker>
+    <!-- Sky arrow -->
+    <marker id="ar3"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#0ea5e9"/></marker>
+    <!-- Violet arrow -->
+    <marker id="av"   markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#8b5cf6"/></marker>
+    <!-- Indigo small -->
+    <marker id="ae"   markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#6366f1"/></marker>
+    <!-- Green small -->
+    <marker id="ad"   markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#10b981"/></marker>
+    <!-- Orange small -->
+    <marker id="ac"   markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#c85c2a"/></marker>
+  </defs>
+</svg>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+      <div class="nav-monogram">SK</div>
+      <span>Sumit Kant</span>
+    </a>
+    <a href="genai-lab.html" class="nav-back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      LLM Concepts
+    </a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <p class="eyebrow">Foundation &amp; Training · Transformer Architecture</p>
+    <h1>How Transformers Work</h1>
+    <p class="hero-sub">A ground-up technical walkthrough of the Transformer architecture &mdash; from tokenisation and embeddings, through self-attention and multi-head attention, to the full encoder-decoder pipeline and its variants.</p>
+    <div class="hero-meta">
+      <span class="badge"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>"Attention is All You Need" · Google, 2017</span>
+      <span class="badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>~20 min read</span>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════
+       1. WHY TRANSFORMERS
+  ══════════════════════════════════ -->
+  <section class="section" id="why">
+    <div class="section-label"><span class="dot" style="background:var(--indigo)"></span>Background</div>
+    <h2>Why Transformers?</h2>
+    <div class="prose">
+      <p>Earlier sequence models like RNNs and LSTMs processed words one at a time &mdash; left to right &mdash; which meant they struggled to relate words that were far apart in a sentence. Even after scaling these models, a fundamental limitation remained: <strong>they could only look at previous words</strong>, not the full context of an entire sentence, paragraph, or document.</p>
+      <p>The Transformer architecture, introduced in the 2017 paper <em>"Attention is All You Need"</em> by Google and the University of Toronto, solved this by:</p>
+      <ul>
+        <li><strong>Parallel processing</strong> of all input tokens simultaneously &mdash; enabling much larger training datasets</li>
+        <li><strong>Efficient scaling</strong> &mdash; GPU parallelism made larger models practical</li>
+        <li><strong>Learning attention</strong> &mdash; the ability to understand the meaning of words relative to every other word in the input</li>
+      </ul>
+    </div>
+
+    <div class="callout blue">
+      <span class="ci">💡</span>
+      <div class="callout-body">
+        <strong>The core insight</strong>
+        <span>The power of the transformer lies in its ability to learn and understand the meaning of <em>all words in a sentence</em> by learning the mapping between every word and every other word simultaneously &mdash; rather than sequentially.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       2. HIGH-LEVEL ARCHITECTURE
+  ══════════════════════════════════ -->
+  <section class="section" id="architecture">
+    <div class="section-label"><span class="dot" style="background:var(--indigo)"></span>Architecture Overview</div>
+    <h2>The Encoder&ndash;Decoder Structure</h2>
+    <div class="prose">
+      <p>At a high level, the Transformer is split into two distinct parts that work in conjunction:</p>
+    </div>
+
+    <!-- High-level architecture diagram -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:680px;display:block;margin:0 auto;font-family:'Plus Jakarta Sans',system-ui,sans-serif">
+
+        <!-- Inputs box -->
+        <rect x="260" y="310" width="160" height="34" rx="8" fill="#f2efe9" stroke="#a8a8a0" stroke-width="1.2"/>
+        <text x="340" y="332" font-size="13" font-weight="700" fill="#6b6b65" text-anchor="middle">Inputs</text>
+
+        <!-- Embedding row -->
+        <rect x="182" y="255" width="110" height="34" rx="8" fill="#eef2ff" stroke="#6366f1" stroke-width="1.2"/>
+        <text x="237" y="277" font-size="11" font-weight="600" fill="#6366f1" text-anchor="middle">Input Embedding</text>
+        <rect x="388" y="255" width="110" height="34" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.2"/>
+        <text x="443" y="277" font-size="11" font-weight="600" fill="#10b981" text-anchor="middle">Output Embedding</text>
+
+        <!-- Arrows: inputs -> embeddings -->
+        <line x1="310" y1="310" x2="255" y2="289" stroke="#a8a8a0" stroke-width="1.2" marker-end="url(#arr)"/>
+        <line x1="360" y1="310" x2="435" y2="289" stroke="#a8a8a0" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+        <!-- ENCODER block -->
+        <rect x="140" y="100" width="195" height="140" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="2"/>
+        <text x="237" y="127" font-size="14" font-weight="800" fill="#6366f1" text-anchor="middle">ENCODER</text>
+        <rect x="158" y="138" width="159" height="30" rx="7" fill="#fff" stroke="#6366f1" stroke-width="1"/>
+        <text x="237" y="158" font-size="11" font-weight="600" fill="#6366f1" text-anchor="middle">Multi-Head Attention</text>
+        <rect x="158" y="176" width="159" height="30" rx="7" fill="#fff" stroke="#6366f1" stroke-width="1"/>
+        <text x="237" y="196" font-size="11" font-weight="600" fill="#6366f1" text-anchor="middle">Feed-Forward Network</text>
+        <text x="237" y="228" font-size="10" fill="#6366f1" text-anchor="middle" opacity=".7">× N layers (typically 6)</text>
+
+        <!-- DECODER block -->
+        <rect x="345" y="100" width="195" height="140" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+        <text x="442" y="127" font-size="14" font-weight="800" fill="#10b981" text-anchor="middle">DECODER</text>
+        <rect x="363" y="138" width="159" height="30" rx="7" fill="#fff" stroke="#10b981" stroke-width="1"/>
+        <text x="442" y="158" font-size="11" font-weight="600" fill="#10b981" text-anchor="middle">Masked Multi-Head Attn</text>
+        <rect x="363" y="176" width="159" height="30" rx="7" fill="#fff" stroke="#10b981" stroke-width="1"/>
+        <text x="442" y="196" font-size="11" font-weight="600" fill="#10b981" text-anchor="middle">Multi-Head Attention</text>
+        <text x="442" y="228" font-size="10" fill="#10b981" text-anchor="middle" opacity=".7">× N layers (typically 6)</text>
+
+        <!-- Cross-attention arrow encoder -> decoder -->
+        <line x1="335" y1="176" x2="363" y2="186" stroke="#c85c2a" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="349" y="170" font-size="9" fill="#c85c2a" text-anchor="middle">K,V</text>
+
+        <!-- Embedding -> Encoder -->
+        <line x1="237" y1="255" x2="237" y2="240" stroke="#6366f1" stroke-width="1.4" marker-end="url(#arr)"/>
+        <!-- Embedding -> Decoder -->
+        <line x1="443" y1="255" x2="443" y2="240" stroke="#10b981" stroke-width="1.4" marker-end="url(#arr2)"/>
+
+        <!-- Output -->
+        <rect x="363" y="38" width="159" height="34" rx="8" fill="#fff7ed" stroke="#c85c2a" stroke-width="1.5"/>
+        <text x="442" y="53" font-size="11" font-weight="700" fill="#c85c2a" text-anchor="middle">Softmax Output</text>
+        <text x="442" y="65" font-size="10" fill="#c85c2a" text-anchor="middle">Probability over vocabulary</text>
+
+        <!-- Decoder -> Output -->
+        <line x1="442" y1="100" x2="442" y2="72" stroke="#c85c2a" stroke-width="1.4" marker-end="url(#arr)"/>
+
+        <!-- Labels -->
+        <text x="237" y="88" font-size="10" fill="#6366f1" font-weight="700" text-anchor="middle" opacity=".7">Encodes structure &amp; meaning</text>
+        <text x="442" y="88" font-size="10" fill="#10b981" font-weight="700" text-anchor="middle" opacity=".7">Generates output tokens</text>
+      </svg>
+      <p class="diagram-caption">Figure 1 &mdash; High-level Transformer architecture: the encoder processes the input, the decoder generates the output conditioned on the encoder's representation.</p>
+    </div>
+
+    <div class="prose">
+      <p>The encoder and decoder are <strong>similar in structure</strong> but serve different roles. The encoder reads and compresses the input into a rich contextual representation. The decoder generates the output token by token, attending to both previously generated tokens and the encoder's representation.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       3. INPUT PIPELINE
+  ══════════════════════════════════ -->
+  <section class="section" id="inputs">
+    <div class="section-label"><span class="dot" style="background:var(--sky)"></span>Input Processing</div>
+    <h2>From Text to Vectors</h2>
+
+    <h3>Step 1 &mdash; Tokenisation</h3>
+    <div class="prose">
+      <p>Raw text cannot be fed directly into a neural network. A <strong>Tokenizer</strong> converts words (or sub-word pieces) into integer IDs that the model can process.</p>
+      <ul>
+        <li>Can tokenize at the <strong>word level</strong> or <strong>sub-word level</strong> (e.g. "learning" → ["learn", "##ing"])</li>
+        <li>The same tokenizer must be used for <strong>both training and inference</strong> &mdash; switching tokenizers invalidates all learned weights</li>
+      </ul>
+    </div>
+
+    <!-- Tokenization visual -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 640 100" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:640px;display:block;margin:0 auto;font-family:'Plus Jakarta Sans',system-ui,sans-serif">
+        <!-- Input phrase -->
+        <text x="10" y="36" font-size="15" font-weight="700" fill="#1a1a18">J&#39;aime</text>
+        <text x="95" y="36" font-size="15" font-weight="700" fill="#1a1a18">l&#39;apprentissage</text>
+        <text x="295" y="36" font-size="15" font-weight="700" fill="#1a1a18">automatique</text>
+        <text x="10" y="55" font-size="10" fill="#a8a8a0">word 1</text>
+        <text x="95" y="55" font-size="10" fill="#a8a8a0">word 2</text>
+        <text x="295" y="55" font-size="10" fill="#a8a8a0">word 3</text>
+        <!-- Arrow -->
+        <line x1="430" y1="30" x2="462" y2="30" stroke="#0ea5e9" stroke-width="1.5" marker-end="url(#ar3)"/>
+        <text x="445" y="25" font-size="9" fill="#0ea5e9" text-anchor="middle">Tokenize</text>
+        <!-- Token IDs -->
+        <rect x="470" y="14" width="44" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="1.2"/>
+        <text x="492" y="33" font-size="13" font-weight="700" fill="#6366f1" text-anchor="middle">2345</text>
+        <rect x="520" y="14" width="44" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="1.2"/>
+        <text x="542" y="33" font-size="13" font-weight="700" fill="#6366f1" text-anchor="middle">3425</text>
+        <rect x="570" y="14" width="44" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="1.2"/>
+        <text x="592" y="33" font-size="13" font-weight="700" fill="#6366f1" text-anchor="middle">3853</text>
+        <text x="542" y="58" font-size="10" fill="#a8a8a0" text-anchor="middle">Token IDs</text>
+      </svg>
+      <p class="diagram-caption">Figure 2 &mdash; "J'aime l'apprentissage automatique" tokenised to integer IDs [2345, 3425, 3853]</p>
+    </div>
+
+    <h3>Step 2 &mdash; Word Embeddings</h3>
+    <div class="prose">
+      <p>Each token ID is looked up in an <strong>Embedding Layer</strong> &mdash; a trainable matrix that maps each ID to a high-dimensional vector. In the original Transformer paper, this vector has <strong>512 dimensions</strong>.</p>
+      <p>The intuition: vectors learn to encode the <strong>meaning and context</strong> of tokens. Words with similar meanings cluster together in vector space. The <strong>angle between vectors</strong> measures semantic distance.</p>
+    </div>
+
+    <!-- 3D vector space diagram -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:500px;display:block;margin:0 auto;font-family:'Plus Jakarta Sans',system-ui,sans-serif">
+        <!-- Axes -->
+        <line x1="200" y1="220" x2="370" y2="220" stroke="#a8a8a0" stroke-width="1.2"/><!-- x -->
+        <line x1="200" y1="220" x2="200" y2="60" stroke="#a8a8a0" stroke-width="1.2"/><!-- y (z) -->
+        <line x1="200" y1="220" x2="100" y2="280" stroke="#a8a8a0" stroke-width="1.2" stroke-dasharray="4 3"/><!-- z (depth) -->
+        <text x="375" y="224" font-size="11" fill="#a8a8a0">y</text>
+        <text x="198" y="56" font-size="11" fill="#a8a8a0">z</text>
+        <text x="90" y="285" font-size="11" fill="#a8a8a0">x</text>
+        <text x="200" y="250" font-size="11" fill="#a8a8a0" text-anchor="middle">O</text>
+
+        <!-- Word vectors -->
+        <!-- computer -->
+        <line x1="200" y1="220" x2="310" y2="260" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <circle cx="310" cy="260" r="5" fill="#6366f1"/>
+        <text x="318" y="264" font-size="12" font-weight="600" fill="#6366f1">computer</text>
+
+        <!-- book -->
+        <line x1="200" y1="220" x2="295" y2="190" stroke="#c85c2a" stroke-width="2"/>
+        <circle cx="295" cy="190" r="6" fill="#c85c2a"/>
+        <text x="303" y="194" font-size="12" font-weight="700" fill="#c85c2a">book</text>
+
+        <!-- student -->
+        <line x1="200" y1="220" x2="270" y2="165" stroke="#10b981" stroke-width="2"/>
+        <circle cx="270" cy="165" r="6" fill="#10b981"/>
+        <text x="278" y="169" font-size="12" font-weight="700" fill="#10b981">student</text>
+
+        <!-- internet -->
+        <line x1="200" y1="220" x2="130" y2="190" stroke="#a8a8a0" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <circle cx="130" cy="190" r="5" fill="#a8a8a0"/>
+        <text x="60" y="194" font-size="12" fill="#a8a8a0">internet</text>
+
+        <!-- fire -->
+        <line x1="200" y1="220" x2="310" y2="90" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <circle cx="310" cy="90" r="5" fill="#f59e0b"/>
+        <text x="318" y="94" font-size="12" fill="#f59e0b">fire</text>
+
+        <!-- fox -->
+        <line x1="200" y1="220" x2="120" y2="130" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <circle cx="120" cy="130" r="5" fill="#8b5cf6"/>
+        <text x="75" y="134" font-size="12" fill="#8b5cf6">fox</text>
+
+        <!-- angle indicator between book and student -->
+        <path d="M 270,188 A 28,28 0 0,0 255,175" fill="none" stroke="#c85c2a" stroke-width="1" stroke-dasharray="3 2"/>
+        <text x="230" y="200" font-size="10" fill="#c85c2a">angle = distance</text>
+
+        <text x="250" y="40" font-size="11" fill="#6b6b65" text-anchor="middle">3D Vector Space (original paper: 512D)</text>
+      </svg>
+      <p class="diagram-caption">Figure 3 &mdash; Words represented as vectors in embedding space. The angle between vectors measures semantic similarity. "book" and "student" are closer than "book" and "fire".</p>
+    </div>
+
+    <h3>Step 3 &mdash; Positional Encoding</h3>
+    <div class="prose">
+      <p>Because the Transformer processes all tokens <strong>in parallel</strong> (unlike RNNs which process sequentially), it has no inherent sense of word order. Positional Encoding adds position information directly to each embedding vector.</p>
+      <p>A fixed positional encoding vector <strong>P</strong> (same dimension as the token embedding) is added to each token embedding, so the combined vector carries both <em>meaning</em> and <em>position</em>.</p>
+    </div>
+
+    <div class="formula">
+      <div class="eq">
+        <span class="var">PE</span><sub style="color:#c3e88d">pos, 2i</sub> &nbsp;=&nbsp; <span class="fn">sin</span>(<span class="var">pos</span> / <span class="num">10000</span><sup style="color:#f78c6c">2i/d</sup>)
+      </div>
+      <div class="eq" style="margin-top:8px">
+        <span class="var">PE</span><sub style="color:#c3e88d">pos, 2i+1</sub> &nbsp;=&nbsp; <span class="fn">cos</span>(<span class="var">pos</span> / <span class="num">10000</span><sup style="color:#f78c6c">2i/d</sup>)
+      </div>
+    </div>
+    <p class="formula-caption">Positional encoding formulas &mdash; alternating sine and cosine for even/odd dimensions</p>
+
+    <div class="def-grid">
+      <div class="def-card">
+        <div class="def-label" style="color:var(--indigo)">pos</div>
+        <div class="def-symbol" style="color:var(--indigo)">pos</div>
+        <div class="def-text">Numerical position of the word in the sequence (e.g., "Jane" at pos = 1)</div>
+      </div>
+      <div class="def-card">
+        <div class="def-label" style="color:var(--emerald)">i</div>
+        <div class="def-symbol" style="color:var(--emerald)">i</div>
+        <div class="def-text">Refers to different dimensions of the encoding vector</div>
+      </div>
+      <div class="def-card">
+        <div class="def-label" style="color:var(--amber)">d</div>
+        <div class="def-symbol" style="color:var(--amber)">d</div>
+        <div class="def-text">Total dimension of the embedding vector (512 in original paper)</div>
+      </div>
+    </div>
+
+    <div class="callout orange">
+      <span class="ci">📍</span>
+      <div class="callout-body">
+        <strong>Positional Embedding in practice</strong>
+        <span>If word embeddings have 4 dimensions, a Positional Embedding vector P⁽¹⁾ of the same size is created for the first word. P⁽¹⁾ is directly <em>added</em> to the token embedding x⁽¹⁾, so that each embedding is "coloured" with its position information.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       4. SELF-ATTENTION
+  ══════════════════════════════════ -->
+  <section class="section" id="selfattn">
+    <div class="section-label"><span class="dot" style="background:var(--accent)"></span>Self-Attention</div>
+    <h2>Self-Attention: The Core Mechanism</h2>
+    <div class="prose">
+      <p>Self-attention is the core innovation of the Transformer. For every word in the input, it computes an <strong>attention-based representation</strong> that captures the relationships between that word and every other word in the sentence &mdash; simultaneously.</p>
+      <p>This lets the model understand, for example, that in "The teacher taught the student with a book", the word <em>book</em> is closely related to <em>teacher</em> and <em>student</em>.</p>
+    </div>
+
+    <!-- Attention Map Heatmap -->
+        <div class="diagram-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-label="Interlinked words diagram showing two columns of the sentence The teacher taught the student with a book." width="100%" style="max-width:680px;display:block;margin:0 auto">
+  <rect x="0" y="0" width="900" height="700" fill="#f3f3f3"/> <line x1="315" y1="60" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="60" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="60" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="60" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="60" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="60" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="60" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="60" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="60" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="196" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="264" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="332" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="400" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="468" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="536" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="60" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="128" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="196" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="264" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="332" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="400" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="468" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="536" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="604" x2="585" y2="604" stroke="#595a60" stroke-width="1.7" stroke-linecap="round" opacity="0.88"/> <line x1="315" y1="128" x2="585" y2="332" stroke="#f0a53a" stroke-width="7" stroke-linecap="round" opacity="0.98"/> <line x1="315" y1="264" x2="585" y2="400" stroke="#f0a53a" stroke-width="7" stroke-linecap="round" opacity="0.98"/> <line x1="315" y1="332" x2="585" y2="536" stroke="#f0a53a" stroke-width="7" stroke-linecap="round" opacity="0.98"/> <line x1="315" y1="468" x2="585" y2="332" stroke="#f0a53a" stroke-width="7" stroke-linecap="round" opacity="0.98"/> <line x1="315" y1="536" x2="585" y2="128" stroke="#f0a53a" stroke-width="7" stroke-linecap="round" opacity="0.98"/> <text x="170" y="60" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">The</text> <text x="730" y="60" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">The</text> <text x="170" y="128" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">teacher</text> <text x="730" y="128" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">teacher</text> <text x="170" y="196" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">taught</text> <text x="730" y="196" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">taught</text> <text x="170" y="264" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">the</text> <text x="730" y="264" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">the</text> <text x="170" y="332" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">student</text> <text x="730" y="332" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">student</text> <text x="170" y="400" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">with</text> <text x="730" y="400" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">with</text> <text x="170" y="468" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">a</text> <text x="730" y="468" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">a</text> <text x="170" y="536" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">book</text> <text x="730" y="536" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">book</text> <text x="170" y="604" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">.</text> <text x="730" y="604" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">.</text>
+</svg>
+      <p class="diagram-caption">Figure 4 &mdash; Attention map: each cell shows how much attention one word pays to another. Darker = stronger attention. "book" strongly attends to "teacher" and "student".</p>
+    </div>
+
+    <h3>Query, Key, Value (Q, K, V)</h3>
+    <div class="prose">
+      <p>For each word in the input, the model computes three vectors by multiplying the word embedding by three learned weight matrices W<sup>Q</sup>, W<sup>K</sup>, W<sup>V</sup>:</p>
+    </div>
+
+    <div class="qkv-grid">
+      <div class="qkv-card q">
+        <div class="qkv-letter">q</div>
+        <div class="qkv-title">Query</div>
+        <div class="qkv-desc">The question this word is asking &mdash; "What is relevant to me?" Represents what the current word is looking for.</div>
+      </div>
+      <div class="qkv-card k">
+        <div class="qkv-letter">k</div>
+        <div class="qkv-title">Key</div>
+        <div class="qkv-desc">The label each word offers &mdash; "Here's what I contain." Similarity of query·key determines attention weight.</div>
+      </div>
+      <div class="qkv-card v">
+        <div class="qkv-letter">v</div>
+        <div class="qkv-title">Value</div>
+        <div class="qkv-desc">The actual content to pass forward &mdash; "Here's what I contribute." Weighted sum of values forms the output.</div>
+      </div>
+    </div>
+
+    <h3>Worked Example: "Jan visite l'Afrique en Septembre"</h3>
+    <div class="prose">
+      <p>Let's compute the attention representation A⁽³⁾ for the word <strong>l'Afrique</strong> (position 3). First, compute Q, K, V for x⁽³⁾:</p>
+    </div>
+
+    <div class="formula">
+      <div class="eq"><span class="var">q</span><sup style="color:#82aaff">⟨3⟩</sup> &nbsp;=&nbsp; <span class="var">W</span><sup style="color:#c792ea">q</sup> · <span class="var">x</span><sup style="color:#82aaff">⟨3⟩</sup></div>
+      <div class="eq" style="margin-top:6px"><span class="var">k</span><sup style="color:#c3e88d">⟨3⟩</sup> &nbsp;=&nbsp; <span class="var">W</span><sup style="color:#c792ea">K</sup> · <span class="var">x</span><sup style="color:#82aaff">⟨3⟩</sup></div>
+      <div class="eq" style="margin-top:6px"><span class="var">v</span><sup style="color:#f78c6c">⟨3⟩</sup> &nbsp;=&nbsp; <span class="var">W</span><sup style="color:#c792ea">V</sup> · <span class="var">x</span><sup style="color:#82aaff">⟨3⟩</sup></div>
+    </div>
+    <p class="formula-caption">where W<sup>q</sup>, W<sup>K</sup>, W<sup>V</sup> are learnable weight matrices</p>
+
+    <div class="prose">
+      <p>The query q⁽³⁾ represents the question: <em>"What's happening in l'Afrique?"</em></p>
+      <p>We then compute the dot product of q⁽³⁾ with every key in the sentence:</p>
+      <ul>
+        <li><code>q⁽³⁾ · k⁽¹⁾</code> &mdash; How good is <em>Jan</em> as an answer? (A person → somewhat relevant)</li>
+        <li><code>q⁽³⁾ · k⁽²⁾</code> &mdash; How good is <em>visite</em> as an answer? (An action → very relevant! Africa is being <em>visited</em>)</li>
+        <li><code>q⁽³⁾ · k⁽⁴⁾</code> &mdash; How good is <em>en</em> (in) as an answer?</li>
+        <li><code>q⁽³⁾ · k⁽⁵⁾</code> &mdash; How good is <em>Septembre</em> as an answer?</li>
+      </ul>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 850" role="img" aria-labelledby="title desc" width="100%" style="max-width:720px;display:block;margin:0 auto">
+  <title id="title">Self-attention style computation diagram</title>
+  <desc id="desc">Vectorized recreation of the handwritten diagram: five input tokens become q, k, v triples, query-key products feed a summation node, and attention outputs A superscript one through five are shown at the top.</desc>
+  <defs>
+    <style>
+      :root {
+        --bg: #f2efe9;
+        --card: #ffffff;
+        --border: rgba(0,0,0,0.08);
+        --tp: #1a1a18;
+        --ts: #6b6b65;
+        --tt: #a8a8a0;
+        --accent: #c85c2a;
+        --indigo: #6366f1;
+        --sky: #0ea5e9;
+        --emerald: #10b981;
+        --amber: #f59e0b;
+        --violet: #8b5cf6;
+        --rose: #f43f5e;
+        --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+        --mono: 'JetBrains Mono', monospace;
+        --r: 14px;
+      }
+      svg { background: var(--bg); font-family: var(--font); }
+      .paper-line { stroke: var(--border); stroke-width: 1; }
+      .node { fill: var(--card); stroke: var(--indigo); stroke-width: 5; }
+      .node-accent { stroke: var(--accent); }
+      .arrow { fill: none; stroke: var(--indigo); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow-indigo); }
+      .arrow-soft { fill: none; stroke: var(--indigo); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: .72; marker-end: url(#arrow-indigo-soft); }
+      .arrow-accent { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow-accent); }
+      .label { fill: var(--tp); font-weight: 700; font-size: 34px; }
+      .math { fill: var(--indigo); font-family: var(--mono); font-weight: 700; font-size: 30px; }
+      .math-small { fill: var(--indigo); font-family: var(--mono); font-weight: 700; font-size: 25px; }
+      .math-accent { fill: var(--accent); }
+      .word { fill: var(--tp); font-size: 31px; font-weight: 600; font-style: italic; }
+      .symbol { fill: var(--indigo); font-size: 40px; font-weight: 800; }
+      .caption { fill: var(--ts); font-size: 18px; }
+    </style>
+    <marker id="arrow-indigo" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M 2 2 L 12 7 L 2 12 z" fill="#6366f1"/>
+    </marker>
+    <marker id="arrow-indigo-soft" markerWidth="12" markerHeight="12" refX="9.5" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 2 2 L 10 6 L 2 10 z" fill="#6366f1" opacity=".72"/>
+    </marker>
+    <marker id="arrow-accent" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M 2 2 L 12 7 L 2 12 z" fill="#c85c2a"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="850" fill="var(--bg)"/>
+  <g opacity=".55">
+    <line class="paper-line" x1="0" y1="73" x2="1400" y2="73"/>
+    <line class="paper-line" x1="0" y1="146" x2="1400" y2="146"/>
+    <line class="paper-line" x1="0" y1="219" x2="1400" y2="219"/>
+    <line class="paper-line" x1="0" y1="292" x2="1400" y2="292"/>
+    <line class="paper-line" x1="0" y1="365" x2="1400" y2="365"/>
+    <line class="paper-line" x1="0" y1="438" x2="1400" y2="438"/>
+    <line class="paper-line" x1="0" y1="511" x2="1400" y2="511"/>
+    <line class="paper-line" x1="0" y1="584" x2="1400" y2="584"/>
+    <line class="paper-line" x1="0" y1="657" x2="1400" y2="657"/>
+    <line class="paper-line" x1="0" y1="730" x2="1400" y2="730"/>
+  </g>
+
+  <!-- top outputs -->
+  <g text-anchor="middle">
+    <text class="math" x="155" y="63">A<tspan baseline-shift="super" font-size="19">&lt;1&gt;</tspan></text>
+    <text class="math" x="405" y="63">A<tspan baseline-shift="super" font-size="19">&lt;2&gt;</tspan></text>
+    <text class="math" x="625" y="63">A<tspan baseline-shift="super" font-size="19">&lt;3&gt;</tspan></text>
+    <text class="math" x="885" y="63">A<tspan baseline-shift="super" font-size="19">&lt;4&gt;</tspan></text>
+    <text class="math" x="1095" y="63">A<tspan baseline-shift="super" font-size="19">&lt;5&gt;</tspan></text>
+    <path class="arrow" d="M155 143 L155 92"/>
+    <path class="arrow" d="M405 143 L405 92"/>
+    <path class="arrow" d="M625 185 L625 92"/>
+    <path class="arrow" d="M885 143 L885 92"/>
+    <path class="arrow" d="M1095 143 L1095 92"/>
+  </g>
+
+  <!-- summation node -->
+  <circle class="node" cx="625" cy="218" r="35"/>
+  <text class="symbol" x="625" y="231" text-anchor="middle">+</text>
+
+  <!-- product nodes -->
+  <g text-anchor="middle">
+    <circle class="node" cx="140" cy="360" r="27"/>
+    <text class="symbol" x="140" y="373">×</text>
+    <circle class="node node-accent" cx="395" cy="360" r="27"/>
+    <text class="symbol math-accent" x="395" y="373">×</text>
+    <circle class="node" cx="625" cy="360" r="27"/>
+    <text class="symbol" x="625" y="373">×</text>
+    <circle class="node" cx="855" cy="360" r="27"/>
+    <text class="symbol" x="855" y="373">×</text>
+    <circle class="node" cx="1085" cy="360" r="27"/>
+    <text class="symbol" x="1085" y="373">×</text>
+  </g>
+
+  <!-- arrows from products to sum -->
+  <path class="arrow-soft" d="M166 344 C300 305 455 267 589 229"/>
+  <path class="arrow-accent" d="M420 341 C478 304 548 262 592 232"/>
+  <path class="arrow" d="M625 331 L625 256"/>
+  <path class="arrow-soft" d="M826 341 C765 307 695 267 657 233"/>
+  <path class="arrow-soft" d="M1058 344 C918 307 768 264 660 225"/>
+
+  <!-- q3 times key labels under products -->
+  <g text-anchor="middle">
+    <text class="math-small" x="140" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;1&gt;</tspan></text>
+    <text class="math-small math-accent" x="395" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;2&gt;</tspan></text>
+    <text class="math-small" x="625" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan></text>
+    <text class="math-small" x="855" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;4&gt;</tspan></text>
+    <text class="math-small" x="1085" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;5&gt;</tspan></text>
+  </g>
+
+  <!-- vertical arrows to product labels -->
+  <path class="arrow" d="M140 437 L140 392"/>
+  <path class="arrow-accent" d="M395 437 L395 392"/>
+  <path class="arrow" d="M625 437 L625 392"/>
+  <path class="arrow" d="M855 437 L855 392"/>
+  <path class="arrow" d="M1085 437 L1085 392"/>
+
+  <!-- q k v vectors -->
+  <g text-anchor="middle">
+    <text class="math" x="140" y="612">q<tspan baseline-shift="super" font-size="18">&lt;1&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;1&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;1&gt;</tspan></text>
+    <text class="math" x="395" y="612">q<tspan baseline-shift="super" font-size="18">&lt;2&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;2&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;2&gt;</tspan></text>
+    <text class="math" x="625" y="612">q<tspan baseline-shift="super" font-size="18">&lt;3&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;3&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;3&gt;</tspan></text>
+    <text class="math" x="855" y="612">q<tspan baseline-shift="super" font-size="18">&lt;4&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;4&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;4&gt;</tspan></text>
+    <text class="math" x="1085" y="612">q<tspan baseline-shift="super" font-size="18">&lt;5&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;5&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;5&gt;</tspan></text>
+  </g>
+
+  <!-- arrows from qkv triples to their own product terms -->
+  <path class="arrow" d="M140 575 L140 493"/>
+  <path class="arrow" d="M395 575 L395 493"/>
+  <path class="arrow" d="M625 575 L625 493"/>
+  <path class="arrow" d="M855 575 L855 493"/>
+  <path class="arrow" d="M1085 575 L1085 493"/>
+
+  <!-- cross-attention style key/query flow from x3 q to all products -->
+  <path class="arrow-soft" d="M625 572 C520 535 327 519 164 490"/>
+  <path class="arrow-soft" d="M625 572 C543 535 470 514 415 491"/>
+  <path class="arrow-soft" d="M625 572 C700 535 795 510 838 489"/>
+  <path class="arrow-soft" d="M625 572 C795 535 972 516 1063 489"/>
+
+  <!-- larger curved return arrows like in the sketch -->
+  <path class="arrow-soft" d="M49 502 C37 432 54 366 109 350"/>
+  <path class="arrow-soft" d="M312 512 C314 435 331 374 367 353"/>
+  <path class="arrow-soft" d="M707 515 C712 438 693 376 653 351"/>
+  <path class="arrow-soft" d="M931 513 C935 435 913 379 881 352"/>
+  <path class="arrow-soft" d="M1179 512 C1182 435 1158 377 1111 351"/>
+
+  <!-- inputs -->
+  <g text-anchor="middle">
+    <text class="math" x="140" y="715">x<tspan baseline-shift="super" font-size="18">&lt;1&gt;</tspan></text>
+    <text class="math" x="395" y="715">x<tspan baseline-shift="super" font-size="18">&lt;2&gt;</tspan></text>
+    <text class="math" x="625" y="715">x<tspan baseline-shift="super" font-size="18">&lt;3&gt;</tspan></text>
+    <text class="math" x="855" y="715">x<tspan baseline-shift="super" font-size="18">&lt;4&gt;</tspan></text>
+    <text class="math" x="1085" y="715">x<tspan baseline-shift="super" font-size="18">&lt;5&gt;</tspan></text>
+
+    <text class="word" x="140" y="779">Jane</text>
+    <text class="word" x="395" y="779">visite</text>
+    <text class="word" x="625" y="779">l’Afrique</text>
+    <text class="word" x="855" y="779">en</text>
+    <text class="word" x="1085" y="779">Septembre</text>
+  </g>
+
+  <!-- arrows from tokens to qkv -->
+  <path class="arrow" d="M140 682 L140 635"/>
+  <path class="arrow" d="M395 682 L395 635"/>
+  <path class="arrow" d="M625 682 L625 635"/>
+  <path class="arrow" d="M855 682 L855 635"/>
+  <path class="arrow" d="M1085 682 L1085 635"/>
+
+  <text class="caption" x="40" y="825">SVG recreation using the supplied design tokens and color palette.</text>
+</svg>
+      <p class="diagram-caption">Figure 4a &mdash; Self-attention computation for the word l'Afrique: query-key dot products weight the value vectors to form the contextual attention representation.</p>
+    </div>
+
+    <div class="callout green">
+      <span class="ci">🔍</span>
+      <div class="callout-body">
+        <strong>Intuition behind the representation</strong>
+        <span>The word l'Afrique ends up knowing it is the <em>destination of a visit</em>. This is not a fixed embedding &mdash; it's a contextually enriched representation. l'Afrique in a different sentence (e.g., "Africa is a continent") would produce a completely different A⁽³⁾.</span>
+      </div>
+    </div>
+
+    <h3>The Attention Formula</h3>
+    <div class="prose">
+      <p>The full attention computation, using all queries, keys, and values in matrix form:</p>
+    </div>
+    <div class="formula">
+      <div class="eq">
+        <span class="fn">ATTENTION</span>(<span class="var">Q</span>, <span class="var">K</span>, <span class="var">V</span>) &nbsp;=&nbsp; <span class="fn">softmax</span><span style="color:#e8e4da">(</span> <span class="var">QK</span><sup style="color:#82aaff">T</sup> / <span style="color:#c3e88d">√d<sub>k</sub></span> <span style="color:#e8e4da">)</span> · <span class="var">V</span>
+      </div>
+    </div>
+    <p class="formula-caption">Scaled Dot-Product Attention &mdash; the version from "Attention is All You Need". The √d<sub>k</sub> scaling prevents the dot products from growing too large.</p>
+
+    <div class="prose">
+      <p>The <strong>√d<sub>k</sub> scaling</strong> factor is crucial &mdash; without it, dot products can grow very large in high dimensions, pushing the softmax into regions with tiny gradients (making learning slow). This variant is also called <em>Scaled Dot-Product Attention</em>.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       5. MULTI-HEAD ATTENTION
+  ══════════════════════════════════ -->
+  <section class="section" id="multihead">
+    <div class="section-label"><span class="dot" style="background:var(--violet)"></span>Multi-Head Attention</div>
+    <h2>Multi-Head Attention</h2>
+    <div class="prose">
+      <p>Self-attention is run <strong>multiple times in parallel</strong> &mdash; each run with its own learned Q, K, V weight matrices. Each parallel run is called an <em>attention head</em>.</p>
+    </div>
+
+    <!-- Multi-head diagram -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:620px;display:block;margin:0 auto;font-family:'Plus Jakarta Sans',system-ui,sans-serif">
+        <!-- Input -->
+        <rect x="240" y="210" width="140" height="30" rx="7" fill="#f2efe9" stroke="#a8a8a0" stroke-width="1.2"/>
+        <text x="310" y="230" font-size="12" font-weight="700" fill="#6b6b65" text-anchor="middle">Input Embeddings</text>
+
+        <!-- Three heads -->
+        <!-- Head 1 -->
+        <rect x="60" y="130" width="120" height="52" rx="8" fill="rgba(99,102,241,.12)" stroke="#6366f1" stroke-width="1.5"/>
+        <text x="120" y="152" font-size="11" font-weight="700" fill="#6366f1" text-anchor="middle">Head 1</text>
+        <text x="120" y="167" font-size="9.5" fill="#6366f1" text-anchor="middle">Named entities?</text>
+        <text x="120" y="178" font-size="9" fill="#6366f1" opacity=".7" text-anchor="middle">(Q₁K₁V₁)</text>
+        <line x1="310" y1="210" x2="155" y2="182" stroke="#8b5cf6" stroke-width="1.2" stroke-dasharray="4 2" marker-end="url(#av)"/>
+
+        <!-- Head 2 -->
+        <rect x="250" y="110" width="120" height="52" rx="8" fill="rgba(139,92,246,.12)" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="310" y="132" font-size="11" font-weight="700" fill="#8b5cf6" text-anchor="middle">Head 2</text>
+        <text x="310" y="147" font-size="9.5" fill="#8b5cf6" text-anchor="middle">Verb / actions?</text>
+        <text x="310" y="158" font-size="9" fill="#8b5cf6" opacity=".7" text-anchor="middle">(Q₂K₂V₂)</text>
+        <line x1="310" y1="210" x2="310" y2="162" stroke="#8b5cf6" stroke-width="1.2" marker-end="url(#av)"/>
+
+        <!-- Head N -->
+        <rect x="440" y="130" width="120" height="52" rx="8" fill="rgba(200,92,42,.1)" stroke="#c85c2a" stroke-width="1.5"/>
+        <text x="500" y="152" font-size="11" font-weight="700" fill="#c85c2a" text-anchor="middle">Head N</text>
+        <text x="500" y="167" font-size="9.5" fill="#c85c2a" text-anchor="middle">Syntax / grammar?</text>
+        <text x="500" y="178" font-size="9" fill="#c85c2a" opacity=".7" text-anchor="middle">(QₙKₙVₙ)</text>
+        <line x1="310" y1="210" x2="465" y2="182" stroke="#c85c2a" stroke-width="1.2" stroke-dasharray="4 2" marker-end="url(#av)"/>
+
+        <!-- Dots in between -->
+        <circle cx="215" cy="155" r="3" fill="#a8a8a0"/>
+        <circle cx="225" cy="155" r="3" fill="#a8a8a0"/>
+
+        <!-- Concat + Linear -->
+        <rect x="200" y="40" width="220" height="44" rx="8" fill="rgba(16,185,129,.1)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="310" y="58" font-size="12" font-weight="700" fill="#10b981" text-anchor="middle">Concat + Linear</text>
+        <text x="310" y="74" font-size="10" fill="#10b981" text-anchor="middle">All heads joined → single output</text>
+
+        <!-- Arrows heads -> concat -->
+        <line x1="120" y1="130" x2="228" y2="84" stroke="#6366f1" stroke-width="1.2" marker-end="url(#av)"/>
+        <line x1="310" y1="110" x2="310" y2="84" stroke="#8b5cf6" stroke-width="1.2" marker-end="url(#av)"/>
+        <line x1="500" y1="130" x2="392" y2="84" stroke="#c85c2a" stroke-width="1.2" marker-end="url(#av)"/>
+
+        <text x="310" y="20" font-size="11" fill="#6b6b65" text-anchor="middle" font-weight="600">12&ndash;100 heads in modern models, each learning a different linguistic aspect</text>
+      </svg>
+      <p class="diagram-caption">Figure 5 &mdash; Multi-head attention runs self-attention H times in parallel. Each head learns a different linguistic relationship. Outputs are concatenated and projected.</p>
+    </div>
+
+    <div class="callout blue">
+      <span class="ci">🧠</span>
+      <div class="callout-body">
+        <strong>What each head learns</strong>
+        <span>The heads are <em>not told what to learn</em>. Their weights are randomly initialised and, given sufficient training data, each head discovers a different linguistic aspect: named entities, verb&ndash;object relationships, coreference, syntax patterns, etc. The number of heads varies: 12&ndash;100 are common in modern models.</span>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p>After all heads run in parallel, their outputs are <strong>concatenated</strong> and passed through a final linear projection, giving a single output tensor of the same dimension as the input.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       6. FULL NETWORK ARCHITECTURE
+  ══════════════════════════════════ -->
+  <section class="section" id="fullarch">
+    <div class="section-label"><span class="dot" style="background:var(--emerald)"></span>Full Network</div>
+    <h2>Full Transformer Architecture</h2>
+    <div class="prose">
+      <p>The complete Transformer stacks encoder and decoder blocks, each containing multiple sub-layers. Here is the canonical architecture from "Attention is All You Need":</p>
+    </div>
+
+    <!-- Full architecture diagram -->
+        <div class="diagram-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc" width="100%" style="max-width:720px;display:block;margin:0 auto">
+  <title id="title">Transformer architecture with multi-head and scaled dot-product attention zoom-ins</title>
+  <desc id="desc">A vector SVG recreation of the uploaded Transformer attention diagram, including encoder, decoder, multi-head attention, and scaled dot-product attention blocks.</desc>
+  <defs>
+    <style>
+      :root{
+        --bg:#f2efe9; --card:#ffffff; --border:rgba(0,0,0,0.08); --tp:#1a1a18; --ts:#6b6b65; --tt:#a8a8a0;
+        --accent:#c85c2a; --indigo:#6366f1; --sky:#0ea5e9; --emerald:#10b981; --amber:#f59e0b;
+        --violet:#8b5cf6; --rose:#f43f5e; --font:'Plus Jakarta Sans',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --r:14px;
+      }
+      svg{background:var(--bg);font-family:var(--font);color:var(--tp)}
+      text{fill:var(--tp);font-family:var(--font);font-size:22px;text-anchor:middle;dominant-baseline:middle}
+      .small{font-size:18px}.tiny{font-size:16px}.label{font-size:24px}.title{font-size:29px;font-weight:800}.bold{font-weight:800}.muted{fill:var(--ts)}.zoom{fill:var(--tt);font-size:23px;font-weight:800}
+      .panel{fill:var(--card);stroke:#d2d2ce;stroke-width:5}.panel-head{fill:#d0d0cd}.shell{fill:#fffdfa;stroke:var(--tp);stroke-width:3}.box{stroke:var(--tp);stroke-width:3;rx:var(--r);ry:var(--r)}
+      .norm{fill:#fef3c7}.ff{fill:#bae6fd}.attn{fill:#fed7aa}.emb{fill:#fee2e2}.soft{fill:#d1fae5}.lin{fill:#e0e7ff}.mask{fill:#fecdd3}.scale{fill:#fef3c7}.mat{fill:#ddd6fe}.mha{fill:#ddd6fe}
+      .arrow{fill:none;stroke:var(--tp);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .thin{stroke-width:2}.skip{fill:none;stroke:var(--tp);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .callout{fill:none;stroke:#c9c9c6;stroke-width:5;stroke-linejoin:round;stroke-linecap:round}.plus{fill:var(--card);stroke:var(--tp);stroke-width:2}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="var(--tp)"/>
+    </marker>
+  </defs>
+
+  <!-- Encoder stack -->
+  <g id="encoder" transform="translate(80,120)">
+    <path class="shell" d="M45 265 Q45 245 65 245 H235 Q255 245 255 265 V565 Q255 585 235 585 H65 Q45 585 45 565 Z"/>
+    <path class="shell" d="M65 245 Q65 225 85 225 H255 Q275 225 275 245 V545 Q275 565 255 565 H85 Q65 565 65 545 Z" opacity=".95"/>
+    <text class="label" x="4" y="405">N×</text>
+    <rect class="box attn" x="95" y="410" width="145" height="70"/>
+    <text x="168" y="434">Multi-Head</text><text x="168" y="461">Attention</text>
+    <rect class="box norm" x="95" y="360" width="145" height="38"/><text x="168" y="379" class="small">Add &amp; Norm</text>
+    <rect class="box ff" x="95" y="250" width="145" height="70"/><text x="168" y="274">Feed</text><text x="168" y="301">Forward</text>
+    <rect class="box norm" x="95" y="215" width="145" height="38"/><text x="168" y="234" class="small">Add &amp; Norm</text>
+    <path class="arrow" d="M168 760 V720"/><text class="label" x="168" y="790">Inputs</text>
+    <rect class="box emb" x="95" y="660" width="145" height="58"/><text x="168" y="682">Input</text><text x="168" y="707">Embedding</text>
+    <text class="label" x="42" y="615">Positional</text><text class="label" x="42" y="645">Encoding</text>
+    <path class="arrow" d="M168 660 V625"/>
+    <circle class="plus" cx="168" cy="625" r="11"/><path d="M158 625 H178 M168 615 V635" stroke="var(--tp)" stroke-width="2"/>
+    <path class="arrow" d="M110 625 C75 585 50 615 74 643 C96 667 132 649 122 616"/>
+    <path class="arrow" d="M168 614 V480"/><path class="arrow" d="M168 410 V398"/><path class="arrow" d="M168 360 V320"/><path class="arrow" d="M168 250 V253"/>
+    <path class="skip" d="M95 445 C55 445 55 480 95 480"/><path class="skip" d="M240 445 C270 445 270 480 240 480"/>
+    <path class="skip" d="M95 234 C58 234 58 250 95 250"/><path class="skip" d="M240 234 C270 234 270 250 240 250"/>
+  </g>
+
+  <!-- Decoder stack -->
+  <g id="decoder" transform="translate(360,70)">
+    <path class="shell" d="M15 235 Q15 215 35 215 H205 Q225 215 225 235 V655 Q225 675 205 675 H35 Q15 675 15 655 Z"/>
+    <path class="shell" d="M35 215 Q35 195 55 195 H225 Q245 195 245 215 V635 Q245 655 225 655 H55 Q35 655 35 635 Z" opacity=".95"/>
+    <text class="label" x="285" y="420">N×</text>
+    <rect class="box attn" x="60" y="510" width="145" height="78"/><text x="133" y="536">Masked</text><text x="133" y="563">Multi-Head</text><text x="133" y="589">Attention</text>
+    <rect class="box norm" x="60" y="468" width="145" height="36"/><text x="133" y="486" class="small">Add &amp; Norm</text>
+    <rect class="box attn" x="60" y="350" width="145" height="70"/><text x="133" y="374">Multi-Head</text><text x="133" y="401">Attention</text>
+    <rect class="box norm" x="60" y="310" width="145" height="36"/><text x="133" y="328" class="small">Add &amp; Norm</text>
+    <rect class="box ff" x="60" y="225" width="145" height="70"/><text x="133" y="249">Feed</text><text x="133" y="276">Forward</text>
+    <rect class="box norm" x="60" y="185" width="145" height="36"/><text x="133" y="203" class="small">Add &amp; Norm</text>
+    <path class="arrow" d="M133 825 V784"/><text class="label" x="133" y="860">Outputs</text><text class="label" x="133" y="888">(shifted right)</text>
+    <rect class="box emb" x="60" y="724" width="145" height="58"/><text x="133" y="746">Output</text><text x="133" y="771">Embedding</text>
+    <text class="label" x="240" y="675">Positional</text><text class="label" x="240" y="705">Encoding</text>
+    <path class="arrow" d="M133 724 V688"/>
+    <circle class="plus" cx="133" cy="688" r="11"/><path d="M123 688 H143 M133 678 V698" stroke="var(--tp)" stroke-width="2"/>
+    <path class="arrow" d="M190 688 C230 645 260 680 232 708 C207 731 177 711 183 681"/>
+    <path class="arrow" d="M133 677 V588"/><path class="arrow" d="M133 510 V504"/><path class="arrow" d="M133 468 V420"/><path class="arrow" d="M133 350 V346"/><path class="arrow" d="M133 310 V295"/>
+    <path class="arrow" d="M133 225 V221"/><path class="arrow" d="M133 185 V150"/>
+    <rect class="box lin" x="60" y="120" width="145" height="32"/><text class="small" x="133" y="136">Linear</text>
+    <path class="arrow" d="M133 120 V88"/>
+    <rect class="box soft" x="60" y="52" width="145" height="32"/><text class="small" x="133" y="68">Softmax</text>
+    <path class="arrow" d="M133 52 V18"/><text class="label" x="133" y="-12">Output</text><text class="label" x="133" y="18">Probabilities</text>
+    <path class="skip" d="M60 550 C35 550 35 588 60 588"/><path class="skip" d="M205 550 C230 550 230 588 205 588"/>
+    <path class="skip" d="M60 385 C35 385 35 420 60 420"/><path class="skip" d="M205 385 C230 385 230 420 205 420"/>
+    <path class="skip" d="M60 203 C35 203 35 225 60 225"/><path class="skip" d="M205 203 C230 203 230 225 205 225"/>
+  </g>
+
+  <!-- Callout connector from decoder attention to zoom panel -->
+  <path class="callout" d="M565 453 L735 360 V90 H1125 V675 H735 V580 L565 493"/>
+
+  <!-- Multi-head attention zoom -->
+  <g id="mha" transform="translate(735,90)">
+    <rect class="panel" x="0" y="0" width="390" height="585"/>
+    <rect class="panel-head" x="0" y="0" width="390" height="65"/><text class="title" x="195" y="33">Multi-head attention</text>
+    <path class="arrow" d="M195 515 V435"/><text class="label" x="195" y="548">K</text>
+    <path class="arrow" d="M95 515 V435"/><text class="label" x="95" y="548">V</text>
+    <path class="arrow" d="M295 515 V435"/><text class="label" x="295" y="548">Q</text>
+    <g opacity=".25"><rect class="box mha" x="60" y="246" width="285" height="65"/><rect class="box mha" x="72" y="232" width="285" height="65"/><rect class="box mha" x="84" y="218" width="285" height="65"/></g>
+    <rect class="box mha" x="35" y="246" width="285" height="65"/><text x="178" y="269">Scaled Dot-Product</text><text x="178" y="298">Attention</text>
+    <text class="label" x="355" y="282">h</text>
+    <path class="arrow" d="M95 390 V331"/><path class="arrow" d="M195 390 V331"/><path class="arrow" d="M295 390 V331"/>
+    <rect class="box" style="fill:var(--card)" x="55" y="390" width="80" height="40"/><text class="small" x="95" y="410">Linear</text>
+    <rect class="box" style="fill:var(--card)" x="155" y="390" width="80" height="40"/><text class="small" x="195" y="410">Linear</text>
+    <rect class="box" style="fill:var(--card)" x="255" y="390" width="80" height="40"/><text class="small" x="295" y="410">Linear</text>
+    <path class="arrow" d="M178 246 V195"/><rect class="box norm" x="130" y="155" width="130" height="40"/><text x="195" y="175">Concat</text>
+    <path class="arrow" d="M195 155 V120"/><rect class="box" style="fill:var(--card)" x="155" y="85" width="80" height="42"/><text class="small" x="195" y="106">Linear</text>
+    <path class="arrow" d="M195 85 V54"/>
+    <text class="zoom" x="195" y="625">Zoom-In!</text>
+  </g>
+
+  <!-- Callout connector from MHA scaled dot-product to second zoom panel -->
+  <path class="callout" d="M1065 385 L1205 510 V285 H1550 V725 H1205 V500 L1065 340"/>
+
+  <!-- Scaled dot product attention zoom -->
+  <g id="sdpa" transform="translate(1205,285)">
+    <rect class="panel" x="0" y="0" width="345" height="440"/>
+    <rect class="panel-head" x="0" y="0" width="345" height="65"/><text class="title" x="173" y="33">Scaled dot-product attention</text>
+    <path class="arrow" d="M173 400 V365"/><text class="label" x="173" y="405">K</text>
+    <path class="arrow" d="M105 400 V365"/><text class="label" x="105" y="405">Q</text>
+    <path class="arrow" d="M253 400 V130"/><text class="label" x="253" y="405">V</text>
+    <rect class="box mat" x="82" y="315" width="126" height="40"/><text x="145" y="335">MatMul</text>
+    <path class="arrow" d="M145 315 V280"/>
+    <rect class="box scale" x="98" y="245" width="94" height="38"/><text x="145" y="264">Scale</text>
+    <path class="arrow" d="M145 245 V210"/>
+    <rect class="box mask" x="74" y="175" width="142" height="38"/><text class="small" x="145" y="194">Mask (opt.)</text>
+    <path class="arrow" d="M145 175 V140"/>
+    <rect class="box soft" x="78" y="105" width="134" height="38"/><text x="145" y="124">SoftMax</text>
+    <path class="arrow" d="M145 105 V70"/>
+    <rect class="box mat" x="125" y="52" width="130" height="40"/><text x="190" y="72">MatMul</text>
+    <path class="arrow" d="M190 52 V28"/>
+    <text class="zoom" x="173" y="472">Zoom-In!</text>
+  </g>
+
+</svg>
+      <p class="diagram-caption">Figure 6 &mdash; Complete Transformer architecture. Left: Encoder stack. Right: Decoder stack with cross-attention receiving K, V from the encoder output. The dashed orange arrow shows the crucial encoder→decoder information flow.</p>
+    </div>
+
+    <h3>Key Sub-Layers Explained</h3>
+    <div class="prose">
+      <ul>
+        <li><strong>Add &amp; Norm</strong> &mdash; A residual connection (input + sub-layer output) followed by Layer Normalisation. Similar to Batch Normalisation in CNNs, this helps speed up learning and stabilises training in deep networks.</li>
+        <li><strong>Residual Connections</strong> &mdash; Borrowed from ResNets, these carry positional information through the deep stack without it being washed out by repeated transformations.</li>
+        <li><strong>Feed-Forward Network</strong> &mdash; A position-wise fully connected network applied identically to each position. Helps the model identify complex patterns and interactions in the attention output.</li>
+        <li><strong>Masked Multi-Head Attention</strong> &mdash; Used only during <em>training</em> in the decoder. The mask hides future tokens so the model can't "cheat" by looking ahead. At test time, tokens are generated one by one so no masking is needed.</li>
+        <li><strong>Linear &amp; Softmax Layer</strong> &mdash; The decoder's final layer projects the output vector to vocabulary size, then softmax converts logits to probabilities over the full vocabulary.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       7. WORKING EXAMPLE
+  ══════════════════════════════════ -->
+  <section class="section" id="example">
+    <div class="section-label"><span class="dot" style="background:var(--amber)"></span>Worked Example</div>
+    <h2>Machine Translation: French → English</h2>
+    <div class="prose">
+      <p>The original Transformer objective was <strong>sequence-to-sequence</strong> machine translation. Here's the complete step-by-step walkthrough of translating <em>"J'aime l'apprentissage automatique"</em> → <em>"I love machine learning"</em>:</p>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">1</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Tokenise the French input</strong>
+          <p>The French sentence is tokenised using the same tokenizer used during training: "J'aime" → 2345, "l'apprentissage" → 3425, "automatique" → 3853</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">2</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Add token IDs to encoder input</strong>
+          <p>Token IDs [2345, 3425, 3853] are fed to the <strong>encoder side</strong> of the network as input.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">3</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Embedding + Multi-Head Attention (Encoder)</strong>
+          <p>Tokens pass through the embedding layer + positional encoding, then into the encoder's Multi-Head Attention block. All 6 encoder blocks run in sequence.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">4</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Encoder output: rich contextual representation</strong>
+          <p>After 6 encoder blocks with feed-forward networks, the encoder output encodes the full <strong>structure and meaning</strong> of the input. This is the "memory" the decoder will query.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">5</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Insert encoder output into decoder cross-attention</strong>
+          <p>The encoder's K and V matrices are passed into the <strong>cross-attention layer</strong> in each decoder block. This is how the decoder "reads" the source sentence.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">6</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Decoder starts with &lt;SOS&gt; token</strong>
+          <p>A Start-of-Sequence <code>&lt;SOS&gt;</code> token is fed to the decoder. The masked self-attention prevents it from seeing future tokens.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">7</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Cross-Attention: decoder queries encoder memory</strong>
+          <p>The decoder uses Q from its own state to query the encoder's K and V: <em>&ldquo;What from the French sentence is most relevant to what I'm currently generating?&rdquo;</em></p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">8</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Linear + Softmax → first token</strong>
+          <p>Output passes through feed-forward → linear layer → softmax, producing a probability distribution over the full vocabulary. The highest probability token is selected: <strong>"I"</strong> (token ID 297).</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">9</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Feed output back in; repeat</strong>
+          <p>"I" is fed back as input to the decoder. Now the decoder generates "love", then "machine", then "learning", then finally the <code>&lt;EOS&gt;</code> End-of-Sequence token.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left"><div class="pipe-num">10</div><div class="pipe-line"></div></div>
+        <div class="pipe-body">
+          <strong>Detokenise to words</strong>
+          <p>Token IDs [297, 450, 901, 389] are converted back to words: <strong>"I love machine learning"</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Translation visual -->
+        <div class="diagram-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1293 670" role="img" aria-labelledby="title desc" width="100%" style="max-width:660px;display:block;margin:0 auto">
+  <title id="title">Transformers sequence-to-sequence translation diagram</title>
+  <desc id="desc">Vector recreation of a transformer translation pipeline showing French input tokenization through encoder and decoder to English output probabilities and decoded words.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f2efe9}
+      .title{font:500 58px 'Plus Jakarta Sans',system-ui,sans-serif;fill:#1a1a18}
+      .label{font:400 30px 'Plus Jakarta Sans',system-ui,sans-serif;fill:#1a1a18}
+      .small{font:500 18px 'Plus Jakarta Sans',system-ui,sans-serif;fill:#1a1a18}
+      .mid{font:500 20px 'Plus Jakarta Sans',system-ui,sans-serif;fill:#1a1a18}
+      .tiny{font:500 13px 'Plus Jakarta Sans',system-ui,sans-serif;fill:#1a1a18}
+      .mono{font:700 22px 'JetBrains Mono',monospace;fill:#1a1a18}
+      .mono-sm{font:700 20px 'JetBrains Mono',monospace;fill:#1a1a18}
+      .panel{fill:#ffffff;stroke:#a8a8a0;stroke-width:2}
+      .dash{fill:none;stroke:#a8a8a0;stroke-width:2;stroke-dasharray:3 4}
+      .encoder{fill:#0ea5e9;fill-opacity:.22;stroke:#6b6b65;stroke-width:2}
+      .decoder{fill:#f59e0b;fill-opacity:.26;stroke:#6b6b65;stroke-width:2}
+      .soft{fill:#10b981;fill-opacity:.18;stroke:#6b6b65;stroke-width:2}
+      .embed{fill:#f43f5e;fill-opacity:.12;stroke:#6b6b65;stroke-width:2}
+      .word{fill:#8b5cf6;fill-opacity:.12;stroke:#6b6b65;stroke-opacity:.45;stroke-width:2}
+      .num{fill:#bdbdbd;stroke:#6b6b65;stroke-opacity:.35;stroke-width:2}
+      .word-strong{fill:#8b5cf6;fill-opacity:.28;stroke:#6b6b65;stroke-opacity:.3;stroke-width:2}
+      .blue-outline{fill:none;stroke:#0756a9;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+      .blue-path{fill:none;stroke:#0756a9;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+      .blue-thin{fill:none;stroke:#0756a9;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+      .dot{fill:#0756a9}
+      .arrow{stroke:#1a1a18;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .connector{stroke:#a8a8a0;stroke-width:2;fill:none}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#1a1a18"/>
+    </marker>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".08"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" width="1293" height="670"/>
+
+  <text x="29" y="62" class="title">Transformers</text>
+  <text x="24" y="140" class="label">Translation:</text>
+  <text x="24" y="180" class="label">sequence-to-sequence task</text>
+
+  <g filter="url(#softShadow)">
+    <path class="panel" d="M63 302H375V380H296V398H148V380H63Z"/>
+    <text x="78" y="337" class="mono-sm">J'aime l'apprentissage</text>
+    <text x="78" y="365" class="mono-sm">automatique</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <path class="panel" d="M34 410H152V464H34Z"/>
+    <text x="63" y="447" class="mono-sm">J’aime</text>
+    <path class="panel" d="M115 428H332V482H115Z"/>
+    <text x="122" y="465" class="mono-sm">l'apprentissage</text>
+    <path class="panel" d="M230 457H405V511H230Z"/>
+    <text x="243" y="493" class="mono-sm">automatique</text>
+  </g>
+  <path class="connector" d="M75 397L148 428M295 380L371 397L333 428M164 482L208 525M285 511L238 525"/>
+
+  <rect x="31" y="525" width="383" height="83" rx="14" fill="#ffffff" stroke="#0756a9" stroke-width="6"/>
+  <rect x="52" y="540" width="100" height="54" class="num"/>
+  <rect x="169" y="540" width="100" height="54" class="num"/>
+  <rect x="286" y="540" width="100" height="54" class="num"/>
+  <text x="76" y="575" class="mono">2345</text>
+  <text x="193" y="575" class="mono">3425</text>
+  <text x="310" y="575" class="mono">3853</text>
+
+  <path class="blue-path" d="M415 567H480V611H561"/>
+  <circle class="dot" cx="561" cy="611" r="17"/>
+  <circle class="dot" cx="704" cy="611" r="17"/>
+  <text x="600" y="623" class="mid">Inputs</text>
+
+  <rect x="482" y="273" width="139" height="201" rx="10" class="encoder"/>
+  <text x="509" y="382" class="mid">Encoder</text>
+  <path class="blue-path" d="M561 611V421"/>
+  <circle class="dot" cx="561" cy="421" r="17"/>
+  <path class="blue-thin" d="M551 319V257H632V324H646"/>
+  <circle class="dot" cx="551" cy="319" r="17"/>
+  <rect x="516" y="525" width="94" height="38" rx="6" class="embed"/>
+  <text x="535" y="548" class="tiny">Embedding</text>
+
+  <rect x="644" y="178" width="139" height="296" rx="10" class="decoder"/>
+  <path class="blue-path" d="M704 611V421"/>
+  <circle class="dot" cx="704" cy="421" r="17"/>
+  <rect x="656" y="525" width="94" height="38" rx="6" class="embed"/>
+  <text x="675" y="548" class="tiny">Embedding</text>
+  <rect x="651" y="294" width="124" height="64" rx="10" fill="#f2efe9" stroke="#0756a9" stroke-width="5"/>
+  <text x="669" y="331" class="mid">Decoder</text>
+
+  <path class="blue-path" d="M704 223V88"/>
+  <circle class="dot" cx="704" cy="223" r="17"/>
+  <circle class="dot" cx="704" cy="88" r="17"/>
+  <text x="702" y="32" class="mid">Output</text>
+  <path class="arrow" d="M704 80V41"/>
+
+  <rect x="655" y="111" width="95" height="55" rx="5" class="soft"/>
+  <text x="672" y="136" class="tiny">Softmax</text>
+  <text x="682" y="155" class="tiny">output</text>
+
+  <path class="dash" d="M703 598H802V76H704"/>
+
+  <path class="blue-thin" d="M704 88H762V116H805"/>
+  <rect x="805" y="72" width="472" height="84" rx="14" fill="#8b5cf6" fill-opacity=".16" stroke="#0756a9" stroke-width="6"/>
+  <rect x="826" y="88" width="98" height="54" class="word-strong"/>
+  <rect x="935" y="88" width="100" height="54" class="word-strong"/>
+  <rect x="1046" y="88" width="100" height="54" class="word-strong"/>
+  <rect x="1157" y="88" width="100" height="54" class="word-strong"/>
+  <text x="855" y="123" class="mono">297</text>
+  <text x="965" y="123" class="mono">450</text>
+  <text x="1075" y="123" class="mono">901</text>
+  <text x="1191" y="123" class="mono">389</text>
+
+  <path d="M896 149H969V174H1206V208H1184L1052 304L919 208H896Z" fill="#8b5cf6" fill-opacity=".12" stroke="#6b6b65" stroke-opacity=".35" stroke-width="2"/>
+
+  <g filter="url(#softShadow)">
+    <path class="word" d="M852 171H891V227H852Z"/>
+    <text x="866" y="207" class="mono-sm">I</text>
+    <path class="word" d="M944 184H1024V243H944Z"/>
+    <text x="957" y="221" class="mono-sm">love</text>
+    <path class="word" d="M1024 209H1148V264H1024Z"/>
+    <text x="1044" y="245" class="mono-sm">machine</text>
+    <path class="word" d="M1148 232H1267V287H1148Z"/>
+    <text x="1162" y="267" class="mono-sm">learning</text>
+  </g>
+
+  <path class="word" d="M884 303H1198V380H884Z"/>
+  <text x="899" y="337" class="mono-sm">I love machine</text>
+  <text x="899" y="363" class="mono-sm">learning</text>
+
+  <g transform="translate(1164 343)">
+    <path d="M2 55L18 9L48 39Z" fill="#f59e0b" stroke="#1a1a18" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="27" cy="10" r="4" fill="#0ea5e9" stroke="#1a1a18" stroke-width="3"/>
+    <circle cx="41" cy="18" r="4" fill="#10b981" stroke="#1a1a18" stroke-width="3"/>
+    <circle cx="52" cy="33" r="4" fill="#f43f5e" stroke="#1a1a18" stroke-width="3"/>
+    <circle cx="19" cy="25" r="4" fill="#6366f1" stroke="#1a1a18" stroke-width="3"/>
+    <path d="M39 5c10 8-7 14 3 21" fill="none" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round"/>
+    <path d="M49 24c13-9 18 4 11 13" fill="none" stroke="#f43f5e" stroke-width="4" stroke-linecap="round"/>
+    <path d="M21 41l18-18" stroke="#1a1a18" stroke-width="3"/>
+  </g>
+</svg>
+      <p class="diagram-caption">Figure 7 &mdash; Machine translation pipeline. The encoder compresses French input into K, V representations. The decoder generates English tokens autoregressively using those K, V vectors.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       8. MODEL VARIANTS
+  ══════════════════════════════════ -->
+  <section class="section" id="variants">
+    <div class="section-label"><span class="dot" style="background:var(--rose)"></span>Model Variants</div>
+    <h2>Transformer Variants</h2>
+    <div class="prose">
+      <p>The encoder and decoder components can be used independently or together, giving rise to three major families of transformer models:</p>
+    </div>
+
+    <div class="variant-grid">
+      <div class="variant-card" style="border-left:3px solid #6366f1">
+        <div class="variant-type" style="color:var(--indigo)">Encoder-Only</div>
+        <div class="variant-name">Encoder Models</div>
+        <div class="variant-models">
+          <span class="model-chip">BERT</span>
+          <span class="model-chip">RoBERTa</span>
+          <span class="model-chip">ALBERT</span>
+        </div>
+        <div class="variant-desc">Best for understanding tasks where the full context is available. Input and output sequences have the same length. Used for classification, sentiment analysis, named entity recognition, extractive QA.</div>
+      </div>
+      <div class="variant-card" style="border-left:3px solid #10b981">
+        <div class="variant-type" style="color:var(--emerald)">Encoder-Decoder</div>
+        <div class="variant-name">Seq2Seq Models</div>
+        <div class="variant-models">
+          <span class="model-chip">T5</span>
+          <span class="model-chip">BARD</span>
+          <span class="model-chip">BART</span>
+        </div>
+        <div class="variant-desc">Best for sequence-to-sequence tasks where input and output lengths differ. Machine translation, summarisation, question answering with generation. The classic Transformer design.</div>
+      </div>
+      <div class="variant-card" style="border-left:3px solid #c85c2a">
+        <div class="variant-type" style="color:var(--accent)">Decoder-Only</div>
+        <div class="variant-name">Generative Models</div>
+        <div class="variant-models">
+          <span class="model-chip">GPT-4</span>
+          <span class="model-chip">LLaMA</span>
+          <span class="model-chip">BLOOM</span>
+          <span class="model-chip">Jurassic</span>
+        </div>
+        <div class="variant-desc">Most powerful for open-ended text generation. The dominant paradigm for modern LLMs. Trained with next-token prediction on massive corpora. No encoder &mdash; the decoder attends to its own previous outputs.</div>
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <span class="ci">📌</span>
+      <div class="callout-body">
+        <strong>Modern LLMs are almost exclusively decoder-only</strong>
+        <span>GPT-4, Claude, Gemini, LLaMA, and most frontier models are decoder-only Transformers. They predict the next token conditioned on all previous tokens &mdash; the same architecture extended to billions of parameters with instruction fine-tuning and RLHF.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       9. SUMMARY
+  ══════════════════════════════════ -->
+  <section class="section" id="summary">
+    <div class="section-label"><span class="dot" style="background:var(--tp)"></span>Summary</div>
+    <h2>The Complete Picture</h2>
+    <div class="prose">
+      <p>The Transformer architecture revolutionised NLP by replacing sequential processing with <strong>parallel, attention-based computation</strong>. Every component serves a specific purpose in building rich contextual representations:</p>
+    </div>
+    <div class="def-grid" style="grid-template-columns:repeat(2,1fr)">
+      <div class="def-card">
+        <div class="def-label" style="color:var(--sky)">Tokenisation</div>
+        <div class="def-text">Converts text to integer IDs. Must be consistent between training and inference.</div>
+      </div>
+      <div class="def-card">
+        <div class="def-label" style="color:var(--indigo)">Embeddings</div>
+        <div class="def-text">512D trainable vectors that encode semantic meaning. Similar words cluster together.</div>
+      </div>
+      <div class="def-card">
+        <div class="def-label" style="color:var(--amber)">Positional Encoding</div>
+        <div class="def-text">Sine/cosine vectors added to embeddings to preserve word order in parallel processing.</div>
+      </div>
+      <div class="def-card">
+        <div class="def-label" style="color:var(--accent)">Self-Attention</div>
+        <div class="def-text">Each word queries, keys, and values every other word. Produces context-aware representations.</div>
+      </div>
+      <div class="def-card">
+        <div class="def-label" style="color:var(--violet)">Multi-Head Attention</div>
+        <div class="def-text">H parallel attention operations, each learning a different linguistic relationship.</div>
+      </div>
+      <div class="def-card">
+        <div class="def-label" style="color:var(--emerald)">Encoder&ndash;Decoder</div>
+        <div class="def-text">Encoder builds understanding. Decoder generates output by cross-attending to encoder's K, V.</div>
+      </div>
+    </div>
+    <div class="callout blue" style="margin-top:20px">
+      <span class="ci">✦</span>
+      <div class="callout-body">
+        <strong>"Attention is All You Need"</strong>
+        <span>The original paper title is literal &mdash; the entire expressive power of the Transformer comes from attention mechanisms. No convolutions, no recurrence. Just learned attention weights, applied in parallel, at scale.</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>&copy; 2026 Sumit Kant &middot; GenAI Lab</span>
+  <div style="display:flex;gap:16px">
+    <a href="genai-lab.html">&larr; Back to LLM Concepts</a>
+    <a href="prompt-engineering.html">Prompt Engineering &rarr;</a>
+    <a href="https://sumitkant.github.io/">Website</a>
+  </div>
+</footer>
+
+<script>
+  /* Build attention heatmap */
+  var words = ['The','teacher','taught','student','with','book'];
+  var weights = [
+    [0.85,0.30,0.15,0.25,0.10,0.20],
+    [0.35,0.90,0.45,0.70,0.20,0.55],
+    [0.20,0.50,0.88,0.40,0.30,0.35],
+    [0.30,0.75,0.40,0.92,0.25,0.60],
+    [0.15,0.25,0.30,0.28,0.80,0.35],
+    [0.25,0.82,0.38,0.78,0.32,0.95],
+  ];
+  var container = document.getElementById('attn-rows');
+  if (container) {
+    words.forEach(function(w,ri){
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:3px;margin-bottom:3px;align-items:center';
+      var label = document.createElement('div');
+      label.style.cssText = 'width:67px;font-size:10px;font-weight:700;color:'+(ri===5?'#c85c2a':'#6b6b65')+';flex-shrink:0;text-align:right;padding-right:6px';
+      label.textContent = w;
+      row.appendChild(label);
+      weights[ri].forEach(function(wt,ci){
+        var isHighlighted = ri===5 && (ci===1||ci===3);
+        var alpha = wt;
+        var bg = isHighlighted
+          ? 'rgba(200,92,42,'+alpha+')'
+          : ri===ci
+            ? 'rgba(99,102,241,'+alpha+')'
+            : 'rgba(14,165,233,'+Math.max(0,alpha-.1)+')';
+        var cell = document.createElement('div');
+        cell.style.cssText = 'flex:1;height:32px;border-radius:4px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(255,255,255,'+(wt>.4?1:.7)+');cursor:default;transition:transform .15s';
+        cell.textContent = wt.toFixed(2);
+        cell.title = words[ri]+' attends to '+words[ci]+': '+wt.toFixed(2);
+        cell.onmouseover = function(){ this.style.transform='scale(1.08)'; this.style.zIndex=10; };
+        cell.onmouseout  = function(){ this.style.transform='scale(1)';    this.style.zIndex=1;  };
+        row.appendChild(cell);
+      });
+      container.appendChild(row);
+    });
+  }
+</script>
+</body>
+</html>

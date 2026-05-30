@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 850" width="1400" height="850" role="img" aria-labelledby="title desc">
+  <title id="title">Self-attention style computation diagram</title>
+  <desc id="desc">Vectorized recreation of the handwritten diagram: five input tokens become q, k, v triples, query-key products feed a summation node, and attention outputs A superscript one through five are shown at the top.</desc>
+  <defs>
+    <style>
+      :root {
+        --bg: #f2efe9;
+        --card: #ffffff;
+        --border: rgba(0,0,0,0.08);
+        --tp: #1a1a18;
+        --ts: #6b6b65;
+        --tt: #a8a8a0;
+        --accent: #c85c2a;
+        --indigo: #6366f1;
+        --sky: #0ea5e9;
+        --emerald: #10b981;
+        --amber: #f59e0b;
+        --violet: #8b5cf6;
+        --rose: #f43f5e;
+        --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+        --mono: 'JetBrains Mono', monospace;
+        --r: 14px;
+      }
+      svg { background: var(--bg); font-family: var(--font); }
+      .paper-line { stroke: var(--border); stroke-width: 1; }
+      .node { fill: var(--card); stroke: var(--indigo); stroke-width: 5; }
+      .node-accent { stroke: var(--accent); }
+      .arrow { fill: none; stroke: var(--indigo); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow-indigo); }
+      .arrow-soft { fill: none; stroke: var(--indigo); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: .72; marker-end: url(#arrow-indigo-soft); }
+      .arrow-accent { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow-accent); }
+      .label { fill: var(--tp); font-weight: 700; font-size: 34px; }
+      .math { fill: var(--indigo); font-family: var(--mono); font-weight: 700; font-size: 30px; }
+      .math-small { fill: var(--indigo); font-family: var(--mono); font-weight: 700; font-size: 25px; }
+      .math-accent { fill: var(--accent); }
+      .word { fill: var(--tp); font-size: 31px; font-weight: 600; font-style: italic; }
+      .symbol { fill: var(--indigo); font-size: 40px; font-weight: 800; }
+      .caption { fill: var(--ts); font-size: 18px; }
+    </style>
+    <marker id="arrow-indigo" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M 2 2 L 12 7 L 2 12 z" fill="#6366f1"/>
+    </marker>
+    <marker id="arrow-indigo-soft" markerWidth="12" markerHeight="12" refX="9.5" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 2 2 L 10 6 L 2 10 z" fill="#6366f1" opacity=".72"/>
+    </marker>
+    <marker id="arrow-accent" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M 2 2 L 12 7 L 2 12 z" fill="#c85c2a"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="850" fill="var(--bg)"/>
+  <g opacity=".55">
+    <line class="paper-line" x1="0" y1="73" x2="1400" y2="73"/>
+    <line class="paper-line" x1="0" y1="146" x2="1400" y2="146"/>
+    <line class="paper-line" x1="0" y1="219" x2="1400" y2="219"/>
+    <line class="paper-line" x1="0" y1="292" x2="1400" y2="292"/>
+    <line class="paper-line" x1="0" y1="365" x2="1400" y2="365"/>
+    <line class="paper-line" x1="0" y1="438" x2="1400" y2="438"/>
+    <line class="paper-line" x1="0" y1="511" x2="1400" y2="511"/>
+    <line class="paper-line" x1="0" y1="584" x2="1400" y2="584"/>
+    <line class="paper-line" x1="0" y1="657" x2="1400" y2="657"/>
+    <line class="paper-line" x1="0" y1="730" x2="1400" y2="730"/>
+  </g>
+
+  <!-- top outputs -->
+  <g text-anchor="middle">
+    <text class="math" x="155" y="63">A<tspan baseline-shift="super" font-size="19">&lt;1&gt;</tspan></text>
+    <text class="math" x="405" y="63">A<tspan baseline-shift="super" font-size="19">&lt;2&gt;</tspan></text>
+    <text class="math" x="625" y="63">A<tspan baseline-shift="super" font-size="19">&lt;3&gt;</tspan></text>
+    <text class="math" x="885" y="63">A<tspan baseline-shift="super" font-size="19">&lt;4&gt;</tspan></text>
+    <text class="math" x="1095" y="63">A<tspan baseline-shift="super" font-size="19">&lt;5&gt;</tspan></text>
+    <path class="arrow" d="M155 143 L155 92"/>
+    <path class="arrow" d="M405 143 L405 92"/>
+    <path class="arrow" d="M625 185 L625 92"/>
+    <path class="arrow" d="M885 143 L885 92"/>
+    <path class="arrow" d="M1095 143 L1095 92"/>
+  </g>
+
+  <!-- summation node -->
+  <circle class="node" cx="625" cy="218" r="35"/>
+  <text class="symbol" x="625" y="231" text-anchor="middle">+</text>
+
+  <!-- product nodes -->
+  <g text-anchor="middle">
+    <circle class="node" cx="140" cy="360" r="27"/>
+    <text class="symbol" x="140" y="373">×</text>
+    <circle class="node node-accent" cx="395" cy="360" r="27"/>
+    <text class="symbol math-accent" x="395" y="373">×</text>
+    <circle class="node" cx="625" cy="360" r="27"/>
+    <text class="symbol" x="625" y="373">×</text>
+    <circle class="node" cx="855" cy="360" r="27"/>
+    <text class="symbol" x="855" y="373">×</text>
+    <circle class="node" cx="1085" cy="360" r="27"/>
+    <text class="symbol" x="1085" y="373">×</text>
+  </g>
+
+  <!-- arrows from products to sum -->
+  <path class="arrow-soft" d="M166 344 C300 305 455 267 589 229"/>
+  <path class="arrow-accent" d="M420 341 C478 304 548 262 592 232"/>
+  <path class="arrow" d="M625 331 L625 256"/>
+  <path class="arrow-soft" d="M826 341 C765 307 695 267 657 233"/>
+  <path class="arrow-soft" d="M1058 344 C918 307 768 264 660 225"/>
+
+  <!-- q3 times key labels under products -->
+  <g text-anchor="middle">
+    <text class="math-small" x="140" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;1&gt;</tspan></text>
+    <text class="math-small math-accent" x="395" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;2&gt;</tspan></text>
+    <text class="math-small" x="625" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan></text>
+    <text class="math-small" x="855" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;4&gt;</tspan></text>
+    <text class="math-small" x="1085" y="466">q<tspan baseline-shift="super" font-size="15">&lt;3&gt;</tspan> · k<tspan baseline-shift="super" font-size="15">&lt;5&gt;</tspan></text>
+  </g>
+
+  <!-- vertical arrows to product labels -->
+  <path class="arrow" d="M140 437 L140 392"/>
+  <path class="arrow-accent" d="M395 437 L395 392"/>
+  <path class="arrow" d="M625 437 L625 392"/>
+  <path class="arrow" d="M855 437 L855 392"/>
+  <path class="arrow" d="M1085 437 L1085 392"/>
+
+  <!-- q k v vectors -->
+  <g text-anchor="middle">
+    <text class="math" x="140" y="612">q<tspan baseline-shift="super" font-size="18">&lt;1&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;1&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;1&gt;</tspan></text>
+    <text class="math" x="395" y="612">q<tspan baseline-shift="super" font-size="18">&lt;2&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;2&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;2&gt;</tspan></text>
+    <text class="math" x="625" y="612">q<tspan baseline-shift="super" font-size="18">&lt;3&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;3&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;3&gt;</tspan></text>
+    <text class="math" x="855" y="612">q<tspan baseline-shift="super" font-size="18">&lt;4&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;4&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;4&gt;</tspan></text>
+    <text class="math" x="1085" y="612">q<tspan baseline-shift="super" font-size="18">&lt;5&gt;</tspan>, k<tspan baseline-shift="super" font-size="18">&lt;5&gt;</tspan>, v<tspan baseline-shift="super" font-size="18">&lt;5&gt;</tspan></text>
+  </g>
+
+  <!-- arrows from qkv triples to their own product terms -->
+  <path class="arrow" d="M140 575 L140 493"/>
+  <path class="arrow" d="M395 575 L395 493"/>
+  <path class="arrow" d="M625 575 L625 493"/>
+  <path class="arrow" d="M855 575 L855 493"/>
+  <path class="arrow" d="M1085 575 L1085 493"/>
+
+  <!-- cross-attention style key/query flow from x3 q to all products -->
+  <path class="arrow-soft" d="M625 572 C520 535 327 519 164 490"/>
+  <path class="arrow-soft" d="M625 572 C543 535 470 514 415 491"/>
+  <path class="arrow-soft" d="M625 572 C700 535 795 510 838 489"/>
+  <path class="arrow-soft" d="M625 572 C795 535 972 516 1063 489"/>
+
+  <!-- larger curved return arrows like in the sketch -->
+  <path class="arrow-soft" d="M49 502 C37 432 54 366 109 350"/>
+  <path class="arrow-soft" d="M312 512 C314 435 331 374 367 353"/>
+  <path class="arrow-soft" d="M707 515 C712 438 693 376 653 351"/>
+  <path class="arrow-soft" d="M931 513 C935 435 913 379 881 352"/>
+  <path class="arrow-soft" d="M1179 512 C1182 435 1158 377 1111 351"/>
+
+  <!-- inputs -->
+  <g text-anchor="middle">
+    <text class="math" x="140" y="715">x<tspan baseline-shift="super" font-size="18">&lt;1&gt;</tspan></text>
+    <text class="math" x="395" y="715">x<tspan baseline-shift="super" font-size="18">&lt;2&gt;</tspan></text>
+    <text class="math" x="625" y="715">x<tspan baseline-shift="super" font-size="18">&lt;3&gt;</tspan></text>
+    <text class="math" x="855" y="715">x<tspan baseline-shift="super" font-size="18">&lt;4&gt;</tspan></text>
+    <text class="math" x="1085" y="715">x<tspan baseline-shift="super" font-size="18">&lt;5&gt;</tspan></text>
+
+    <text class="word" x="140" y="779">Jane</text>
+    <text class="word" x="395" y="779">visite</text>
+    <text class="word" x="625" y="779">l’Afrique</text>
+    <text class="word" x="855" y="779">en</text>
+    <text class="word" x="1085" y="779">Septembre</text>
+  </g>
+
+  <!-- arrows from tokens to qkv -->
+  <path class="arrow" d="M140 682 L140 635"/>
+  <path class="arrow" d="M395 682 L395 635"/>
+  <path class="arrow" d="M625 682 L625 635"/>
+  <path class="arrow" d="M855 682 L855 635"/>
+  <path class="arrow" d="M1085 682 L1085 635"/>
+
+  <text class="caption" x="40" y="825">SVG recreation using the supplied design tokens and color palette.</text>
+</svg>

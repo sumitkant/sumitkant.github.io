@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,800&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -1254,111 +1254,6 @@
       .page { padding: 0 1rem 4rem; }
       .model-table th:nth-child(n+4), .model-table td:nth-child(n+4) { display: none; }
     }
-  
-    /* ══════════════════════════════════════════════════
-       LIVEBENCH MODEL EXPLORER  (scoped under #livebench-explorer)
-    ══════════════════════════════════════════════════ */
-    #livebench-explorer {
-      --indigo:#6366f1; --sky:#0ea5e9; --emerald:#10b981; --amber:#f59e0b; --rose:#f43f5e; --violet:#8b5cf6;
-      --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-      --radius:16px;
-      --lb-card:#ffffff;
-    }
-    #livebench-explorer .lb-intro { font-size:14px; color:var(--text-secondary); line-height:1.7; margin:4px 0 16px; max-width:820px; }
-    #livebench-explorer .lb-intro strong { color:var(--text-primary); font-weight:700; }
-    #livebench-explorer code { font-family:var(--mono); font-size:12px; background:rgba(0,0,0,0.05); border:1px solid var(--border); border-radius:5px; padding:1px 6px; color:var(--accent); }
-
-    #livebench-explorer .controls-grid { display:grid; grid-template-columns:1.15fr 0.85fr 0.75fr 0.75fr; gap:10px; margin:16px 0; }
-    #livebench-explorer .control-card { background:var(--lb-card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; }
-    #livebench-explorer .control-label { display:block; font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:8px; }
-    #livebench-explorer .control-card input[type="text"],
-    #livebench-explorer .control-card input[type="number"],
-    #livebench-explorer .control-card select {
-      width:100%; border:1px solid var(--border); background:var(--bg); border-radius:9px;
-      padding:9px 10px; font-size:13px; color:var(--text-primary); outline:none; font-family:var(--font);
-    }
-    #livebench-explorer .control-card input:focus,
-    #livebench-explorer .control-card select:focus { border-color:rgba(200,92,42,0.45); box-shadow:0 0 0 3px rgba(200,92,42,0.08); }
-    #livebench-explorer .check-grid { display:flex; flex-wrap:wrap; gap:6px; max-height:116px; overflow:auto; padding-right:2px; }
-    #livebench-explorer .check-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 8px; border:1px solid var(--border); border-radius:999px; background:var(--bg); font-size:11px; color:var(--text-secondary); cursor:pointer; user-select:none; }
-    #livebench-explorer .check-pill input { accent-color:var(--accent); }
-    #livebench-explorer .button-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-    #livebench-explorer .action-btn { border:1px solid var(--border); border-radius:999px; padding:8px 13px; background:var(--text-primary); color:var(--bg); font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font); transition:transform 0.15s, box-shadow 0.15s; }
-    #livebench-explorer .action-btn:hover { transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,0.12); }
-    #livebench-explorer .action-btn:disabled { opacity:0.5; cursor:default; transform:none; box-shadow:none; }
-    #livebench-explorer .action-btn.secondary { background:var(--lb-card); color:var(--text-primary); }
-    #livebench-explorer .status-line { font-size:12px; color:var(--text-secondary); padding:10px 12px; background:var(--lb-card); border:1px solid var(--border); border-radius:10px; margin:14px 0; font-family:var(--mono); }
-
-    #livebench-explorer .metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 1.5rem; }
-    #livebench-explorer .metric-card { background:var(--lb-card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; min-height:116px; }
-    #livebench-explorer .metric-name { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:6px; }
-    #livebench-explorer .metric-value { font-size:1.85rem; font-weight:800; letter-spacing:-0.035em; line-height:1.1; margin-bottom:6px; }
-    #livebench-explorer .metric-desc { font-size:12px; color:var(--text-secondary); line-height:1.55; }
-
-    #livebench-explorer .viz-card { background:var(--lb-card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin:16px 0; overflow:hidden; }
-    #livebench-explorer .viz-card.is-hidden { display:none; }
-    #livebench-explorer .viz-card.is-disabled .svg-wrap,
-    #livebench-explorer .viz-card.is-disabled .legend { opacity:0.35; filter:grayscale(0.6); pointer-events:none; }
-    #livebench-explorer .trend-disabled-note { display:none; font-size:12px; color:var(--text-secondary); background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:10px; padding:9px 12px; margin-bottom:12px; }
-    #livebench-explorer .viz-card.is-disabled .trend-disabled-note { display:block; }
-    #livebench-explorer .viz-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
-    #livebench-explorer .viz-title { font-size:1rem; font-weight:800; letter-spacing:-0.02em; }
-    #livebench-explorer .viz-sub { font-size:12px; color:var(--text-secondary); line-height:1.55; max-width:720px; }
-    #livebench-explorer .lb-badge { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:var(--bg); border:1px solid var(--border); border-radius:999px; font-size:12px; font-weight:500; color:var(--text-secondary); white-space:nowrap; }
-    #livebench-explorer .svg-wrap { width:100%; overflow-x:auto; border-radius:12px; background:linear-gradient(180deg, rgba(0,0,0,0.018), rgba(0,0,0,0.005)); border:1px solid var(--border); }
-    #livebench-explorer svg.chart { display:block; min-width:820px; width:100%; height:520px; }
-    #livebench-explorer svg.chart.small { height:400px; }
-    #livebench-explorer .grid-line { stroke:rgba(0,0,0,0.06); stroke-width:1; }
-    #livebench-explorer .model-line { fill:none; stroke-width:2; opacity:0.62; transition:opacity 0.15s, stroke-width 0.15s; }
-    #livebench-explorer .model-line:hover { opacity:1; stroke-width:3.5; }
-    #livebench-explorer .dot { opacity:0.8; }
-    #livebench-explorer .lb-model-group { transition:opacity 0.12s ease; }
-    #livebench-explorer .lb-model-group.lb-dim { opacity:0.07; }
-    #livebench-explorer .lb-model-group.lb-focus { opacity:1 !important; }
-    #livebench-explorer .lb-model-group.lb-focus .model-line { stroke-width:3.6; opacity:1; }
-    #livebench-explorer .lb-model-group.lb-focus .line-label { font-weight:800; }
-    #livebench-explorer .line-label { font-family:var(--font); font-size:9.5px; font-weight:600; pointer-events:none; }
-    #livebench-explorer .legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; font-size:11px; color:var(--text-secondary); }
-    #livebench-explorer .legend-item { display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:var(--bg); border:1px solid var(--border); }
-    #livebench-explorer .legend-swatch { width:9px; height:9px; border-radius:50%; }
-
-    #livebench-explorer .prompt-table { background:var(--lb-card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin:16px 0; }
-    #livebench-explorer .data-table { width:100%; border-collapse:collapse; font-size:12.5px; min-width:780px; }
-    #livebench-explorer .data-table th, #livebench-explorer .data-table td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
-    #livebench-explorer .data-table th { background:var(--bg); font-size:10px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-tertiary); position:sticky; top:0; }
-    #livebench-explorer .data-table td.num { font-family:var(--mono); text-align:right; white-space:nowrap; }
-    #livebench-explorer .data-table tr:last-child td { border-bottom:none; }
-    #livebench-explorer .model-name { font-weight:700; color:var(--text-primary); }
-    #livebench-explorer .provider-tag { display:inline-flex; margin-top:3px; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-tertiary); }
-
-    #livebench-explorer .highlight { border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:12px 16px; margin:14px 0; font-size:13.5px; line-height:1.7; }
-    #livebench-explorer .highlight.orange { background:rgba(200,92,42,0.08); color:#7c2d12; }
-    #livebench-explorer .compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
-    #livebench-explorer .compare-card { border-radius:12px; padding:14px 16px; font-size:13px; line-height:1.65; }
-    #livebench-explorer .compare-card.do { background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); }
-    #livebench-explorer .compare-card.dont { background:rgba(244,63,94,0.05); border:1px solid rgba(244,63,94,0.15); }
-    #livebench-explorer .compare-label { font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:7px; }
-    #livebench-explorer .compare-card.do .compare-label { color:var(--emerald); }
-    #livebench-explorer .compare-card.dont .compare-label { color:var(--rose); }
-    #livebench-explorer .lb-blog { font-size:14px; color:var(--text-secondary); line-height:1.8; }
-    #livebench-explorer .lb-blog p { margin-bottom:12px; }
-    #livebench-explorer .lb-blog strong { color:var(--text-primary); font-weight:700; }
-    #livebench-explorer .lb-subhead { font-size:1rem; font-weight:800; margin:24px 0 12px; }
-
-    #livebench-explorer .tooltip { position:fixed; pointer-events:none; z-index:500; background:#1a1a18; color:#f2efe9; border-radius:10px; padding:9px 10px; font-size:12px; line-height:1.45; max-width:340px; box-shadow:0 10px 30px rgba(0,0,0,0.2); display:none; }
-    #livebench-explorer .tooltip strong { display:block; font-size:12.5px; margin-bottom:3px; }
-    #livebench-explorer .tooltip span { color:rgba(242,239,233,0.72); }
-
-    @media (max-width:980px) {
-      #livebench-explorer .metric-grid { grid-template-columns:repeat(2,1fr); }
-      #livebench-explorer .controls-grid { grid-template-columns:1fr 1fr; }
-    }
-    @media (max-width:720px) {
-      #livebench-explorer .controls-grid,
-      #livebench-explorer .metric-grid,
-      #livebench-explorer .compare-grid { grid-template-columns:1fr; }
-    }
-
   </style>
 </head>
 
@@ -1492,7 +1387,7 @@
           <text x="18" y="120" font-family="monospace" font-size="7.5" fill="#a89eff" opacity="0.7">token · token</text>
         </svg>
         <div class="tile-content">
-          <!-- <span class="tile-eyebrow">9 articles</span> -->
+          <span class="tile-eyebrow">9 articles</span>
           <span class="tile-label">LLM<br>Concepts</span>
         </div>
       </button>
@@ -1552,7 +1447,7 @@
           <text x="20" y="100" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.5">Resources</text>
         </svg>
         <div class="tile-content">
-          <!-- <span class="tile-eyebrow">12 links</span> -->
+          <span class="tile-eyebrow">12 links</span>
           <span class="tile-label">Tool<br>Stack</span>
         </div>
       </button>
@@ -1602,7 +1497,7 @@
           <circle cx="22" cy="55" r="2.5" fill="#d4a84b" opacity="0.5"/>
         </svg>
         <div class="tile-content">
-          <!-- <span class="tile-eyebrow">Papers read</span> -->
+          <span class="tile-eyebrow">Papers read</span>
           <span class="tile-label">Research<br>Digest</span>
         </div>
       </button>
@@ -1648,7 +1543,7 @@
           <text x="28" y="130" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">Gemini</text>
         </svg>
         <div class="tile-content">
-          <!-- <span class="tile-eyebrow">7 models</span> -->
+          <span class="tile-eyebrow">7 models</span>
           <span class="tile-label">Model<br>Landscape</span>
         </div>
       </button>
@@ -2172,847 +2067,163 @@
     <section class="section" id="section-models">
       <div class="section-header">
         <h2 class="section-title">Model Landscape</h2>
-        <span class="section-count">Live LiveBench leaderboard, fetched in your browser</span>
+        <span class="section-count">Frontier models compared across key benchmarks</span>
       </div>
 
+      <!-- Benchmark bars — MMLU -->
+      <div class="card-grid-2" style="margin-bottom:var(--gap);">
 
-      <div id="livebench-explorer">
-        <p class="lb-intro">
-          A live model leaderboard built from <strong>LiveBench</strong> benchmark CSVs. The script fetches every public release, adds a <code>_date</code> column, computes simple category averages, and renders them as parallel-coordinate and trend charts. It loads automatically — pick a category to drill into individual benchmarks, or select multiple dates to see how models move over time.
-        </p>
-
-        <div class="controls-grid">
-          <div class="control-card">
-            <label class="control-label" for="dataSource">Data source</label>
-            <select id="dataSource">
-              <option value="github" selected>GitHub raw mirror (CORS-friendly)</option>
-              <option value="livebench">livebench.ai direct URLs</option>
-            </select>
-            <div class="button-row">
-              <button class="action-btn" id="loadBtn">Load / Refresh</button>
-              <button class="action-btn secondary" id="downloadBtn" disabled>Download CSV</button>
-            </div>
+        <div class="benchmark-wrap">
+          <div class="benchmark-title">
+            MMLU (5-shot) — General Knowledge
+            <span>Higher = better</span>
           </div>
-          <div class="control-card">
-            <label class="control-label">Release dates</label>
-            <div class="check-grid" id="dateFilters"></div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Claude Opus 4</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:91%;background:#c85c2a;"></div></div>
+            <div class="bar-val">91.0</div>
           </div>
-          <div class="control-card">
-            <label class="control-label" for="categorySelect">Category</label>
-            <select id="categorySelect"></select>
-            <div style="height:8px"></div>
-            <label class="control-label" for="topN">Top N lines</label>
-            <input id="topN" type="number" min="3" max="60" value="18"/>
+          <div class="bar-row">
+            <div class="bar-label"><strong>GPT-4o</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:89%;background:#10a37f;"></div></div>
+            <div class="bar-val">89.0</div>
           </div>
-          <div class="control-card">
-            <label class="control-label" for="modelSearch">Model search</label>
-            <input id="modelSearch" type="text" placeholder="gpt, claude, gemini..."/>
-            <div style="height:8px"></div>
-            <label class="control-label" for="providerSelect">Provider</label>
-            <select id="providerSelect"><option value="all">All providers</option></select>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Gemini 1.5 Pro</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:86%;background:#5a5ab4;"></div></div>
+            <div class="bar-val">85.9</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Llama 3.1 405B</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:84%;background:#888;"></div></div>
+            <div class="bar-val">84.1</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Mistral Large 2</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:81%;background:#aaa;"></div></div>
+            <div class="bar-val">81.2</div>
           </div>
         </div>
 
-        <div class="controls-grid">
-          <div class="control-card">
-            <label class="control-label" for="minScore">Minimum selected-category score</label>
-            <input id="minScore" type="number" min="0" max="100" step="1" value="0"/>
+        <div class="benchmark-wrap">
+          <div class="benchmark-title">
+            HumanEval — Coding (pass@1)
+            <span>Higher = better</span>
           </div>
-          <div class="control-card">
-            <label class="control-label" for="sortBy">Sort models by</label>
-            <select id="sortBy">
-              <option value="category" selected>Selected category average</option>
-              <option value="overall">Overall mean across benchmarks</option>
-              <option value="model">Model name</option>
-              <option value="date">Date</option>
-            </select>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Claude Opus 4</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:92%;background:#c85c2a;"></div></div>
+            <div class="bar-val">92.0</div>
           </div>
-          <div class="control-card">
-            <label class="control-label">Metric axes</label>
-            <div class="check-grid" id="metricFilters"></div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>GPT-4o</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:90%;background:#10a37f;"></div></div>
+            <div class="bar-val">90.2</div>
           </div>
-          <div class="control-card">
-            <label class="control-label">View options</label>
-            <label class="check-pill"><input id="latestOnly" type="checkbox" checked/> Latest selected date only</label>
-            <label class="check-pill"><input id="showPoints" type="checkbox" checked/> Show points</label>
-            <label class="check-pill"><input id="fadeOlder" type="checkbox" checked/> Fade older releases</label>
+          <div class="bar-row">
+            <div class="bar-label"><strong>DeepSeek-V3</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:88%;background:#5a5ab4;"></div></div>
+            <div class="bar-val">88.5</div>
           </div>
-        </div>
-
-        <div class="status-line" id="status">Loading the latest LiveBench release…</div>
-
-        <div class="metric-grid">
-          <div class="metric-card"><div class="metric-name">Rows loaded</div><div class="metric-value" id="kpiRows">--</div><div class="metric-desc">Model-date records after combining every release.</div></div>
-          <div class="metric-card"><div class="metric-name">Models in view</div><div class="metric-value" id="kpiModels">--</div><div class="metric-desc">Unique models matching the active filters.</div></div>
-          <div class="metric-card"><div class="metric-name">Top model</div><div class="metric-value" id="kpiTop" style="font-size:1.25rem;line-height:1.25;">--</div><div class="metric-desc" id="kpiTopDesc">Based on selected category average.</div></div>
-          <div class="metric-card"><div class="metric-name">Benchmark axes</div><div class="metric-value" id="kpiAxes">--</div><div class="metric-desc">Metric columns used in the parallel chart.</div></div>
-        </div>
-
-        <!-- 1. Broad-category profile — always the first chart -->
-        <div class="viz-card" id="profileCard">
-          <div class="viz-header">
-            <div>
-              <div class="viz-title">Parallel profile by broad category</div>
-              <div class="viz-sub">Compresses many benchmark columns into simple buckets: reasoning, coding, language, data transformation, and spatial/logical tasks. Model names sit at each end of every line; hover a line to focus it. Pick a category above to drill into its individual axes.</div>
-            </div>
-            <span class="lb-badge" id="profileContext">Waiting for data</span>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Gemini 1.5 Pro</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:83%;background:#888;"></div></div>
+            <div class="bar-val">83.3</div>
           </div>
-          <div class="svg-wrap"><svg id="profileChart" class="chart small" role="img" aria-label="Category profile chart"></svg></div>
-          <div class="legend" id="profileLegend"></div>
-        </div>
-
-        <!-- 2. Metric-level breakdown — loads once a specific category is selected -->
-        <div class="viz-card is-hidden" id="parallelCard">
-          <div class="viz-header">
-            <div>
-              <div class="viz-title">Parallel coordinates by benchmark metric</div>
-              <div class="viz-sub">Individual benchmark axes for the selected category. The vertical scale auto-fits the visible data rather than starting at zero.</div>
-            </div>
-            <span class="lb-badge" id="chartContext">Waiting for data</span>
-          </div>
-          <div class="svg-wrap"><svg id="parallelChart" class="chart" role="img" aria-label="Parallel coordinates chart"></svg></div>
-          <div class="legend" id="parallelLegend"></div>
-        </div>
-
-        <!-- 3. Trend chart — always visible, disabled until 2+ dates selected -->
-        <div class="viz-card is-disabled" id="trendCard">
-          <div class="viz-header">
-            <div>
-              <div class="viz-title">Trend over release dates</div>
-              <div class="viz-sub">For models that appear across multiple releases, this shows whether their selected-category score improved, held steady, or declined over time.</div>
-            </div>
-            <span class="lb-badge" id="trendContext">Select 2+ dates</span>
-          </div>
-          <div class="trend-disabled-note" id="trendDisabledNote">Tick at least two release dates above to enable this chart.</div>
-          <div class="svg-wrap"><svg id="trendChart" class="chart small" role="img" aria-label="Model trend chart"></svg></div>
-          <div class="legend" id="trendLegend"></div>
-        </div>
-
-        <!-- Filtered leaderboard table -->
-        <div class="prompt-table" style="overflow:auto;max-height:560px;">
-          <table class="data-table" id="modelTable">
-            <thead><tr><th>Date</th><th>Model</th><th>Category</th><th>Overall</th><th>Reasoning</th><th>Coding</th><th>Language</th><th>Data</th></tr></thead>
-            <tbody><tr><td colspan="8">Loading data…</td></tr></tbody>
-          </table>
-        </div>
-
-        <!-- Auto-generated plain-English summary -->
-        <h3 class="lb-subhead">What the benchmark says right now</h3>
-        <div class="highlight orange" id="blogLead">Loading the latest LiveBench release to generate a model comparison summary…</div>
-        <div class="compare-grid">
-          <div class="compare-card do">
-            <div class="compare-label">The simple takeaway</div>
-            <div id="blogTakeaway">After loading, this summarizes the current leaders and what they are good at.</div>
-          </div>
-          <div class="compare-card dont">
-            <div class="compare-label">Important caveat</div>
-            <div>LiveBench scores are useful but not a universal answer to "which model is best?" A model that wins on math may not fit cost-sensitive summarization, low-latency chat, safety review, or tool-calling workflows.</div>
+          <div class="bar-row">
+            <div class="bar-label"><strong>Llama 3.1 70B</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:72%;background:#aaa;"></div></div>
+            <div class="bar-val">72.6</div>
           </div>
         </div>
-        <div id="generatedBlog" class="lb-blog" style="margin-top:16px;">
-          <p>Loading data to produce the generated comparison notes…</p>
-        </div>
 
-        <p style="font-size:11px;color:var(--text-tertiary);margin-top:14px;">
-          Live data from the LiveBench public CSV releases. Averages are simple arithmetic means computed in-browser for exploration and may differ from LiveBench's official aggregation.
-        </p>
-
-        <div class="tooltip" id="tooltip"></div>
       </div>
 
-      <script>
-      (function () {
-
-  const LIVEBENCH_DATES = [
-    '2024-06-24', '2024-07-26', '2024-08-31', '2024-11-25', '2025-04-02',
-    '2025-04-25', '2025-05-30', '2025-11-25', '2025-12-23', '2026-01-08'
-  ];
-
-  const CATEGORY_GROUPS = {
-    all: {
-      label: 'All benchmarks',
-      metrics: []
-    },
-    reasoning: {
-      label: 'Reasoning / math / logic',
-      metrics: ['AMPS_Hard', 'math_comp', 'olympiad', 'logic_with_navigation', 'zebra_puzzle', 'theory_of_mind', 'simplify', 'integrals_with_game', 'connections', 'consecutive_events', 'spatial']
-    },
-    coding: {
-      label: 'Coding',
-      metrics: ['code_completion', 'code_generation', 'javascript', 'python', 'typescript']
-    },
-    language: {
-      label: 'Language quality',
-      metrics: ['story_generation', 'summarize', 'paraphrase', 'typos']
-    },
-    data: {
-      label: 'Data transformation',
-      metrics: ['tablejoin', 'tablereformat', 'plot_unscrambling']
-    },
-    spatial: {
-      label: 'Spatial and puzzle-heavy',
-      metrics: ['spatial', 'zebra_puzzle', 'connections', 'logic_with_navigation', 'consecutive_events']
-    }
-  };
-
-  const CATEGORY_COLORS = {
-    all: '#1a1a18', reasoning: '#c85c2a', coding: '#6366f1', language: '#10b981', data: '#0ea5e9', spatial: '#8b5cf6'
-  };
-
-  let allRows = [];
-  let allColumns = [];
-  let numericColumns = [];
-  let combinedCsvCache = '';
-  let activeMetrics = [];
-
-  const els = {
-    loadBtn: document.getElementById('loadBtn'),
-    downloadBtn: document.getElementById('downloadBtn'),
-    dataSource: document.getElementById('dataSource'),
-    status: document.getElementById('status'),
-    dateFilters: document.getElementById('dateFilters'),
-    categorySelect: document.getElementById('categorySelect'),
-    providerSelect: document.getElementById('providerSelect'),
-    modelSearch: document.getElementById('modelSearch'),
-    topN: document.getElementById('topN'),
-    minScore: document.getElementById('minScore'),
-    sortBy: document.getElementById('sortBy'),
-    metricFilters: document.getElementById('metricFilters'),
-    latestOnly: document.getElementById('latestOnly'),
-    showPoints: document.getElementById('showPoints'),
-    fadeOlder: document.getElementById('fadeOlder'),
-    parallelChart: document.getElementById('parallelChart'),
-    profileChart: document.getElementById('profileChart'),
-    trendChart: document.getElementById('trendChart'),
-    profileCard: document.getElementById('profileCard'),
-    parallelCard: document.getElementById('parallelCard'),
-    trendCard: document.getElementById('trendCard'),
-    profileContext: document.getElementById('profileContext'),
-    trendContext: document.getElementById('trendContext'),
-    parallelLegend: document.getElementById('parallelLegend'),
-    profileLegend: document.getElementById('profileLegend'),
-    trendLegend: document.getElementById('trendLegend'),
-    modelTable: document.getElementById('modelTable').querySelector('tbody'),
-    tooltip: document.getElementById('tooltip'),
-    chartContext: document.getElementById('chartContext'),
-    kpiRows: document.getElementById('kpiRows'),
-    kpiModels: document.getElementById('kpiModels'),
-    kpiTop: document.getElementById('kpiTop'),
-    kpiTopDesc: document.getElementById('kpiTopDesc'),
-    kpiAxes: document.getElementById('kpiAxes'),
-    blogLead: document.getElementById('blogLead'),
-    blogTakeaway: document.getElementById('blogTakeaway'),
-    generatedBlog: document.getElementById('generatedBlog')
-  };
-
-  function setStatus(message) { els.status.textContent = message; }
-  function tableFileName(date) { return `table_${date.replaceAll('-', '_')}.csv`; }
-  function getCsvUrl(fileName) {
-    if (els.dataSource.value === 'livebench') return `https://livebench.ai/${fileName}`;
-    return `https://raw.githubusercontent.com/LiveBench/livebench.github.io/main/public/${fileName}`;
-  }
-
-  function parseCsvLine(line) {
-    const cells = [];
-    let current = '';
-    let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      const next = line[i + 1];
-      if (char === '"' && inQuotes && next === '"') { current += '"'; i++; }
-      else if (char === '"') { inQuotes = !inQuotes; }
-      else if (char === ',' && !inQuotes) { cells.push(current); current = ''; }
-      else { current += char; }
-    }
-    cells.push(current);
-    return cells;
-  }
-
-  function parseCsv(csvText) {
-    const lines = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(line => line.trim() !== '');
-    const headers = parseCsvLine(lines[0]).map(h => h.trim());
-    const rows = [];
-    for (const line of lines.slice(1)) {
-      const values = parseCsvLine(line);
-      const row = {};
-      headers.forEach((h, i) => { row[h] = values[i] ?? ''; });
-      if (values.length > headers.length) row._extra_cells = values.slice(headers.length).join('|');
-      rows.push(row);
-    }
-    return { headers, rows };
-  }
-
-  function escapeCsvCell(value) {
-    const text = value == null ? '' : String(value);
-    return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
-  }
-
-  function rowsToCsv(rows, columns) {
-    return [
-      columns.map(escapeCsvCell).join(','),
-      ...rows.map(row => columns.map(column => escapeCsvCell(row[column] ?? '')).join(','))
-    ].join('\n');
-  }
-
-  async function combineLiveBenchCsvs() {
-    const rows = [];
-    const columns = new Set(['_date', '_source_file', '_source_url']);
-    for (const date of LIVEBENCH_DATES) {
-      const fileName = tableFileName(date);
-      const url = getCsvUrl(fileName);
-      setStatus(`Fetching ${fileName} from ${els.dataSource.value}...`);
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Failed ${url}: HTTP ${response.status}`);
-      const text = await response.text();
-      const parsed = parseCsv(text);
-      parsed.headers.forEach(h => columns.add(h));
-      parsed.rows.forEach(row => {
-        if ('_extra_cells' in row) columns.add('_extra_cells');
-        rows.push({ _date: date, _source_file: fileName, _source_url: url, ...row });
-      });
-    }
-    return { rows, columns: Array.from(columns) };
-  }
-
-  function toNumber(value) {
-    if (value == null || value === '') return NaN;
-    const n = Number(value);
-    return Number.isFinite(n) ? n : NaN;
-  }
-
-  function avg(values) {
-    const nums = values.map(toNumber).filter(Number.isFinite);
-    return nums.length ? nums.reduce((a,b) => a+b, 0) / nums.length : NaN;
-  }
-
-  function fmt(n, digits = 1) {
-    return Number.isFinite(n) ? n.toFixed(digits) : '--';
-  }
-
-  function inferProvider(model) {
-    const m = String(model || '').toLowerCase();
-    if (m.includes('gpt') || m.includes('o3') || m.includes('o4')) return 'OpenAI';
-    if (m.includes('claude')) return 'Anthropic';
-    if (m.includes('gemini') || m.includes('gemma')) return 'Google';
-    if (m.includes('deepseek')) return 'DeepSeek';
-    if (m.includes('qwen')) return 'Alibaba/Qwen';
-    if (m.includes('grok')) return 'xAI';
-    if (m.includes('llama') || m.includes('meta')) return 'Meta';
-    if (m.includes('mistral') || m.includes('devstral')) return 'Mistral';
-    if (m.includes('kimi')) return 'Moonshot/Kimi';
-    if (m.includes('glm')) return 'Zhipu/GLM';
-    if (m.includes('minimax')) return 'MiniMax';
-    if (m.includes('arcee')) return 'Arcee';
-    return 'Other';
-  }
-
-  function categoryMetrics(key) {
-    if (key === 'all') return numericColumns;
-    return CATEGORY_GROUPS[key].metrics.filter(m => numericColumns.includes(m));
-  }
-
-  function enrichRows(rows) {
-    return rows.map(row => {
-      const next = { ...row };
-      next._provider = inferProvider(row.model);
-      next._overall = avg(numericColumns.map(c => row[c]));
-      for (const [key, group] of Object.entries(CATEGORY_GROUPS)) {
-        next[`_${key}`] = key === 'all' ? next._overall : avg(group.metrics.map(c => row[c]));
-      }
-      return next;
-    });
-  }
-
-  function unique(arr) { return Array.from(new Set(arr)).filter(Boolean); }
-
-  function initControls() {
-    const latestDate = LIVEBENCH_DATES.slice().sort().at(-1);
-    els.dateFilters.innerHTML = LIVEBENCH_DATES.slice().sort().map(date => `
-      <label class="check-pill"><input type="checkbox" value="${date}" ${date === latestDate ? 'checked' : ''}/> ${date}</label>
-    `).join('');
-
-    els.categorySelect.innerHTML = Object.entries(CATEGORY_GROUPS).map(([key, value]) => `
-      <option value="${key}">${value.label}</option>
-    `).join('');
-
-    document.querySelectorAll('#dateFilters input').forEach(input => input.addEventListener('change', updateView));
-    [els.providerSelect, els.modelSearch, els.topN, els.minScore, els.sortBy, els.latestOnly, els.showPoints, els.fadeOlder].forEach(el => {
-      el.addEventListener('input', updateView);
-      el.addEventListener('change', updateView);
-    });
-    els.categorySelect.addEventListener('change', () => { updateMetricFilters(); updateView(); });
-  }
-
-  function updateMetricFilters() {
-    const selected = els.categorySelect.value || 'all';
-    activeMetrics = categoryMetrics(selected).slice(0, 14);
-    els.metricFilters.innerHTML = activeMetrics.map(metric => `
-      <label class="check-pill"><input type="checkbox" value="${metric}" checked/> ${metric}</label>
-    `).join('');
-    document.querySelectorAll('#metricFilters input').forEach(input => input.addEventListener('change', updateView));
-  }
-
-  function selectedDates() {
-    return Array.from(document.querySelectorAll('#dateFilters input:checked')).map(i => i.value);
-  }
-
-  function selectedMetrics() {
-    const checked = Array.from(document.querySelectorAll('#metricFilters input:checked')).map(i => i.value);
-    return checked.length ? checked : activeMetrics;
-  }
-
-  function filterRows() {
-    const dates = selectedDates();
-    const latest = dates.slice().sort().at(-1);
-    const category = els.categorySelect.value || 'all';
-    const metricKey = `_${category}`;
-    const q = els.modelSearch.value.trim().toLowerCase();
-    const provider = els.providerSelect.value;
-    const minScore = Number(els.minScore.value || 0);
-    let rows = allRows.filter(row => dates.includes(row._date));
-    if (els.latestOnly.checked && latest) rows = rows.filter(row => row._date === latest);
-    if (q) rows = rows.filter(row => String(row.model || '').toLowerCase().includes(q));
-    if (provider !== 'all') rows = rows.filter(row => row._provider === provider);
-    rows = rows.filter(row => Number.isFinite(row[metricKey]) && row[metricKey] >= minScore);
-
-    const sortBy = els.sortBy.value;
-    rows.sort((a,b) => {
-      if (sortBy === 'model') return String(a.model).localeCompare(String(b.model));
-      if (sortBy === 'date') return String(b._date).localeCompare(String(a._date));
-      if (sortBy === 'overall') return (b._overall || -Infinity) - (a._overall || -Infinity);
-      return (b[metricKey] || -Infinity) - (a[metricKey] || -Infinity);
-    });
-    return rows;
-  }
-
-  function colorFor(index, total) {
-    const hue = Math.round((index * 360 / Math.max(total, 1) + 12) % 360);
-    return `hsl(${hue} 68% 42%)`;
-  }
-
-  function clearSvg(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
-  function makeSvg(tag, attrs = {}) {
-    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
-    return el;
-  }
-
-  // Smooth a sequence of [x,y] points into a Catmull-Rom -> cubic Bezier path (no zig-zag).
-  function smoothPath(pts) {
-    if (!pts.length) return '';
-    if (pts.length === 1) return `M${pts[0][0]},${pts[0][1]}`;
-    if (pts.length === 2) return `M${pts[0][0]},${pts[0][1]} L${pts[1][0]},${pts[1][1]}`;
-    let d = `M${pts[0][0]},${pts[0][1]}`;
-    for (let i = 0; i < pts.length - 1; i++) {
-      const p0 = pts[i - 1] || pts[i];
-      const p1 = pts[i];
-      const p2 = pts[i + 1];
-      const p3 = pts[i + 2] || p2;
-      const c1x = p1[0] + (p2[0] - p0[0]) / 6;
-      const c1y = p1[1] + (p2[1] - p0[1]) / 6;
-      const c2x = p2[0] - (p3[0] - p1[0]) / 6;
-      const c2y = p2[1] - (p3[1] - p1[1]) / 6;
-      d += ` C${c1x.toFixed(2)},${c1y.toFixed(2)} ${c2x.toFixed(2)},${c2y.toFixed(2)} ${p2[0].toFixed(2)},${p2[1].toFixed(2)}`;
-    }
-    return d;
-  }
-
-  // Build a y-domain from the visible data points (NOT anchored at zero) plus ~5 tick marks.
-  function computeScale(values) {
-    const finite = values.map(toNumber).filter(Number.isFinite);
-    if (!finite.length) return { min: 0, max: 100, ticks: [0, 25, 50, 75, 100] };
-    let lo = Math.min(...finite);
-    let hi = Math.max(...finite);
-    if (lo === hi) { lo -= 1; hi += 1; }
-    const padding = (hi - lo) * 0.06;
-    lo -= padding;
-    hi += padding;
-    const steps = 4;
-    const ticks = [];
-    for (let i = 0; i <= steps; i++) ticks.push(lo + (hi - lo) * i / steps);
-    return { min: lo, max: hi, ticks };
-  }
-
-  function truncName(name, max = 18) {
-    const s = String(name ?? '');
-    return s.length > max ? s.slice(0, max - 1) + '…' : s;
-  }
-
-  // On hover, focus the hovered model line and gray out all the others in the same chart.
-  function addModelGroupHover(svg, group) {
-    group.addEventListener('mouseenter', () => {
-      svg.querySelectorAll('.lb-model-group').forEach(g => { if (g !== group) g.classList.add('lb-dim'); });
-      group.classList.add('lb-focus');
-    });
-    group.addEventListener('mouseleave', () => {
-      svg.querySelectorAll('.lb-model-group').forEach(g => g.classList.remove('lb-dim'));
-      group.classList.remove('lb-focus');
-    });
-  }
-
-  // Place the model name at the left and right ends of its line.
-  function addEndLabels(group, model, color, leftX, leftY, rightX, rightY) {
-    const name = truncName(model);
-    const left = makeSvg('text', { x: leftX, y: leftY + 3.4, 'text-anchor': 'end', fill: color, class: 'line-label' });
-    left.textContent = name;
-    group.appendChild(left);
-    const right = makeSvg('text', { x: rightX, y: rightY + 3.4, 'text-anchor': 'start', fill: color, class: 'line-label' });
-    right.textContent = name;
-    group.appendChild(right);
-  }
-
-  function showTooltip(html, event) {
-    els.tooltip.innerHTML = html;
-    els.tooltip.style.display = 'block';
-    els.tooltip.style.left = `${Math.min(window.innerWidth - 360, event.clientX + 14)}px`;
-    els.tooltip.style.top = `${event.clientY + 14}px`;
-  }
-  function hideTooltip() { els.tooltip.style.display = 'none'; }
-
-  function renderParallelChart(rows) {
-    const svg = els.parallelChart;
-    clearSvg(svg);
-    const metrics = selectedMetrics().filter(m => numericColumns.includes(m));
-    if (!rows.length || !metrics.length) {
-      svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'No rows match the current filters.';
-      els.parallelLegend.innerHTML = '';
-      return;
-    }
-    const width = Math.max(820, metrics.length * 120);
-    const height = 520;
-    const pad = { left: 120, right: 120, top: 38, bottom: 118 };
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-    const innerW = width - pad.left - pad.right;
-    const innerH = height - pad.top - pad.bottom;
-    const topN = Math.max(3, Math.min(60, Number(els.topN.value) || 18));
-    const plotRows = rows.slice(0, topN);
-    const latestDate = selectedDates().sort().at(-1);
-    const x = i => pad.left + (metrics.length === 1 ? innerW / 2 : i * innerW / (metrics.length - 1));
-
-    // Scale to the min/max of the values actually visible on the chart (not from zero).
-    const visibleValues = [];
-    plotRows.forEach(row => metrics.forEach(metric => visibleValues.push(toNumber(row[metric]))));
-    const scale = computeScale(visibleValues);
-    const y = value => {
-      const v = Math.max(scale.min, Math.min(scale.max, value));
-      return pad.top + (scale.max - v) / (scale.max - scale.min) * innerH;
-    };
-
-    scale.ticks.forEach(tick => {
-      const yy = y(tick);
-      svg.appendChild(makeSvg('line', { x1: pad.left, x2: width - pad.right, y1: yy, y2: yy, class: 'grid-line' }));
-      const label = makeSvg('text', { x: pad.left - 8, y: yy + 4, 'text-anchor': 'end', fill: '#a8a8a0', 'font-size': 10 });
-      label.textContent = fmt(tick, 1);
-      svg.appendChild(label);
-    });
-
-    metrics.forEach((metric, i) => {
-      const xx = x(i);
-      svg.appendChild(makeSvg('line', { x1: xx, x2: xx, y1: pad.top, y2: pad.top + innerH, stroke: 'rgba(0,0,0,0.18)' }));
-      const label = makeSvg('text', { x: xx, y: pad.top + innerH + 20, 'text-anchor': 'end', transform: `rotate(-38 ${xx} ${pad.top + innerH + 20})`, fill: '#6b6b65', 'font-size': 11 });
-      label.textContent = metric;
-      svg.appendChild(label);
-    });
-
-    const leftLabelX = pad.left - 36;
-    const rightLabelX = width - pad.right + 8;
-    plotRows.forEach((row, index) => {
-      const color = colorFor(index, plotRows.length);
-      const finitePts = metrics.map((metric, i) => ({ x: x(i), y: y(toNumber(row[metric])), v: toNumber(row[metric]) })).filter(p => Number.isFinite(p.v));
-      if (!finitePts.length) return;
-      const group = makeSvg('g', { class: 'lb-model-group' });
-      if (els.fadeOlder.checked && latestDate && row._date !== latestDate) group.setAttribute('opacity', '0.28');
-      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
-      path.addEventListener('mousemove', event => showTooltip(`<strong>${row.model}</strong><span>${row._date} · ${row._provider}<br/>Selected avg: ${fmt(row['_' + els.categorySelect.value])} · Overall: ${fmt(row._overall)}</span>`, event));
-      path.addEventListener('mouseleave', hideTooltip);
-      group.appendChild(path);
-
-      if (els.showPoints.checked) {
-        finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3.2, fill: color, class: 'dot' })));
-      }
-      addEndLabels(group, row.model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
-      addModelGroupHover(svg, group);
-      svg.appendChild(group);
-    });
-
-    els.parallelLegend.innerHTML = plotRows.slice(0, 16).map((row, index) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, plotRows.length)}"></span>${escapeHtml(row.model)}</span>`).join('');
-    els.chartContext.textContent = `${plotRows.length} lines · ${metrics.length} axes`;
-  }
-
-  function renderProfileChart(rows) {
-    const svg = els.profileChart;
-    clearSvg(svg);
-    const axes = ['reasoning', 'coding', 'language', 'data', 'spatial'];
-    if (!rows.length) {
-      svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'No profile rows available.';
-      els.profileLegend.innerHTML = '';
-      if (els.profileContext) els.profileContext.textContent = 'No data';
-      return;
-    }
-    const width = 980, height = 400, pad = { left: 120, right: 120, top: 36, bottom: 72 };
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-    const innerW = width - pad.left - pad.right, innerH = height - pad.top - pad.bottom;
-    const topN = Math.max(3, Math.min(20, Number(els.topN.value) || 12));
-    const plotRows = rows.slice(0, topN);
-    const x = i => pad.left + i * innerW / (axes.length - 1);
-
-    // Scale to the visible category averages (not from zero).
-    const visibleValues = [];
-    plotRows.forEach(row => axes.forEach(axis => visibleValues.push(row['_' + axis])));
-    const scale = computeScale(visibleValues);
-    const y = value => {
-      const v = Math.max(scale.min, Math.min(scale.max, value));
-      return pad.top + (scale.max - v) / (scale.max - scale.min) * innerH;
-    };
-
-    scale.ticks.forEach(tick => {
-      const yy = y(tick);
-      svg.appendChild(makeSvg('line', { x1: pad.left, x2: width - pad.right, y1: yy, y2: yy, class: 'grid-line' }));
-      const label = makeSvg('text', { x: pad.left - 8, y: yy + 4, 'text-anchor': 'end', fill: '#a8a8a0', 'font-size': 10 });
-      label.textContent = fmt(tick, 1);
-      svg.appendChild(label);
-    });
-    axes.forEach((axis, i) => {
-      const xx = x(i);
-      svg.appendChild(makeSvg('line', { x1: xx, x2: xx, y1: pad.top, y2: pad.top + innerH, stroke: 'rgba(0,0,0,0.18)' }));
-      const label = makeSvg('text', { x: xx, y: pad.top + innerH + 24, 'text-anchor': 'middle', fill: '#6b6b65', 'font-size': 11 });
-      label.textContent = CATEGORY_GROUPS[axis].label.replace(' / math / logic', '');
-      svg.appendChild(label);
-    });
-
-    const leftLabelX = pad.left - 36;
-    const rightLabelX = width - pad.right + 8;
-    plotRows.forEach((row, index) => {
-      const color = colorFor(index, plotRows.length);
-      const finitePts = axes.map((axis, i) => ({ x: x(i), y: y(row['_' + axis]), v: row['_' + axis] })).filter(p => Number.isFinite(p.v));
-      if (!finitePts.length) return;
-      const group = makeSvg('g', { class: 'lb-model-group' });
-      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
-      path.addEventListener('mousemove', event => showTooltip(`<strong>${row.model}</strong><span>${row._date}<br/>Reasoning ${fmt(row._reasoning)} · Coding ${fmt(row._coding)} · Data ${fmt(row._data)}</span>`, event));
-      path.addEventListener('mouseleave', hideTooltip);
-      group.appendChild(path);
-      finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3, fill: color, class: 'dot' })));
-      addEndLabels(group, row.model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
-      addModelGroupHover(svg, group);
-      svg.appendChild(group);
-    });
-    els.profileLegend.innerHTML = plotRows.slice(0, 12).map((row, index) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, plotRows.length)}"></span>${escapeHtml(row.model)}</span>`).join('');
-    if (els.profileContext) els.profileContext.textContent = `${plotRows.length} models · ${axes.length} categories`;
-  }
-
-  function renderTrendChart(rows) {
-    const svg = els.trendChart;
-    clearSvg(svg);
-    const category = els.categorySelect.value || 'all';
-    const key = '_' + category;
-    const dates = selectedDates().sort();
-    if (dates.length < 2) {
-      svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'Select at least two release dates to show trends.';
-      els.trendLegend.innerHTML = '';
-      return;
-    }
-
-    // Pick models that ACTUALLY appear in >=2 of the selected dates (honoring search + provider filters).
-    const q = els.modelSearch.value.trim().toLowerCase();
-    const provider = els.providerSelect.value;
-    const pool = allRows.filter(r => dates.includes(r._date)
-      && Number.isFinite(r[key])
-      && (!q || String(r.model || '').toLowerCase().includes(q))
-      && (provider === 'all' || r._provider === provider));
-    const byModel = new Map();
-    pool.forEach(r => { if (!byModel.has(r.model)) byModel.set(r.model, []); byModel.get(r.model).push(r); });
-    const topN = Math.max(3, Math.min(12, Number(els.topN.value) || 8));
-    let seriesByModel = Array.from(byModel.entries())
-      .map(([model, series]) => ({ model, series: series.slice().sort((a, b) => a._date.localeCompare(b._date)) }))
-      .filter(s => new Set(s.series.map(r => r._date)).size >= 2)
-      .sort((a, b) => (b.series.at(-1)[key] || -Infinity) - (a.series.at(-1)[key] || -Infinity))
-      .slice(0, topN)
-      .map((s, index) => ({ ...s, index }));
-
-    if (!seriesByModel.length) {
-      svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'No model appears in two or more of the selected dates. Try selecting closer dates.';
-      els.trendLegend.innerHTML = '';
-      return;
-    }
-
-    const width = 980, height = 400, pad = { left: 120, right: 120, top: 36, bottom: 82 };
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-    const innerW = width - pad.left - pad.right, innerH = height - pad.top - pad.bottom;
-    const x = i => pad.left + i * innerW / Math.max(1, dates.length - 1);
-
-    const visibleValues = [];
-    seriesByModel.forEach(s => s.series.forEach(row => visibleValues.push(row[key])));
-    const scale = computeScale(visibleValues);
-    const y = value => {
-      const v = Math.max(scale.min, Math.min(scale.max, value));
-      return pad.top + (scale.max - v) / (scale.max - scale.min) * innerH;
-    };
-
-    scale.ticks.forEach(tick => {
-      const yy = y(tick);
-      svg.appendChild(makeSvg('line', { x1: pad.left, x2: width - pad.right, y1: yy, y2: yy, class: 'grid-line' }));
-      const label = makeSvg('text', { x: pad.left - 8, y: yy + 4, 'text-anchor': 'end', fill: '#a8a8a0', 'font-size': 10 });
-      label.textContent = fmt(tick, 1);
-      svg.appendChild(label);
-    });
-    dates.forEach((date, i) => {
-      const xx = x(i);
-      svg.appendChild(makeSvg('line', { x1: xx, x2: xx, y1: pad.top, y2: pad.top + innerH, stroke: 'rgba(0,0,0,0.1)' }));
-      const label = makeSvg('text', { x: xx, y: pad.top + innerH + 22, 'text-anchor': 'end', transform: `rotate(-35 ${xx} ${pad.top + innerH + 22})`, fill: '#6b6b65', 'font-size': 11 });
-      label.textContent = date;
-      svg.appendChild(label);
-    });
-
-    const leftLabelX = pad.left - 36;
-    const rightLabelX = width - pad.right + 8;
-    seriesByModel.forEach(({ model, index, series }) => {
-      const color = colorFor(index, seriesByModel.length);
-      const finitePts = series.map(row => ({ x: x(dates.indexOf(row._date)), y: y(row[key]), v: row[key] })).filter(p => Number.isFinite(p.v));
-      if (finitePts.length < 2) return;
-      const group = makeSvg('g', { class: 'lb-model-group' });
-      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
-      path.addEventListener('mousemove', event => showTooltip(`<strong>${model}</strong><span>${CATEGORY_GROUPS[category].label}<br/>${fmt(series[0][key])} → ${fmt(series.at(-1)[key])}</span>`, event));
-      path.addEventListener('mouseleave', hideTooltip);
-      group.appendChild(path);
-      finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3, fill: color, class: 'dot' })));
-      addEndLabels(group, model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
-      addModelGroupHover(svg, group);
-      svg.appendChild(group);
-    });
-    els.trendLegend.innerHTML = seriesByModel.slice(0, 10).map(({ model, index }) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, seriesByModel.length)}"></span>${escapeHtml(model)}</span>`).join('');
-  }
-
-  function renderTable(rows) {
-    if (!rows.length) {
-      els.modelTable.innerHTML = '<tr><td colspan="8">No rows match the active filters.</td></tr>';
-      return;
-    }
-    const category = els.categorySelect.value || 'all';
-    els.modelTable.innerHTML = rows.slice(0, 120).map(row => `
-      <tr>
-        <td>${row._date}</td>
-        <td><span class="model-name">${escapeHtml(row.model)}</span><br/><span class="provider-tag">${escapeHtml(row._provider)}</span></td>
-        <td class="num">${fmt(row['_' + category])}</td>
-        <td class="num">${fmt(row._overall)}</td>
-        <td class="num">${fmt(row._reasoning)}</td>
-        <td class="num">${fmt(row._coding)}</td>
-        <td class="num">${fmt(row._language)}</td>
-        <td class="num">${fmt(row._data)}</td>
-      </tr>
-    `).join('');
-  }
-
-  function renderKPIs(rows) {
-    const uniqueModels = unique(rows.map(r => r.model));
-    const category = els.categorySelect.value || 'all';
-    const top = rows[0];
-    els.kpiRows.textContent = allRows.length ? allRows.length.toLocaleString() : '--';
-    els.kpiModels.textContent = uniqueModels.length ? uniqueModels.length.toLocaleString() : '--';
-    els.kpiTop.textContent = top ? top.model : '--';
-    els.kpiTopDesc.textContent = top ? `${fmt(top['_' + category])} average in ${CATEGORY_GROUPS[category].label}` : 'Based on selected category average.';
-    els.kpiAxes.textContent = selectedMetrics().length || '--';
-  }
-
-  function categoryWinner(rows, category) {
-    const key = '_' + category;
-    const valid = rows.filter(r => Number.isFinite(r[key])).sort((a,b) => b[key] - a[key]);
-    return valid[0];
-  }
-
-  function renderBlog(rows) {
-    if (!rows.length) return;
-    const category = els.categorySelect.value || 'all';
-    const topOverall = [...rows].sort((a,b) => b._overall - a._overall)[0];
-    const topSelected = categoryWinner(rows, category);
-    const winners = ['reasoning','coding','language','data','spatial'].map(cat => ({ cat, row: categoryWinner(rows, cat) })).filter(x => x.row);
-    els.blogLead.innerHTML = `In this filtered view, <strong>${escapeHtml(topSelected.model)}</strong> leads the selected <strong>${CATEGORY_GROUPS[category].label}</strong> view with an average score of <strong>${fmt(topSelected['_' + category])}</strong>. The strongest all-around row is <strong>${escapeHtml(topOverall.model)}</strong> with a simple overall mean of <strong>${fmt(topOverall._overall)}</strong>.`;
-    els.blogTakeaway.innerHTML = `Treat the best model as a context-specific choice: pick reasoning leaders for math and puzzle-heavy work, coding leaders for developer workflows, language leaders for summarization and rewriting, and data leaders for spreadsheet-like transformation tasks.`;
-    els.generatedBlog.innerHTML = `
-      <p><strong>1. The leaderboard is not one race; it is several smaller races.</strong> LiveBench splits model behavior across tasks like math, coding, language, table handling, and spatial reasoning. A model that looks excellent on one axis can dip on another, which is why the parallel chart is more useful than a single rank number.</p>
-      <p><strong>2. The selected view favors ${escapeHtml(CATEGORY_GROUPS[category].label.toLowerCase())}.</strong> In the current filters, ${escapeHtml(topSelected.model)} is the cleanest pick for that slice. If your workflow resembles those tasks, it is a strong candidate to test first.</p>
-      <p><strong>3. Category winners tell a more practical story.</strong> ${winners.map(w => `${CATEGORY_GROUPS[w.cat].label}: <strong>${escapeHtml(w.row.model)}</strong> (${fmt(w.row['_' + w.cat])})`).join(' · ')}.</p>
-      <p><strong>4. What this means in simple terms:</strong> use the model with the highest reasoning profile when correctness depends on multi-step logic; use the coding profile when code reliability matters; use language and data profiles when your work is closer to content operations, summaries, tables, and formatting.</p>
-      <p><strong>5. The caveat:</strong> this page computes simple means from public CSV columns. It does not account for price, latency, context window, safety policy, or your private data. Use it to shortlist models, then run your own task-specific evaluation.</p>
-    `;
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
-  }
-
-  function updateView() {
-    if (!allRows.length) return;
-    const rows = filterRows();
-    const category = els.categorySelect.value || 'all';
-    const dateCount = selectedDates().length;
-
-    renderKPIs(rows);
-    renderProfileChart(rows);
-
-    // Metric-level breakdown only loads once a specific (non-"all") category is selected.
-    const categorySelected = category !== 'all';
-    els.parallelCard.classList.toggle('is-hidden', !categorySelected);
-    if (categorySelected) renderParallelChart(rows);
-
-    // Trend chart is always present but stays disabled until 2+ release dates are selected,
-    // independent of the chosen category.
-    const trendEnabled = dateCount >= 2;
-    els.trendCard.classList.toggle('is-hidden', false);
-    els.trendCard.classList.toggle('is-disabled', !trendEnabled);
-    if (els.trendContext) els.trendContext.textContent = trendEnabled ? `${dateCount} dates` : 'Select 2+ dates';
-    if (trendEnabled) renderTrendChart(rows);
-    else { clearSvg(els.trendChart); els.trendLegend.innerHTML = ''; }
-
-    renderTable(rows);
-    renderBlog(rows);
-    setStatus(`Showing ${rows.length.toLocaleString()} rows for ${CATEGORY_GROUPS[category].label}.${categorySelected ? '' : ' Select a specific category to load the per-metric breakdown chart.'}`);
-  }
-
-  async function loadData() {
-    els.loadBtn.disabled = true;
-    els.downloadBtn.disabled = true;
-    try {
-      const { rows, columns } = await combineLiveBenchCsvs();
-      allColumns = columns;
-      numericColumns = columns.filter(c => !c.startsWith('_') && c !== 'model' && rows.some(row => Number.isFinite(toNumber(row[c]))));
-      allRows = enrichRows(rows);
-      combinedCsvCache = rowsToCsv(rows, columns);
-
-      const providers = unique(allRows.map(r => r._provider)).sort();
-      els.providerSelect.innerHTML = '<option value="all">All providers</option>' + providers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
-      updateMetricFilters();
-      els.downloadBtn.disabled = false;
-      updateView();
-      setStatus(`Loaded ${allRows.length.toLocaleString()} model-date rows across ${LIVEBENCH_DATES.length} releases and ${numericColumns.length} numeric metrics.`);
-    } catch (err) {
-      console.error(err);
-      setStatus(`Error: ${err.message}. Try switching data source or hosting this file on a server/proxy if CORS blocks browser fetch.`);
-    } finally {
-      els.loadBtn.disabled = false;
-    }
-  }
-
-  function downloadCombinedCsv() {
-    if (!combinedCsvCache) return;
-    const blob = new Blob([combinedCsvCache], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'livebench_all_dates_combined.csv';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  initControls();
-  els.loadBtn.addEventListener('click', loadData);
-  els.downloadBtn.addEventListener('click', downloadCombinedCsv);
-  // Auto-load data on page load so the dashboard is never empty.
-  loadData();
-      })();
-      </script>
-
+      <!-- Comparison table -->
+      <div class="model-table-wrap">
+        <table class="model-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Provider</th>
+              <th>Context</th>
+              <th>MMLU</th>
+              <th>HumanEval</th>
+              <th>MATH</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Claude Opus 4</td>
+              <td>Anthropic</td>
+              <td>200K</td>
+              <td><span class="score-num">91.0</span><span class="score-bar-mini" style="width:46px;background:#c85c2a;opacity:0.4;"></span></td>
+              <td><span class="score-num">92.0</span></td>
+              <td><span class="score-num">—</span></td>
+              <td><span class="model-badge badge-leader">Frontier</span></td>
+            </tr>
+            <tr>
+              <td>Claude Sonnet 4</td>
+              <td>Anthropic</td>
+              <td>200K</td>
+              <td><span class="score-num">88.3</span></td>
+              <td><span class="score-num">88.7</span></td>
+              <td><span class="score-num">—</span></td>
+              <td><span class="model-badge badge-leader">Frontier</span></td>
+            </tr>
+            <tr>
+              <td>GPT-4o</td>
+              <td>OpenAI</td>
+              <td>128K</td>
+              <td><span class="score-num">89.0</span></td>
+              <td><span class="score-num">90.2</span></td>
+              <td><span class="score-num">76.6</span></td>
+              <td><span class="model-badge badge-leader">Frontier</span></td>
+            </tr>
+            <tr>
+              <td>Gemini 1.5 Pro</td>
+              <td>Google</td>
+              <td>1M</td>
+              <td><span class="score-num">85.9</span></td>
+              <td><span class="score-num">83.3</span></td>
+              <td><span class="score-num">67.7</span></td>
+              <td><span class="model-badge badge-mid">Established</span></td>
+            </tr>
+            <tr>
+              <td>DeepSeek-V3</td>
+              <td>DeepSeek</td>
+              <td>128K</td>
+              <td><span class="score-num">88.5</span></td>
+              <td><span class="score-num">88.5</span></td>
+              <td><span class="score-num">75.3</span></td>
+              <td><span class="model-badge badge-open">Open</span></td>
+            </tr>
+            <tr>
+              <td>Llama 3.1 405B</td>
+              <td>Meta</td>
+              <td>128K</td>
+              <td><span class="score-num">84.1</span></td>
+              <td><span class="score-num">—</span></td>
+              <td><span class="score-num">73.8</span></td>
+              <td><span class="model-badge badge-open">Open</span></td>
+            </tr>
+            <tr>
+              <td>Mistral Large 2</td>
+              <td>Mistral AI</td>
+              <td>128K</td>
+              <td><span class="score-num">81.2</span></td>
+              <td><span class="score-num">92.0</span></td>
+              <td><span class="score-num">—</span></td>
+              <td><span class="model-badge badge-mid">Established</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="font-size:11px;color:var(--text-tertiary);margin-top:10px;">
+        Benchmarks sourced from official model cards and papers. Scores reflect reported values at time of publication. Context window and scores may vary by version. — Updated May 2026
+      </p>
     </section>
 
   </main>
