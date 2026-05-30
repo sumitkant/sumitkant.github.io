@@ -223,7 +223,7 @@
     }
 
     .tile-label {
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 800;
       line-height: 1.2;
       letter-spacing: -0.02em;
@@ -369,12 +369,13 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-card);
-      padding: 18px 20px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 7px;
       transition: transform 0.18s, box-shadow 0.18s;
       position: relative;
+      cursor: pointer;
     }
 
     .skill-card:hover {
@@ -406,23 +407,27 @@
     .badge-custom { background: rgba(90, 90, 180, 0.1); color: #5a5ab4; }
 
     .skill-name {
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 800;
       line-height: 1.3;
       color: var(--text-primary);
     }
 
     .skill-desc {
-      font-size: 12.5px;
+      font-size: 12px;
       color: var(--text-secondary);
-      line-height: 1.65;
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .skill-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .skill-tags {
@@ -454,11 +459,11 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 999px;
       background: var(--text-primary);
       color: var(--bg);
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
       font-family: var(--font);
       border: none;
@@ -470,6 +475,198 @@
 
     .download-btn:hover { opacity: 0.8; }
     .download-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+
+    /* ── Skill modal ─────────────────────────────── */
+    .skill-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 14, 12, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .skill-modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .skill-modal {
+      background: var(--card-bg);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.22);
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.22s ease, opacity 0.22s ease;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .skill-modal-overlay.open .skill-modal {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .skill-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .skill-modal-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .skill-modal-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .skill-modal-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .skill-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .modal-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .modal-close-btn:hover { background: rgba(0,0,0,0.07); }
+    .modal-close-btn svg { width: 14px; height: 14px; stroke: var(--text-secondary); fill: none; stroke-width: 2; }
+
+    .skill-modal-body {
+      overflow-y: auto;
+      padding: 22px 24px 28px;
+      flex: 1;
+    }
+
+    /* Rendered markdown styles inside modal */
+    .skill-modal-body h1, .skill-modal-body h2 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 20px 0 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .skill-modal-body h1:first-child,
+    .skill-modal-body h2:first-child { margin-top: 0; }
+
+    .skill-modal-body h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 16px 0 6px;
+    }
+
+    .skill-modal-body p {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+
+    .skill-modal-body ul, .skill-modal-body ol {
+      padding-left: 18px;
+      margin-bottom: 12px;
+    }
+
+    .skill-modal-body li {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 4px;
+    }
+
+    .skill-modal-body code {
+      font-family: 'Cascadia Code', 'Fira Mono', monospace;
+      font-size: 11.5px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 1px 5px;
+      color: var(--accent);
+    }
+
+    .skill-modal-body pre {
+      background: #1a1a18;
+      border-radius: 10px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+    }
+
+    .skill-modal-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #e8e4da;
+      font-size: 12px;
+    }
+
+    .skill-modal-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 18px 0;
+    }
+
+    .skill-modal-body strong { color: var(--text-primary); font-weight: 700; }
+
+    .skill-modal-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-tertiary);
+      font-size: 13px;
+    }
+
+    .skill-modal-loading .spin {
+      width: 16px; height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── LLM Concepts ────────────────────────────── */
     /* reuses post-card + card-grid */
@@ -774,6 +971,199 @@
     footer a { color: var(--text-tertiary); transition: color 0.15s; }
     footer a:hover { color: var(--text-primary); }
 
+    /* ── Skills intro block ──────────────────────── */
+    .skills-intro {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 2.5rem;
+      align-items: stretch;
+    }
+
+    .skills-intro-left {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px 30px 32px;
+    }
+
+    .skills-intro-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .skills-intro-heading {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    .skills-intro-body {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 22px;
+    }
+
+    .skills-intro-body p + p { margin-top: 10px; }
+
+    .skills-pillars {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .skills-pillar {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+    }
+
+    .skills-pillar-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(200, 92, 42, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .skills-pillar-icon svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .skills-pillar-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .skills-pillar-text span {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ── Right column: full-height blog tile ─────── */
+    .skills-intro-right {
+      min-height: 100%;
+    }
+
+    .skills-deepdive-tile {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      min-height: 280px;
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      position: relative;
+      text-decoration: none;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .skills-deepdive-tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    }
+
+    /* the SVG fills the entire tile as a background */
+    .skills-deepdive-tile .tile-svg-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* subtle dark scrim at the bottom so text is readable */
+    .skills-deepdive-tile::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 30%,
+        rgba(80, 20, 5, 0.55) 70%,
+        rgba(60, 12, 0, 0.82) 100%
+      );
+      border-radius: var(--radius-card);
+    }
+
+    .skills-deepdive-content {
+      position: relative;
+      z-index: 2;
+      padding: 22px 22px 24px;
+    }
+
+    .skills-deepdive-eyebrow {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 8px;
+    }
+
+    .skills-deepdive-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .skills-deepdive-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.22);
+      backdrop-filter: blur(6px);
+      padding: 6px 14px;
+      border-radius: 999px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .skills-deepdive-tile:hover .skills-deepdive-cta {
+      background: rgba(255,255,255,0.24);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    .skills-deepdive-cta svg {
+      width: 11px;
+      height: 11px;
+      stroke: rgba(255,255,255,0.9);
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    @media (max-width: 820px) {
+      .skills-intro { grid-template-columns: 1fr; }
+      .skills-deepdive-tile { min-height: 220px; }
+    }
+
     /* ── Responsive ──────────────────────────────── */
     @media (max-width: 900px) {
       .card-grid, .card-grid-4 { grid-template-columns: repeat(2, 1fr); }
@@ -857,8 +1247,8 @@
           </g>
         </svg>
         <div class="tile-content">
-          <span class="tile-eyebrow">15 skills</span>
-          <span class="tile-label">Skills<br>Library</span>
+          <!-- <span class="tile-eyebrow">15 skills</span> -->
+          <span class="tile-label">Agent<br>Skills</span>
         </div>
       </button>
 
@@ -1086,10 +1476,174 @@
     <!-- ════════════════════════════════════════════ -->
     <section class="section active" id="section-skills">
       <div class="section-header">
-        <h2 class="section-title">Skills Library</h2>
+        <h2 class="section-title">Agent Skills</h2>
         <span class="section-count" id="skills-count">Loading…</span>
       </div>
-      <!-- Dynamic groups injected here by JS -->
+
+      <!-- ── Two-column intro ─────────────────────── -->
+      <div class="skills-intro">
+
+        <!-- Left: concept explainer -->
+        <div class="skills-intro-left">
+          <p class="skills-intro-eyebrow">What are Skills?</p>
+          <h3 class="skills-intro-heading">Reusable instructions<br>for AI agents</h3>
+          <div class="skills-intro-body">
+            <p>A <strong>skill</strong> is a markdown file — <code>SKILL.md</code> — that gives Claude (or any LLM agent) a precise, reusable set of instructions for a specific task. Think of it as a structured prompt template that lives in your repo and travels with your code.</p>
+            <p>Instead of re-explaining context every time, you drop a skill into your workflow and the agent knows exactly what to do — which tools to call, how to format output, what constraints apply.</p>
+          </div>
+          <div class="skills-pillars">
+            <div class="skills-pillar">
+              <div class="skills-pillar-icon">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              </div>
+              <div class="skills-pillar-text">
+                <strong>Portable by design</strong>
+                <span>Each skill is a plain markdown file — version-controlled, shareable, and model-agnostic.</span>
+              </div>
+            </div>
+            <div class="skills-pillar">
+              <div class="skills-pillar-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
+              </div>
+              <div class="skills-pillar-text">
+                <strong>Composable with MCP &amp; sub-agents</strong>
+                <span>Skills plug into Claude's tool-use layer — combine multiple skills in one agentic pipeline.</span>
+              </div>
+            </div>
+            <div class="skills-pillar">
+              <div class="skills-pillar-icon">
+                <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <div class="skills-pillar-text">
+                <strong>Provider-agnostic structure</strong>
+                <span>The library is organised by provider — Anthropic, OpenAI, and custom — so you can mix and match.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: full-height blog tile -->
+        <div class="skills-intro-right">
+          <a class="skills-deepdive-tile" href="https://sumitkant.github.io/Blogs/AI-ML/agent-skills-anthropic.html" target="_blank" rel="noopener">
+
+            <!-- Full-bleed SVG background — fills the entire tile -->
+            <svg class="tile-svg-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <linearGradient id="td-bg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%"   stop-color="#c85c2a"/>
+                  <stop offset="55%"  stop-color="#a84520"/>
+                  <stop offset="100%" stop-color="#5a1a05"/>
+                </linearGradient>
+                <pattern id="td-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                  <path d="M32 0L0 0 0 32" fill="none" stroke="#fff" stroke-width="0.4" opacity="0.12"/>
+                </pattern>
+                <!-- radial glow behind the centre node -->
+                <radialGradient id="td-glow" cx="50%" cy="45%" r="38%">
+                  <stop offset="0%"   stop-color="rgba(255,200,160,0.22)"/>
+                  <stop offset="100%" stop-color="transparent"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Background layers -->
+              <rect width="400" height="500" fill="url(#td-bg)"/>
+              <rect width="400" height="500" fill="url(#td-grid)"/>
+              <rect width="400" height="500" fill="url(#td-glow)"/>
+
+              <!-- Outer ring -->
+              <circle cx="200" cy="220" r="150" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.1"/>
+              <circle cx="200" cy="220" r="100" fill="none" stroke="#fff" stroke-width="0.7" opacity="0.13"/>
+              <circle cx="200" cy="220" r="56"  fill="none" stroke="#fff" stroke-width="0.9" opacity="0.18"/>
+
+              <!-- Spoke lines -->
+              <g stroke="#fff" stroke-width="1.1" opacity="0.2">
+                <line x1="200" y1="220" x2="80"  y2="110"/>
+                <line x1="200" y1="220" x2="320" y2="110"/>
+                <line x1="200" y1="220" x2="350" y2="240"/>
+                <line x1="200" y1="220" x2="310" y2="345"/>
+                <line x1="200" y1="220" x2="90"  y2="345"/>
+                <line x1="200" y1="220" x2="50"  y2="240"/>
+              </g>
+
+              <!-- Outer spoke nodes -->
+              <g fill="#fff" opacity="0.3">
+                <circle cx="80"  cy="110" r="7"/>
+                <circle cx="320" cy="110" r="7"/>
+                <circle cx="350" cy="240" r="7"/>
+                <circle cx="310" cy="345" r="7"/>
+                <circle cx="90"  cy="345" r="7"/>
+                <circle cx="50"  cy="240" r="7"/>
+              </g>
+
+              <!-- Secondary connecting arcs between outer nodes -->
+              <g stroke="#fff" stroke-width="0.6" opacity="0.09" fill="none">
+                <path d="M80 110 Q200 60 320 110"/>
+                <path d="M320 110 Q370 175 350 240"/>
+                <path d="M350 240 Q330 295 310 345"/>
+                <path d="M310 345 Q200 395 90 345"/>
+                <path d="M90 345 Q55 295 50 240"/>
+                <path d="M50 240 Q55 170 80 110"/>
+              </g>
+
+              <!-- Centre pulse rings -->
+              <circle cx="200" cy="220" r="28" fill="rgba(255,255,255,0.08)" stroke="#fff" stroke-width="0.8" opacity="0.4"/>
+              <circle cx="200" cy="220" r="18" fill="#fff" opacity="0.92"/>
+              <circle cx="200" cy="220" r="11" fill="url(#td-bg)"/>
+
+              <!-- ANTHROPIC wordmark at top -->
+              <text x="200" y="55"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="22" font-weight="800" letter-spacing="5"
+                fill="#fff" opacity="0.9" text-anchor="middle">ANTHROPIC</text>
+
+              <!-- Decorative rule under wordmark -->
+              <rect x="130" y="64" width="140" height="1.5" rx="1" fill="#fff" opacity="0.2"/>
+
+              <!-- Sub-label mid -->
+              <text x="200" y="90"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="10" font-weight="500" letter-spacing="2.5"
+                fill="#fff" opacity="0.4" text-anchor="middle">AGENT SKILLS · DEEPLEARNING.AI</text>
+
+              <!-- Floating tag pills -->
+              <rect x="120" y="370" width="68" height="18" rx="5"
+                fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
+              <text x="154" y="382"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="8" font-weight="600" fill="#fff" opacity="0.7" text-anchor="middle">Agentic AI</text>
+
+              <rect x="196" y="370" width="46" height="18" rx="5"
+                fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="0.7"/>
+              <text x="219" y="382"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="8" font-weight="600" fill="#fff" opacity="0.55" text-anchor="middle">Claude</text>
+
+              <rect x="250" y="370" width="40" height="18" rx="5"
+                fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="0.7"/>
+              <text x="270" y="382"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="8" font-weight="600" fill="#fff" opacity="0.5" text-anchor="middle">MCP</text>
+            </svg>
+
+            <!-- Text overlay (sits above scrim via z-index from CSS) -->
+            <div class="skills-deepdive-content">
+              <p class="skills-deepdive-eyebrow">Read the course notes →</p>
+              <p class="skills-deepdive-title">Agent Skills<br>with Anthropic</p>
+              <span class="skills-deepdive-cta">
+                Open blog post
+                <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+
+          </a>
+        </div>
+
+      </div>
+      <!-- ── end intro ────────────────────────────── -->
+       <div class="section-header">
+        <h2 class="section-title">Skill Library</h2>
+      </div>
+
+      <!-- Dynamic skill groups injected here by JS -->
       <div id="skills-root"></div>
     </section>
 
@@ -1739,29 +2293,219 @@
       return { name: name, desc: desc };
     }
  
-    /* ── Build a skill card DOM element ── */
+    /* ── Truncate description to ~2 sentences ── */
+    function truncateDesc(text, maxChars) {
+      if (!text) return '';
+      maxChars = maxChars || 130;
+      if (text.length <= maxChars) return text;
+      // Try to cut at a sentence boundary
+      var cut = text.substring(0, maxChars);
+      var lastDot = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+      if (lastDot > 60) return text.substring(0, lastDot + 1);
+      return cut.trimEnd() + '…';
+    }
+
+    /* ── Build a compact skill card DOM element ── */
     function buildCard(skill, provider) {
       var cfg = PROVIDERS[provider] || { emoji: '⚙️', badgeClass: 'badge-custom', badgeText: toTitle(provider) };
       var folderUrl   = 'https://github.com/' + GH_OWNER + '/' + GH_REPO + '/tree/' + GH_BRANCH + '/' + skill.skill_md.replace('/SKILL.md', '');
       var zipDownload = 'https://download-directory.github.io/?url=' + encodeURIComponent(folderUrl);
- 
+      var fullDesc    = skill.desc || skill.description || '';
+      var shortDesc   = truncateDesc(fullDesc);
+
       var card = document.createElement('div');
       card.className = 'skill-card';
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
       card.innerHTML =
         '<div class="skill-card-header">' +
           '<span class="skill-name">' + escHtml(skill.name || toTitle(skill.folder)) + '</span>' +
           '<span class="skill-provider-badge ' + cfg.badgeClass + '">' + escHtml(cfg.badgeText) + '</span>' +
         '</div>' +
-        '<p class="skill-desc">' + escHtml(skill.desc || skill.description || 'See SKILL.md for details.') + '</p>' +
+        '<p class="skill-desc">' + escHtml(shortDesc || 'Click to read the skill.') + '</p>' +
         '<div class="skill-footer">' +
-          '<a class="skill-tag" href="' + folderUrl + '" target="_blank" rel="noopener">' +
-            GH_ICON + 'View on GitHub' +
-          '</a>' +
-          '<a class="download-btn" href="' + zipDownload + '" target="_blank" rel="noopener">' +
+          '<span style="font-size:11px;color:var(--accent);font-weight:600;cursor:pointer;">Read skill →</span>' +
+          '<a class="download-btn" href="' + zipDownload + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;">' +
             DOWNLOAD_ICON + ' ZIP' +
           '</a>' +
         '</div>';
+
+      // Open modal on click (but not if user clicked the ZIP link)
+      card.addEventListener('click', function() {
+        openSkillModal(skill, provider, folderUrl, zipDownload);
+      });
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') openSkillModal(skill, provider, folderUrl, zipDownload);
+      });
+
       return card;
+    }
+
+    /* ── Very lightweight markdown → HTML renderer ── */
+    function mdToHtml(md) {
+      // Strip YAML frontmatter
+      md = md.replace(/^---[\s\S]*?---\s*/m, '');
+      var lines = md.split('\n');
+      var html = '', inPre = false, inUl = false, inOl = false;
+
+      function closeLists() {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (inOl) { html += '</ol>'; inOl = false; }
+      }
+
+      function inlineFormat(s) {
+        return s
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.+?)\*/g, '<em>$1</em>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--accent);">$1</a>');
+      }
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+
+        // Fenced code block toggle
+        if (/^```/.test(line)) {
+          if (inPre) { html += '</code></pre>'; inPre = false; }
+          else { closeLists(); html += '<pre><code>'; inPre = true; }
+          continue;
+        }
+        if (inPre) { html += escHtml(line) + '\n'; continue; }
+
+        // Headings
+        var hm = line.match(/^(#{1,3})\s+(.*)/);
+        if (hm) {
+          closeLists();
+          var lvl = Math.min(hm[1].length + 1, 3); // h2/h3 in modal
+          html += '<h' + lvl + '>' + inlineFormat(escHtml(hm[2])) + '</h' + lvl + '>';
+          continue;
+        }
+
+        // HR
+        if (/^---+$/.test(line.trim())) { closeLists(); html += '<hr>'; continue; }
+
+        // Unordered list
+        var ulm = line.match(/^[\-\*\+]\s+(.*)/);
+        if (ulm) {
+          if (!inUl) { if (inOl) { html += '</ol>'; inOl = false; } html += '<ul>'; inUl = true; }
+          html += '<li>' + inlineFormat(escHtml(ulm[1])) + '</li>';
+          continue;
+        }
+
+        // Ordered list
+        var olm = line.match(/^\d+\.\s+(.*)/);
+        if (olm) {
+          if (!inOl) { if (inUl) { html += '</ul>'; inUl = false; } html += '<ol>'; inOl = true; }
+          html += '<li>' + inlineFormat(escHtml(olm[1])) + '</li>';
+          continue;
+        }
+
+        // Blank line
+        if (line.trim() === '') { closeLists(); continue; }
+
+        // Paragraph
+        closeLists();
+        html += '<p>' + inlineFormat(escHtml(line.trim())) + '</p>';
+      }
+
+      closeLists();
+      if (inPre) html += '</code></pre>';
+      return html;
+    }
+
+    /* ── Inject modal DOM (created in JS so it always exists before any click) ── */
+    (function() {
+      var m = document.createElement('div');
+      m.id = 'skill-modal-overlay';
+      m.className = 'skill-modal-overlay';
+      m.setAttribute('role', 'dialog');
+      m.setAttribute('aria-modal', 'true');
+      m.innerHTML = [
+        '<div class="skill-modal" id="skill-modal">',
+          '<div class="skill-modal-header">',
+            '<div class="skill-modal-title-group">',
+              '<span class="skill-modal-title" id="modal-title"></span>',
+              '<div class="skill-modal-meta" id="modal-meta"></div>',
+            '</div>',
+            '<div class="skill-modal-actions">',
+              '<a id="modal-gh-link" class="skill-tag" href="#" target="_blank" rel="noopener" style="text-decoration:none;" onclick="event.stopPropagation()">',
+                '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;margin-right:3px;vertical-align:middle;">',
+                  '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
+                '</svg>GitHub',
+              '</a>',
+              '<a id="modal-zip-link" class="download-btn" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;">',
+                '<svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.2;">',
+                  '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>',
+                  '<polyline points="7 10 12 15 17 10"/>',
+                  '<line x1="12" y1="15" x2="12" y2="3"/>',
+                '</svg> ZIP',
+              '</a>',
+              '<button class="modal-close-btn" id="modal-close" aria-label="Close">',
+                '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#6b6b65;fill:none;stroke-width:2;">',
+                  '<line x1="18" y1="6" x2="6" y2="18"/>',
+                  '<line x1="6" y1="6" x2="18" y2="18"/>',
+                '</svg>',
+              '</button>',
+            '</div>',
+          '</div>',
+          '<div class="skill-modal-body" id="modal-body">',
+            '<div class="skill-modal-loading"><span class="spin"></span> Loading…</div>',
+          '</div>',
+        '</div>'
+      ].join('');
+      document.body.appendChild(m);
+
+      // Wire up close handlers immediately after inserting
+      m.addEventListener('click', function(e) { if (e.target === m) closeModal(); });
+      document.getElementById('modal-close').addEventListener('click', closeModal);
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+    })();
+
+    /* ── Modal open / close ── */
+    function openSkillModal(skill, provider, folderUrl, zipDownload) {
+      var overlay   = document.getElementById('skill-modal-overlay');
+      var modalBody = document.getElementById('modal-body');
+      var cfg = PROVIDERS[provider] || { badgeClass: 'badge-custom', badgeText: toTitle(provider) };
+
+      document.getElementById('modal-title').textContent = skill.name || toTitle(skill.folder);
+      document.getElementById('modal-meta').innerHTML =
+        '<span class="skill-provider-badge ' + cfg.badgeClass + '">' + escHtml(cfg.badgeText) + '</span>';
+      document.getElementById('modal-gh-link').href  = folderUrl;
+      document.getElementById('modal-zip-link').href = zipDownload;
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      // Use cached raw markdown if available — no second network request needed
+      if (skill._rawMd) {
+        modalBody.innerHTML = mdToHtml(skill._rawMd);
+        return;
+      }
+
+      // Fallback: fetch fresh (e.g. if manifest load skipped it)
+      modalBody.innerHTML = '<div class="skill-modal-loading"><span class="spin"></span> Loading SKILL.md…</div>';
+      fetch('./' + skill.skill_md)
+        .then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status + ' — ' + skill.skill_md);
+          return r.text();
+        })
+        .then(function(raw) {
+          skill._rawMd = raw;
+          modalBody.innerHTML = mdToHtml(raw);
+        })
+        .catch(function(err) {
+          console.error('[Skill Modal]', err);
+          modalBody.innerHTML =
+            '<p style="color:var(--text-tertiary);font-size:13px;">' +
+            'Could not load <code>' + escHtml(skill.skill_md) + '</code>.<br>' +
+            'Check that the file exists and the site is served over HTTP (not file://).</p>';
+        });
+    }
+
+    function closeModal() {
+      var overlay = document.getElementById('skill-modal-overlay');
+      if (overlay) { overlay.classList.remove('open'); }
+      document.body.style.overflow = '';
     }
  
     /* ── Skeleton shimmer group ── */
@@ -1828,14 +2572,16 @@
  
           /* Fetch all SKILL.md files for this provider in parallel */
           var enriched = await Promise.all(skills.map(async function(skill) {
-            if (skill.name && skill.description) return skill; // already parsed by manifest generator
             try {
               var mdRes = await fetch('./' + skill.skill_md);
               if (mdRes.ok) {
-                var text   = await mdRes.text();
-                var parsed = parseSkillMd(text);
-                if (parsed.name)  skill.name        = parsed.name;
-                if (parsed.desc)  skill.description = parsed.desc;
+                var rawText = await mdRes.text();
+                skill._rawMd = rawText;                    // cache for modal
+                if (!skill.name || !skill.description) {
+                  var parsed = parseSkillMd(rawText);
+                  if (parsed.name)  skill.name        = parsed.name;
+                  if (parsed.desc)  skill.description = parsed.desc;
+                }
               }
             } catch(e) { /* use whatever manifest already has */ }
             return skill;
@@ -1877,8 +2623,10 @@
     var _st = document.createElement('style');
     _st.textContent = '@keyframes pulse{0%,100%{background-position:200% 0}50%{background-position:-200% 0}}';
     document.head.appendChild(_st);
- 
+
     loadSkills();
   </script>
+
+
 </body>
 </html>
