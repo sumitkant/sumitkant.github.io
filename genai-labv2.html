@@ -1,0 +1,3804 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sumit Kant's GenAI Lab — agents, skills, concepts, tools, research & model landscape." />
+  <title>GenAI Lab — Sumit Kant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #f2efe9;
+      --border: rgba(0, 0, 0, 0.08);
+      --text-primary: #1a1a18;
+      --text-secondary: #6b6b65;
+      --text-tertiary: #a8a8a0;
+      --accent: #c85c2a;
+      --card-bg: #ffffff;
+      --quote-bg: #111110;
+      --radius-card: 18px;
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --gap: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+
+    /* ── Nav ─────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(242, 239, 233, 0.92);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .nav-monogram {
+      width: 30px;
+      height: 30px;
+      background: var(--text-primary);
+      color: var(--bg);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+    .nav-links a.active { font-weight: 500; }
+
+    /* ── Page layout ─────────────────────────────── */
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    /* ── Hero ────────────────────────────────────── */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .hero-title strong { font-weight: 800; color: var(--accent); }
+
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 580px;
+    }
+
+    /* ── Section nav tiles ───────────────────────── */
+    .section-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 2.5rem;
+    }
+
+    .tab-btn {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 20px 18px 18px;
+      height: 148px;
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-color: rgba(0,0,0,0.14);
+    }
+
+    .tab-btn.active {
+      border-color: transparent;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.18);
+    }
+
+    /* SVG background layer */
+    .tab-btn .tile-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.9;
+      transition: opacity 0.2s;
+    }
+
+    .tab-btn:not(.active) .tile-bg { opacity: 0; }
+    .tab-btn:hover:not(.active) .tile-bg { opacity: 0.06; }
+
+    /* Decorative SVG illustration (always visible, dimmer when inactive) */
+    .tab-btn .tile-art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .tab-btn:not(.active) .tile-art { opacity: 0.35; }
+    .tab-btn.active .tile-art { opacity: 1; }
+    .tab-btn:hover:not(.active) .tile-art { opacity: 0.6; }
+
+    /* Text content sits above SVG */
+    .tile-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tile-eyebrow {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      line-height: 1;
+    }
+
+    .tile-label {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .tab-btn:not(.active) .tile-eyebrow,
+    .tab-btn:not(.active) .tile-label {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active .tile-eyebrow,
+    .tab-btn.active .tile-label {
+      color: #fff;
+    }
+
+    @media (max-width: 900px) {
+      .section-tabs { grid-template-columns: repeat(3, 1fr); }
+      .tab-btn { height: 120px; }
+    }
+
+    @media (max-width: 540px) {
+      .section-tabs { grid-template-columns: repeat(2, 1fr); }
+      .tab-btn { height: 110px; }
+    }
+
+    /* ── Section ─────────────────────────────────── */
+    .section {
+      display: none;
+    }
+
+    .section.active { display: block; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-count {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+
+    /* ── Card grid (shared) ──────────────────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap);
+    }
+
+    .card-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--gap);
+    }
+
+    .card-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--gap);
+    }
+
+    /* ── Post card (matches blog style) ─────────── */
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: block;
+    }
+
+    .post-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .post-card img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-thumb {
+      width: 100%;
+      aspect-ratio: 16/10;
+      display: block;
+    }
+
+    .post-body {
+      padding: 14px 16px 18px;
+    }
+
+    .post-tags {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-bottom: 7px;
+    }
+
+    .post-tags .p { color: var(--accent); font-weight: 600; }
+
+    .post-title {
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--text-primary);
+      margin-bottom: 9px;
+      display: block;
+    }
+
+    .post-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ── Skills section ──────────────────────────── */
+    .theme-group {
+      margin-bottom: 2.5rem;
+    }
+
+    .theme-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skill-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      transition: transform 0.18s, box-shadow 0.18s;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .skill-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .skill-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .skill-provider-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    .badge-anthropic { background: rgba(200, 92, 42, 0.1); color: var(--accent); }
+    .badge-openai { background: rgba(16, 163, 127, 0.1); color: #10a37f; }
+    .badge-custom { background: rgba(90, 90, 180, 0.1); color: #5a5ab4; }
+
+    .skill-name {
+      font-size: 0.88rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--text-primary);
+    }
+
+    .skill-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .skill-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .skill-tag {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 500;
+      background: var(--bg);
+      color: var(--text-tertiary);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    a.skill-tag:hover {
+      color: var(--text-primary);
+      border-color: rgba(0,0,0,0.2);
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--text-primary);
+      color: var(--bg);
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .download-btn:hover { opacity: 0.8; }
+    .download-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+
+    /* ── Skill modal ─────────────────────────────── */
+    .skill-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 14, 12, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .skill-modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .skill-modal {
+      background: var(--card-bg);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.22);
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.22s ease, opacity 0.22s ease;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .skill-modal-overlay.open .skill-modal {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .skill-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .skill-modal-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .skill-modal-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .skill-modal-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .skill-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .modal-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .modal-close-btn:hover { background: rgba(0,0,0,0.07); }
+    .modal-close-btn svg { width: 14px; height: 14px; stroke: var(--text-secondary); fill: none; stroke-width: 2; }
+
+    .skill-modal-body {
+      overflow-y: auto;
+      padding: 22px 24px 28px;
+      flex: 1;
+    }
+
+    /* Rendered markdown styles inside modal */
+    .skill-modal-body h1, .skill-modal-body h2 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 20px 0 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .skill-modal-body h1:first-child,
+    .skill-modal-body h2:first-child { margin-top: 0; }
+
+    .skill-modal-body h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 16px 0 6px;
+    }
+
+    .skill-modal-body p {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+
+    .skill-modal-body ul, .skill-modal-body ol {
+      padding-left: 18px;
+      margin-bottom: 12px;
+    }
+
+    .skill-modal-body li {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 4px;
+    }
+
+    .skill-modal-body code {
+      font-family: 'Cascadia Code', 'Fira Mono', monospace;
+      font-size: 11.5px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 1px 5px;
+      color: var(--accent);
+    }
+
+    .skill-modal-body pre {
+      background: #1a1a18;
+      border-radius: 10px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+    }
+
+    .skill-modal-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #e8e4da;
+      font-size: 12px;
+    }
+
+    .skill-modal-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 18px 0;
+    }
+
+    .skill-modal-body strong { color: var(--text-primary); font-weight: 700; }
+
+    .skill-modal-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-tertiary);
+      font-size: 13px;
+    }
+
+    .skill-modal-loading .spin {
+      width: 16px; height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── LLM Concepts ────────────────────────────── */
+    /* reuses post-card + card-grid */
+
+    /* ── Tool Stack ──────────────────────────────── */
+    .tool-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform 0.18s, box-shadow 0.18s;
+      text-decoration: none;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .tool-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .tool-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .tool-category {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .tool-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .tool-link-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    .tool-link-row svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+
+    /* ── Research Digest ─────────────────────────── */
+    .digest-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+
+    .digest-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .digest-banner {
+      width: 100%;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .digest-body {
+      padding: 16px 18px 20px;
+    }
+
+    .digest-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .digest-type {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .digest-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--text-tertiary);
+    }
+
+    .digest-date {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .digest-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .digest-summary {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .coming-soon-block {
+      background: var(--card-bg);
+      border: 1px dashed rgba(0,0,0,0.15);
+      border-radius: var(--radius-card);
+      padding: 3rem 2rem;
+      text-align: center;
+      grid-column: 1 / -1;
+    }
+
+    .coming-soon-block .cs-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .coming-soon-block .cs-title {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .coming-soon-block .cs-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      max-width: 380px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    /* ── Model Landscape ─────────────────────────── */
+    .benchmark-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      margin-bottom: var(--gap);
+    }
+
+    .benchmark-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .benchmark-title span { font-size: 11px; color: var(--text-tertiary); font-weight: 400; }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .bar-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      width: 130px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bar-label strong { color: var(--text-primary); font-weight: 700; }
+
+    .bar-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(0,0,0,0.06);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+
+    .bar-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      width: 44px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .model-table-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      margin-bottom: var(--gap);
+    }
+
+    .model-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .model-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .model-table td {
+      padding: 11px 16px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .model-table tr:last-child td { border-bottom: none; }
+
+    .model-table tr:hover td { background: rgba(0,0,0,0.02); }
+
+    .model-table td:first-child { font-weight: 700; color: var(--text-primary); }
+
+    .model-badge {
+      display: inline-flex;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .badge-leader { background: rgba(200,92,42,0.1); color: var(--accent); }
+    .badge-open { background: rgba(16,163,127,0.1); color: #10a37f; }
+    .badge-mid { background: rgba(90,90,180,0.1); color: #5a5ab4; }
+
+    .score-num { font-weight: 700; color: var(--text-primary); }
+    .score-bar-mini {
+      display: inline-block;
+      height: 4px;
+      border-radius: 2px;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+
+    /* ── Footer ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 2rem 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    footer a { color: var(--text-tertiary); transition: color 0.15s; }
+    footer a:hover { color: var(--text-primary); }
+
+    /* ── Skills intro block ──────────────────────── */
+    .skills-intro {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 2.5rem;
+      align-items: stretch;
+    }
+
+    .skills-intro-left {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px 30px 32px;
+    }
+
+    .skills-intro-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .skills-intro-heading {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    .skills-intro-body {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 22px;
+    }
+
+    .skills-intro-body p + p { margin-top: 10px; }
+
+    .skills-pillars {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .skills-pillar {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+    }
+
+    .skills-pillar-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(200, 92, 42, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .skills-pillar-icon svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .skills-pillar-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .skills-pillar-text span {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ── Right column: full-height blog tile ─────── */
+    .skills-intro-right {
+      min-height: 100%;
+    }
+
+    .skills-deepdive-tile {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      min-height: 280px;
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      position: relative;
+      text-decoration: none;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .skills-deepdive-tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    }
+
+    /* the SVG fills the entire tile as a background */
+    .skills-deepdive-tile .tile-svg-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* subtle dark scrim at the bottom so text is readable */
+    .skills-deepdive-tile::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 30%,
+        rgba(80, 20, 5, 0.55) 70%,
+        rgba(60, 12, 0, 0.82) 100%
+      );
+      border-radius: var(--radius-card);
+    }
+
+    .skills-deepdive-content {
+      position: relative;
+      z-index: 2;
+      padding: 22px 22px 24px;
+    }
+
+    .skills-deepdive-eyebrow {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 8px;
+    }
+
+    .skills-deepdive-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .skills-deepdive-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.22);
+      backdrop-filter: blur(6px);
+      padding: 6px 14px;
+      border-radius: 999px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .skills-deepdive-tile:hover .skills-deepdive-cta {
+      background: rgba(255,255,255,0.24);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    .skills-deepdive-cta svg {
+      width: 11px;
+      height: 11px;
+      stroke: rgba(255,255,255,0.9);
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    @media (max-width: 820px) {
+      .skills-intro { grid-template-columns: 1fr; }
+      .skills-deepdive-tile { min-height: 220px; }
+    }
+
+    /* ── LLM Concept Map ─────────────────────────── */
+    .concept-group.grp-foundation  .concept-card { border-left: 3px solid #6366f1; }
+    .concept-group.grp-memory      .concept-card { border-left: 3px solid #0ea5e9; }
+    .concept-group.grp-inference   .concept-card { border-left: 3px solid #10b981; }
+    .concept-group.grp-evaluation  .concept-card { border-left: 3px solid #f59e0b; }
+    .concept-group.grp-agentic     .concept-card { border-left: 3px solid #c85c2a; }
+
+    .concept-group { margin-bottom: 2rem; }
+
+    .concept-group-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .concept-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .concept-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    }
+
+    .concept-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-bottom: 2px;
+    }
+
+    .concept-icon svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .concept-name {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.25;
+    }
+
+    .concept-sub {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    @media (max-width: 820px) { .concept-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .concept-grid { grid-template-columns: 1fr; } }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 900px) {
+      .card-grid, .card-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 540px) {
+      .card-grid, .card-grid-4, .card-grid-2 { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .page { padding: 0 1rem 4rem; }
+      .model-table th:nth-child(n+4), .model-table td:nth-child(n+4) { display: none; }
+    }
+  
+    /* ══════════════════════════════════════════════════
+       LIVEBENCH MODEL EXPLORER  (scoped under #livebench-explorer)
+    ══════════════════════════════════════════════════ */
+    #livebench-explorer {
+      --indigo:#6366f1; --sky:#0ea5e9; --emerald:#10b981; --amber:#f59e0b; --rose:#f43f5e; --violet:#8b5cf6;
+      --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --radius:16px;
+      --lb-card:#ffffff;
+    }
+    #livebench-explorer .lb-intro { font-size:14px; color:var(--text-secondary); line-height:1.7; margin:4px 0 16px; max-width:820px; }
+    #livebench-explorer .lb-intro strong { color:var(--text-primary); font-weight:700; }
+    #livebench-explorer code { font-family:var(--mono); font-size:12px; background:rgba(0,0,0,0.05); border:1px solid var(--border); border-radius:5px; padding:1px 6px; color:var(--accent); }
+
+    #livebench-explorer .controls-grid { display:grid; grid-template-columns:1.15fr 0.85fr 0.75fr 0.75fr; gap:10px; margin:16px 0; }
+    #livebench-explorer .control-card { background:var(--lb-card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; }
+    #livebench-explorer .control-label { display:block; font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:8px; }
+    #livebench-explorer .control-card input[type="text"],
+    #livebench-explorer .control-card input[type="number"],
+    #livebench-explorer .control-card select {
+      width:100%; border:1px solid var(--border); background:var(--bg); border-radius:9px;
+      padding:9px 10px; font-size:13px; color:var(--text-primary); outline:none; font-family:var(--font);
+    }
+    #livebench-explorer .control-card input:focus,
+    #livebench-explorer .control-card select:focus { border-color:rgba(200,92,42,0.45); box-shadow:0 0 0 3px rgba(200,92,42,0.08); }
+    #livebench-explorer .check-grid { display:flex; flex-wrap:wrap; gap:6px; max-height:116px; overflow:auto; padding-right:2px; }
+    #livebench-explorer .check-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 8px; border:1px solid var(--border); border-radius:999px; background:var(--bg); font-size:11px; color:var(--text-secondary); cursor:pointer; user-select:none; }
+    #livebench-explorer .check-pill input { accent-color:var(--accent); }
+    #livebench-explorer .button-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    #livebench-explorer .action-btn { border:1px solid var(--border); border-radius:999px; padding:8px 13px; background:var(--text-primary); color:var(--bg); font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font); transition:transform 0.15s, box-shadow 0.15s; }
+    #livebench-explorer .action-btn:hover { transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,0.12); }
+    #livebench-explorer .action-btn:disabled { opacity:0.5; cursor:default; transform:none; box-shadow:none; }
+    #livebench-explorer .action-btn.secondary { background:var(--lb-card); color:var(--text-primary); }
+    #livebench-explorer .status-line { font-size:12px; color:var(--text-secondary); padding:10px 12px; background:var(--lb-card); border:1px solid var(--border); border-radius:10px; margin:14px 0; font-family:var(--mono); }
+
+    #livebench-explorer .metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 1.5rem; }
+    #livebench-explorer .metric-card { background:var(--lb-card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; min-height:116px; }
+    #livebench-explorer .metric-name { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:6px; }
+    #livebench-explorer .metric-value { font-size:1.85rem; font-weight:800; letter-spacing:-0.035em; line-height:1.1; margin-bottom:6px; }
+    #livebench-explorer .metric-desc { font-size:12px; color:var(--text-secondary); line-height:1.55; }
+
+    #livebench-explorer .viz-card { background:var(--lb-card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin:16px 0; overflow:hidden; }
+    #livebench-explorer .viz-card.is-hidden { display:none; }
+    #livebench-explorer .viz-card.is-disabled .svg-wrap,
+    #livebench-explorer .viz-card.is-disabled .legend { opacity:0.35; filter:grayscale(0.6); pointer-events:none; }
+    #livebench-explorer .trend-disabled-note { display:none; font-size:12px; color:var(--text-secondary); background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:10px; padding:9px 12px; margin-bottom:12px; }
+    #livebench-explorer .viz-card.is-disabled .trend-disabled-note { display:block; }
+    #livebench-explorer .viz-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
+    #livebench-explorer .viz-title { font-size:1rem; font-weight:800; letter-spacing:-0.02em; }
+    #livebench-explorer .viz-sub { font-size:12px; color:var(--text-secondary); line-height:1.55; max-width:720px; }
+    #livebench-explorer .lb-badge { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:var(--bg); border:1px solid var(--border); border-radius:999px; font-size:12px; font-weight:500; color:var(--text-secondary); white-space:nowrap; }
+    #livebench-explorer .svg-wrap { width:100%; overflow-x:auto; border-radius:12px; background:linear-gradient(180deg, rgba(0,0,0,0.018), rgba(0,0,0,0.005)); border:1px solid var(--border); }
+    #livebench-explorer svg.chart { display:block; min-width:820px; width:100%; height:520px; }
+    #livebench-explorer svg.chart.small { height:400px; }
+    #livebench-explorer .grid-line { stroke:rgba(0,0,0,0.06); stroke-width:1; }
+    #livebench-explorer .model-line { fill:none; stroke-width:2; opacity:0.62; transition:opacity 0.15s, stroke-width 0.15s; }
+    #livebench-explorer .model-line:hover { opacity:1; stroke-width:3.5; }
+    #livebench-explorer .dot { opacity:0.8; }
+    #livebench-explorer .lb-model-group { transition:opacity 0.12s ease; }
+    #livebench-explorer .lb-model-group.lb-dim { opacity:0.07; }
+    #livebench-explorer .lb-model-group.lb-focus { opacity:1 !important; }
+    #livebench-explorer .lb-model-group.lb-focus .model-line { stroke-width:3.6; opacity:1; }
+    #livebench-explorer .lb-model-group.lb-focus .line-label { font-weight:800; }
+    #livebench-explorer .line-label { font-family:var(--font); font-size:9.5px; font-weight:600; pointer-events:none; }
+    #livebench-explorer .legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; font-size:11px; color:var(--text-secondary); }
+    #livebench-explorer .legend-item { display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:var(--bg); border:1px solid var(--border); }
+    #livebench-explorer .legend-swatch { width:9px; height:9px; border-radius:50%; }
+
+    #livebench-explorer .prompt-table { background:var(--lb-card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin:16px 0; }
+    #livebench-explorer .data-table { width:100%; border-collapse:collapse; font-size:12.5px; min-width:780px; }
+    #livebench-explorer .data-table th, #livebench-explorer .data-table td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
+    #livebench-explorer .data-table th { background:var(--bg); font-size:10px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-tertiary); position:sticky; top:0; }
+    #livebench-explorer .data-table td.num { font-family:var(--mono); text-align:right; white-space:nowrap; }
+    #livebench-explorer .data-table tr:last-child td { border-bottom:none; }
+    #livebench-explorer .model-name { font-weight:700; color:var(--text-primary); }
+    #livebench-explorer .provider-tag { display:inline-flex; margin-top:3px; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-tertiary); }
+
+    #livebench-explorer .highlight { border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:12px 16px; margin:14px 0; font-size:13.5px; line-height:1.7; }
+    #livebench-explorer .highlight.orange { background:rgba(200,92,42,0.08); color:#7c2d12; }
+    #livebench-explorer .compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+    #livebench-explorer .compare-card { border-radius:12px; padding:14px 16px; font-size:13px; line-height:1.65; }
+    #livebench-explorer .compare-card.do { background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); }
+    #livebench-explorer .compare-card.dont { background:rgba(244,63,94,0.05); border:1px solid rgba(244,63,94,0.15); }
+    #livebench-explorer .compare-label { font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:7px; }
+    #livebench-explorer .compare-card.do .compare-label { color:var(--emerald); }
+    #livebench-explorer .compare-card.dont .compare-label { color:var(--rose); }
+    #livebench-explorer .lb-blog { font-size:14px; color:var(--text-secondary); line-height:1.8; }
+    #livebench-explorer .lb-blog p { margin-bottom:12px; }
+    #livebench-explorer .lb-blog strong { color:var(--text-primary); font-weight:700; }
+    #livebench-explorer .lb-subhead { font-size:1rem; font-weight:800; margin:24px 0 12px; }
+
+    #livebench-explorer .tooltip { position:fixed; pointer-events:none; z-index:500; background:#1a1a18; color:#f2efe9; border-radius:10px; padding:9px 10px; font-size:12px; line-height:1.45; max-width:340px; box-shadow:0 10px 30px rgba(0,0,0,0.2); display:none; }
+    #livebench-explorer .tooltip strong { display:block; font-size:12.5px; margin-bottom:3px; }
+    #livebench-explorer .tooltip span { color:rgba(242,239,233,0.72); }
+
+    @media (max-width:980px) {
+      #livebench-explorer .metric-grid { grid-template-columns:repeat(2,1fr); }
+      #livebench-explorer .controls-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:720px) {
+      #livebench-explorer .controls-grid,
+      #livebench-explorer .metric-grid,
+      #livebench-explorer .compare-grid { grid-template-columns:1fr; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Nav ──────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="blog.html" >Blog</a></li>
+        <li><a href="bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+
+    <!-- ── Hero ──────────────────────────────────── -->
+    <header class="hero">
+      <p class="hero-eyebrow">Exploration</p>
+      <h1 class="hero-title">The <strong>GenAI Lab</strong></h1>
+      <p class="hero-sub">A living workspace for agents, skills, LLM concepts, tools, research digests, and model comparisons. Updated as I learn.</p>
+    </header>
+
+    <!-- ── Section tiles ─────────────────────────── -->
+    <div class="section-tabs" role="tablist">
+
+      <!-- 1 · Skills Library -->
+      <button class="tab-btn active" data-section="skills" role="tab">
+        <!-- active bg gradient -->
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sk-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#c85c2a"/>
+              <stop offset="100%" stop-color="#7a2e10"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#sk-grad)"/>
+        </svg>
+        <!-- art — star cluster / skill nodes -->
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <g opacity="1">
+            <!-- grid lines -->
+            <pattern id="sk-grid" width="22" height="22" patternUnits="userSpaceOnUse">
+              <path d="M22 0L0 0 0 22" fill="none" stroke="#fff" stroke-width="0.35" opacity="0.18"/>
+            </pattern>
+            <rect width="220" height="148" fill="url(#sk-grid)"/>
+            <!-- central star burst -->
+            <circle cx="148" cy="60" r="38" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.2"/>
+            <circle cx="148" cy="60" r="22" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+            <circle cx="148" cy="60" r="8" fill="#fff" opacity="0.55"/>
+            <!-- spoke nodes -->
+            <line x1="148" y1="60" x2="185" y2="35" stroke="#fff" stroke-width="1" opacity="0.4"/>
+            <circle cx="185" cy="35" r="4" fill="#fff" opacity="0.5"/>
+            <line x1="148" y1="60" x2="192" y2="72" stroke="#fff" stroke-width="1" opacity="0.35"/>
+            <circle cx="192" cy="72" r="3" fill="#fff" opacity="0.4"/>
+            <line x1="148" y1="60" x2="168" y2="100" stroke="#fff" stroke-width="1" opacity="0.35"/>
+            <circle cx="168" cy="100" r="4" fill="#fff" opacity="0.45"/>
+            <line x1="148" y1="60" x2="115" y2="88" stroke="#fff" stroke-width="1" opacity="0.3"/>
+            <circle cx="115" cy="88" r="3.5" fill="#fff" opacity="0.4"/>
+            <line x1="148" y1="60" x2="112" y2="38" stroke="#fff" stroke-width="1" opacity="0.35"/>
+            <circle cx="112" cy="38" r="3" fill="#fff" opacity="0.4"/>
+          </g>
+        </svg>
+        <div class="tile-content">
+          <!-- <span class="tile-eyebrow">15 skills</span> -->
+          <span class="tile-label">Agent<br>Skills</span>
+        </div>
+      </button>
+
+      <!-- 2 · LLM Concepts -->
+      <button class="tab-btn" data-section="concepts" role="tab">
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="llm-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2d1b7a"/>
+              <stop offset="50%" stop-color="#5b50e8"/>
+              <stop offset="100%" stop-color="#8b6ff7"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#llm-grad)"/>
+        </svg>
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- dot pattern -->
+          <pattern id="llm-dots" width="14" height="14" patternUnits="userSpaceOnUse">
+            <circle cx="7" cy="7" r="0.8" fill="#fff" opacity="0.2"/>
+          </pattern>
+          <rect width="220" height="148" fill="url(#llm-dots)"/>
+          <!-- transformer self-attention grid -->
+          <g opacity="0.6">
+            <g fill="#a89eff" opacity="0.7">
+              <rect x="110" y="18" width="9" height="9" rx="2"/>
+              <rect x="125" y="18" width="9" height="9" rx="2"/>
+              <rect x="140" y="18" width="9" height="9" rx="2"/>
+              <rect x="155" y="18" width="9" height="9" rx="2"/>
+              <rect x="170" y="18" width="9" height="9" rx="2"/>
+              <rect x="110" y="34" width="9" height="9" rx="2" opacity="0.8"/>
+              <rect x="125" y="34" width="9" height="9" rx="2" fill="#fff"/>
+              <rect x="140" y="34" width="9" height="9" rx="2" opacity="0.5"/>
+              <rect x="155" y="34" width="9" height="9" rx="2" opacity="0.3"/>
+              <rect x="170" y="34" width="9" height="9" rx="2" opacity="0.6"/>
+              <rect x="110" y="50" width="9" height="9" rx="2" opacity="0.4"/>
+              <rect x="125" y="50" width="9" height="9" rx="2" opacity="0.7"/>
+              <rect x="140" y="50" width="9" height="9" rx="2" fill="#fff"/>
+              <rect x="155" y="50" width="9" height="9" rx="2" opacity="0.5"/>
+              <rect x="170" y="50" width="9" height="9" rx="2" opacity="0.3"/>
+              <rect x="110" y="66" width="9" height="9" rx="2" opacity="0.2"/>
+              <rect x="125" y="66" width="9" height="9" rx="2" opacity="0.45"/>
+              <rect x="140" y="66" width="9" height="9" rx="2" opacity="0.8"/>
+              <rect x="155" y="66" width="9" height="9" rx="2" fill="#fff"/>
+              <rect x="170" y="66" width="9" height="9" rx="2" opacity="0.4"/>
+              <rect x="110" y="82" width="9" height="9" rx="2" opacity="0.15"/>
+              <rect x="125" y="82" width="9" height="9" rx="2" opacity="0.3"/>
+              <rect x="140" y="82" width="9" height="9" rx="2" opacity="0.6"/>
+              <rect x="155" y="82" width="9" height="9" rx="2" opacity="0.85"/>
+              <rect x="170" y="82" width="9" height="9" rx="2" fill="#fff"/>
+            </g>
+            <!-- label -->
+            <text x="185" y="18" font-family="monospace" font-size="6" fill="#fff" opacity="0.35" writing-mode="tb">ATTENTION</text>
+          </g>
+          <!-- prompt terminal -->
+          <!-- <rect x="12" y="90" width="82" height="40" rx="5" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.3"/> -->
+          <!-- <text x="18" y="107" font-family="monospace" font-size="7.5" fill="#fff" opacity="0.55">&gt;_ prompt</text>
+          <text x="18" y="120" font-family="monospace" font-size="7.5" fill="#a89eff" opacity="0.7">token · token</text> -->
+        </svg>
+        <div class="tile-content">
+          <!-- <span class="tile-eyebrow">9 articles</span> -->
+          <span class="tile-label">LLM<br>Concepts</span>
+        </div>
+      </button>
+
+      <!-- 3 · Tool Stack -->
+      <button class="tab-btn" data-section="tools" role="tab">
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ts-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0f2027"/>
+              <stop offset="50%" stop-color="#203a43"/>
+              <stop offset="100%" stop-color="#2c5364"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#ts-grad)"/>
+        </svg>
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- circuit-board pattern -->
+          <g stroke="#4dd9ac" stroke-width="0.8" fill="none" opacity="0.5">
+            <line x1="100" y1="20" x2="100" y2="50"/>
+            <line x1="100" y1="50" x2="130" y2="50"/>
+            <line x1="130" y1="50" x2="130" y2="30"/>
+            <line x1="130" y1="30" x2="180" y2="30"/>
+            <line x1="180" y1="30" x2="180" y2="75"/>
+            <line x1="180" y1="75" x2="205" y2="75"/>
+            <line x1="100" y1="50" x2="100" y2="90"/>
+            <line x1="100" y1="90" x2="155" y2="90"/>
+            <line x1="155" y1="90" x2="155" y2="120"/>
+            <line x1="155" y1="120" x2="200" y2="120"/>
+            <line x1="130" y1="50" x2="130" y2="110"/>
+            <line x1="130" y1="110" x2="108" y2="110"/>
+            <line x1="108" y1="110" x2="108" y2="135"/>
+          </g>
+          <!-- nodes -->
+          <g fill="#4dd9ac" opacity="0.75">
+            <circle cx="100" cy="20" r="3.5"/>
+            <circle cx="100" cy="50" r="3.5"/>
+            <circle cx="130" cy="50" r="3.5"/>
+            <circle cx="130" cy="30" r="3.5"/>
+            <circle cx="180" cy="30" r="3.5"/>
+            <circle cx="180" cy="75" r="3.5"/>
+            <circle cx="100" cy="90" r="3.5"/>
+            <circle cx="155" cy="90" r="3.5"/>
+            <circle cx="155" cy="120" r="3.5"/>
+            <circle cx="130" cy="110" r="3.5"/>
+          </g>
+          <!-- glow dot -->
+          <circle cx="180" cy="75" r="7" fill="#4dd9ac" opacity="0.2"/>
+          <!-- stack layers -->
+          <!-- <rect x="12" y="30" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.15" stroke="#4dd9ac" stroke-width="0.6"/>
+          <text x="20" y="40" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.8">API Layer</text>
+          <rect x="12" y="50" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.1" stroke="#4dd9ac" stroke-width="0.6"/>
+          <text x="20" y="60" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.7">Models</text>
+          <rect x="12" y="70" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.07" stroke="#4dd9ac" stroke-width="0.6"/>
+          <text x="20" y="80" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.6">Frameworks</text>
+          <rect x="12" y="90" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.05" stroke="#4dd9ac" stroke-width="0.6"/>
+          <text x="20" y="100" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.5">Resources</text> -->
+        </svg>
+        <div class="tile-content">
+          <!-- <span class="tile-eyebrow">12 links</span> -->
+          <span class="tile-label">Tool<br>Stack</span>
+        </div>
+      </button>
+
+      <!-- 4 · Research Digest -->
+      <button class="tab-btn" data-section="research" role="tab">
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rd-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#111110"/>
+              <stop offset="100%" stop-color="#2a2820"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#rd-grad)"/>
+        </svg>
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- paper lines -->
+          <g stroke="#d4a84b" stroke-width="0.7" opacity="0.45">
+            <line x1="105" y1="18" x2="200" y2="18"/>
+            <line x1="105" y1="28" x2="200" y2="28"/>
+            <line x1="105" y1="38" x2="170" y2="38"/>
+            <line x1="105" y1="58" x2="200" y2="58"/>
+            <line x1="105" y1="68" x2="200" y2="68"/>
+            <line x1="105" y1="78" x2="188" y2="78"/>
+            <line x1="105" y1="88" x2="200" y2="88"/>
+            <line x1="105" y1="98" x2="200" y2="98"/>
+            <line x1="105" y1="108" x2="158" y2="108"/>
+            <line x1="105" y1="128" x2="200" y2="128"/>
+            <line x1="105" y1="138" x2="178" y2="138"/>
+          </g>
+          <!-- paper border -->
+          <rect x="100" y="10" width="108" height="135" rx="4" fill="none" stroke="#d4a84b" stroke-width="0.7" opacity="0.25"/>
+          <!-- arXiv label -->
+          <text x="108" y="50" font-family="monospace" font-size="7" fill="#d4a84b" opacity="0.6">arXiv</text>
+          <rect x="100" y="44" width="108" height="10" fill="#d4a84b" opacity="0.06"/>
+          <!-- highlight bar -->
+          <rect x="100" y="118" width="108" height="10" fill="#d4a84b" opacity="0.08"/>
+          <!-- icon -->
+          <circle cx="50" cy="55" r="28" fill="none" stroke="#d4a84b" stroke-width="1" opacity="0.25"/>
+          <circle cx="50" cy="55" r="18" fill="none" stroke="#d4a84b" stroke-width="0.8" opacity="0.35"/>
+          <text x="50" y="58" font-family="monospace" font-size="9" fill="#d4a84b" opacity="0.7" text-anchor="middle">∑</text>
+          <!-- <text x="50" y="64" font-family="monospace" font-size="7" fill="#d4a84b" opacity="0.45" text-anchor="middl e">digest</text> -->
+          <!-- dots around circle -->
+          <circle cx="50" cy="27" r="2.5" fill="#d4a84b" opacity="0.5"/>
+          <circle cx="78" cy="55" r="2.5" fill="#d4a84b" opacity="0.5"/>
+          <circle cx="50" cy="83" r="2.5" fill="#d4a84b" opacity="0.5"/>
+          <circle cx="22" cy="55" r="2.5" fill="#d4a84b" opacity="0.5"/>
+        </svg>
+        <div class="tile-content">
+          <!-- <span class="tile-eyebrow">Papers read</span> -->
+          <span class="tile-label">Research<br>Digest</span>
+        </div>
+      </button>
+
+      <!-- 5 · Model Landscape -->
+      <button class="tab-btn" data-section="models" role="tab">
+        <svg class="tile-bg" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ml-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#003049"/>
+              <stop offset="100%" stop-color="#0a4a6e"/>
+            </linearGradient>
+          </defs>
+          <rect width="220" height="148" fill="url(#ml-grad)"/>
+        </svg>
+        <svg class="tile-art" viewBox="0 0 220 148" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- bar chart -->
+          <line x1="100" y1="15" x2="100" y2="128" stroke="#FCBF49" stroke-width="0.7" opacity="0.4"/>
+          <line x1="100" y1="128" x2="210" y2="128" stroke="#FCBF49" stroke-width="0.7" opacity="0.4"/>
+          <!-- bars -->
+          <rect x="106" y="38" width="16" height="90" rx="2" fill="#F77F00" opacity="0.85"/>
+          <rect x="126" y="48" width="16" height="80" rx="2" fill="#FCBF49" opacity="0.7"/>
+          <rect x="146" y="55" width="16" height="73" rx="2" fill="#F77F00" opacity="0.55"/>
+          <rect x="166" y="68" width="16" height="60" rx="2" fill="#FCBF49" opacity="0.45"/>
+          <rect x="186" y="80" width="16" height="48" rx="2" fill="#F77F00" opacity="0.35"/>
+          <!-- bar labels -->
+          <text x="114" y="34" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.7" text-anchor="middle">91</text>
+          <text x="134" y="44" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.6" text-anchor="middle">89</text>
+          <text x="154" y="51" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.5" text-anchor="middle">86</text>
+          <text x="174" y="64" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.45" text-anchor="middle">84</text>
+          <text x="194" y="76" font-family="monospace" font-size="6.5" fill="#FCBF49" opacity="0.4" text-anchor="middle">81</text>
+          <!-- wave line chart -->
+          <polyline points="100,95 120,78 140,85 160,65 180,72 200,55 210,58" fill="none" stroke="#fff" stroke-width="1.4" opacity="0.35" stroke-dasharray="3 2"/>
+          <!-- left side label -->
+          <!-- <text x="15" y="60" font-family="monospace" font-size="7.5" fill="#FCBF49" opacity="0.55" text-anchor="middle">MMLU</text>
+          <text x="15" y="72" font-family="monospace" font-size="6" fill="#FCBF49" opacity="0.35" text-anchor="middle">Bench</text> -->
+          <!-- model dots -->
+          <!-- <circle cx="20" cy="100" r="3" fill="#c85c2a" opacity="0.9"/>
+          <text x="28" y="104" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">Claude</text>
+          <circle cx="20" cy="113" r="3" fill="#10a37f" opacity="0.9"/>
+          <text x="28" y="117" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">GPT-4o</text>
+          <circle cx="20" cy="126" r="3" fill="#5a5ab4" opacity="0.9"/>
+          <text x="28" y="130" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">Gemini</text> -->
+        </svg>
+        <div class="tile-content">
+          <!-- <span class="tile-eyebrow">7 models</span> -->
+          <span class="tile-label">Model<br>Landscape</span>
+        </div>
+      </button>
+
+    </div>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  1. SKILLS LIBRARY  (dynamic)               -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section active" id="section-skills">
+      <div class="section-header">
+        <h2 class="section-title">Agent Skills</h2>
+        <span class="section-count" id="skills-count">Loading…</span>
+      </div>
+
+      <!-- ── Two-column intro ─────────────────────── -->
+      <div class="skills-intro">
+
+        <!-- Left: concept explainer -->
+        <div class="skills-intro-left">
+          <p class="skills-intro-eyebrow">What are Skills?</p>
+          <h3 class="skills-intro-heading">Reusable instructions<br>for AI agents</h3>
+          <div class="skills-intro-body">
+            <p>A <strong>skill</strong> is a markdown file — <code>SKILL.md</code> — that gives Claude (or any LLM agent) a precise, reusable set of instructions for a specific task. Think of it as a structured prompt template that lives in your repo and travels with your code.</p>
+            <p>Instead of re-explaining context every time, you drop a skill into your workflow and the agent knows exactly what to do — which tools to call, how to format output, what constraints apply.</p>
+          </div>
+          <div class="skills-pillars">
+            <div class="skills-pillar">
+              <div class="skills-pillar-icon">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              </div>
+              <div class="skills-pillar-text">
+                <strong>Portable by design</strong>
+                <span>Each skill is a plain markdown file — version-controlled, shareable, and model-agnostic.</span>
+              </div>
+            </div>
+            <div class="skills-pillar">
+              <div class="skills-pillar-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
+              </div>
+              <div class="skills-pillar-text">
+                <strong>Composable with MCP &amp; sub-agents</strong>
+                <span>Skills plug into Claude's tool-use layer — combine multiple skills in one agentic pipeline.</span>
+              </div>
+            </div>
+            <div class="skills-pillar">
+              <div class="skills-pillar-icon">
+                <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <div class="skills-pillar-text">
+                <strong>Provider-agnostic structure</strong>
+                <span>The library is organised by provider — Anthropic, OpenAI, and custom — so you can mix and match.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: full-height blog tile -->
+        <div class="skills-intro-right">
+          <a class="skills-deepdive-tile" href="https://sumitkant.github.io/Blogs/AI-ML/agent-skills-anthropic.html" target="_blank" rel="noopener">
+
+            <!-- Full-bleed SVG background — fills the entire tile -->
+            <svg class="tile-svg-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <linearGradient id="td-bg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%"   stop-color="#c85c2a"/>
+                  <stop offset="55%"  stop-color="#a84520"/>
+                  <stop offset="100%" stop-color="#5a1a05"/>
+                </linearGradient>
+                <pattern id="td-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                  <path d="M32 0L0 0 0 32" fill="none" stroke="#fff" stroke-width="0.4" opacity="0.12"/>
+                </pattern>
+                <!-- radial glow behind the centre node -->
+                <radialGradient id="td-glow" cx="50%" cy="45%" r="38%">
+                  <stop offset="0%"   stop-color="rgba(255,200,160,0.22)"/>
+                  <stop offset="100%" stop-color="transparent"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Background layers -->
+              <rect width="400" height="500" fill="url(#td-bg)"/>
+              <rect width="400" height="500" fill="url(#td-grid)"/>
+              <rect width="400" height="500" fill="url(#td-glow)"/>
+
+              <!-- Outer ring -->
+              <circle cx="200" cy="220" r="150" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.1"/>
+              <circle cx="200" cy="220" r="100" fill="none" stroke="#fff" stroke-width="0.7" opacity="0.13"/>
+              <circle cx="200" cy="220" r="56"  fill="none" stroke="#fff" stroke-width="0.9" opacity="0.18"/>
+
+              <!-- Spoke lines -->
+              <g stroke="#fff" stroke-width="1.1" opacity="0.2">
+                <line x1="200" y1="220" x2="80"  y2="110"/>
+                <line x1="200" y1="220" x2="320" y2="110"/>
+                <line x1="200" y1="220" x2="350" y2="240"/>
+                <line x1="200" y1="220" x2="310" y2="345"/>
+                <line x1="200" y1="220" x2="90"  y2="345"/>
+                <line x1="200" y1="220" x2="50"  y2="240"/>
+              </g>
+
+              <!-- Outer spoke nodes -->
+              <g fill="#fff" opacity="0.3">
+                <circle cx="80"  cy="110" r="7"/>
+                <circle cx="320" cy="110" r="7"/>
+                <circle cx="350" cy="240" r="7"/>
+                <circle cx="310" cy="345" r="7"/>
+                <circle cx="90"  cy="345" r="7"/>
+                <circle cx="50"  cy="240" r="7"/>
+              </g>
+
+              <!-- Secondary connecting arcs between outer nodes -->
+              <g stroke="#fff" stroke-width="0.6" opacity="0.09" fill="none">
+                <path d="M80 110 Q200 60 320 110"/>
+                <path d="M320 110 Q370 175 350 240"/>
+                <path d="M350 240 Q330 295 310 345"/>
+                <path d="M310 345 Q200 395 90 345"/>
+                <path d="M90 345 Q55 295 50 240"/>
+                <path d="M50 240 Q55 170 80 110"/>
+              </g>
+
+              <!-- Centre pulse rings -->
+              <circle cx="200" cy="220" r="28" fill="rgba(255,255,255,0.08)" stroke="#fff" stroke-width="0.8" opacity="0.4"/>
+              <circle cx="200" cy="220" r="18" fill="#fff" opacity="0.92"/>
+              <circle cx="200" cy="220" r="11" fill="url(#td-bg)"/>
+
+              <!-- ANTHROPIC wordmark at top -->
+              <text x="200" y="55"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="22" font-weight="800" letter-spacing="5"
+                fill="#fff" opacity="0.9" text-anchor="middle">ANTHROPIC</text>
+
+              <!-- Decorative rule under wordmark -->
+              <rect x="130" y="64" width="140" height="1.5" rx="1" fill="#fff" opacity="0.2"/>
+
+              <!-- Sub-label mid -->
+              <text x="200" y="90"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="10" font-weight="500" letter-spacing="2.5"
+                fill="#fff" opacity="0.4" text-anchor="middle">AGENT SKILLS · DEEPLEARNING.AI</text>
+
+              <!-- Floating tag pills -->
+              <rect x="120" y="370" width="68" height="18" rx="5"
+                fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
+              <text x="154" y="382"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="8" font-weight="600" fill="#fff" opacity="0.7" text-anchor="middle">Agentic AI</text>
+
+              <rect x="196" y="370" width="46" height="18" rx="5"
+                fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="0.7"/>
+              <text x="219" y="382"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="8" font-weight="600" fill="#fff" opacity="0.55" text-anchor="middle">Claude</text>
+
+              <rect x="250" y="370" width="40" height="18" rx="5"
+                fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="0.7"/>
+              <text x="270" y="382"
+                font-family="'Plus Jakarta Sans',system-ui,sans-serif"
+                font-size="8" font-weight="600" fill="#fff" opacity="0.5" text-anchor="middle">MCP</text>
+            </svg>
+
+            <!-- Text overlay (sits above scrim via z-index from CSS) -->
+            <div class="skills-deepdive-content">
+              <p class="skills-deepdive-eyebrow">Read the course notes →</p>
+              <p class="skills-deepdive-title">Agent Skills<br>with Anthropic</p>
+              <span class="skills-deepdive-cta">
+                Open blog post
+                <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+
+          </a>
+        </div>
+
+      </div>
+      <!-- ── end intro ────────────────────────────── -->
+       <div class="section-header">
+        <h2 class="section-title">Skill Library</h2>
+      </div>
+
+      <!-- Dynamic skill groups injected here by JS -->
+      <div id="skills-root"></div>
+    </section>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  2. LLM CONCEPTS                             -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section" id="section-concepts">
+      <div class="section-header">
+        <h2 class="section-title">LLM Concepts</h2>
+        <span class="section-count">Click any concept to read a dedicated page</span>
+      </div>
+
+      <!-- ── FOUNDATION & TRAINING (indigo) ── -->
+      <div class="concept-group grp-foundation">
+        <h3 class="concept-group-label">Foundation &amp; Training</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/prompt-engineering.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            </div>
+            <span class="concept-name">Prompt engineering</span>
+            <p class="concept-sub">Zero-shot, few-shot, chain-of-thought, system prompts</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/fine-tuning.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+            </div>
+            <span class="concept-name">Fine-tuning</span>
+            <p class="concept-sub">LoRA, RLHF, instruction tuning, dataset curation</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/tokenization-embeddings.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            </div>
+            <span class="concept-name">Tokenization &amp; embeddings</span>
+            <p class="concept-sub">BPE, token limits, vector spaces, semantic similarity</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/transformer-architecture.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>
+            </div>
+            <span class="concept-name">Transformer architecture</span>
+            <p class="concept-sub">Attention, MLP layers, positional encoding, KV cache</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/pretraining-vs-posttraining.html">
+            <div class="concept-icon" style="background:rgba(99,102,241,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#6366f1"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+            </div>
+            <span class="concept-name">Pretraining vs post-training</span>
+            <p class="concept-sub">Pretraining, SFT, RLHF, DPO — how each shapes behavior</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MEMORY & RETRIEVAL (sky blue) ── -->
+      <div class="concept-group grp-memory">
+        <h3 class="concept-group-label">Memory &amp; Retrieval</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/rag.html">
+            <div class="concept-icon" style="background:rgba(14,165,233,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#0ea5e9"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            </div>
+            <span class="concept-name">RAG</span>
+            <p class="concept-sub">Chunking, vector DBs, hybrid search, re-ranking</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/context-window-management.html">
+            <div class="concept-icon" style="background:rgba(14,165,233,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#0ea5e9"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+            <span class="concept-name">Context window management</span>
+            <p class="concept-sub">Token limits, lost-in-the-middle, chunking strategies</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/memory-state-for-agents.html">
+            <div class="concept-icon" style="background:rgba(14,165,233,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#0ea5e9"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <span class="concept-name">Memory &amp; state for agents</span>
+            <p class="concept-sub">Short-term, long-term, episodic, semantic memory patterns</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── INFERENCE & OUTPUT (emerald) ── -->
+      <div class="concept-group grp-inference">
+        <h3 class="concept-group-label">Inference &amp; Output</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/inference-sampling.html">
+            <div class="concept-icon" style="background:rgba(16,185,129,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#10b981"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <span class="concept-name">Inference &amp; sampling</span>
+            <p class="concept-sub">Temperature, top-p, top-k, greedy vs beam search</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/structured-outputs.html">
+            <div class="concept-icon" style="background:rgba(16,185,129,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#10b981"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <span class="concept-name">Structured outputs</span>
+            <p class="concept-sub">JSON mode, tool use, function calling, Pydantic validation</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/hallucination-grounding.html">
+            <div class="concept-icon" style="background:rgba(16,185,129,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#10b981"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <span class="concept-name">Hallucination &amp; grounding</span>
+            <p class="concept-sub">Causes, detection, mitigation, citation strategies</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/multimodal-inputs.html">
+            <div class="concept-icon" style="background:rgba(16,185,129,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#10b981"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <span class="concept-name">Multimodal inputs</span>
+            <p class="concept-sub">Vision, audio, PDF — how LLMs process non-text inputs</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── EVALUATION & PRODUCTION (amber) ── -->
+      <div class="concept-group grp-evaluation">
+        <h3 class="concept-group-label">Evaluation &amp; Production</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/evals-benchmarking.html">
+            <div class="concept-icon" style="background:rgba(245,158,11,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#f59e0b"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <span class="concept-name">Evals &amp; benchmarking</span>
+            <p class="concept-sub">MMLU, HumanEval, LLM-as-judge, custom evals</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/cost-latency-optimization.html">
+            <div class="concept-icon" style="background:rgba(245,158,11,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#f59e0b"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="concept-name">Cost &amp; latency optimization</span>
+            <p class="concept-sub">Caching, quantization, batching, prompt compression</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/safety-alignment-guardrails.html">
+            <div class="concept-icon" style="background:rgba(245,158,11,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#f59e0b"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="concept-name">Safety, alignment &amp; guardrails</span>
+            <p class="concept-sub">Constitutional AI, RLHF, prompt injection, jailbreaks</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── AGENTIC SYSTEMS (burnt orange) ── -->
+      <div class="concept-group grp-agentic">
+        <h3 class="concept-group-label">Agentic Systems</h3>
+        <div class="concept-grid">
+          <div class="concept-card" data-href="genailab/concepts/agent-architectures.html">
+            <div class="concept-icon" style="background:rgba(200,92,42,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#c85c2a"><circle cx="12" cy="12" r="2"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><line x1="6" y1="6" x2="10" y2="11"/><line x1="18" y1="6" x2="14" y2="11"/><line x1="6" y1="18" x2="10" y2="13"/><line x1="18" y1="18" x2="14" y2="13"/></svg>
+            </div>
+            <span class="concept-name">Agent architectures</span>
+            <p class="concept-sub">ReAct, tool use, planning loops, multi-agent coordination</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/mcp.html">
+            <div class="concept-icon" style="background:rgba(200,92,42,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#c85c2a"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <span class="concept-name">MCP</span>
+            <p class="concept-sub">Tool registration, server-client model, skill integration</p>
+          </div>
+          <div class="concept-card" data-href="genailab/concepts/agent-skills.html">
+            <div class="concept-icon" style="background:rgba(200,92,42,0.1);">
+              <svg viewBox="0 0 24 24" stroke="#c85c2a"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <span class="concept-name">Agent skills</span>
+            <p class="concept-sub">SKILL.md pattern, composability, sub-agents, reliability</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  3. TOOL STACK                               -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section" id="section-tools">
+      <div class="section-header">
+        <h2 class="section-title">Tool Stack</h2>
+        <!-- <span class="section-count">Resources, platforms &amp; tools — organised by theme</span> -->
+      </div>
+
+      <!-- ── AI ASSISTANTS ── -->
+      <div class="theme-group">
+        <p class="theme-label">🤖 AI Assistants</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://claude.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,92,42,0.1);">✦</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Claude</span>
+            <p class="tool-desc">Anthropic's flagship model — excellent for coding, analysis, long-context reasoning, and agentic workflows. Claude Sonnet 4 is my primary work environment.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>claude.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://chatgpt.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(16,163,127,0.1);">⚡</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">ChatGPT</span>
+            <p class="tool-desc">OpenAI's consumer AI — GPT-4o and o3 models with voice, image generation, browsing, code interpreter, and custom GPTs.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>chatgpt.com</div>
+          </a>
+
+          <a class="tool-card" href="https://gemini.google.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(66,133,244,0.1);">💎</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Gemini</span>
+            <p class="tool-desc">Google's multimodal AI — Gemini 2.5 Pro with 1M token context, Deep Research, and tight integration with Google Workspace.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>gemini.google.com</div>
+          </a>
+
+          <a class="tool-card" href="https://chat.deepseek.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,60,200,0.1);">🐋</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">DeepSeek</span>
+            <p class="tool-desc">Chinese open-weight frontier model — DeepSeek-R2 with exceptional reasoning and coding at a fraction of the cost of competitors.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>chat.deepseek.com</div>
+          </a>
+
+          <a class="tool-card" href="https://grok.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,0,0,0.06);">𝕏</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Grok</span>
+            <p class="tool-desc">xAI's model with real-time X (Twitter) data access, Grok 3 with deep reasoning mode, and image generation via Aurora.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>grok.com</div>
+          </a>
+
+          <a class="tool-card" href="https://chat.mistral.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,120,0,0.1);">🌊</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Le Chat (Mistral)</span>
+            <p class="tool-desc">Mistral AI's chat interface — fast, European, and multilingual. Mistral Large 2 and the open-source Mistral 7B family.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>chat.mistral.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.perplexity.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,200,0.1);">🔍</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Perplexity AI</span>
+            <p class="tool-desc">AI-native search engine with real-time web retrieval. Great for research, citations, and grounded answers with source links.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>perplexity.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://huggingface.co/chat" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,180,0,0.1);">🤗</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">HuggingChat</span>
+            <p class="tool-desc">Open-source chat interface by Hugging Face — run Llama 3.3, Mistral, Qwen, and Command R+ for free with web search.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huggingface.co/chat</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── LLM FRAMEWORKS ── -->
+      <div class="theme-group">
+        <p class="theme-label">🔗 Frameworks</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://langchain.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,80,0.1);">🔗</div>
+            <span class="tool-category">Framework</span>
+            <span class="tool-name">LangChain</span>
+            <p class="tool-desc">The most popular LLM application framework — chains, retrievers, memory, and 100+ integrations. Foundation for most production RAG pipelines.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>langchain.com</div>
+          </a>
+
+          <a class="tool-card" href="https://www.llamaindex.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(180,80,200,0.1);">🦙</div>
+            <span class="tool-category">Framework</span>
+            <span class="tool-name">LlamaIndex</span>
+            <p class="tool-desc">Data framework for connecting private data to LLMs — indexing, querying, and 100+ data connectors. Best for RAG-heavy applications.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>llamaindex.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://huggingface.co" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,180,0,0.1);">🤗</div>
+            <span class="tool-category">Framework / Hub</span>
+            <span class="tool-name">Hugging Face</span>
+            <p class="tool-desc">Open-source model hub, Transformers library, PEFT, datasets, and Spaces — the central ecosystem for open-weight AI development.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huggingface.co</div>
+          </a>
+
+          <a class="tool-card" href="https://ai.pydantic.dev" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(230,0,80,0.1);">🐍</div>
+            <span class="tool-category">Framework</span>
+            <span class="tool-name">PydanticAI</span>
+            <p class="tool-desc">Type-safe agent framework from the Pydantic team — structured outputs, dependency injection, and model-agnostic agent layer with validation built in.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>ai.pydantic.dev</div>
+          </a>
+
+          <a class="tool-card" href="https://sdk.vercel.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,0,0,0.06);">▲</div>
+            <span class="tool-category">Framework</span>
+            <span class="tool-name">Vercel AI SDK</span>
+            <p class="tool-desc">TypeScript-first SDK for building AI-powered web apps — streaming, tool use, React hooks, and support for all major LLM providers.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>sdk.vercel.ai</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── AGENTIC FRAMEWORKS ── -->
+      <div class="theme-group">
+        <p class="theme-label">🕸️ Agentic Frameworks</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,80,0.1);">🕸️</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">LangGraph</span>
+            <p class="tool-desc">Graph-based stateful agent framework — nodes, edges, and checkpointing for complex multi-step reasoning, human-in-the-loop, and production workflows.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>langchain-ai.github.io/langgraph</div>
+          </a>
+
+          <a class="tool-card" href="https://crewai.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(220,50,50,0.1);">👥</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">CrewAI</span>
+            <p class="tool-desc">Role-based multi-agent collaboration — define crews of agents with tasks and goals. Adopted by 60%+ of Fortune 500 for enterprise agent deployments.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>crewai.com</div>
+          </a>
+
+          <a class="tool-card" href="https://microsoft.github.io/autogen/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,120,212,0.1);">🔄</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">AutoGen (Microsoft)</span>
+            <p class="tool-desc">Microsoft Research's multi-agent conversation framework — agents debate, collaborate, and review each other's outputs. Best for research-grade workflows.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>microsoft.github.io/autogen</div>
+          </a>
+
+          <a class="tool-card" href="https://openai.github.io/openai-agents-python/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(16,163,127,0.1);">🤝</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">OpenAI Agents SDK</span>
+            <p class="tool-desc">Production-grade replacement for Swarm — explicit agent handoffs, built-in tracing, and first-party tool integrations for OpenAI-native deployments.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>openai.github.io/openai-agents-python</div>
+          </a>
+
+          <a class="tool-card" href="https://google.github.io/adk-docs/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(66,133,244,0.1);">🌐</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">Google ADK</span>
+            <p class="tool-desc">Google's Agent Development Kit — hierarchical agent trees, native Vertex AI and Gemini integration, and A2A protocol for cross-framework agent communication.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>google.github.io/adk-docs</div>
+          </a>
+
+          <a class="tool-card" href="https://huggingface.co/docs/smolagents" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,180,0,0.1);">⚡</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">Smolagents (HF)</span>
+            <p class="tool-desc">Hugging Face's lightweight agent library — minimal code, code-writing agents, and model-agnostic tool use. Great for fast prototyping.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huggingface.co/docs/smolagents</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── LOCAL HOSTING ── -->
+      <div class="theme-group">
+        <p class="theme-label">🖥️ Local Hosting</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://ollama.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,0,0,0.06);">🦙</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">Ollama</span>
+            <p class="tool-desc">The developer standard for local LLMs — one command to pull and run Llama 3.3, Qwen3, Mistral, DeepSeek, and more with an OpenAI-compatible API.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>ollama.com</div>
+          </a>
+
+          <a class="tool-card" href="https://lmstudio.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(120,80,200,0.1);">🖥️</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">LM Studio</span>
+            <p class="tool-desc">Best GUI for local LLMs — visual model browser, download manager, and a local server that mimics OpenAI's API. Excellent on Apple Silicon.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>lmstudio.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://jan.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,180,100,0.1);">💬</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">Jan</span>
+            <p class="tool-desc">100% offline desktop AI — clean ChatGPT-style UI, zero telemetry, and agentic Project workspaces with Browser MCP for fully private AI workflows.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>jan.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://openwebui.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,150,200,0.1);">🌐</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">Open WebUI</span>
+            <p class="tool-desc">Self-hosted ChatGPT-style interface wrapping Ollama or any OpenAI-compatible backend — multi-user, RAG, plugins, and conversation history.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>openwebui.com</div>
+          </a>
+
+          <a class="tool-card" href="https://docs.vllm.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,50,50,0.1);">🚀</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">vLLM</span>
+            <p class="tool-desc">High-throughput inference engine for production — PagedAttention for GPU memory efficiency, best-in-class tool calling, and OpenAI-compatible serving at scale.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>docs.vllm.ai</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── BLOGS ── -->
+      <div class="theme-group">
+        <p class="theme-label">✍️ Blogs</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://lilianweng.github.io" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,92,42,0.1);">📝</div>
+            <span class="tool-category">Blog</span>
+            <span class="tool-name">Lil'Log — Lilian Weng</span>
+            <p class="tool-desc">Deep-dive survey posts by ex-OpenAI VP of Research — transformers, diffusion models, RL, and agent memory. Essential for conceptual depth.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>lilianweng.github.io</div>
+          </a>
+
+          <a class="tool-card" href="https://simonwillison.net" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,150,30,0.1);">🔬</div>
+            <span class="tool-category">Blog</span>
+            <span class="tool-name">Simon Willison's Blog</span>
+            <p class="tool-desc">Hands-on LLM experiments, tool use, and prompt injection research — one of the best builder-focused technical voices in the GenAI space.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>simonwillison.net</div>
+          </a>
+
+          <a class="tool-card" href="https://magazine.sebastianraschka.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">📊</div>
+            <span class="tool-category">Blog / Newsletter</span>
+            <span class="tool-name">Ahead of AI — Raschka</span>
+            <p class="tool-desc">Sebastian Raschka's newsletter — LLM architecture comparisons, training deep dives, and rigorous code-first explanations of cutting-edge research.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>magazine.sebastianraschka.com</div>
+          </a>
+
+          <a class="tool-card" href="https://huyenchip.com/blog" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,180,120,0.1);">⚙️</div>
+            <span class="tool-category">Blog</span>
+            <span class="tool-name">Chip Huyen's Blog</span>
+            <p class="tool-desc">Real-world MLOps and production ML systems — AI engineering patterns, inference optimization, and hard-won lessons from building LLM products.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huyenchip.com/blog</div>
+          </a>
+
+          <a class="tool-card" href="https://eugeneyan.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,120,0,0.1);">🔭</div>
+            <span class="tool-category">Blog</span>
+            <span class="tool-name">Eugene Yan's Blog</span>
+            <p class="tool-desc">Applied ML, recsys, and LLM engineering from Amazon Principal Scientist — bridges academia and product with practical patterns for shipping AI systems.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>eugeneyan.com</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── VIDEOS ── -->
+      <div class="theme-group">
+        <p class="theme-label">📺 Videos</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://www.youtube.com/@AndrejKarpathy" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,0,0,0.08);">🎓</div>
+            <span class="tool-category">Video</span>
+            <span class="tool-name">Andrej Karpathy</span>
+            <p class="tool-desc">Zero-to-hero neural network series, GPT from scratch, and state-of-LLM lectures — the single best deep learning resource on YouTube.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@AndrejKarpathy</div>
+          </a>
+
+          <a class="tool-card" href="https://www.youtube.com/@lexfridman" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,30,30,0.08);">🎙️</div>
+            <span class="tool-category">Video / Podcast</span>
+            <span class="tool-name">Lex Fridman</span>
+            <p class="tool-desc">Long-form interviews with Sam Altman, Ilya Sutskever, Yann LeCun, and other AI leaders — philosophy, research, and the future of intelligence.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@lexfridman</div>
+          </a>
+
+          <a class="tool-card" href="https://www.youtube.com/@3blue1brown" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(60,100,255,0.1);">🔵</div>
+            <span class="tool-category">Video</span>
+            <span class="tool-name">3Blue1Brown</span>
+            <p class="tool-desc">Visual deep learning — animated explanations of neural networks, attention, and transformers that make abstract math intuitive and memorable.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@3blue1brown</div>
+          </a>
+
+          <a class="tool-card" href="https://www.youtube.com/@YannicKilcher" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,30,30,0.08);">📄</div>
+            <span class="tool-category">Video</span>
+            <span class="tool-name">Yannic Kilcher</span>
+            <p class="tool-desc">In-depth ML paper walkthroughs — transformers, reasoning models, and RL explained with whiteboard-level rigour for serious practitioners.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@YannicKilcher</div>
+          </a>
+
+          <a class="tool-card" href="https://www.youtube.com/@TwoMinutePapers" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,200,0.1);">⚡</div>
+            <span class="tool-category">Video</span>
+            <span class="tool-name">Two Minute Papers</span>
+            <p class="tool-desc">Fast, engaging breakdowns of the latest AI research papers — Károly Zsolnai-Fehér distills key ideas from complex work into digestible 5-minute videos.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@TwoMinutePapers</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── COURSES ── -->
+      <div class="theme-group">
+        <p class="theme-label">🎓 Courses</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://www.deeplearning.ai/courses/chatgpt-prompt-eng" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">✏️</div>
+            <span class="tool-category">Course — DeepLearning.AI</span>
+            <span class="tool-name">Prompt Engineering for Devs</span>
+            <p class="tool-desc">Andrew Ng &amp; Isa Fulford's free short course — iterative prompt development, summarisation, inference, transformation, and chatbot building with the OpenAI API.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.deeplearning.ai/courses/retrieval-augmented-generation-rag/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">🗄️</div>
+            <span class="tool-category">Course — DeepLearning.AI</span>
+            <span class="tool-name">Retrieval Augmented Generation</span>
+            <p class="tool-desc">End-to-end RAG course — chunking, vector databases, hybrid search, reranking, evaluation, and production deployment. ~5hrs/week for one month.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.deeplearning.ai/courses/building-agentic-rag-with-llamaindex" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">🤖</div>
+            <span class="tool-category">Course — DeepLearning.AI</span>
+            <span class="tool-name">Agentic RAG with LlamaIndex</span>
+            <p class="tool-desc">Build routers, tool-calling agents, and multi-document research assistants with LlamaIndex. Taught by Jerry Liu, LlamaIndex co-founder and CEO.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.deeplearning.ai/courses/langchain-chat-with-your-data/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">🔗</div>
+            <span class="tool-category">Course — DeepLearning.AI</span>
+            <span class="tool-name">LangChain: Chat with Your Data</span>
+            <p class="tool-desc">Learn document loading, splitting, embeddings, vector stores, retrieval, and Q&amp;A chains using LangChain — a hands-on intro to RAG applications.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.coursera.org/specializations/deep-learning" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,86,210,0.1);">🏛️</div>
+            <span class="tool-category">Course — Coursera</span>
+            <span class="tool-name">Deep Learning Specialization</span>
+            <p class="tool-desc">Andrew Ng's 5-course foundational program — neural networks, CNNs, sequence models, and structuring ML projects. The canonical entry point to deep learning.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>coursera.org</div>
+          </a>
+
+          <a class="tool-card" href="https://www.coursera.org/learn/generative-ai-for-everyone" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,86,210,0.1);">🌍</div>
+            <span class="tool-category">Course — Coursera</span>
+            <span class="tool-name">Generative AI for Everyone</span>
+            <p class="tool-desc">Andrew Ng's non-technical GenAI course — how LLMs work, prompt engineering, real-world applications, and responsible AI use. Rated 4.8★ with 3300+ reviews.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>coursera.org</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── WEB SEARCH APIs ── -->
+      <div class="theme-group">
+        <p class="theme-label">🔎 Web Search APIs</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://tavily.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,140,255,0.1);">🔭</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Tavily</span>
+            <p class="tool-desc">Purpose-built search API for AI agents — relevance filtering, answer extraction, and structured results ready for LLM consumption. 1M+ downloads. Acquired by Nebius (2026).</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>tavily.com</div>
+          </a>
+
+          <a class="tool-card" href="https://exa.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(80,50,200,0.1);">🧲</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Exa AI</span>
+            <p class="tool-desc">Neural semantic search API for agents — find pages by meaning rather than keywords, with full content extraction. Strong for technical doc retrieval.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>exa.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://brave.com/search/api/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,80,0,0.1);">🦁</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Brave Search API</span>
+            <p class="tool-desc">Independent search index — not a Google/Bing wrapper. Top scorer in 2026 agentic benchmarks (14.89). LLM Context API optimised for agent consumption.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>brave.com/search/api</div>
+          </a>
+
+          <a class="tool-card" href="https://docs.perplexity.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,200,0.1);">💡</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Perplexity Sonar API</span>
+            <p class="tool-desc">Perplexity's API for grounded LLM answers — Sonar and Sonar Pro return LLM-synthesised responses with cited sources. Best for factual Q&amp;A agents.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>docs.perplexity.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://serper.dev" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,180,80,0.1);">⚡</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Serper</span>
+            <p class="tool-desc">Google Search API wrapper — fast, cheap at scale ($0.30–$1/1k queries), JSON results, and a 2500-query free tier. Great for cost-sensitive high-volume agents.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>serper.dev</div>
+          </a>
+
+          <a class="tool-card" href="https://www.firecrawl.dev" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,80,0,0.08);">🔥</div>
+            <span class="tool-category">Search API / Scraper</span>
+            <span class="tool-name">Firecrawl</span>
+            <p class="tool-desc">Web scraping and crawling API for LLMs — turns any URL into clean markdown, handles JS-rendered pages, and pairs with search APIs for full-content agent pipelines.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>firecrawl.dev</div>
+          </a>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  4. RESEARCH DIGEST                          -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section" id="section-research">
+      <div class="section-header">
+        <h2 class="section-title">Research Digest</h2>
+        <span class="section-count">Papers I read, summarised as blogs or decks</span>
+      </div>
+
+      <div class="card-grid">
+
+        <!-- DarkForest digest -->
+        <div class="digest-card">
+          <div class="digest-banner" style="background: linear-gradient(135deg, #0d1f0d, #243324);">
+            arXiv · 2605.25188
+          </div>
+          <div class="digest-body">
+            <div class="digest-meta">
+              <span class="digest-type">Blog</span>
+              <span class="digest-dot"></span>
+              <span class="digest-date">May 2025</span>
+            </div>
+            <p class="digest-title">DarkForest: Reducing Debate in Multi-Agent LLMs</p>
+            <p class="digest-summary">How belief aggregation without inter-agent debate yields 30.7% accuracy gains and 6.5× token savings across six reasoning tasks.</p>
+          </div>
+        </div>
+
+        <!-- GRPO digest -->
+        <div class="digest-card">
+          <div class="digest-banner" style="background: linear-gradient(135deg, #0d1117, #1e2430);">
+            arXiv · DeepSeek-R1
+          </div>
+          <div class="digest-body">
+            <div class="digest-meta">
+              <span class="digest-type">Blog</span>
+              <span class="digest-dot"></span>
+              <span class="digest-date">Feb 2025</span>
+            </div>
+            <p class="digest-title">GRPO: Group Relative Policy Optimisation for LLMs</p>
+            <p class="digest-summary">A breakdown of DeepSeek-R1's training recipe — how reward shaping and GRPO replace RLHF for reasoning model training.</p>
+          </div>
+        </div>
+
+        <!-- Coming soon -->
+        <div class="coming-soon-block" style="grid-column: span 1;">
+          <span class="cs-icon">📑</span>
+          <p class="cs-title">More digests coming soon</p>
+          <p class="cs-desc">I'm reading and summarising papers on attention mechanisms, MoE architectures, and agentic planning. Check back regularly.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  5. MODEL LANDSCAPE                          -->
+    <!-- ════════════════════════════════════════════ -->
+    <section class="section" id="section-models">
+      <div class="section-header">
+        <h2 class="section-title">Model Landscape</h2>
+        <span class="section-count">Live LiveBench leaderboard, fetched in your browser</span>
+      </div>
+
+
+      <div id="livebench-explorer">
+        <p class="lb-intro">
+          A live model leaderboard built from <strong>LiveBench</strong> benchmark CSVs. The script fetches every public release, adds a <code>_date</code> column, computes simple category averages, and renders them as parallel-coordinate and trend charts. It loads automatically — pick a category to drill into individual benchmarks, or select multiple dates to see how models move over time.
+        </p>
+
+        <div class="controls-grid">
+          <div class="control-card">
+            <label class="control-label" for="dataSource">Data source</label>
+            <select id="dataSource">
+              <option value="github" selected>GitHub raw mirror (CORS-friendly)</option>
+              <option value="livebench">livebench.ai direct URLs</option>
+            </select>
+            <div class="button-row">
+              <button class="action-btn" id="loadBtn">Load / Refresh</button>
+              <button class="action-btn secondary" id="downloadBtn" disabled>Download CSV</button>
+            </div>
+          </div>
+          <div class="control-card">
+            <label class="control-label">Release dates</label>
+            <div class="check-grid" id="dateFilters"></div>
+          </div>
+          <div class="control-card">
+            <label class="control-label" for="categorySelect">Category</label>
+            <select id="categorySelect"></select>
+            <div style="height:8px"></div>
+            <label class="control-label" for="topN">Top N lines</label>
+            <input id="topN" type="number" min="3" max="60" value="18"/>
+          </div>
+          <div class="control-card">
+            <label class="control-label" for="modelSearch">Model search</label>
+            <input id="modelSearch" type="text" placeholder="gpt, claude, gemini..."/>
+            <div style="height:8px"></div>
+            <label class="control-label" for="providerSelect">Provider</label>
+            <select id="providerSelect"><option value="all">All providers</option></select>
+          </div>
+        </div>
+
+        <div class="controls-grid">
+          <div class="control-card">
+            <label class="control-label" for="minScore">Minimum selected-category score</label>
+            <input id="minScore" type="number" min="0" max="100" step="1" value="0"/>
+          </div>
+          <div class="control-card">
+            <label class="control-label" for="sortBy">Sort models by</label>
+            <select id="sortBy">
+              <option value="category" selected>Selected category average</option>
+              <option value="overall">Overall mean across benchmarks</option>
+              <option value="model">Model name</option>
+              <option value="date">Date</option>
+            </select>
+          </div>
+          <div class="control-card">
+            <label class="control-label">Metric axes</label>
+            <div class="check-grid" id="metricFilters"></div>
+          </div>
+          <div class="control-card">
+            <label class="control-label">View options</label>
+            <label class="check-pill"><input id="latestOnly" type="checkbox" checked/> Latest selected date only</label>
+            <label class="check-pill"><input id="showPoints" type="checkbox" checked/> Show points</label>
+            <label class="check-pill"><input id="fadeOlder" type="checkbox" checked/> Fade older releases</label>
+          </div>
+        </div>
+
+        <div class="status-line" id="status">Loading the latest LiveBench release…</div>
+
+        <div class="metric-grid">
+          <div class="metric-card"><div class="metric-name">Rows loaded</div><div class="metric-value" id="kpiRows">--</div><div class="metric-desc">Model-date records after combining every release.</div></div>
+          <div class="metric-card"><div class="metric-name">Models in view</div><div class="metric-value" id="kpiModels">--</div><div class="metric-desc">Unique models matching the active filters.</div></div>
+          <div class="metric-card"><div class="metric-name">Top model</div><div class="metric-value" id="kpiTop" style="font-size:1.25rem;line-height:1.25;">--</div><div class="metric-desc" id="kpiTopDesc">Based on selected category average.</div></div>
+          <div class="metric-card"><div class="metric-name">Benchmark axes</div><div class="metric-value" id="kpiAxes">--</div><div class="metric-desc">Metric columns used in the parallel chart.</div></div>
+        </div>
+
+        <!-- 1. Broad-category profile — always the first chart -->
+        <div class="viz-card" id="profileCard">
+          <div class="viz-header">
+            <div>
+              <div class="viz-title">Parallel profile by broad category</div>
+              <div class="viz-sub">Compresses many benchmark columns into simple buckets: reasoning, coding, language, data transformation, and spatial/logical tasks. Model names sit at each end of every line; hover a line to focus it. Pick a category above to drill into its individual axes.</div>
+            </div>
+            <span class="lb-badge" id="profileContext">Waiting for data</span>
+          </div>
+          <div class="svg-wrap"><svg id="profileChart" class="chart small" role="img" aria-label="Category profile chart"></svg></div>
+          <div class="legend" id="profileLegend"></div>
+        </div>
+
+        <!-- 2. Metric-level breakdown — loads once a specific category is selected -->
+        <div class="viz-card is-hidden" id="parallelCard">
+          <div class="viz-header">
+            <div>
+              <div class="viz-title">Parallel coordinates by benchmark metric</div>
+              <div class="viz-sub">Individual benchmark axes for the selected category. The vertical scale auto-fits the visible data rather than starting at zero.</div>
+            </div>
+            <span class="lb-badge" id="chartContext">Waiting for data</span>
+          </div>
+          <div class="svg-wrap"><svg id="parallelChart" class="chart" role="img" aria-label="Parallel coordinates chart"></svg></div>
+          <div class="legend" id="parallelLegend"></div>
+        </div>
+
+        <!-- 3. Trend chart — always visible, disabled until 2+ dates selected -->
+        <div class="viz-card is-disabled" id="trendCard">
+          <div class="viz-header">
+            <div>
+              <div class="viz-title">Trend over release dates</div>
+              <div class="viz-sub">For models that appear across multiple releases, this shows whether their selected-category score improved, held steady, or declined over time.</div>
+            </div>
+            <span class="lb-badge" id="trendContext">Select 2+ dates</span>
+          </div>
+          <div class="trend-disabled-note" id="trendDisabledNote">Tick at least two release dates above to enable this chart.</div>
+          <div class="svg-wrap"><svg id="trendChart" class="chart small" role="img" aria-label="Model trend chart"></svg></div>
+          <div class="legend" id="trendLegend"></div>
+        </div>
+
+        <!-- Filtered leaderboard table -->
+        <div class="prompt-table" style="overflow:auto;max-height:560px;">
+          <table class="data-table" id="modelTable">
+            <thead><tr><th>Date</th><th>Model</th><th>Category</th><th>Overall</th><th>Reasoning</th><th>Coding</th><th>Language</th><th>Data</th></tr></thead>
+            <tbody><tr><td colspan="8">Loading data…</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- Auto-generated plain-English summary -->
+        <h3 class="lb-subhead">What the benchmark says right now</h3>
+        <div class="highlight orange" id="blogLead">Loading the latest LiveBench release to generate a model comparison summary…</div>
+        <div class="compare-grid">
+          <div class="compare-card do">
+            <div class="compare-label">The simple takeaway</div>
+            <div id="blogTakeaway">After loading, this summarizes the current leaders and what they are good at.</div>
+          </div>
+          <div class="compare-card dont">
+            <div class="compare-label">Important caveat</div>
+            <div>LiveBench scores are useful but not a universal answer to "which model is best?" A model that wins on math may not fit cost-sensitive summarization, low-latency chat, safety review, or tool-calling workflows.</div>
+          </div>
+        </div>
+        <div id="generatedBlog" class="lb-blog" style="margin-top:16px;">
+          <p>Loading data to produce the generated comparison notes…</p>
+        </div>
+
+        <p style="font-size:11px;color:var(--text-tertiary);margin-top:14px;">
+          Live data from the LiveBench public CSV releases. Averages are simple arithmetic means computed in-browser for exploration and may differ from LiveBench's official aggregation.
+        </p>
+
+        <div class="tooltip" id="tooltip"></div>
+      </div>
+
+      <script>
+      (function () {
+
+  const LIVEBENCH_DATES = [
+    '2024-06-24', '2024-07-26', '2024-08-31', '2024-11-25', '2025-04-02',
+    '2025-04-25', '2025-05-30', '2025-11-25', '2025-12-23', '2026-01-08'
+  ];
+
+  const CATEGORY_GROUPS = {
+    all: {
+      label: 'All benchmarks',
+      metrics: []
+    },
+    reasoning: {
+      label: 'Reasoning / math / logic',
+      metrics: ['AMPS_Hard', 'math_comp', 'olympiad', 'logic_with_navigation', 'zebra_puzzle', 'theory_of_mind', 'simplify', 'integrals_with_game', 'connections', 'consecutive_events', 'spatial']
+    },
+    coding: {
+      label: 'Coding',
+      metrics: ['code_completion', 'code_generation', 'javascript', 'python', 'typescript']
+    },
+    language: {
+      label: 'Language quality',
+      metrics: ['story_generation', 'summarize', 'paraphrase', 'typos']
+    },
+    data: {
+      label: 'Data transformation',
+      metrics: ['tablejoin', 'tablereformat', 'plot_unscrambling']
+    },
+    spatial: {
+      label: 'Spatial and puzzle-heavy',
+      metrics: ['spatial', 'zebra_puzzle', 'connections', 'logic_with_navigation', 'consecutive_events']
+    }
+  };
+
+  const CATEGORY_COLORS = {
+    all: '#1a1a18', reasoning: '#c85c2a', coding: '#6366f1', language: '#10b981', data: '#0ea5e9', spatial: '#8b5cf6'
+  };
+
+  let allRows = [];
+  let allColumns = [];
+  let numericColumns = [];
+  let combinedCsvCache = '';
+  let activeMetrics = [];
+
+  const els = {
+    loadBtn: document.getElementById('loadBtn'),
+    downloadBtn: document.getElementById('downloadBtn'),
+    dataSource: document.getElementById('dataSource'),
+    status: document.getElementById('status'),
+    dateFilters: document.getElementById('dateFilters'),
+    categorySelect: document.getElementById('categorySelect'),
+    providerSelect: document.getElementById('providerSelect'),
+    modelSearch: document.getElementById('modelSearch'),
+    topN: document.getElementById('topN'),
+    minScore: document.getElementById('minScore'),
+    sortBy: document.getElementById('sortBy'),
+    metricFilters: document.getElementById('metricFilters'),
+    latestOnly: document.getElementById('latestOnly'),
+    showPoints: document.getElementById('showPoints'),
+    fadeOlder: document.getElementById('fadeOlder'),
+    parallelChart: document.getElementById('parallelChart'),
+    profileChart: document.getElementById('profileChart'),
+    trendChart: document.getElementById('trendChart'),
+    profileCard: document.getElementById('profileCard'),
+    parallelCard: document.getElementById('parallelCard'),
+    trendCard: document.getElementById('trendCard'),
+    profileContext: document.getElementById('profileContext'),
+    trendContext: document.getElementById('trendContext'),
+    parallelLegend: document.getElementById('parallelLegend'),
+    profileLegend: document.getElementById('profileLegend'),
+    trendLegend: document.getElementById('trendLegend'),
+    modelTable: document.getElementById('modelTable').querySelector('tbody'),
+    tooltip: document.getElementById('tooltip'),
+    chartContext: document.getElementById('chartContext'),
+    kpiRows: document.getElementById('kpiRows'),
+    kpiModels: document.getElementById('kpiModels'),
+    kpiTop: document.getElementById('kpiTop'),
+    kpiTopDesc: document.getElementById('kpiTopDesc'),
+    kpiAxes: document.getElementById('kpiAxes'),
+    blogLead: document.getElementById('blogLead'),
+    blogTakeaway: document.getElementById('blogTakeaway'),
+    generatedBlog: document.getElementById('generatedBlog')
+  };
+
+  function setStatus(message) { els.status.textContent = message; }
+  function tableFileName(date) { return `table_${date.replaceAll('-', '_')}.csv`; }
+  function getCsvUrl(fileName) {
+    if (els.dataSource.value === 'livebench') return `https://livebench.ai/${fileName}`;
+    return `https://raw.githubusercontent.com/LiveBench/livebench.github.io/main/public/${fileName}`;
+  }
+
+  function parseCsvLine(line) {
+    const cells = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      const next = line[i + 1];
+      if (char === '"' && inQuotes && next === '"') { current += '"'; i++; }
+      else if (char === '"') { inQuotes = !inQuotes; }
+      else if (char === ',' && !inQuotes) { cells.push(current); current = ''; }
+      else { current += char; }
+    }
+    cells.push(current);
+    return cells;
+  }
+
+  function parseCsv(csvText) {
+    const lines = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(line => line.trim() !== '');
+    const headers = parseCsvLine(lines[0]).map(h => h.trim());
+    const rows = [];
+    for (const line of lines.slice(1)) {
+      const values = parseCsvLine(line);
+      const row = {};
+      headers.forEach((h, i) => { row[h] = values[i] ?? ''; });
+      if (values.length > headers.length) row._extra_cells = values.slice(headers.length).join('|');
+      rows.push(row);
+    }
+    return { headers, rows };
+  }
+
+  function escapeCsvCell(value) {
+    const text = value == null ? '' : String(value);
+    return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  }
+
+  function rowsToCsv(rows, columns) {
+    return [
+      columns.map(escapeCsvCell).join(','),
+      ...rows.map(row => columns.map(column => escapeCsvCell(row[column] ?? '')).join(','))
+    ].join('\n');
+  }
+
+  async function combineLiveBenchCsvs() {
+    const rows = [];
+    const columns = new Set(['_date', '_source_file', '_source_url']);
+    for (const date of LIVEBENCH_DATES) {
+      const fileName = tableFileName(date);
+      const url = getCsvUrl(fileName);
+      setStatus(`Fetching ${fileName} from ${els.dataSource.value}...`);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Failed ${url}: HTTP ${response.status}`);
+      const text = await response.text();
+      const parsed = parseCsv(text);
+      parsed.headers.forEach(h => columns.add(h));
+      parsed.rows.forEach(row => {
+        if ('_extra_cells' in row) columns.add('_extra_cells');
+        rows.push({ _date: date, _source_file: fileName, _source_url: url, ...row });
+      });
+    }
+    return { rows, columns: Array.from(columns) };
+  }
+
+  function toNumber(value) {
+    if (value == null || value === '') return NaN;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  function avg(values) {
+    const nums = values.map(toNumber).filter(Number.isFinite);
+    return nums.length ? nums.reduce((a,b) => a+b, 0) / nums.length : NaN;
+  }
+
+  function fmt(n, digits = 1) {
+    return Number.isFinite(n) ? n.toFixed(digits) : '--';
+  }
+
+  function inferProvider(model) {
+    const m = String(model || '').toLowerCase();
+    if (m.includes('gpt') || m.includes('o3') || m.includes('o4')) return 'OpenAI';
+    if (m.includes('claude')) return 'Anthropic';
+    if (m.includes('gemini') || m.includes('gemma')) return 'Google';
+    if (m.includes('deepseek')) return 'DeepSeek';
+    if (m.includes('qwen')) return 'Alibaba/Qwen';
+    if (m.includes('grok')) return 'xAI';
+    if (m.includes('llama') || m.includes('meta')) return 'Meta';
+    if (m.includes('mistral') || m.includes('devstral')) return 'Mistral';
+    if (m.includes('kimi')) return 'Moonshot/Kimi';
+    if (m.includes('glm')) return 'Zhipu/GLM';
+    if (m.includes('minimax')) return 'MiniMax';
+    if (m.includes('arcee')) return 'Arcee';
+    return 'Other';
+  }
+
+  function categoryMetrics(key) {
+    if (key === 'all') return numericColumns;
+    return CATEGORY_GROUPS[key].metrics.filter(m => numericColumns.includes(m));
+  }
+
+  function enrichRows(rows) {
+    return rows.map(row => {
+      const next = { ...row };
+      next._provider = inferProvider(row.model);
+      next._overall = avg(numericColumns.map(c => row[c]));
+      for (const [key, group] of Object.entries(CATEGORY_GROUPS)) {
+        next[`_${key}`] = key === 'all' ? next._overall : avg(group.metrics.map(c => row[c]));
+      }
+      return next;
+    });
+  }
+
+  function unique(arr) { return Array.from(new Set(arr)).filter(Boolean); }
+
+  function initControls() {
+    const latestDate = LIVEBENCH_DATES.slice().sort().at(-1);
+    els.dateFilters.innerHTML = LIVEBENCH_DATES.slice().sort().map(date => `
+      <label class="check-pill"><input type="checkbox" value="${date}" ${date === latestDate ? 'checked' : ''}/> ${date}</label>
+    `).join('');
+
+    els.categorySelect.innerHTML = Object.entries(CATEGORY_GROUPS).map(([key, value]) => `
+      <option value="${key}">${value.label}</option>
+    `).join('');
+
+    document.querySelectorAll('#dateFilters input').forEach(input => input.addEventListener('change', updateView));
+    [els.providerSelect, els.modelSearch, els.topN, els.minScore, els.sortBy, els.latestOnly, els.showPoints, els.fadeOlder].forEach(el => {
+      el.addEventListener('input', updateView);
+      el.addEventListener('change', updateView);
+    });
+    els.categorySelect.addEventListener('change', () => { updateMetricFilters(); updateView(); });
+  }
+
+  function updateMetricFilters() {
+    const selected = els.categorySelect.value || 'all';
+    activeMetrics = categoryMetrics(selected).slice(0, 14);
+    els.metricFilters.innerHTML = activeMetrics.map(metric => `
+      <label class="check-pill"><input type="checkbox" value="${metric}" checked/> ${metric}</label>
+    `).join('');
+    document.querySelectorAll('#metricFilters input').forEach(input => input.addEventListener('change', updateView));
+  }
+
+  function selectedDates() {
+    return Array.from(document.querySelectorAll('#dateFilters input:checked')).map(i => i.value);
+  }
+
+  function selectedMetrics() {
+    const checked = Array.from(document.querySelectorAll('#metricFilters input:checked')).map(i => i.value);
+    return checked.length ? checked : activeMetrics;
+  }
+
+  function filterRows() {
+    const dates = selectedDates();
+    const latest = dates.slice().sort().at(-1);
+    const category = els.categorySelect.value || 'all';
+    const metricKey = `_${category}`;
+    const q = els.modelSearch.value.trim().toLowerCase();
+    const provider = els.providerSelect.value;
+    const minScore = Number(els.minScore.value || 0);
+    let rows = allRows.filter(row => dates.includes(row._date));
+    if (els.latestOnly.checked && latest) rows = rows.filter(row => row._date === latest);
+    if (q) rows = rows.filter(row => String(row.model || '').toLowerCase().includes(q));
+    if (provider !== 'all') rows = rows.filter(row => row._provider === provider);
+    rows = rows.filter(row => Number.isFinite(row[metricKey]) && row[metricKey] >= minScore);
+
+    const sortBy = els.sortBy.value;
+    rows.sort((a,b) => {
+      if (sortBy === 'model') return String(a.model).localeCompare(String(b.model));
+      if (sortBy === 'date') return String(b._date).localeCompare(String(a._date));
+      if (sortBy === 'overall') return (b._overall || -Infinity) - (a._overall || -Infinity);
+      return (b[metricKey] || -Infinity) - (a[metricKey] || -Infinity);
+    });
+    return rows;
+  }
+
+  function colorFor(index, total) {
+    const hue = Math.round((index * 360 / Math.max(total, 1) + 12) % 360);
+    return `hsl(${hue} 68% 42%)`;
+  }
+
+  function clearSvg(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
+  function makeSvg(tag, attrs = {}) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
+    return el;
+  }
+
+  // Smooth a sequence of [x,y] points into a Catmull-Rom -> cubic Bezier path (no zig-zag).
+  function smoothPath(pts) {
+    if (!pts.length) return '';
+    if (pts.length === 1) return `M${pts[0][0]},${pts[0][1]}`;
+    if (pts.length === 2) return `M${pts[0][0]},${pts[0][1]} L${pts[1][0]},${pts[1][1]}`;
+    let d = `M${pts[0][0]},${pts[0][1]}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[i + 2] || p2;
+      const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+      const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+      const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += ` C${c1x.toFixed(2)},${c1y.toFixed(2)} ${c2x.toFixed(2)},${c2y.toFixed(2)} ${p2[0].toFixed(2)},${p2[1].toFixed(2)}`;
+    }
+    return d;
+  }
+
+  // Build a y-domain from the visible data points (NOT anchored at zero) plus ~5 tick marks.
+  function computeScale(values) {
+    const finite = values.map(toNumber).filter(Number.isFinite);
+    if (!finite.length) return { min: 0, max: 100, ticks: [0, 25, 50, 75, 100] };
+    let lo = Math.min(...finite);
+    let hi = Math.max(...finite);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const padding = (hi - lo) * 0.06;
+    lo -= padding;
+    hi += padding;
+    const steps = 4;
+    const ticks = [];
+    for (let i = 0; i <= steps; i++) ticks.push(lo + (hi - lo) * i / steps);
+    return { min: lo, max: hi, ticks };
+  }
+
+  function truncName(name, max = 18) {
+    const s = String(name ?? '');
+    return s.length > max ? s.slice(0, max - 1) + '…' : s;
+  }
+
+  // On hover, focus the hovered model line and gray out all the others in the same chart.
+  function addModelGroupHover(svg, group) {
+    group.addEventListener('mouseenter', () => {
+      svg.querySelectorAll('.lb-model-group').forEach(g => { if (g !== group) g.classList.add('lb-dim'); });
+      group.classList.add('lb-focus');
+    });
+    group.addEventListener('mouseleave', () => {
+      svg.querySelectorAll('.lb-model-group').forEach(g => g.classList.remove('lb-dim'));
+      group.classList.remove('lb-focus');
+    });
+  }
+
+  // Place the model name at the left and right ends of its line.
+  function addEndLabels(group, model, color, leftX, leftY, rightX, rightY) {
+    const name = truncName(model);
+    const left = makeSvg('text', { x: leftX, y: leftY + 3.4, 'text-anchor': 'end', fill: color, class: 'line-label' });
+    left.textContent = name;
+    group.appendChild(left);
+    const right = makeSvg('text', { x: rightX, y: rightY + 3.4, 'text-anchor': 'start', fill: color, class: 'line-label' });
+    right.textContent = name;
+    group.appendChild(right);
+  }
+
+  function showTooltip(html, event) {
+    els.tooltip.innerHTML = html;
+    els.tooltip.style.display = 'block';
+    els.tooltip.style.left = `${Math.min(window.innerWidth - 360, event.clientX + 14)}px`;
+    els.tooltip.style.top = `${event.clientY + 14}px`;
+  }
+  function hideTooltip() { els.tooltip.style.display = 'none'; }
+
+  function renderParallelChart(rows) {
+    const svg = els.parallelChart;
+    clearSvg(svg);
+    const metrics = selectedMetrics().filter(m => numericColumns.includes(m));
+    if (!rows.length || !metrics.length) {
+      svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'No rows match the current filters.';
+      els.parallelLegend.innerHTML = '';
+      return;
+    }
+    const width = Math.max(820, metrics.length * 120);
+    const height = 520;
+    const pad = { left: 120, right: 120, top: 38, bottom: 118 };
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    const innerW = width - pad.left - pad.right;
+    const innerH = height - pad.top - pad.bottom;
+    const topN = Math.max(3, Math.min(60, Number(els.topN.value) || 18));
+    const plotRows = rows.slice(0, topN);
+    const latestDate = selectedDates().sort().at(-1);
+    const x = i => pad.left + (metrics.length === 1 ? innerW / 2 : i * innerW / (metrics.length - 1));
+
+    // Scale to the min/max of the values actually visible on the chart (not from zero).
+    const visibleValues = [];
+    plotRows.forEach(row => metrics.forEach(metric => visibleValues.push(toNumber(row[metric]))));
+    const scale = computeScale(visibleValues);
+    const y = value => {
+      const v = Math.max(scale.min, Math.min(scale.max, value));
+      return pad.top + (scale.max - v) / (scale.max - scale.min) * innerH;
+    };
+
+    scale.ticks.forEach(tick => {
+      const yy = y(tick);
+      svg.appendChild(makeSvg('line', { x1: pad.left, x2: width - pad.right, y1: yy, y2: yy, class: 'grid-line' }));
+      const label = makeSvg('text', { x: pad.left - 8, y: yy + 4, 'text-anchor': 'end', fill: '#a8a8a0', 'font-size': 10 });
+      label.textContent = fmt(tick, 1);
+      svg.appendChild(label);
+    });
+
+    metrics.forEach((metric, i) => {
+      const xx = x(i);
+      svg.appendChild(makeSvg('line', { x1: xx, x2: xx, y1: pad.top, y2: pad.top + innerH, stroke: 'rgba(0,0,0,0.18)' }));
+      const label = makeSvg('text', { x: xx, y: pad.top + innerH + 20, 'text-anchor': 'end', transform: `rotate(-38 ${xx} ${pad.top + innerH + 20})`, fill: '#6b6b65', 'font-size': 11 });
+      label.textContent = metric;
+      svg.appendChild(label);
+    });
+
+    const leftLabelX = pad.left - 36;
+    const rightLabelX = width - pad.right + 8;
+    plotRows.forEach((row, index) => {
+      const color = colorFor(index, plotRows.length);
+      const finitePts = metrics.map((metric, i) => ({ x: x(i), y: y(toNumber(row[metric])), v: toNumber(row[metric]) })).filter(p => Number.isFinite(p.v));
+      if (!finitePts.length) return;
+      const group = makeSvg('g', { class: 'lb-model-group' });
+      if (els.fadeOlder.checked && latestDate && row._date !== latestDate) group.setAttribute('opacity', '0.28');
+      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
+      path.addEventListener('mousemove', event => showTooltip(`<strong>${row.model}</strong><span>${row._date} · ${row._provider}<br/>Selected avg: ${fmt(row['_' + els.categorySelect.value])} · Overall: ${fmt(row._overall)}</span>`, event));
+      path.addEventListener('mouseleave', hideTooltip);
+      group.appendChild(path);
+
+      if (els.showPoints.checked) {
+        finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3.2, fill: color, class: 'dot' })));
+      }
+      addEndLabels(group, row.model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
+      addModelGroupHover(svg, group);
+      svg.appendChild(group);
+    });
+
+    els.parallelLegend.innerHTML = plotRows.slice(0, 16).map((row, index) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, plotRows.length)}"></span>${escapeHtml(row.model)}</span>`).join('');
+    els.chartContext.textContent = `${plotRows.length} lines · ${metrics.length} axes`;
+  }
+
+  function renderProfileChart(rows) {
+    const svg = els.profileChart;
+    clearSvg(svg);
+    const axes = ['reasoning', 'coding', 'language', 'data', 'spatial'];
+    if (!rows.length) {
+      svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'No profile rows available.';
+      els.profileLegend.innerHTML = '';
+      if (els.profileContext) els.profileContext.textContent = 'No data';
+      return;
+    }
+    const width = 980, height = 400, pad = { left: 120, right: 120, top: 36, bottom: 72 };
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    const innerW = width - pad.left - pad.right, innerH = height - pad.top - pad.bottom;
+    const topN = Math.max(3, Math.min(20, Number(els.topN.value) || 12));
+    const plotRows = rows.slice(0, topN);
+    const x = i => pad.left + i * innerW / (axes.length - 1);
+
+    // Scale to the visible category averages (not from zero).
+    const visibleValues = [];
+    plotRows.forEach(row => axes.forEach(axis => visibleValues.push(row['_' + axis])));
+    const scale = computeScale(visibleValues);
+    const y = value => {
+      const v = Math.max(scale.min, Math.min(scale.max, value));
+      return pad.top + (scale.max - v) / (scale.max - scale.min) * innerH;
+    };
+
+    scale.ticks.forEach(tick => {
+      const yy = y(tick);
+      svg.appendChild(makeSvg('line', { x1: pad.left, x2: width - pad.right, y1: yy, y2: yy, class: 'grid-line' }));
+      const label = makeSvg('text', { x: pad.left - 8, y: yy + 4, 'text-anchor': 'end', fill: '#a8a8a0', 'font-size': 10 });
+      label.textContent = fmt(tick, 1);
+      svg.appendChild(label);
+    });
+    axes.forEach((axis, i) => {
+      const xx = x(i);
+      svg.appendChild(makeSvg('line', { x1: xx, x2: xx, y1: pad.top, y2: pad.top + innerH, stroke: 'rgba(0,0,0,0.18)' }));
+      const label = makeSvg('text', { x: xx, y: pad.top + innerH + 24, 'text-anchor': 'middle', fill: '#6b6b65', 'font-size': 11 });
+      label.textContent = CATEGORY_GROUPS[axis].label.replace(' / math / logic', '');
+      svg.appendChild(label);
+    });
+
+    const leftLabelX = pad.left - 36;
+    const rightLabelX = width - pad.right + 8;
+    plotRows.forEach((row, index) => {
+      const color = colorFor(index, plotRows.length);
+      const finitePts = axes.map((axis, i) => ({ x: x(i), y: y(row['_' + axis]), v: row['_' + axis] })).filter(p => Number.isFinite(p.v));
+      if (!finitePts.length) return;
+      const group = makeSvg('g', { class: 'lb-model-group' });
+      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
+      path.addEventListener('mousemove', event => showTooltip(`<strong>${row.model}</strong><span>${row._date}<br/>Reasoning ${fmt(row._reasoning)} · Coding ${fmt(row._coding)} · Data ${fmt(row._data)}</span>`, event));
+      path.addEventListener('mouseleave', hideTooltip);
+      group.appendChild(path);
+      finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3, fill: color, class: 'dot' })));
+      addEndLabels(group, row.model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
+      addModelGroupHover(svg, group);
+      svg.appendChild(group);
+    });
+    els.profileLegend.innerHTML = plotRows.slice(0, 12).map((row, index) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, plotRows.length)}"></span>${escapeHtml(row.model)}</span>`).join('');
+    if (els.profileContext) els.profileContext.textContent = `${plotRows.length} models · ${axes.length} categories`;
+  }
+
+  function renderTrendChart(rows) {
+    const svg = els.trendChart;
+    clearSvg(svg);
+    const category = els.categorySelect.value || 'all';
+    const key = '_' + category;
+    const dates = selectedDates().sort();
+    if (dates.length < 2) {
+      svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'Select at least two release dates to show trends.';
+      els.trendLegend.innerHTML = '';
+      return;
+    }
+
+    // Pick models that ACTUALLY appear in >=2 of the selected dates (honoring search + provider filters).
+    const q = els.modelSearch.value.trim().toLowerCase();
+    const provider = els.providerSelect.value;
+    const pool = allRows.filter(r => dates.includes(r._date)
+      && Number.isFinite(r[key])
+      && (!q || String(r.model || '').toLowerCase().includes(q))
+      && (provider === 'all' || r._provider === provider));
+    const byModel = new Map();
+    pool.forEach(r => { if (!byModel.has(r.model)) byModel.set(r.model, []); byModel.get(r.model).push(r); });
+    const topN = Math.max(3, Math.min(12, Number(els.topN.value) || 8));
+    let seriesByModel = Array.from(byModel.entries())
+      .map(([model, series]) => ({ model, series: series.slice().sort((a, b) => a._date.localeCompare(b._date)) }))
+      .filter(s => new Set(s.series.map(r => r._date)).size >= 2)
+      .sort((a, b) => (b.series.at(-1)[key] || -Infinity) - (a.series.at(-1)[key] || -Infinity))
+      .slice(0, topN)
+      .map((s, index) => ({ ...s, index }));
+
+    if (!seriesByModel.length) {
+      svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'No model appears in two or more of the selected dates. Try selecting closer dates.';
+      els.trendLegend.innerHTML = '';
+      return;
+    }
+
+    const width = 980, height = 400, pad = { left: 120, right: 120, top: 36, bottom: 82 };
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    const innerW = width - pad.left - pad.right, innerH = height - pad.top - pad.bottom;
+    const x = i => pad.left + i * innerW / Math.max(1, dates.length - 1);
+
+    const visibleValues = [];
+    seriesByModel.forEach(s => s.series.forEach(row => visibleValues.push(row[key])));
+    const scale = computeScale(visibleValues);
+    const y = value => {
+      const v = Math.max(scale.min, Math.min(scale.max, value));
+      return pad.top + (scale.max - v) / (scale.max - scale.min) * innerH;
+    };
+
+    scale.ticks.forEach(tick => {
+      const yy = y(tick);
+      svg.appendChild(makeSvg('line', { x1: pad.left, x2: width - pad.right, y1: yy, y2: yy, class: 'grid-line' }));
+      const label = makeSvg('text', { x: pad.left - 8, y: yy + 4, 'text-anchor': 'end', fill: '#a8a8a0', 'font-size': 10 });
+      label.textContent = fmt(tick, 1);
+      svg.appendChild(label);
+    });
+    dates.forEach((date, i) => {
+      const xx = x(i);
+      svg.appendChild(makeSvg('line', { x1: xx, x2: xx, y1: pad.top, y2: pad.top + innerH, stroke: 'rgba(0,0,0,0.1)' }));
+      const label = makeSvg('text', { x: xx, y: pad.top + innerH + 22, 'text-anchor': 'end', transform: `rotate(-35 ${xx} ${pad.top + innerH + 22})`, fill: '#6b6b65', 'font-size': 11 });
+      label.textContent = date;
+      svg.appendChild(label);
+    });
+
+    const leftLabelX = pad.left - 36;
+    const rightLabelX = width - pad.right + 8;
+    seriesByModel.forEach(({ model, index, series }) => {
+      const color = colorFor(index, seriesByModel.length);
+      const finitePts = series.map(row => ({ x: x(dates.indexOf(row._date)), y: y(row[key]), v: row[key] })).filter(p => Number.isFinite(p.v));
+      if (finitePts.length < 2) return;
+      const group = makeSvg('g', { class: 'lb-model-group' });
+      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
+      path.addEventListener('mousemove', event => showTooltip(`<strong>${model}</strong><span>${CATEGORY_GROUPS[category].label}<br/>${fmt(series[0][key])} → ${fmt(series.at(-1)[key])}</span>`, event));
+      path.addEventListener('mouseleave', hideTooltip);
+      group.appendChild(path);
+      finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3, fill: color, class: 'dot' })));
+      addEndLabels(group, model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
+      addModelGroupHover(svg, group);
+      svg.appendChild(group);
+    });
+    els.trendLegend.innerHTML = seriesByModel.slice(0, 10).map(({ model, index }) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, seriesByModel.length)}"></span>${escapeHtml(model)}</span>`).join('');
+  }
+
+  function renderTable(rows) {
+    if (!rows.length) {
+      els.modelTable.innerHTML = '<tr><td colspan="8">No rows match the active filters.</td></tr>';
+      return;
+    }
+    const category = els.categorySelect.value || 'all';
+    els.modelTable.innerHTML = rows.slice(0, 120).map(row => `
+      <tr>
+        <td>${row._date}</td>
+        <td><span class="model-name">${escapeHtml(row.model)}</span><br/><span class="provider-tag">${escapeHtml(row._provider)}</span></td>
+        <td class="num">${fmt(row['_' + category])}</td>
+        <td class="num">${fmt(row._overall)}</td>
+        <td class="num">${fmt(row._reasoning)}</td>
+        <td class="num">${fmt(row._coding)}</td>
+        <td class="num">${fmt(row._language)}</td>
+        <td class="num">${fmt(row._data)}</td>
+      </tr>
+    `).join('');
+  }
+
+  function renderKPIs(rows) {
+    const uniqueModels = unique(rows.map(r => r.model));
+    const category = els.categorySelect.value || 'all';
+    const top = rows[0];
+    els.kpiRows.textContent = allRows.length ? allRows.length.toLocaleString() : '--';
+    els.kpiModels.textContent = uniqueModels.length ? uniqueModels.length.toLocaleString() : '--';
+    els.kpiTop.textContent = top ? top.model : '--';
+    els.kpiTopDesc.textContent = top ? `${fmt(top['_' + category])} average in ${CATEGORY_GROUPS[category].label}` : 'Based on selected category average.';
+    els.kpiAxes.textContent = selectedMetrics().length || '--';
+  }
+
+  function categoryWinner(rows, category) {
+    const key = '_' + category;
+    const valid = rows.filter(r => Number.isFinite(r[key])).sort((a,b) => b[key] - a[key]);
+    return valid[0];
+  }
+
+  function renderBlog(rows) {
+    if (!rows.length) return;
+    const category = els.categorySelect.value || 'all';
+    const topOverall = [...rows].sort((a,b) => b._overall - a._overall)[0];
+    const topSelected = categoryWinner(rows, category);
+    const winners = ['reasoning','coding','language','data','spatial'].map(cat => ({ cat, row: categoryWinner(rows, cat) })).filter(x => x.row);
+    els.blogLead.innerHTML = `In this filtered view, <strong>${escapeHtml(topSelected.model)}</strong> leads the selected <strong>${CATEGORY_GROUPS[category].label}</strong> view with an average score of <strong>${fmt(topSelected['_' + category])}</strong>. The strongest all-around row is <strong>${escapeHtml(topOverall.model)}</strong> with a simple overall mean of <strong>${fmt(topOverall._overall)}</strong>.`;
+    els.blogTakeaway.innerHTML = `Treat the best model as a context-specific choice: pick reasoning leaders for math and puzzle-heavy work, coding leaders for developer workflows, language leaders for summarization and rewriting, and data leaders for spreadsheet-like transformation tasks.`;
+    els.generatedBlog.innerHTML = `
+      <p><strong>1. The leaderboard is not one race; it is several smaller races.</strong> LiveBench splits model behavior across tasks like math, coding, language, table handling, and spatial reasoning. A model that looks excellent on one axis can dip on another, which is why the parallel chart is more useful than a single rank number.</p>
+      <p><strong>2. The selected view favors ${escapeHtml(CATEGORY_GROUPS[category].label.toLowerCase())}.</strong> In the current filters, ${escapeHtml(topSelected.model)} is the cleanest pick for that slice. If your workflow resembles those tasks, it is a strong candidate to test first.</p>
+      <p><strong>3. Category winners tell a more practical story.</strong> ${winners.map(w => `${CATEGORY_GROUPS[w.cat].label}: <strong>${escapeHtml(w.row.model)}</strong> (${fmt(w.row['_' + w.cat])})`).join(' · ')}.</p>
+      <p><strong>4. What this means in simple terms:</strong> use the model with the highest reasoning profile when correctness depends on multi-step logic; use the coding profile when code reliability matters; use language and data profiles when your work is closer to content operations, summaries, tables, and formatting.</p>
+      <p><strong>5. The caveat:</strong> this page computes simple means from public CSV columns. It does not account for price, latency, context window, safety policy, or your private data. Use it to shortlist models, then run your own task-specific evaluation.</p>
+    `;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
+  }
+
+  function updateView() {
+    if (!allRows.length) return;
+    const rows = filterRows();
+    const category = els.categorySelect.value || 'all';
+    const dateCount = selectedDates().length;
+
+    renderKPIs(rows);
+    renderProfileChart(rows);
+
+    // Metric-level breakdown only loads once a specific (non-"all") category is selected.
+    const categorySelected = category !== 'all';
+    els.parallelCard.classList.toggle('is-hidden', !categorySelected);
+    if (categorySelected) renderParallelChart(rows);
+
+    // Trend chart is always present but stays disabled until 2+ release dates are selected,
+    // independent of the chosen category.
+    const trendEnabled = dateCount >= 2;
+    els.trendCard.classList.toggle('is-hidden', false);
+    els.trendCard.classList.toggle('is-disabled', !trendEnabled);
+    if (els.trendContext) els.trendContext.textContent = trendEnabled ? `${dateCount} dates` : 'Select 2+ dates';
+    if (trendEnabled) renderTrendChart(rows);
+    else { clearSvg(els.trendChart); els.trendLegend.innerHTML = ''; }
+
+    renderTable(rows);
+    renderBlog(rows);
+    setStatus(`Showing ${rows.length.toLocaleString()} rows for ${CATEGORY_GROUPS[category].label}.${categorySelected ? '' : ' Select a specific category to load the per-metric breakdown chart.'}`);
+  }
+
+  async function loadData() {
+    els.loadBtn.disabled = true;
+    els.downloadBtn.disabled = true;
+    try {
+      const { rows, columns } = await combineLiveBenchCsvs();
+      allColumns = columns;
+      numericColumns = columns.filter(c => !c.startsWith('_') && c !== 'model' && rows.some(row => Number.isFinite(toNumber(row[c]))));
+      allRows = enrichRows(rows);
+      combinedCsvCache = rowsToCsv(rows, columns);
+
+      const providers = unique(allRows.map(r => r._provider)).sort();
+      els.providerSelect.innerHTML = '<option value="all">All providers</option>' + providers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+      updateMetricFilters();
+      els.downloadBtn.disabled = false;
+      updateView();
+      setStatus(`Loaded ${allRows.length.toLocaleString()} model-date rows across ${LIVEBENCH_DATES.length} releases and ${numericColumns.length} numeric metrics.`);
+    } catch (err) {
+      console.error(err);
+      setStatus(`Error: ${err.message}. Try switching data source or hosting this file on a server/proxy if CORS blocks browser fetch.`);
+    } finally {
+      els.loadBtn.disabled = false;
+    }
+  }
+
+  function downloadCombinedCsv() {
+    if (!combinedCsvCache) return;
+    const blob = new Blob([combinedCsvCache], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'livebench_all_dates_combined.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  initControls();
+  els.loadBtn.addEventListener('click', loadData);
+  els.downloadBtn.addEventListener('click', downloadCombinedCsv);
+  // Auto-load data on page load so the dashboard is never empty.
+  loadData();
+      })();
+      </script>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <span>© 2026 Sumit Kant</span>
+    <div style="display:flex;gap:16px;">
+      <a href="https://sumitkant.github.io/">Website</a>
+      <a href="https://sumitkant.github.io/bookshelf.html">Bookshelf</a>
+      <a href="mailto:sumit.kant@iiml.org">Email</a>
+    </div>
+  </footer>
+
+  <script>
+    /* ══════════════════════════════════════════════════
+       TAB SWITCHING
+    ══════════════════════════════════════════════════ */
+    var tabs     = document.querySelectorAll('.tab-btn');
+    var sections = document.querySelectorAll('.section');
+ 
+    tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = btn.dataset.section;
+        tabs.forEach(function (b) { b.classList.remove('active'); });
+        sections.forEach(function (s) { s.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('section-' + target).classList.add('active');
+        document.getElementById('section-' + target).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+ 
+    /* ── Animate bars when model section activates ── */
+    document.querySelector('[data-section="models"]').addEventListener('click', function () {
+      setTimeout(function () {
+        document.querySelectorAll('.bar-fill').forEach(function (bar) {
+          var w = bar.style.width;
+          bar.style.width = '0';
+          requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = w; }); });
+        });
+      }, 50);
+    });
+ 
+    /* ══════════════════════════════════════════════════
+       SKILLS LIBRARY — manifest-based static loader
+       ──────────────────────────────────────────────
+       No GitHub API. No auth. Works with private repos.
+ 
+       How it works:
+         1. Fetches skills-manifest.json (static file
+            committed next to genai-lab.html).
+         2. For each skill, fetches its SKILL.md via a
+            relative URL — served by GitHub Pages.
+         3. Parses name + description from SKILL.md.
+ 
+       To update: run  python generate_skills_manifest.py
+       then commit skills-manifest.json.
+    ══════════════════════════════════════════════════ */
+ 
+    var GH_OWNER  = 'sumitkant';
+    var GH_REPO   = 'sumitkant.github.io';
+    var GH_BRANCH = 'master';
+ 
+    var PROVIDERS = {
+      'claude': { emoji: '🟠', badgeClass: 'badge-anthropic', badgeText: 'Anthropic' },
+      'openai': { emoji: '🟢', badgeClass: 'badge-openai',    badgeText: 'OpenAI'    },
+      'custom': { emoji: '🔵', badgeClass: 'badge-custom',    badgeText: 'Custom'    }
+    };
+ 
+    var PROVIDER_ORDER = ['claude', 'openai', 'custom'];
+ 
+    var DOWNLOAD_ICON = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+    var GH_ICON = '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:3px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>';
+ 
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+ 
+    function toTitle(slug) {
+      return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    }
+ 
+    /* ── Parse name + description from SKILL.md text ── */
+    function parseSkillMd(text) {
+      var name = '', desc = '';
+ 
+      // 1. YAML frontmatter between --- markers
+      var fm = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
+      if (fm) {
+        var fmText = fm[1];
+        var n = fmText.match(/^name\s*:\s*(.+)$/m);
+        var d = fmText.match(/^description\s*:\s*([\s\S]+?)(?=\n\w|\n---|\s*$)/m);
+        if (n) name = n[1].trim();
+        if (d) desc = d[1].replace(/\n\s+/g, ' ').trim();
+      }
+      // 2. Fallback: first # heading
+      if (!name) {
+        var h = text.match(/^#\s+(.+)$/m);
+        if (h) name = h[1].trim();
+      }
+      // 3. Fallback: first real paragraph
+      if (!desc) {
+        var body = text.replace(/^---[\s\S]*?---\s*/m, '').replace(/^#[^\n]*\n/m, '').trim();
+        var paras = body.split(/\n{2,}/);
+        for (var i = 0; i < paras.length; i++) {
+          var clean = paras[i].replace(/[*_`#>\[\]|\\]/g, '').replace(/\s+/g, ' ').trim();
+          if (clean.length > 20) { desc = clean; break; }
+        }
+      }
+      return { name: name, desc: desc };
+    }
+ 
+    /* ── Truncate description to ~2 sentences ── */
+    function truncateDesc(text, maxChars) {
+      if (!text) return '';
+      maxChars = maxChars || 130;
+      if (text.length <= maxChars) return text;
+      // Try to cut at a sentence boundary
+      var cut = text.substring(0, maxChars);
+      var lastDot = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+      if (lastDot > 60) return text.substring(0, lastDot + 1);
+      return cut.trimEnd() + '…';
+    }
+
+    /* ── Build a compact skill card DOM element ── */
+    function buildCard(skill, provider) {
+      var cfg = PROVIDERS[provider] || { emoji: '⚙️', badgeClass: 'badge-custom', badgeText: toTitle(provider) };
+      var folderUrl   = 'https://github.com/' + GH_OWNER + '/' + GH_REPO + '/tree/' + GH_BRANCH + '/' + skill.skill_md.replace('/SKILL.md', '');
+      var zipDownload = 'https://download-directory.github.io/?url=' + encodeURIComponent(folderUrl);
+      var fullDesc    = skill.desc || skill.description || '';
+      var shortDesc   = truncateDesc(fullDesc);
+
+      var card = document.createElement('div');
+      card.className = 'skill-card';
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.innerHTML =
+        '<div class="skill-card-header">' +
+          '<span class="skill-name">' + escHtml(skill.name || toTitle(skill.folder)) + '</span>' +
+          '<span class="skill-provider-badge ' + cfg.badgeClass + '">' + escHtml(cfg.badgeText) + '</span>' +
+        '</div>' +
+        '<p class="skill-desc">' + escHtml(shortDesc || 'Click to read the skill.') + '</p>' +
+        '<div class="skill-footer">' +
+          '<span style="font-size:11px;color:var(--accent);font-weight:600;cursor:pointer;">Read skill →</span>' +
+          '<a class="download-btn" href="' + zipDownload + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;">' +
+            DOWNLOAD_ICON + ' ZIP' +
+          '</a>' +
+        '</div>';
+
+      // Open modal on click (but not if user clicked the ZIP link)
+      card.addEventListener('click', function() {
+        openSkillModal(skill, provider, folderUrl, zipDownload);
+      });
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') openSkillModal(skill, provider, folderUrl, zipDownload);
+      });
+
+      return card;
+    }
+
+    /* ── Very lightweight markdown → HTML renderer ── */
+    function mdToHtml(md) {
+      // Strip YAML frontmatter
+      md = md.replace(/^---[\s\S]*?---\s*/m, '');
+      var lines = md.split('\n');
+      var html = '', inPre = false, inUl = false, inOl = false;
+
+      function closeLists() {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (inOl) { html += '</ol>'; inOl = false; }
+      }
+
+      function inlineFormat(s) {
+        return s
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.+?)\*/g, '<em>$1</em>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--accent);">$1</a>');
+      }
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+
+        // Fenced code block toggle
+        if (/^```/.test(line)) {
+          if (inPre) { html += '</code></pre>'; inPre = false; }
+          else { closeLists(); html += '<pre><code>'; inPre = true; }
+          continue;
+        }
+        if (inPre) { html += escHtml(line) + '\n'; continue; }
+
+        // Headings
+        var hm = line.match(/^(#{1,3})\s+(.*)/);
+        if (hm) {
+          closeLists();
+          var lvl = Math.min(hm[1].length + 1, 3); // h2/h3 in modal
+          html += '<h' + lvl + '>' + inlineFormat(escHtml(hm[2])) + '</h' + lvl + '>';
+          continue;
+        }
+
+        // HR
+        if (/^---+$/.test(line.trim())) { closeLists(); html += '<hr>'; continue; }
+
+        // Unordered list
+        var ulm = line.match(/^[\-\*\+]\s+(.*)/);
+        if (ulm) {
+          if (!inUl) { if (inOl) { html += '</ol>'; inOl = false; } html += '<ul>'; inUl = true; }
+          html += '<li>' + inlineFormat(escHtml(ulm[1])) + '</li>';
+          continue;
+        }
+
+        // Ordered list
+        var olm = line.match(/^\d+\.\s+(.*)/);
+        if (olm) {
+          if (!inOl) { if (inUl) { html += '</ul>'; inUl = false; } html += '<ol>'; inOl = true; }
+          html += '<li>' + inlineFormat(escHtml(olm[1])) + '</li>';
+          continue;
+        }
+
+        // Blank line
+        if (line.trim() === '') { closeLists(); continue; }
+
+        // Paragraph
+        closeLists();
+        html += '<p>' + inlineFormat(escHtml(line.trim())) + '</p>';
+      }
+
+      closeLists();
+      if (inPre) html += '</code></pre>';
+      return html;
+    }
+
+    /* ── Inject modal DOM (created in JS so it always exists before any click) ── */
+    (function() {
+      var m = document.createElement('div');
+      m.id = 'skill-modal-overlay';
+      m.className = 'skill-modal-overlay';
+      m.setAttribute('role', 'dialog');
+      m.setAttribute('aria-modal', 'true');
+      m.innerHTML = [
+        '<div class="skill-modal" id="skill-modal">',
+          '<div class="skill-modal-header">',
+            '<div class="skill-modal-title-group">',
+              '<span class="skill-modal-title" id="modal-title"></span>',
+              '<div class="skill-modal-meta" id="modal-meta"></div>',
+            '</div>',
+            '<div class="skill-modal-actions">',
+              '<a id="modal-gh-link" class="skill-tag" href="#" target="_blank" rel="noopener" style="text-decoration:none;" onclick="event.stopPropagation()">',
+                '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;margin-right:3px;vertical-align:middle;">',
+                  '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
+                '</svg>GitHub',
+              '</a>',
+              '<a id="modal-zip-link" class="download-btn" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;">',
+                '<svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.2;">',
+                  '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>',
+                  '<polyline points="7 10 12 15 17 10"/>',
+                  '<line x1="12" y1="15" x2="12" y2="3"/>',
+                '</svg> ZIP',
+              '</a>',
+              '<button class="modal-close-btn" id="modal-close" aria-label="Close">',
+                '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#6b6b65;fill:none;stroke-width:2;">',
+                  '<line x1="18" y1="6" x2="6" y2="18"/>',
+                  '<line x1="6" y1="6" x2="18" y2="18"/>',
+                '</svg>',
+              '</button>',
+            '</div>',
+          '</div>',
+          '<div class="skill-modal-body" id="modal-body">',
+            '<div class="skill-modal-loading"><span class="spin"></span> Loading…</div>',
+          '</div>',
+        '</div>'
+      ].join('');
+      document.body.appendChild(m);
+
+      // Wire up close handlers immediately after inserting
+      m.addEventListener('click', function(e) { if (e.target === m) closeModal(); });
+      document.getElementById('modal-close').addEventListener('click', closeModal);
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+    })();
+
+    /* ── Modal open / close ── */
+    function openSkillModal(skill, provider, folderUrl, zipDownload) {
+      var overlay   = document.getElementById('skill-modal-overlay');
+      var modalBody = document.getElementById('modal-body');
+      var cfg = PROVIDERS[provider] || { badgeClass: 'badge-custom', badgeText: toTitle(provider) };
+
+      document.getElementById('modal-title').textContent = skill.name || toTitle(skill.folder);
+      document.getElementById('modal-meta').innerHTML =
+        '<span class="skill-provider-badge ' + cfg.badgeClass + '">' + escHtml(cfg.badgeText) + '</span>';
+      document.getElementById('modal-gh-link').href  = folderUrl;
+      document.getElementById('modal-zip-link').href = zipDownload;
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      // Use cached raw markdown if available — no second network request needed
+      if (skill._rawMd) {
+        modalBody.innerHTML = mdToHtml(skill._rawMd);
+        return;
+      }
+
+      // Fallback: fetch fresh (e.g. if manifest load skipped it)
+      modalBody.innerHTML = '<div class="skill-modal-loading"><span class="spin"></span> Loading SKILL.md…</div>';
+      fetch('./' + skill.skill_md)
+        .then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status + ' — ' + skill.skill_md);
+          return r.text();
+        })
+        .then(function(raw) {
+          skill._rawMd = raw;
+          modalBody.innerHTML = mdToHtml(raw);
+        })
+        .catch(function(err) {
+          console.error('[Skill Modal]', err);
+          modalBody.innerHTML =
+            '<p style="color:var(--text-tertiary);font-size:13px;">' +
+            'Could not load <code>' + escHtml(skill.skill_md) + '</code>.<br>' +
+            'Check that the file exists and the site is served over HTTP (not file://).</p>';
+        });
+    }
+
+    function closeModal() {
+      var overlay = document.getElementById('skill-modal-overlay');
+      if (overlay) { overlay.classList.remove('open'); }
+      document.body.style.overflow = '';
+    }
+ 
+    /* ── Skeleton shimmer group ── */
+    function buildSkeletonGroup(providerKey, count) {
+      var cfg = PROVIDERS[providerKey] || { emoji: '⚙️', badgeText: toTitle(providerKey) };
+      var group = document.createElement('div');
+      group.className = 'theme-group';
+      var lbl = document.createElement('p');
+      lbl.className = 'theme-label';
+      lbl.textContent = cfg.emoji + ' ' + cfg.badgeText + ' Skills';
+      group.appendChild(lbl);
+      var grid = document.createElement('div');
+      grid.className = 'card-grid';
+      for (var i = 0; i < (count || 3); i++) {
+        var s = document.createElement('div');
+        s.className = 'skill-card';
+        s.style.cssText = 'min-height:130px;animation:pulse 1.4s ease-in-out infinite;background:linear-gradient(90deg,#ebe8e1 25%,#f5f2ec 50%,#ebe8e1 75%);background-size:200% 100%;';
+        grid.appendChild(s);
+      }
+      group.appendChild(grid);
+      return group;
+    }
+ 
+    /* ── Main loader — reads manifest, then fetches each SKILL.md ── */
+    async function loadSkills() {
+      var root    = document.getElementById('skills-root');
+      var countEl = document.getElementById('skills-count');
+ 
+      // Show shimmer skeletons immediately
+      PROVIDER_ORDER.forEach(function(p) { root.appendChild(buildSkeletonGroup(p, 3)); });
+ 
+      try {
+        /* Step 1 — fetch the manifest from genailab/ (same folder as the skills) */
+        var res = await fetch('./genailab/skills-manifest.json');
+        if (!res.ok) throw new Error('manifest HTTP ' + res.status);
+        var manifest = await res.json();
+ 
+        root.innerHTML = '';
+        var totalSkills = 0;
+ 
+        /* Determine provider order: known first, then any extras alphabetically */
+        var allProviders = Object.keys(manifest);
+        var ordered = PROVIDER_ORDER.filter(function(k){ return manifest[k]; })
+          .concat(allProviders.filter(function(k){ return !PROVIDER_ORDER.includes(k); }).sort());
+ 
+        /* Step 2 — for each provider, build group and fetch SKILL.md files in parallel */
+        for (var pi = 0; pi < ordered.length; pi++) {
+          var providerKey = ordered[pi];
+          var skills      = manifest[providerKey];
+          if (!skills || skills.length === 0) continue;
+ 
+          var cfg = PROVIDERS[providerKey] || { emoji: '⚙️', badgeClass: 'badge-custom', badgeText: toTitle(providerKey) };
+ 
+          var group = document.createElement('div');
+          group.className = 'theme-group';
+          var lbl = document.createElement('p');
+          lbl.className = 'theme-label';
+          lbl.textContent = cfg.emoji + ' ' + cfg.badgeText + ' Skills';
+          group.appendChild(lbl);
+          var grid = document.createElement('div');
+          grid.className = 'card-grid';
+          group.appendChild(grid);
+          root.appendChild(group);
+ 
+          /* Fetch all SKILL.md files for this provider in parallel */
+          var enriched = await Promise.all(skills.map(async function(skill) {
+            try {
+              var mdRes = await fetch('./' + skill.skill_md);
+              if (mdRes.ok) {
+                var rawText = await mdRes.text();
+                skill._rawMd = rawText;                    // cache for modal
+                if (!skill.name || !skill.description) {
+                  var parsed = parseSkillMd(rawText);
+                  if (parsed.name)  skill.name        = parsed.name;
+                  if (parsed.desc)  skill.description = parsed.desc;
+                }
+              }
+            } catch(e) { /* use whatever manifest already has */ }
+            return skill;
+          }));
+ 
+          enriched.forEach(function(skill) {
+            grid.appendChild(buildCard(skill, providerKey));
+            totalSkills++;
+          });
+ 
+          countEl.textContent = totalSkills + ' skill' + (totalSkills !== 1 ? 's' : '') + ' across ' + (pi + 1) + ' provider' + (pi > 0 ? 's' : '');
+        }
+ 
+        var np = ordered.length;
+        countEl.textContent = totalSkills + ' skills across ' + np + ' provider' + (np !== 1 ? 's' : '');
+ 
+        if (totalSkills === 0) {
+          root.innerHTML = '<div class="coming-soon-block" style="grid-column:1/-1"><span class="cs-icon">📁</span><p class="cs-title">No skills in manifest</p><p class="cs-desc">Run <code>python generate_skills_manifest.py</code> and commit <code>skills-manifest.json</code>.</p></div>';
+          countEl.textContent = '0 skills';
+        }
+ 
+      } catch(err) {
+        root.innerHTML =
+          '<div class="coming-soon-block" style="grid-column:1/-1">' +
+            '<span class="cs-icon">⚠️</span>' +
+            '<p class="cs-title">skills-manifest.json not found</p>' +
+            '<p class="cs-desc">' +
+              'Run the generator script once from your repo root:<br><br>' +
+              '<code style="background:var(--bg);padding:4px 10px;border-radius:6px;font-size:12px;">python generate_skills_manifest.py</code><br><br>' +
+              'This writes <code>genailab/skills-manifest.json</code> — commit it and you\'re done.' +
+            '</p>' +
+          '</div>';
+        countEl.textContent = 'Run generator first';
+        console.warn('[Skills Loader] Could not fetch skills-manifest.json:', err);
+      }
+    }
+ 
+    /* ── Pulse animation keyframe ── */
+    var _st = document.createElement('style');
+    _st.textContent = '@keyframes pulse{0%,100%{background-position:200% 0}50%{background-position:-200% 0}}';
+    document.head.appendChild(_st);
+
+    loadSkills();
+  </script>
+
+  <!-- ── Concept card navigation ── -->
+  <script>
+    document.querySelectorAll('.concept-card[data-href]').forEach(function(card) {
+      card.addEventListener('click', function() {
+        window.location.href = card.dataset.href;
+      });
+    });
+  </script>
+
+</body>
+</html>
