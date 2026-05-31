@@ -1,0 +1,5 @@
+interface:
+  display_name: Ken Style Writer
+  short_description: Draft and rewrite business articles in a Ken-like analytical style.
+  icon: pen-line
+  color: '#111111'

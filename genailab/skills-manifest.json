@@ -219,6 +219,18 @@
       "name": "karpathy-guidelines",
       "description": "Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.",
       "skill_md": "genailab/skills/custom/karpathy-guidelines/SKILL.md"
+    },
+    {
+      "folder": "ken-style-writer",
+      "name": "ken-style-writer",
+      "description": "write or rewrite full business journalism articles in a ken-like analytical style from topics, notes, drafts, transcripts, links, uploaded documents, or web research. Use when the user asks to create, rewrite, expand, or polish an article with the narrative structure, sharp business analysis, reported texture, skeptical humor, data-backed argumentation, and India-focused company/category lens associated with the ken, including longform reported features and shorter conversational nutgraf-style commentary.",
+      "skill_md": "genailab/skills/custom/ken-style-writer/SKILL.md"
+    },
+    {
+      "folder": "the-ken-charts-skill",
+      "name": "the-ken-charts",
+      "description": "Write Plotly code in The Ken's editorial data-journalism style. Use when a user wants to create a chart in The Ken's visual style, asks what makes The Ken's visualizations compelling, or wants to turn a dataset into a story the way The Ken does. The skill covers their editorial principles (opinionated titles, hero numbers, annotation-as-narration, color-as-character, shape-as-emphasis), their recurring visual elements, and how to implement everything in interactive Plotly HTML.",
+      "skill_md": "genailab/skills/custom/the-ken-charts-skill/SKILL.md"
     }
   ]
 }
