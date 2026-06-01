@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Introduction to RAG — GenAI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #fdf7ff;
+      --card-bg: #ffffff;
+      --border: rgba(139,92,246,0.12);
+      --text-primary: #1a0a2e;
+      --text-secondary: #6b5b8a;
+      --text-tertiary: #a89bc0;
+      --accent: #c026d3;
+      --accent-light: rgba(192,38,211,0.08);
+      --indigo: #6366f1;
+      --sky: #0ea5e9;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --violet: #7c3aed;
+      --pink: #ec4899;
+      --purple: #8b5cf6;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 16px;
+      --nav-h: 72px;
+      --content-w: 980px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      height: var(--nav-h);
+      background: rgba(253,247,255,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto; padding: 0 2rem;
+      height: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }
+    .nav-monogram {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      color: #fff;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .nav-back {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-secondary);
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* ── Layout ── */
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 6rem; }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    .hero-eyebrow {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 24px; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--violet));
+      border-radius: 1px;
+    }
+    .hero-title {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800; letter-spacing: -0.035em;
+      line-height: 1.05; margin-bottom: 16px;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 15px; color: var(--text-secondary);
+      line-height: 1.75; max-width: 640px; margin-bottom: 24px;
+    }
+    .hero-meta {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 999px; font-size: 12px; font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .hero-badge svg { width: 13px; height: 13px; stroke: var(--accent); fill: none; stroke-width: 2; }
+
+    /* ── TOC ── */
+    .toc-bar {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      margin-bottom: 3rem;
+      padding: 14px 16px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .toc-btn {
+      padding: 5px 12px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 600;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--text-secondary);
+      cursor: pointer; font-family: var(--font);
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .toc-btn:hover { color: var(--text-primary); border-color: var(--purple); }
+    .toc-btn.active { background: linear-gradient(135deg, var(--accent), var(--violet)); color: #fff; border-color: transparent; }
+
+    /* ── Content sections ── */
+    .content-section { margin-bottom: 3.5rem; }
+
+    .section-label {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-tertiary); margin-bottom: 10px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    }
+    .section-label-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .section-heading {
+      font-size: 1.5rem; font-weight: 800;
+      letter-spacing: -0.025em; margin-bottom: 12px;
+    }
+    .section-body {
+      font-size: 14px; color: var(--text-secondary);
+      line-height: 1.8; margin-bottom: 16px;
+    }
+    .section-body strong { color: var(--text-primary); font-weight: 700; }
+
+    /* ── Part divider ── */
+    .part-divider {
+      display: flex; align-items: center; gap: 16px;
+      margin: 3rem 0 2rem;
+    }
+    .part-num {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.16em;
+      text-transform: uppercase; color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      padding: 6px 14px; border-radius: 999px; white-space: nowrap;
+    }
+    .part-line { flex: 1; height: 1px; background: var(--border); }
+    .part-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; }
+
+    /* ── Highlight callouts ── */
+    .highlight {
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px; margin: 14px 0;
+      font-size: 13.5px; line-height: 1.7; font-style: italic;
+    }
+    .highlight.pink    { border-color: var(--pink);    background: rgba(236,72,153,0.06);   color: #831843; }
+    .highlight.violet  { border-color: var(--violet);  background: rgba(124,58,237,0.06);   color: #2e1065; }
+    .highlight.purple  { border-color: var(--purple);  background: rgba(139,92,246,0.06);   color: #4c1d95; }
+    .highlight.fuchsia { border-color: var(--accent);  background: var(--accent-light);     color: #701a75; }
+    .highlight.emerald { border-color: var(--emerald); background: rgba(16,185,129,0.06);   color: #064e3b; }
+    .highlight.sky     { border-color: var(--sky);     background: rgba(14,165,233,0.06);   color: #0c4a6e; }
+
+    /* ── Technique cards ── */
+    .technique-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 2rem;
+    }
+    .technique-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 22px;
+      display: flex; flex-direction: column; gap: 8px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .technique-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(139,92,246,0.1);
+    }
+    .technique-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 2px; flex-shrink: 0; font-size: 18px;
+    }
+    .technique-name { font-size: 0.9rem; font-weight: 800; color: var(--text-primary); line-height: 1.2; }
+    .technique-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+    .technique-tag {
+      display: inline-flex; align-self: flex-start;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 10px; font-weight: 700; margin-top: auto;
+    }
+
+    /* ── Param cards ── */
+    .param-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+    .param-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px;
+    }
+    .param-name {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 6px;
+    }
+    .param-value { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .param-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+    .param-slider {
+      margin-top: 10px; height: 4px; border-radius: 2px;
+      background: var(--border); position: relative; overflow: visible;
+    }
+    .param-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 2px; }
+    .param-marker {
+      position: absolute; top: -3px; width: 10px; height: 10px;
+      border-radius: 50%; border: 2px solid var(--card-bg);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.15); transform: translateX(-50%);
+    }
+
+    /* ── Code block ── */
+    .code-wrap { background: #130d1f; border-radius: 12px; overflow: hidden; margin: 16px 0; }
+    .code-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px; border-bottom: 1px solid rgba(139,92,246,0.15);
+    }
+    .code-lang {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(255,255,255,0.35);
+      font-family: var(--mono);
+    }
+    .code-dots { display: flex; gap: 5px; }
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-body {
+      padding: 16px 18px; overflow-x: auto;
+      font-family: var(--mono); font-size: 12.5px;
+      line-height: 1.7; color: #e8e0f5;
+      white-space: pre;
+    }
+    .c-comment  { color: #6b5b8a; }
+    .c-keyword  { color: #c084fc; }
+    .c-string   { color: #a5f3c4; }
+    .c-number   { color: #fb7185; }
+    .c-fn       { color: #93c5fd; }
+    .c-var      { color: #f0abfc; }
+    .c-op       { color: #e879f9; }
+
+    /* ── Terminal block ── */
+    .terminal-wrap { background: #0d0717; border-radius: 12px; overflow: hidden; margin: 16px 0; border: 1px solid rgba(139,92,246,0.2); }
+    .terminal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px; background: #1a0f2e;
+      border-bottom: 1px solid rgba(139,92,246,0.15);
+    }
+    .terminal-title { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4); font-family: var(--mono); }
+    .terminal-body {
+      padding: 16px 18px; overflow-x: auto;
+      font-family: var(--mono); font-size: 12px; line-height: 1.8; color: #c4b5fd;
+      white-space: pre;
+    }
+    .t-dim     { color: #6b5b8a; }
+    .t-green   { color: #86efac; }
+    .t-pink    { color: #f9a8d4; }
+    .t-yellow  { color: #fde68a; }
+    .t-cyan    { color: #67e8f9; }
+    .t-white   { color: #f5f3ff; }
+    .t-bold    { font-weight: 700; }
+    .t-accent  { color: #e879f9; }
+
+    /* ── Results table ── */
+    .results-table {
+      width: 100%; border-collapse: collapse;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      margin: 16px 0; font-size: 12.5px;
+    }
+    .results-table th {
+      padding: 10px 14px; text-align: left;
+      background: linear-gradient(135deg, rgba(192,38,211,0.06), rgba(124,58,237,0.06));
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-tertiary);
+      border-bottom: 1px solid var(--border);
+    }
+    .results-table td {
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:hover td { background: rgba(139,92,246,0.03); }
+    .results-table tr.winner td { background: rgba(192,38,211,0.04); }
+    .results-table tr.winner td:first-child { border-left: 3px solid var(--accent); }
+    .score-pill {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+    }
+    .score-high  { background: rgba(16,185,129,0.1); color: #065f46; }
+    .score-mid   { background: rgba(245,158,11,0.1); color: #78350f; }
+    .score-low   { background: rgba(244,63,94,0.1);  color: #881337; }
+    .tag-fixed    { background: rgba(14,165,233,0.1); color: #0c4a6e; }
+    .tag-sentence { background: rgba(139,92,246,0.1); color: #2e1065; }
+    .tag-semantic { background: rgba(192,38,211,0.1); color: #701a75; }
+    .tag-chroma   { background: rgba(249,115,22,0.1); color: #7c2d12; }
+    .tag-faiss    { background: rgba(16,185,129,0.1); color: #064e3b; }
+    .tag-lance    { background: rgba(99,102,241,0.1); color: #1e1b4b; }
+
+    /* ── Best practices / BP cards ── */
+    .bp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
+    .bp-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .bp-num {
+      width: 26px; height: 26px; border-radius: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      color: #fff; font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .bp-text strong { display: block; font-size: 13px; font-weight: 800; margin-bottom: 3px; }
+    .bp-text span { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+
+    /* ── Steps ── */
+    .steps { display: flex; flex-direction: column; gap: 0; margin: 14px 0; }
+    .step {
+      display: flex; gap: 16px; padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: var(--accent); flex-shrink: 0;
+      border-color: var(--accent);
+    }
+    .step-body strong { display: block; font-size: 13.5px; font-weight: 700; margin-bottom: 3px; }
+    .step-body p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--mono); font-size: 12px;
+      background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.15);
+      border-radius: 5px; padding: 1px 6px; color: var(--accent);
+    }
+
+    /* ── Callout ── */
+    .callout {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 13px 16px; border-radius: 10px; margin: 14px 0;
+      font-size: 13px; line-height: 1.65;
+    }
+    .callout.warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+    .callout.note    { background: rgba(99,102,241,0.07); border: 1px solid rgba(99,102,241,0.2); }
+    .callout.insight { background: rgba(192,38,211,0.07); border: 1px solid rgba(192,38,211,0.2); }
+    .callout-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .callout-body strong { display: block; font-weight: 700; margin-bottom: 3px; color: var(--text-primary); }
+    .callout-body span { color: var(--text-secondary); }
+
+    /* ── Compare grid ── */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+    .compare-card { border-radius: 12px; padding: 14px 16px; font-size: 13px; line-height: 1.65; }
+    .compare-card.do { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); }
+    .compare-card.dont { background: rgba(244,63,94,0.05); border: 1px solid rgba(244,63,94,0.15); }
+    .compare-label { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 7px; }
+    .compare-card.do .compare-label { color: var(--emerald); }
+    .compare-card.dont .compare-label { color: var(--rose); }
+
+    /* ── Metric definition cards ── */
+    .metric-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 16px 0; }
+    .metric-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+    }
+    .metric-icon { font-size: 22px; margin-bottom: 8px; }
+    .metric-name { font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+    .metric-def { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
+    .metric-formula {
+      font-family: var(--mono); font-size: 11px;
+      background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.12);
+      border-radius: 6px; padding: 6px 10px; color: var(--violet);
+    }
+
+    /* ── Store detail card ── */
+    .store-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px 26px;
+      margin-bottom: 16px;
+    }
+    .store-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .store-name { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+    .store-tagline { font-size: 12px; color: var(--text-secondary); }
+    .store-badge {
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 10px; font-weight: 700;
+    }
+    .store-body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px; }
+    .store-stats { display: flex; gap: 20px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--border); }
+    .store-stat-item { display: flex; flex-direction: column; gap: 2px; }
+    .store-stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); }
+    .store-stat-val { font-size: 13px; font-weight: 700; }
+
+    /* ── Finding card ── */
+    .finding-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 16px 0; }
+    .finding-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .finding-num { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+    .finding-title { font-size: 14px; font-weight: 800; }
+    .finding-body { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      max-width: var(--content-w); margin: 0 auto;
+      padding: 2rem; font-size: 12px; color: var(--text-tertiary);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 820px) {
+      .technique-grid, .param-grid, .metric-grid { grid-template-columns: repeat(2,1fr); }
+      .bp-grid, .compare-grid, .finding-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 540px) {
+      .technique-grid, .param-grid, .metric-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-inner">
+   <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
+        </object>
+      </a>
+    <a href="../../genai-lab.html" class="nav-back">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        LLM Concepts
+      </a>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ── Hero ── -->
+  <header class="hero">
+    <p class="hero-eyebrow">RAG · Vector Databases · Chunking · Embeddings</p>
+    <h1 class="hero-title">Introduction to<br><span>Retrieval-Augmented Generation</span></h1>
+    <p class="hero-sub">A technical deep-dive into how RAG works — from document ingestion and chunking strategies to vector store internals, embedding models, and evaluation. Built and benchmarked locally using Ollama, ChromaDB, FAISS, and LanceDB.</p>
+    <div class="hero-meta">
+      <span class="hero-badge">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ~25 min read
+      </span>
+      <span class="hero-badge">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        3 chunking strategies
+      </span>
+      <span class="hero-badge">
+        <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        3 vector stores
+      </span>
+      <span class="hero-badge">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        2 evaluation methods
+      </span>
+    </div>
+  </header>
+
+  <!-- ── TOC ── -->
+  <div class="toc-bar">
+    <button class="toc-btn active">What is RAG?</button>
+    <button class="toc-btn">The Pipeline</button>
+    <button class="toc-btn">Chunking</button>
+    <button class="toc-btn">Fixed-size</button>
+    <button class="toc-btn">Sentence</button>
+    <button class="toc-btn">Semantic</button>
+    <button class="toc-btn">Vector Stores</button>
+    <button class="toc-btn">ChromaDB</button>
+    <button class="toc-btn">FAISS</button>
+    <button class="toc-btn">LanceDB</button>
+    <button class="toc-btn">Evaluation</button>
+    <button class="toc-btn">BERTScore</button>
+    <button class="toc-btn">LLM Judge</button>
+    <button class="toc-btn">Results</button>
+  </div>
+
+  <!-- ════════════════════════════════ -->
+  <!-- WHAT IS RAG                      -->
+  <!-- ════════════════════════════════ -->
+  <section class="content-section" id="intro">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--accent);"></span>
+      What is RAG?
+    </div>
+    <h2 class="section-heading">Grounding LLMs in Your Own Data</h2>
+    <p class="section-body">Large Language Models are trained on vast amounts of text — but that training has a cutoff date, and it does not include your private documents, your codebase, or your organisation's internal knowledge. When you ask an LLM a question about something it was not trained on, it either guesses (and sometimes confidently hallucinates) or says it doesn't know.</p>
+
+    <p class="section-body"><strong>Retrieval-Augmented Generation (RAG)</strong> solves this by adding a retrieval step before generation. Instead of asking the LLM to answer from memory, you first search your own document collection for the most relevant context, then pass that context to the LLM alongside the question. The LLM's job becomes synthesis and reasoning over provided material — not recall from training.</p>
+
+    <div class="highlight fuchsia">
+      "RAG transforms an LLM from a closed-book exam taker into an open-book researcher. The quality of the answers depends entirely on the quality of what you retrieve."
+    </div>
+
+    <p class="section-body">The concept was formalised in the 2020 paper <em>"Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"</em> by Lewis et al. at Facebook AI Research. Since then it has become one of the most widely adopted patterns for building production AI applications — from internal Q&amp;A bots to customer support agents to code search tools.</p>
+
+    <div class="callout note">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <strong>What this explainer covers</strong>
+        <span>We will walk through every component of a RAG pipeline from scratch — document ingestion, chunking, embedding, vector storage, retrieval, generation, and evaluation — with working Python code and benchmarks comparing 3 chunking strategies × 3 vector stores across 10 hard questions from a real research paper.</span>
+      </div>
+    </div>
+
+    <div class="technique-grid">
+      <div class="technique-card">
+        <div class="technique-icon" style="background:rgba(192,38,211,0.1);">📄</div>
+        <div class="technique-name">Without RAG</div>
+        <div class="technique-desc">LLM answers from training data only. Cannot access private documents. May hallucinate facts not in training set. Knowledge has a cutoff date.</div>
+        <span class="technique-tag" style="background:rgba(244,63,94,0.1);color:#881337;">Closed-book</span>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon" style="background:rgba(14,165,233,0.1);">🔍</div>
+        <div class="technique-name">With RAG</div>
+        <div class="technique-desc">Relevant document chunks are retrieved at query time and provided as context. LLM synthesises over real, up-to-date source material.</div>
+        <span class="technique-tag" style="background:rgba(16,185,129,0.1);color:#064e3b;">Open-book</span>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon" style="background:rgba(139,92,246,0.1);">⚠️</div>
+        <div class="technique-name">The Challenge</div>
+        <div class="technique-desc">Every step of the pipeline — chunking, embedding, retrieval, generation — introduces quality trade-offs that compound. Most only surface in production.</div>
+        <span class="technique-tag" style="background:rgba(245,158,11,0.1);color:#78350f;">Non-trivial</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════ -->
+  <!-- THE PIPELINE                     -->
+  <!-- ════════════════════════════════ -->
+  <section class="content-section" id="architecture">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--violet);"></span>
+      The RAG Pipeline
+    </div>
+    <h2 class="section-heading">Six Stages from Document to Answer</h2>
+    <p class="section-body">A complete RAG system has two distinct phases: an <strong>offline indexing phase</strong> that processes your documents once, and an <strong>online query phase</strong> that runs for every user question. The indexing phase is compute-intensive but amortised across many queries; the query phase must be fast enough for real-time use.</p>
+
+    <p class="section-body">In our implementation, embeddings are computed once per chunking strategy and shared across all three vector stores — ensuring that the comparison is purely about retrieval architecture, not embedding variance. Here is how each stage works:</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Document Ingestion</strong>
+          <p>Extract raw text from PDFs, HTML pages, markdown files, or any structured document format. The goal is a clean plain-text corpus with as little noise (page numbers, headers, footers) as possible. We use <code>pymupdf</code> for PDF extraction. The MUSE-Autoskill research paper yields 103,413 characters of clean text.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Chunking</strong>
+          <p>Split the text into segments small enough for the embedding model's context window (typically 512–8,192 tokens), while preserving enough surrounding context for each chunk to be semantically meaningful on its own. This is the single most impactful decision in the pipeline — we cover three strategies in detail below.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Embedding</strong>
+          <p>Convert each text chunk into a dense numerical vector using an embedding model. Semantically similar text produces geometrically close vectors. We use <code>nomic-embed-text</code> via Ollama — a local, open-weight model that produces 768-dimensional embeddings. Each chunk is truncated to 2,000 characters before embedding to avoid context overflow.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Indexing into a Vector Store</strong>
+          <p>Persist the embeddings in a vector database optimised for similarity search. The vector store is the retrieval backbone: given a query embedding, it must quickly return the K most similar stored vectors. We benchmark ChromaDB (HNSW index), FAISS (flat exact search), and LanceDB (columnar Arrow format) — covering the three most common architectural choices.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>Retrieval + Generation</strong>
+          <p>At query time, embed the user's question using the same embedding model, retrieve the top-K most similar chunks from the vector store, and pass them as context to the LLM. The LLM's prompt becomes: <em>"Answer this question using only the following context: [retrieved chunks]."</em> We use Gemma 4 (<code>gemma4:e2b-it-q4_K_M</code>) via Ollama with top-5 retrieval.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <strong>Evaluation</strong>
+          <p>Measure how well the system performed — did the retrieved context contain the answer? Was the generated answer faithful to that context? Did it actually address what was asked? We use two complementary evaluation methods: BERTScore (embedding-based, no LLM required) and a DeepEval-inspired LLM judge for reasoning quality.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!--  PART 1 — CHUNKING                          -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <span class="part-num">Part 01</span>
+    <div class="part-line"></div>
+  </div>
+  <div class="part-title" style="margin-bottom:2rem;">Chunking Strategies</div>
+
+  <section class="content-section" id="chunking">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--pink);"></span>
+      What is Chunking?
+    </div>
+    <h2 class="section-heading">The Art of Splitting Documents</h2>
+    <p class="section-body">An embedding model has a fixed context window — typically 512 to 8,192 tokens. You cannot embed an entire research paper in one shot. Chunking solves this by splitting the document into segments small enough to embed, while preserving enough context for each chunk to be semantically meaningful on its own.</p>
+
+    <p class="section-body">The fundamental tension in chunking is <strong>granularity vs. coherence</strong>. Smaller chunks give you more precise retrieval but risk cutting sentences mid-thought. Larger chunks preserve more context but may retrieve too much irrelevant material around the useful sentence. The three strategies below represent three different approaches to navigating this tension.</p>
+
+    <div class="technique-grid">
+      <div class="technique-card">
+        <div class="technique-icon" style="background:rgba(14,165,233,0.1);">✂️</div>
+        <div class="technique-name">Fixed-size</div>
+        <div class="technique-desc">Split every N characters with an overlap window. The simplest, fastest, and most predictable approach. Language-agnostic.</div>
+        <span class="technique-tag tag-fixed">Baseline</span>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon" style="background:rgba(139,92,246,0.1);">📝</div>
+        <div class="technique-name">Sentence-aware</div>
+        <div class="technique-desc">Group K sentences per chunk using NLTK tokenization. Respects natural language boundaries — never cuts mid-sentence.</div>
+        <span class="technique-tag tag-sentence">Structure-aware</span>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon" style="background:rgba(192,38,211,0.1);">🧠</div>
+        <div class="technique-name">Semantic</div>
+        <div class="technique-desc">Split where cosine similarity between adjacent sentences drops below a threshold. Groups semantically related content together.</div>
+        <span class="technique-tag tag-semantic">Meaning-based</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fixed-size -->
+  <section class="content-section" id="fixed">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--sky);"></span>
+      Strategy 01 — Fixed-size Chunking
+    </div>
+    <h2 class="section-heading">The Baseline: Character Windows with Overlap</h2>
+    <p class="section-body">Fixed-size chunking is exactly what it sounds like: slice the document every <em>N</em> characters, with an <em>overlap</em> window between consecutive chunks. In our implementation, we use a chunk size of 512 characters with 64 characters of overlap — so the last 64 characters of chunk <em>i</em> are also the first 64 characters of chunk <em>i+1</em>.</p>
+
+    <div class="highlight sky">
+      <strong>Why overlap matters:</strong> Without overlap, a sentence that straddles a chunk boundary gets split in half, and both halves become incomplete on their own. The overlap ensures that boundary content always appears fully in at least one chunk.
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">Python · chunker.py</span>
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57;"></div>
+          <div class="code-dot" style="background:#febc2e;"></div>
+          <div class="code-dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="code-body"><span class="c-keyword">def</span> <span class="c-fn">fixed_chunk</span>(text: <span class="c-fn">str</span>, size: <span class="c-fn">int</span> = <span class="c-number">512</span>, overlap: <span class="c-fn">int</span> = <span class="c-number">64</span>) -&gt; <span class="c-fn">List</span>[<span class="c-fn">str</span>]:
+    <span class="c-string">"""Split text into fixed-size character windows with overlap."""</span>
+    chunks, start = [], <span class="c-number">0</span>
+    <span class="c-keyword">while</span> start &lt; <span class="c-fn">len</span>(text):
+        end = start + size
+        chunks.<span class="c-fn">append</span>(text[start:end].<span class="c-fn">strip</span>())
+        start += size - overlap  <span class="c-comment"># slide forward by (size - overlap)</span>
+    <span class="c-keyword">return</span> [c <span class="c-keyword">for</span> c <span class="c-keyword">in</span> chunks <span class="c-keyword">if</span> c]</div>
+    </div>
+
+    <p class="section-body">For the MUSE-Autoskill paper (103,413 chars), fixed chunking produced <strong>231 chunks</strong>. This is a predictable number: roughly <code>total_chars / (chunk_size - overlap)</code>.</p>
+
+    <div class="bp-grid">
+      <div class="bp-card">
+        <div class="bp-num">✓</div>
+        <div class="bp-text">
+          <strong>Predictable chunk count</strong>
+          <span>You always know how many chunks you'll get, making memory planning straightforward.</span>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-num">✓</div>
+        <div class="bp-text">
+          <strong>Language-agnostic</strong>
+          <span>Works identically on any language, domain, or document structure. No NLP tools required.</span>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-num">✗</div>
+        <div class="bp-text">
+          <strong>Splits mid-sentence</strong>
+          <span>Character boundaries rarely align with sentence boundaries. Chunks may start or end mid-sentence, harming embedding quality.</span>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-num">✗</div>
+        <div class="bp-text">
+          <strong>Ignores document structure</strong>
+          <span>A paragraph, table row, or section heading gets no special treatment — it's just characters in sequence.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sentence chunking -->
+  <section class="content-section" id="sentence">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--violet);"></span>
+      Strategy 02 — Sentence-aware Chunking
+    </div>
+    <h2 class="section-heading">Respecting Language Boundaries</h2>
+    <p class="section-body">Sentence-aware chunking uses NLTK's <code>sent_tokenize</code> to first split the document into individual sentences, then groups <em>K</em> consecutive sentences into each chunk. In our implementation, we use <em>K=5</em> sentences per chunk with a 2,000-character safety cap.</p>
+
+    <p class="section-body">The key insight is that <strong>a sentence is the minimum unit of meaning</strong> in natural language. An incomplete sentence is almost never useful for retrieval — it lacks a subject, a predicate, or both. By always respecting sentence boundaries, we ensure every chunk is at minimum a complete thought.</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">Python · chunker.py</span>
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57;"></div>
+          <div class="code-dot" style="background:#febc2e;"></div>
+          <div class="code-dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="code-body"><span class="c-keyword">def</span> <span class="c-fn">sentence_chunk</span>(text: <span class="c-fn">str</span>, sentences_per_chunk: <span class="c-fn">int</span> = <span class="c-number">5</span>,
+                     max_chars: <span class="c-fn">int</span> = <span class="c-number">2000</span>) -&gt; <span class="c-fn">List</span>[<span class="c-fn">str</span>]:
+    <span class="c-string">"""Group N consecutive sentences, capped at max_chars."""</span>
+    sentences = nltk.<span class="c-fn">sent_tokenize</span>(text)
+    chunks = []
+    <span class="c-keyword">for</span> i <span class="c-keyword">in</span> <span class="c-fn">range</span>(<span class="c-number">0</span>, <span class="c-fn">len</span>(sentences), sentences_per_chunk):
+        chunk = <span class="c-string">" "</span>.<span class="c-fn">join</span>(sentences[i : i + sentences_per_chunk])
+        <span class="c-keyword">if</span> chunk.<span class="c-fn">strip</span>():
+            chunks.<span class="c-fn">append</span>(chunk.<span class="c-fn">strip</span>()[:max_chars])
+    <span class="c-keyword">return</span> chunks</div>
+    </div>
+
+    <p class="section-body">For the same paper, sentence chunking produced <strong>125 chunks</strong> — almost half as many as fixed chunking. This is because sentences in academic papers tend to be long, and 5 sentences often reaches the 2,000-character cap before we need to truncate.</p>
+
+    <div class="highlight violet">
+      <strong>Academic paper peculiarity:</strong> Research papers have unusually long sentences, dense with clauses and citations. A single MUSE-Autoskill paper sentence like <em>"We found that Hermes and MUSE-Autoskill end within ~2pp of each other when using the same generated skills (58.40% vs 60.35%)"</em> is already 130 characters.
+    </div>
+
+    <div class="callout insight">
+      <span class="callout-icon">🔍</span>
+      <div class="callout-body">
+        <strong>Why fewer chunks can be better</strong>
+        <span>Fewer, larger chunks reduce retrieval candidates but each chunk carries more context. For cross-section questions that span multiple sentences, sentence chunking often retrieves a chunk that already contains the full answer — while fixed chunking might retrieve two partial chunks that each contain only half of it.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Semantic chunking -->
+  <section class="content-section" id="semantic">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--accent);"></span>
+      Strategy 03 — Semantic Chunking
+    </div>
+    <h2 class="section-heading">Splitting on Meaning, Not Structure</h2>
+    <p class="section-body">Semantic chunking is the most sophisticated of the three approaches. Instead of splitting by character count or sentence count, it splits wherever the <strong>topic changes</strong> — detected by measuring cosine similarity between adjacent sentence embeddings. When similarity drops below a threshold (0.75 in our setup), a new chunk begins.</p>
+
+    <p class="section-body">The intuition: if sentence <em>i</em> and sentence <em>i+1</em> are semantically similar (discussing the same concept), they belong in the same chunk. If similarity drops sharply, a topic shift has occurred and a split is warranted.</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">Python · chunker.py</span>
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57;"></div>
+          <div class="code-dot" style="background:#febc2e;"></div>
+          <div class="code-dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="code-body"><span class="c-keyword">def</span> <span class="c-fn">semantic_chunk</span>(text: <span class="c-fn">str</span>, threshold: <span class="c-fn">float</span> = <span class="c-number">0.75</span>,
+                      max_chars: <span class="c-fn">int</span> = <span class="c-number">1024</span>) -&gt; <span class="c-fn">List</span>[<span class="c-fn">str</span>]:
+    sentences = nltk.<span class="c-fn">sent_tokenize</span>(text)
+    model = <span class="c-fn">SentenceTransformer</span>(<span class="c-string">"all-MiniLM-L6-v2"</span>)
+    embeddings = model.<span class="c-fn">encode</span>(sentences, show_progress_bar=<span class="c-keyword">False</span>)
+
+    chunks, current = [], [sentences[<span class="c-number">0</span>]]
+    <span class="c-keyword">for</span> i <span class="c-keyword">in</span> <span class="c-fn">range</span>(<span class="c-number">1</span>, <span class="c-fn">len</span>(sentences)):
+        sim = <span class="c-fn">cosine_similarity</span>([embeddings[i-<span class="c-number">1</span>]], [embeddings[i]])[<span class="c-number">0</span>][<span class="c-number">0</span>]
+        current_len = <span class="c-fn">sum</span>(<span class="c-fn">len</span>(s) <span class="c-keyword">for</span> s <span class="c-keyword">in</span> current)
+
+        <span class="c-keyword">if</span> sim &gt;= threshold <span class="c-keyword">and</span> current_len &lt; max_chars:
+            current.<span class="c-fn">append</span>(sentences[i])  <span class="c-comment"># same topic → keep going</span>
+        <span class="c-keyword">else</span>:
+            chunks.<span class="c-fn">append</span>(<span class="c-string">" "</span>.<span class="c-fn">join</span>(current))
+            current = [sentences[i]]         <span class="c-comment"># new topic → start new chunk</span>
+
+    <span class="c-keyword">if</span> current:
+        chunks.<span class="c-fn">append</span>(<span class="c-string">" "</span>.<span class="c-fn">join</span>(current))
+    <span class="c-keyword">return</span> chunks</div>
+    </div>
+
+    <p class="section-body">Semantic chunking produced <strong>617 chunks</strong> for the same paper — more than 2.5× the fixed-size count. This is the key surprise: because academic papers constantly shift between sub-topics (methods, results, related work, ablations), the similarity threshold fires frequently, creating many short, topically-focused chunks.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card do">
+        <div class="compare-label">✓ Advantage</div>
+        Each chunk is topically coherent — when you retrieve it, almost everything in the chunk is about the same concept. High precision retrieval.
+      </div>
+      <div class="compare-card dont">
+        <div class="compare-label">✗ Drawback</div>
+        More chunks = more vectors to search, more embedding time, and more risk that a cross-topic question retrieves fragmented context from many tiny chunks.
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <strong>Model dependency</strong>
+        <span>Semantic chunking uses <code>all-MiniLM-L6-v2</code> for sentence similarity — a different model than the one used for RAG retrieval (<code>nomic-embed-text</code>). The quality of semantic splits depends on the quality of this secondary model. A mismatch in semantic spaces can produce splits that look wrong to the retrieval model.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!--  PART 2 — VECTOR STORES                     -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <span class="part-num">Part 02</span>
+    <div class="part-line"></div>
+  </div>
+  <div class="part-title" style="margin-bottom:2rem;">Vector Stores</div>
+
+  <section class="content-section" id="vector-stores">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--purple);"></span>
+      How Vector Search Works
+    </div>
+    <h2 class="section-heading">From Embeddings to Nearest Neighbours</h2>
+    <p class="section-body">A vector store is a database optimised for one specific query type: <em>"given this query vector, find the K most similar stored vectors."</em> Under the hood, all three stores we tested compute <strong>cosine similarity</strong> — the cosine of the angle between two vectors in high-dimensional space. Two vectors pointing in the same direction have cosine similarity of 1.0; perpendicular vectors score 0.0.</p>
+
+    <p class="section-body">The difference between stores is not <em>what</em> similarity they compute but <em>how</em> they compute it — the data structure, index type, and storage backend each make different trade-offs between speed, memory, persistence, and scalability.</p>
+
+    <div class="highlight purple">
+      <strong>Why normalise before inner product?</strong> FAISS uses inner product (dot product) natively. For cosine similarity, you normalise each vector to unit length first — then inner product equals cosine similarity. All three stores in our benchmark compute equivalent cosine similarity scores.
+    </div>
+  </section>
+
+  <!-- ChromaDB -->
+  <section class="content-section" id="chromadb">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--amber);"></span>
+      Store 01 — ChromaDB
+    </div>
+    <h2 class="section-heading">The Swiss Army Knife</h2>
+
+    <div class="store-card">
+      <div class="store-header">
+        <div>
+          <div class="store-name">🟠 ChromaDB</div>
+          <div class="store-tagline">Persistent · Metadata-rich · Developer-friendly</div>
+        </div>
+        <span class="store-badge" style="background:rgba(245,158,11,0.1);color:#78350f;">HNSW Index</span>
+      </div>
+      <div class="store-body">
+        ChromaDB is an open-source embedding database designed specifically for LLM applications. It stores embeddings, documents, and metadata together in a single persistent store, backed by <strong>DuckDB</strong> and <strong>Parquet</strong>. Its default index is HNSW (Hierarchical Navigable Small World), a graph-based approximate nearest neighbour algorithm that trades a small amount of recall for dramatically faster search than brute-force.
+      </div>
+      <div class="store-stats">
+        <div class="store-stat-item">
+          <span class="store-stat-label">Index Type</span>
+          <span class="store-stat-val">HNSW</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">Persistence</span>
+          <span class="store-stat-val">Disk (Parquet)</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">Metadata support</span>
+          <span class="store-stat-val">Full</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">Avg latency (our run)</span>
+          <span class="store-stat-val" style="color:var(--accent);">2.4–2.7 ms</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-body">The HNSW graph builds a layered navigable structure that lets the search algorithm "zoom in" from coarse to fine — starting in a sparse upper layer and descending to the dense bottom layer where the nearest neighbours live. This makes it sub-linear in practice: searching a million vectors takes milliseconds, not seconds.</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">Python · chroma_store.py</span>
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57;"></div>
+          <div class="code-dot" style="background:#febc2e;"></div>
+          <div class="code-dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="code-body"><span class="c-comment"># Create collection with cosine distance metric</span>
+self.collection = self.client.<span class="c-fn">create_collection</span>(
+    name=collection,
+    metadata={<span class="c-string">"hnsw:space"</span>: <span class="c-string">"cosine"</span>},
+)
+
+<span class="c-comment"># Add documents with pre-computed embeddings</span>
+self.collection.<span class="c-fn">add</span>(
+    ids=ids,
+    documents=texts,
+    embeddings=embeddings.<span class="c-fn">tolist</span>(),
+    metadatas=[{<span class="c-string">"idx"</span>: i} <span class="c-keyword">for</span> i <span class="c-keyword">in</span> <span class="c-fn">range</span>(<span class="c-fn">len</span>(texts))],
+)
+
+<span class="c-comment"># Query: returns cosine distance (1 - similarity)</span>
+results = self.collection.<span class="c-fn">query</span>(
+    query_embeddings=[query_embedding.<span class="c-fn">tolist</span>()],
+    n_results=top_k,
+)
+<span class="c-comment"># Convert distance → similarity: score = 1 - distance</span></div>
+    </div>
+
+    <div class="callout note">
+      <span class="callout-icon">🔧</span>
+      <div class="callout-body">
+        <strong>ChromaDB gotcha we hit</strong>
+        <span>ChromaDB ≥0.6 rejects empty metadata dicts <code>{}</code> with a validation error. The fix: always pass at least one metadata key per document — we used <code>{"idx": i}</code>. The HNSW index also rebuilds on each insert batch, so bulk-adding all chunks at once is significantly faster than adding one by one.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAISS -->
+  <section class="content-section" id="faiss">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--emerald);"></span>
+      Store 02 — FAISS
+    </div>
+    <h2 class="section-heading">The Speed Demon</h2>
+
+    <div class="store-card">
+      <div class="store-header">
+        <div>
+          <div class="store-name">🟢 FAISS</div>
+          <div class="store-tagline">In-memory · Fastest retrieval · Facebook AI Research</div>
+        </div>
+        <span class="store-badge" style="background:rgba(16,185,129,0.1);color:#064e3b;">Flat Index (Exact)</span>
+      </div>
+      <div class="store-body">
+        FAISS (Facebook AI Similarity Search) is a pure C++ library exposed via Python, optimised for maximum retrieval throughput. Unlike ChromaDB and LanceDB, FAISS is not a database — it is purely a vector index. It stores no text, no metadata, and nothing on disk by default. We use <code>IndexFlatIP</code> (flat inner product index), which performs <strong>exact brute-force search</strong> — no approximation, no graph, just computing the dot product between the query and every stored vector.
+      </div>
+      <div class="store-stats">
+        <div class="store-stat-item">
+          <span class="store-stat-label">Index Type</span>
+          <span class="store-stat-val">Flat (Exact)</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">Persistence</span>
+          <span class="store-stat-val">In-memory only</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">Text storage</span>
+          <span class="store-stat-val">Separate list</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">Avg latency (our run)</span>
+          <span class="store-stat-val" style="color:var(--emerald);">0.1–0.2 ms</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-body">The reason FAISS is 10–30× faster than ChromaDB and LanceDB in our benchmark is not that it uses a smarter index — it's that our dataset is small enough (125–617 vectors) that brute-force exact search over that many vectors takes almost no time. At this scale, the overhead of graph traversal in HNSW actually costs more than a simple matrix multiply.</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">Python · faiss_store.py</span>
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57;"></div>
+          <div class="code-dot" style="background:#febc2e;"></div>
+          <div class="code-dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="code-body"><span class="c-comment"># Normalise vectors to unit length → inner product = cosine similarity</span>
+norms = np.<span class="c-fn">linalg</span>.<span class="c-fn">norm</span>(embeddings, axis=<span class="c-number">1</span>, keepdims=<span class="c-keyword">True</span>)
+normed = embeddings / np.<span class="c-fn">where</span>(norms == <span class="c-number">0</span>, <span class="c-number">1</span>, norms)
+
+<span class="c-comment"># IndexFlatIP = exact brute-force inner product</span>
+self.index = faiss.<span class="c-fn">IndexFlatIP</span>(dim)
+self.index.<span class="c-fn">add</span>(normed.<span class="c-fn">astype</span>(np.float32))
+self.texts.<span class="c-fn">extend</span>(texts)  <span class="c-comment"># text stored separately in Python list</span>
+
+<span class="c-comment"># Search: returns (scores, indices) — scores are cosine similarities</span>
+scores, indices = self.index.<span class="c-fn">search</span>(q, k)</div>
+    </div>
+
+    <div class="callout insight">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <strong>When FAISS wins and loses</strong>
+        <span>For fewer than ~50,000 vectors, FAISS flat index is the fastest option because brute-force matrix multiply is highly cache-friendly and BLAS-optimised. For millions of vectors, HNSW (ChromaDB) or IVF quantisation (FAISS with a different index type) becomes necessary — otherwise search time grows linearly with dataset size.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- LanceDB -->
+  <section class="content-section" id="lancedb">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--indigo);"></span>
+      Store 03 — LanceDB
+    </div>
+    <h2 class="section-heading">The Analytics Powerhouse</h2>
+
+    <div class="store-card">
+      <div class="store-header">
+        <div>
+          <div class="store-name">🔵 LanceDB</div>
+          <div class="store-tagline">Arrow-based · Analytics-ready · Multi-modal</div>
+        </div>
+        <span class="store-badge" style="background:rgba(99,102,241,0.1);color:#1e1b4b;">Lance Format</span>
+      </div>
+      <div class="store-body">
+        LanceDB is a newer vector store built on the <strong>Lance columnar format</strong> — Apache Arrow compatible, which means vectors, text, and metadata are all stored in the same columnar table, enabling SQL-style filtering alongside vector search. It's designed for multi-modal AI applications where you might want to filter by metadata (<em>"retrieve only chunks from section 5"</em>) before running vector similarity.
+      </div>
+      <div class="store-stats">
+        <div class="store-stat-item">
+          <span class="store-stat-label">Index Type</span>
+          <span class="store-stat-val">IVF-PQ (approx)</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">Storage format</span>
+          <span class="store-stat-val">Lance (columnar)</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">SQL filtering</span>
+          <span class="store-stat-val">Native</span>
+        </div>
+        <div class="store-stat-item">
+          <span class="store-stat-label">Avg latency (our run)</span>
+          <span class="store-stat-val" style="color:var(--indigo);">4.4–5.9 ms</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-body">LanceDB was the slowest in our benchmark — but this is not a fair comparison at our scale. The Lance format performs best with larger datasets and benefits significantly from its built-in IVF-PQ (Inverted File with Product Quantisation) index, which we did not explicitly enable here (using scan mode for small datasets instead). LanceDB's real advantage is in <strong>production-scale hybrid search</strong> and analytics workloads where you need both vector similarity and attribute filtering.</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">Python · lancedb_store.py</span>
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57;"></div>
+          <div class="code-dot" style="background:#febc2e;"></div>
+          <div class="code-dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="code-body"><span class="c-comment"># Define schema with PyArrow — text + vector column</span>
+schema = pa.<span class="c-fn">schema</span>([
+    pa.<span class="c-fn">field</span>(<span class="c-string">"text"</span>,   pa.<span class="c-fn">utf8</span>()),
+    pa.<span class="c-fn">field</span>(<span class="c-string">"vector"</span>, pa.<span class="c-fn">list_</span>(pa.<span class="c-fn">float32</span>(), dim)),
+])
+self.table = self.db.<span class="c-fn">create_table</span>(<span class="c-string">"chunks"</span>, data=data, schema=schema)
+
+<span class="c-comment"># Native cosine search — returns _distance = 1 - similarity</span>
+results = (
+    self.table.<span class="c-fn">search</span>(query_embedding.<span class="c-fn">tolist</span>())
+    .<span class="c-fn">metric</span>(<span class="c-string">"cosine"</span>)
+    .<span class="c-fn">limit</span>(top_k)
+    .<span class="c-fn">to_list</span>()
+)
+score = <span class="c-number">1</span> - row[<span class="c-string">"_distance"</span>]  <span class="c-comment"># convert distance → similarity</span></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!--  PART 3 — EVALUATION                        -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <span class="part-num">Part 03</span>
+    <div class="part-line"></div>
+  </div>
+  <div class="part-title" style="margin-bottom:2rem;">Evaluation Strategy</div>
+
+  <section class="content-section" id="eval-strategy">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--pink);"></span>
+      The Evaluation Challenge
+    </div>
+    <h2 class="section-heading">Measuring Quality Without Ground Truth</h2>
+    <p class="section-body">Evaluating RAG quality is fundamentally harder than evaluating classification or translation. You don't have a ground-truth answer to compare against. You have a retrieved context, a generated answer, and a question — and you want to know whether the answer is faithful to the context, relevant to the question, and whether the retrieved context was even useful.</p>
+
+    <p class="section-body">The industry-standard library RAGAS provides these metrics — but it has deep LangChain dependencies that conflict with newer library versions, and its internal LLM judge requires models to output strict JSON, which small quantised models consistently fail to do. <strong>We built our own two-layer evaluation stack instead.</strong></p>
+
+    <div class="compare-grid">
+      <div class="compare-card do">
+        <div class="compare-label">✓ Layer 1: BERTScore</div>
+        <strong>Embedding-based, no LLM required.</strong> Uses BERT to compute semantic similarity between the generated answer and the retrieved context / question. Fast, deterministic, and works with any language.
+      </div>
+      <div class="compare-card dont">
+        <div class="compare-label">× Why not RAGAS?</div>
+        <strong>Dependency hell + JSON parsing failures.</strong> RAGAS imports a deprecated VertexAI module from langchain-community. Its metrics require LLM outputs to be strict JSON — small models fail this consistently, silently returning 0.
+      </div>
+    </div>
+
+    <div class="callout insight">
+      <span class="callout-icon">🎯</span>
+      <div class="callout-body">
+        <strong>Why two evaluation methods?</strong>
+        <span>BERTScore and our LLM judge measure different things. BERTScore catches semantic overlap but can miss logical failures. The LLM judge evaluates reasoning quality but can be too generous. Running both lets us see where they agree (robust signal) and where they diverge (interesting ambiguity) — as we'll see in the results.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BERTScore -->
+  <section class="content-section" id="bertscore">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--violet);"></span>
+      Evaluation Method 01 — BERTScore
+    </div>
+    <h2 class="section-heading">Semantic Similarity Without References</h2>
+    <p class="section-body">BERTScore was originally designed for machine translation evaluation — comparing a generated translation against a reference translation using contextualised BERT embeddings rather than exact word overlap (like BLEU). We repurpose it here to evaluate RAG quality without needing reference answers.</p>
+
+    <p class="section-body">The core idea: embed both the candidate text and the reference text using DistilBERT, then compute <strong>token-level cosine similarities</strong> between every token in the candidate and every token in the reference. Precision, recall, and F1 are computed over these pairwise similarities.</p>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-icon">🎯</div>
+        <div class="metric-name">Faithfulness</div>
+        <div class="metric-def">Does the generated answer stay grounded in the retrieved context? We compute BERTScore F1 between the answer and the concatenated context chunks.</div>
+        <div class="metric-formula">BERTScore(answer, context)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">🔗</div>
+        <div class="metric-name">Answer Relevancy</div>
+        <div class="metric-def">Does the answer address what was actually asked? We compute BERTScore F1 between the answer and the question — a proxy for topical alignment.</div>
+        <div class="metric-formula">BERTScore(answer, question)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">📐</div>
+        <div class="metric-name">Context Precision</div>
+        <div class="metric-def">Are the retrieved chunks relevant to the question? We score each chunk against the question and take the mean — measuring whether retrieval was on-target.</div>
+        <div class="metric-formula">mean(BERTScore(chunk, question))</div>
+      </div>
+    </div>
+
+    <div class="highlight pink">
+      <strong>Important caveat:</strong> These are repurposed uses of BERTScore, not its original intent. BERTScore(answer, context) as a faithfulness proxy assumes that a faithful answer uses similar vocabulary to the source context — which is usually true but can fail when the LLM paraphrases heavily or when the context is dense with technical jargon.
+    </div>
+
+    <p class="section-body">We use <code>distilbert-base-uncased</code> as the backbone — a lighter model than the full BERT-large that BERTScore typically recommends, but appropriate for our latency requirements. The model is cached after the first load and reused across all 9 configuration evaluations.</p>
+  </section>
+
+  <!-- DeepEval-inspired -->
+  <section class="content-section" id="deepeval">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--accent);"></span>
+      Evaluation Method 02 — DeepEval-Inspired LLM Judge
+    </div>
+    <h2 class="section-heading">LLM-as-Judge with Scalar Scoring</h2>
+    <p class="section-body">DeepEval is a popular RAG evaluation framework that uses an LLM to score retrieval and generation quality using structured rubrics. Its built-in metrics (<code>FaithfulnessMetric</code>, <code>AnswerRelevancyMetric</code>) internally ask an LLM to return a structured JSON verdict — but small models like Gemma almost never produce parseable JSON reliably.</p>
+
+    <p class="section-body">Our implementation adopts DeepEval's <strong>scoring rubrics</strong> exactly (same 0/0.5/1.0 anchors, same three metrics) but asks the LLM to return a plain scalar instead of JSON — which every model can do reliably. We score three metrics for each Q&amp;A result.</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">Python · evaluator.py — DeepEval prompt</span>
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57;"></div>
+          <div class="code-dot" style="background:#febc2e;"></div>
+          <div class="code-dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="code-body">_DEEP_FAITHFULNESS_PROMPT = <span class="c-string">"""You are evaluating factual faithfulness of an AI answer.
+
+Retrieved Context:
+{context}
+
+Question: {question}
+AI Answer: {answer}
+
+Does the answer contain ONLY information supported by the context?
+- 1.0 = every claim is backed by the context
+- 0.5 = some claims supported, others added outside the context
+- 0.0 = answer contradicts or ignores the context
+
+Reply with ONLY a decimal number 0.0-1.0. Nothing else."""</span></div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-icon">✅</div>
+        <div class="metric-name">Deep Faithfulness</div>
+        <div class="metric-def">LLM judges whether every claim in the answer is directly supported by the retrieved context. Penalises hallucination and out-of-context claims.</div>
+        <div class="metric-formula">LLM score: 0.0 → 1.0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">💬</div>
+        <div class="metric-name">Deep Relevancy</div>
+        <div class="metric-def">LLM judges whether the answer addresses what was actually asked. A faithful but off-topic answer scores high on faithfulness but low on relevancy.</div>
+        <div class="metric-formula">LLM score: 0.0 → 1.0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">🔍</div>
+        <div class="metric-name">Deep Precision</div>
+        <div class="metric-def">LLM judges what proportion of the retrieved chunks are actually useful for answering the question — a direct measure of retrieval quality.</div>
+        <div class="metric-formula">LLM score: 0.0 → 1.0</div>
+      </div>
+    </div>
+
+    <div class="callout insight">
+      <span class="callout-icon">🧪</span>
+      <div class="callout-body">
+        <strong>The "easy questions" problem — and how we solved it</strong>
+        <span>In earlier runs with auto-generated questions, Deep scores were near 1.0 for every configuration — useless for comparison. The LLM was too generous because questions were sampled from the same document, making any retrieved context look relevant. We replaced auto-generated questions with 10 hard, hand-crafted questions requiring cross-section retrieval, specific numbers, and table lookups — which finally produced meaningful score variance.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!--  PART 4 — THE RUN                           -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <span class="part-num">Part 04</span>
+    <div class="part-line"></div>
+  </div>
+  <div class="part-title" style="margin-bottom:2rem;">The Benchmark Run</div>
+
+  <section class="content-section" id="run">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--emerald);"></span>
+      Live Run
+    </div>
+    <h2 class="section-heading">9 Configurations, 10 Questions Each</h2>
+    <p class="section-body">We ran the full benchmark against the MUSE-Autoskill paper (<em>"Self-Evolving Agents via Skill Creation, Memory, Management, and Evaluation"</em>, ByteDance, May 2026) — a dense 30-page paper with tables, appendices, ablation studies, and specific numerical results. 10 hard questions requiring retrieval across multiple sections were used.</p>
+
+    <div class="terminal-wrap">
+      <div class="terminal-header">
+        <span class="terminal-title">▶ benchmark run · gemma4:e2b-it-q4_K_M · nomic-embed-text</span>
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57;"></div>
+          <div class="code-dot" style="background:#febc2e;"></div>
+          <div class="code-dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="terminal-body"><span class="t-pink t-bold">Loaded 10 questions from questions.txt</span>
+
+<span class="t-cyan t-bold">🔬 RAG Playground</span>  <span class="t-white">LLM=</span><span class="t-green">gemma4:e2b-it-q4_K_M</span>  <span class="t-white">Embed=</span><span class="t-green">nomic-embed-text</span>  <span class="t-white">Eval=</span><span class="t-yellow">all</span>  <span class="t-white">Stores=</span><span class="t-yellow">chroma, faiss, lancedb</span>
+
+<span class="t-white t-bold">📄 Loading:</span> <span class="t-green">papers/2605.27366v1.pdf</span>
+<span class="t-dim">   Extracted </span><span class="t-cyan">103,413</span><span class="t-dim"> characters</span>
+
+<span class="t-white t-bold">📋 Using 10 custom questions</span>
+
+<span class="t-dim">⠋ Chunking (fixed)...</span>
+<span class="t-white">fixed</span> <span class="t-dim">→</span> <span class="t-cyan t-bold">231 chunks</span>
+<span class="t-dim">⠦ Embedding chunks...
+  ↳ Indexing into </span><span class="t-pink">chroma</span><span class="t-dim">...
+     Running evaluation ...
+      → BERTScore...
+  [BERTScore] Loading distilbert-base-uncased (one-time, ~250MB on first run)...
+  [BERTScore] Model loaded and cached ✓
+      → DeepEval...
+  ↳ Indexing into </span><span class="t-pink">faiss</span><span class="t-dim">...
+     Running evaluation ...
+      → BERTScore...
+      → DeepEval...
+  ↳ Indexing into </span><span class="t-pink">lancedb</span><span class="t-dim">...
+     Running evaluation ...
+      → BERTScore...
+      → DeepEval...</span>
+
+<span class="t-dim">⠋ Chunking (sentence)...</span>
+<span class="t-white">sentence</span> <span class="t-dim">→</span> <span class="t-cyan t-bold">125 chunks</span>
+<span class="t-dim">⠸ Embedding chunks...
+  ↳ Indexing into </span><span class="t-pink">chroma</span><span class="t-dim">... → DeepEval...
+  ↳ Indexing into </span><span class="t-pink">faiss</span><span class="t-dim">...  → DeepEval...
+  ↳ Indexing into </span><span class="t-pink">lancedb</span><span class="t-dim">... → DeepEval...</span>
+
+<span class="t-dim">⠋ Chunking (semantic)...</span>
+<span class="t-white">semantic</span> <span class="t-dim">→</span> <span class="t-cyan t-bold">617 chunks</span>
+<span class="t-dim">⠇ Embedding chunks...
+  ↳ Indexing into </span><span class="t-pink">chroma</span><span class="t-dim">... → DeepEval...
+  ↳ Indexing into </span><span class="t-pink">faiss</span><span class="t-dim">...  → DeepEval...
+  ↳ Indexing into </span><span class="t-pink">lancedb</span><span class="t-dim">... → DeepEval...</span></div>
+    </div>
+  </section>
+
+  <!-- Results table -->
+  <section class="content-section" id="results">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--emerald);"></span>
+      Results
+    </div>
+    <h2 class="section-heading">Full Benchmark Results</h2>
+    <p class="section-body">Each row represents one chunking strategy × vector store configuration, averaged over 10 evaluation questions. BERT columns are BERTScore F1; Deep columns are LLM judge scalars. Higher is better on all metrics.</p>
+
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Chunking</th>
+          <th>Store</th>
+          <th>Chunks</th>
+          <th>Latency</th>
+          <th>BERT Faith.</th>
+          <th>BERT Relev.</th>
+          <th>BERT Prec.</th>
+          <th>Deep Faith.</th>
+          <th>Deep Relev.</th>
+          <th>Deep Prec.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="score-pill tag-fixed">fixed</span></td>
+          <td><span class="score-pill tag-chroma">chroma</span></td>
+          <td>231</td>
+          <td>2.4 ms</td>
+          <td><span class="score-pill score-mid">0.765</span></td>
+          <td><span class="score-pill score-high">0.831</span></td>
+          <td><span class="score-pill score-mid">0.752</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-mid">0.900</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+        </tr>
+        <tr>
+          <td><span class="score-pill tag-fixed">fixed</span></td>
+          <td><span class="score-pill tag-faiss">faiss</span></td>
+          <td>231</td>
+          <td style="color:var(--emerald);font-weight:700;">0.1 ms</td>
+          <td><span class="score-pill score-mid">0.765</span></td>
+          <td><span class="score-pill score-high">0.831</span></td>
+          <td><span class="score-pill score-mid">0.753</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+        </tr>
+        <tr>
+          <td><span class="score-pill tag-fixed">fixed</span></td>
+          <td><span class="score-pill tag-lance">lancedb</span></td>
+          <td>231</td>
+          <td>4.4 ms</td>
+          <td><span class="score-pill score-mid">0.765</span></td>
+          <td><span class="score-pill score-high">0.832</span></td>
+          <td><span class="score-pill score-mid">0.752</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-mid">0.900</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+        </tr>
+        <tr>
+          <td><span class="score-pill tag-sentence">sentence</span></td>
+          <td><span class="score-pill tag-chroma">chroma</span></td>
+          <td>125</td>
+          <td>2.7 ms</td>
+          <td><span class="score-pill score-mid">0.739</span></td>
+          <td><span class="score-pill score-high">0.831</span></td>
+          <td><span class="score-pill score-mid">0.724</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-mid">0.950</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+        </tr>
+        <tr>
+          <td><span class="score-pill tag-sentence">sentence</span></td>
+          <td><span class="score-pill tag-faiss">faiss</span></td>
+          <td>125</td>
+          <td style="color:var(--emerald);font-weight:700;">0.2 ms</td>
+          <td><span class="score-pill score-mid">0.739</span></td>
+          <td><span class="score-pill score-high">0.832</span></td>
+          <td><span class="score-pill score-mid">0.724</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-mid">0.950</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+        </tr>
+        <tr class="winner">
+          <td><span class="score-pill tag-sentence">sentence</span></td>
+          <td><span class="score-pill tag-lance">lancedb</span></td>
+          <td>125</td>
+          <td>4.4 ms</td>
+          <td><span class="score-pill score-mid">0.746</span></td>
+          <td><span class="score-pill score-high">0.831</span></td>
+          <td><span class="score-pill score-low">0.724</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-mid">0.950</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+        </tr>
+        <tr>
+          <td><span class="score-pill tag-semantic">semantic</span></td>
+          <td><span class="score-pill tag-chroma">chroma</span></td>
+          <td>617</td>
+          <td>2.7 ms</td>
+          <td><span class="score-pill score-mid">0.778</span></td>
+          <td><span class="score-pill score-high">0.844</span></td>
+          <td><span class="score-pill score-mid">0.762</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-low">0.650</span></td>
+          <td><span class="score-pill score-mid">0.779</span></td>
+        </tr>
+        <tr>
+          <td><span class="score-pill tag-semantic">semantic</span></td>
+          <td><span class="score-pill tag-faiss">faiss</span></td>
+          <td>617</td>
+          <td style="color:var(--emerald);font-weight:700;">0.2 ms</td>
+          <td><span class="score-pill score-mid">0.782</span></td>
+          <td><span class="score-pill score-high">0.839</span></td>
+          <td><span class="score-pill score-mid">0.762</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-mid">0.750</span></td>
+          <td><span class="score-pill score-mid">0.779</span></td>
+        </tr>
+        <tr>
+          <td><span class="score-pill tag-semantic">semantic</span></td>
+          <td><span class="score-pill tag-lance">lancedb</span></td>
+          <td>617</td>
+          <td>5.9 ms</td>
+          <td><span class="score-pill score-mid">0.778</span></td>
+          <td><span class="score-pill score-high">0.847</span></td>
+          <td><span class="score-pill score-mid">0.762</span></td>
+          <td><span class="score-pill score-high">1.000</span></td>
+          <td><span class="score-pill score-mid">0.700</span></td>
+          <td><span class="score-pill score-mid">0.779</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12px;color:var(--text-tertiary);">
+      <span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:rgba(192,38,211,0.04);border:1px solid var(--accent);"></span>
+      <span>🏆 Best configuration: <strong style="color:var(--text-primary);">sentence + lancedb</strong> (composite score: <strong style="color:var(--accent);">0.875</strong>)</span>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════ -->
+  <!-- KEY FINDINGS                     -->
+  <!-- ════════════════════════════════ -->
+  <section class="content-section" id="findings">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--violet);"></span>
+      Analysis
+    </div>
+    <h2 class="section-heading">What the Numbers Actually Tell Us</h2>
+    <p class="section-body">The results surface four distinct patterns that would not have been visible without running both evaluation methods simultaneously.</p>
+
+    <div class="finding-grid">
+      <div class="finding-card">
+        <div class="finding-num">Finding 01</div>
+        <div class="finding-title">BERTScore and LLM judge disagree on semantic chunking</div>
+        <div class="finding-body">Semantic chunking scores the <em>highest</em> on BERT faithfulness (0.778–0.782) and BERT relevancy (0.839–0.847) — but the <em>lowest</em> on Deep relevancy (0.65–0.75) and Deep precision (0.779). The LLM judge penalises semantic chunking because its many tiny topically-focused chunks retrieve fragmented context. BERTScore misses this because token-level overlap looks fine even when logical flow is broken.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-num">Finding 02</div>
+        <div class="finding-title">FAISS is 10–30× faster with zero quality cost at this scale</div>
+        <div class="finding-body">FAISS retrieval averaged 0.1–0.2 ms versus 2.4–2.7 ms for ChromaDB and 4.4–5.9 ms for LanceDB — and the quality scores are statistically identical. For RAG systems with fewer than ~50,000 chunks, FAISS flat index is the optimal choice: exact search over a small dataset is faster than approximate search via HNSW graph traversal.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-num">Finding 03</div>
+        <div class="finding-title">Sentence chunking wins on context precision, not faithfulness</div>
+        <div class="finding-body">Sentence chunking achieves the only <strong>1.000</strong> Deep Context Precision scores — meaning the LLM judge found all retrieved sentence-chunks directly relevant to the question. But its BERT faithfulness (0.739) is lower than both fixed (0.765) and semantic (0.778). Fewer, larger chunks retrieve context that's more on-topic but require the LLM to be faithful to more material at once.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-num">Finding 04</div>
+        <div class="finding-title">Vector store choice matters far less than chunking strategy</div>
+        <div class="finding-body">Within each chunking strategy, all three vector stores produce nearly identical quality scores — the maximum difference is 0.006 in BERT faithfulness. But across chunking strategies, Deep relevancy ranges from 0.650 to 1.000 — a 0.35 spread. <strong>Chunking is the dominant variable; vector store is an operational choice.</strong></div>
+      </div>
+    </div>
+
+    <div class="highlight fuchsia" style="margin-top:1.5rem;">
+      <strong>Bottom line:</strong> Optimise chunking first, then choose your vector store based on operational requirements (latency → FAISS, persistence + metadata → ChromaDB, production scale + hybrid search → LanceDB). The quality impact of vector store choice, at least at this scale, is negligible.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════ -->
+  <!-- CONCLUSION                       -->
+  <!-- ════════════════════════════════ -->
+  <section class="content-section" id="conclusion">
+    <div class="section-label">
+      <span class="section-label-dot" style="background:var(--pink);"></span>
+      Key Takeaways
+    </div>
+    <h2 class="section-heading">Building Your Own RAG System</h2>
+
+    <div class="bp-grid">
+      <div class="bp-card">
+        <div class="bp-num">1</div>
+        <div class="bp-text">
+          <strong>Start with sentence chunking as your default</strong>
+          <span>It's structure-aware, produces coherent units of meaning, and generalises well without threshold tuning. Upgrade to semantic chunking only for homogeneous documents (blogs, reports) — not dense academic papers.</span>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-num">2</div>
+        <div class="bp-text">
+          <strong>Use FAISS for development, ChromaDB for production</strong>
+          <span>FAISS is 10–30× faster at small scale and requires zero setup. Once you need persistence, metadata filtering, or a team-friendly interface, ChromaDB's DuckDB backend is the cleanest migration path.</span>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-num">3</div>
+        <div class="bp-text">
+          <strong>Use overlap — always</strong>
+          <span>Even 10–15% character overlap dramatically reduces the chance of splitting a key sentence across chunk boundaries. The storage overhead is negligible. This applies to fixed and sentence chunking both.</span>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-num">4</div>
+        <div class="bp-text">
+          <strong>Run both embedding and LLM-based evaluation</strong>
+          <span>BERTScore and LLM judges measure different failure modes. Using only one will miss half the picture — especially the semantic coherence issues that BERTScore cannot detect.</span>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-num">5</div>
+        <div class="bp-text">
+          <strong>Use hard, domain-specific questions for evaluation</strong>
+          <span>Auto-generated questions from the same document will always score near 1.0 on LLM judges. Hand-craft questions that require cross-section retrieval, specific numbers, and table lookups to expose real variance.</span>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-num">6</div>
+        <div class="bp-text">
+          <strong>Keep it all local during development</strong>
+          <span>This entire pipeline — embedding, generation, and evaluation — ran on Ollama with no API keys. Local-first RAG development is not just feasible; it's fast enough for iterative experimentation and keeps costs at zero.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>Sumit Kant · GenAI Lab · 2026</span>
+  <span>Built with Ollama · Gemma 4 · nomic-embed-text · ChromaDB · FAISS · LanceDB · BERTScore</span>
+</footer>
+
+<script>
+  // TOC button active state
+  document.querySelectorAll('.toc-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.toc-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
