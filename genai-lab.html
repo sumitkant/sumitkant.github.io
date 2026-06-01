@@ -2505,21 +2505,21 @@
     <section class="section" id="section-models">
       <div class="section-header">
         <h2 class="section-title">Model Landscape</h2>
-        <span class="section-count">Live LiveBench leaderboard, fetched in your browser</span>
+        <span class="section-count">Live LiveBench leaderboard</span>
       </div>
 
 
       <div id="livebench-explorer">
         <p class="lb-intro">
-          A live model leaderboard built from <strong>LiveBench</strong> benchmark CSVs. The script fetches every public release, adds a <code>_date</code> column, computes simple category averages, and renders them as parallel-coordinate and trend charts. It loads automatically — pick a category to drill into individual benchmarks, or select multiple dates to see how models move over time.
+          A live model leaderboard built from <strong>LiveBench</strong> benchmark CSVs. Pick a category to drill into individual benchmarks, or select multiple dates to see how models move over time.
         </p>
 
         <div class="controls-grid">
           <div class="control-card">
             <label class="control-label" for="dataSource">Data source</label>
             <select id="dataSource">
-              <option value="github" selected>GitHub raw mirror (CORS-friendly)</option>
-              <option value="livebench">livebench.ai direct URLs</option>
+              <option value="github" selected>Github</option>
+              <option value="livebench">LiveBench</option>
             </select>
             <div class="button-row">
               <button class="action-btn" id="loadBtn">Load / Refresh</button>
@@ -2586,7 +2586,7 @@
           <div class="viz-header">
             <div>
               <div class="viz-title">Parallel profile by broad category</div>
-              <div class="viz-sub">Compresses many benchmark columns into simple buckets: reasoning, coding, language, data transformation, and spatial/logical tasks. Model names sit at each end of every line; hover a line to focus it. Pick a category above to drill into its individual axes.</div>
+              <div class="viz-sub">Pick a category above to drill into its individual axes.</div>
             </div>
             <span class="lb-badge" id="profileContext">Waiting for data</span>
           </div>
