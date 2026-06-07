@@ -257,15 +257,24 @@
       left: 0;
       right: 0;
       z-index: 100;
-      padding: var(--space-4) var(--space-6);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: var(--space-4) 0;
       background: oklch(from var(--color-bg) l c h / 0.85);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.06);
       transition: background var(--transition), border-color var(--transition);
+    }
+
+    .nav-inner {
+      max-width: var(--content-wide);
+      margin-inline: auto;
+      padding-inline: var(--space-6);
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-links {
+      margin-left: auto;
     }
 
     .nav-logo {
@@ -319,6 +328,7 @@
       display: flex;
       align-items: center;
       gap: var(--space-3);
+      margin-left: auto;
     }
 
     .theme-toggle {
@@ -1630,23 +1640,25 @@
 
   <!-- Navigation -->
   <nav class="nav">
-    <a href="#" class="nav-logo" aria-label="Sumit Kant Home">
-      <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;">
-      </object>
-    </a>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" aria-label="Sumit Kant Home">
+        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;">
+        </object>
+      </a>
 
-    <ul class="nav-links" role="list">
-      <li><a href="blog.html">Blog</a></li>
-      <li><a href="bookshelf.html">Books &amp; Reading</a></li>
-      <li><a href="johnnysmusiclab.html">Music Lab</a></li>
-      <li><a href="genai-lab.html" class="active">GenAI Lab</a></li>
-      <li><a href="neuralnotework.html">My Second Brain</a></li>
-    </ul>
+      <ul class="nav-links" role="list">
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="neuralnotework.html">My Second Brain</a></li>
+      </ul>
 
-    <div class="nav-right">
-      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="nav-right">
+        <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </nav>
 
