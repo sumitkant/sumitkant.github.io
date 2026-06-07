@@ -1,0 +1,52 @@
+# Coolors Modern Themes Markdown Pack
+
+Total themes: 48
+
+- [01. Sunny Beach Day](01-sunny-beach-day.md) - 124.7K hearts
+- [02. Summer Ocean Breeze](02-summer-ocean-breeze.md) - 79.3K hearts
+- [03. Black & Gold Elegance](03-black-and-gold-elegance.md) - 54.6K hearts
+- [04. Warm Autumn Glow](04-warm-autumn-glow.md) - 48.2K hearts
+- [05. Cool Coastal Vibes](05-cool-coastal-vibes.md) - 34.4K hearts
+- [06. Neutral Harmony Bliss](06-neutral-harmony-bliss.md) - 48.2K hearts
+- [07. Purple Raindrops](07-purple-raindrops.md) - 25.3K hearts
+- [08. Dark Sunset](08-dark-sunset.md) - 31.5K hearts
+- [09. Golden Twilight](09-golden-twilight.md) - 24.7K hearts
+- [10. Coastal Vibes](10-coastal-vibes.md) - 28.5K hearts
+- [11. Bold Hues](11-bold-hues.md) - 23.3K hearts
+- [12. Monochrome Beach](12-monochrome-beach.md) - 23.3K hearts
+- [13. Neutral Elegance](13-neutral-elegance.md) - 23.9K hearts
+- [14. Contrast Pop](14-contrast-pop.md) - 19.8K hearts
+- [15. Rustic Charm](15-rustic-charm.md) - 18.5K hearts
+- [16. Classic Red Palette](16-classic-red-palette.md) - 11K hearts
+- [17. Earthly Tones](17-earthly-tones.md) - 21.2K hearts
+- [18. Oceanic Cactus](18-oceanic-cactus.md) - 18.1K hearts
+- [19. Neutral Earth Tones](19-neutral-earth-tones.md) - 15.7K hearts
+- [20. Monochrome Harmony](20-monochrome-harmony.md) - 13.6K hearts
+- [21. Bold Berry](21-bold-berry.md) - 13.3K hearts
+- [22. Deep Sea](22-deep-sea.md) - 11.8K hearts
+- [23. Ocean Serenity](23-ocean-serenity.md) - 12K hearts
+- [24. Autumn Hues](24-autumn-hues.md) - 13.4K hearts
+- [25. Coral Reef](25-coral-reef.md) - 12.7K hearts
+- [26. Ocean Breeze](26-ocean-breeze.md) - 10.3K hearts
+- [27. Magenta Dream](27-magenta-dream.md) - 9,289 hearts
+- [28. Minimalist Elegance](28-minimalist-elegance.md) - 8,992 hearts
+- [29. Gentle Sea Breeze](29-gentle-sea-breeze.md) - 7,982 hearts
+- [30. Sky Blue Freshness](30-sky-blue-freshness.md) - 6,933 hearts
+- [31. Orange Sunset Sky](31-orange-sunset-sky.md) - 8,388 hearts
+- [32. Golden Glow](32-golden-glow.md) - 7,237 hearts
+- [33. Silent Waters](33-silent-waters.md) - 8,076 hearts
+- [34. Monochrome Red](34-monochrome-red.md) - 6,507 hearts
+- [35. Ocean Breeze](35-ocean-breeze.md) - 7,659 hearts
+- [36. Industrial Blue](36-industrial-blue.md) - 7,513 hearts
+- [37. Dusk Horizon](37-dusk-horizon.md) - 6,066 hearts
+- [38. Azure Skies](38-azure-skies.md) - 5,157 hearts
+- [39. Nature Harmony](39-nature-harmony.md) - 6,061 hearts
+- [40. Misty Morning](40-misty-morning.md) - 6,289 hearts
+- [41. Mystic Waters](41-mystic-waters.md) - 5,900 hearts
+- [42. Ocean Sunset](42-ocean-sunset.md) - 5,461 hearts
+- [43. Cozy Fireside](43-cozy-fireside.md) - 5,130 hearts
+- [44. Vintage Vibes](44-vintage-vibes.md) - 5,369 hearts
+- [45. Deep Sea](45-deep-sea.md) - 4,633 hearts
+- [46. Cozy Cabin](46-cozy-cabin.md) - 4,964 hearts
+- [47. Monochrome Chic](47-monochrome-chic.md) - 4,332 hearts
+- [48. Forest Adventure](48-forest-adventure.md) - 3,924 hearts

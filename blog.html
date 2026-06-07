@@ -122,6 +122,44 @@
       font-weight: 500;
     }
 
+    .mobile-menu {
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 1.5rem 16px;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(-110%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 99;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .mobile-menu.open {
+      transform: translateY(0);
+    }
+
+    .mobile-menu a {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.15s;
+    }
+
+    .mobile-menu a:last-child {
+      border-bottom: none;
+    }
+
+    .mobile-menu a:hover,
+    .mobile-menu a.active {
+      color: var(--text-primary);
+    }
+
     .page {
       max-width: var(--content-w);
       margin: 0 auto;
@@ -286,11 +324,36 @@
     .item {
       display: inline-block;
       width: calc(25% - 9px);
+      /* 4 cols, gutter 12 → (100% - 3*12px)/4 */
       margin-bottom: var(--gap);
       border-radius: var(--radius-card);
       overflow: hidden;
       vertical-align: top;
 
+    }
+
+    @media (max-width: 1200px) {
+      .item {
+        width: calc(33.333% - 8px);
+      }
+
+      /* 3 cols */
+    }
+
+    @media (max-width: 900px) {
+      .item {
+        width: calc(50% - 6px);
+      }
+
+      /* 2 cols */
+    }
+
+    @media (max-width: 540px) {
+      .item {
+        width: 100%;
+      }
+
+      /* 1 col */
     }
 
     .item.hidden {
@@ -462,21 +525,52 @@
       color: var(--text-primary);
     }
 
-    @media (max-width: 900px) {
-      .grid {
-        columns: 2 200px;
-      }
+    /* Hamburger — hidden on desktop, shown on mobile */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
     }
 
-    @media (max-width: 540px) {
-      .grid {
-        columns: 1;
-      }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
 
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    @media (max-width: 700px) {
       .nav-links {
         display: none;
       }
 
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 540px) {
       .page {
         padding: 0 1rem 4rem;
       }
@@ -489,7 +583,7 @@
   <nav>
     <div class="nav-inner">
       <a href="https://sumitkant.github.io/" class="nav-logo">
-        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block;">
+        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;">
         </object>
       </a>
       <ul class="nav-links">
@@ -499,8 +593,25 @@
         <li><a href="genai-lab.html" class="active">GenAI Lab</a></li>
         <li><a href="neuralnotework.html">My Second Brain</a></li>
       </ul>
+
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu" role="navigation">
+    <a href="blog.html" onclick="closeMobileMenu()">Blog</a>
+    <a href="bookshelf.html" onclick="closeMobileMenu()">Books &amp; Reading</a>
+    <a href="johnnysmusiclab.html" onclick="closeMobileMenu()">Music Lab</a>
+    <a href="genai-lab.html" class="active" onclick="closeMobileMenu()">GenAI Lab</a>
+    <a href="neuralnotework.html" onclick="closeMobileMenu()">My Second Brain</a>
+  </div>
+
+  <!-- Mobile Menu -->
+
 
   <main class="page">
 
@@ -1743,6 +1854,24 @@
         applyFilters();
       }, 180);
     });
+
+    /* ── Mobile menu toggle ─────────────────────── */
+    var hamburger = document.getElementById('hamburger');
+    var mobileMenu = document.getElementById('mobileMenu');
+
+    function toggleMobileMenu() {
+      var open = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+
+    hamburger.addEventListener('click', toggleMobileMenu);
   </script>
 
 

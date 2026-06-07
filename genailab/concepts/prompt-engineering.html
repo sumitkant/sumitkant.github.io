@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prompt Engineering — GenAI Lab</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet" />
   <style>
     :root {
       --bg: #f2efe9;
       --card-bg: #ffffff;
-      --border: rgba(0,0,0,0.08);
+      --border: rgba(0, 0, 0, 0.08);
       --text-primary: #1a1a18;
       --text-secondary: #6b6b65;
       --text-tertiary: #a8a8a0;
       --accent: #c85c2a;
-      --accent-light: rgba(200,92,42,0.08);
+      --accent-light: rgba(200, 92, 42, 0.08);
       --indigo: #6366f1;
       --sky: #0ea5e9;
       --emerald: #10b981;
@@ -30,8 +33,18 @@
       --content-w: 980px;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; scroll-behavior: smooth; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
 
     body {
       background: var(--bg);
@@ -41,40 +54,80 @@
       line-height: 1.6;
     }
 
-    a { color: inherit; text-decoration: none; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
     /* ── Nav ── */
     nav {
-      position: sticky; top: 0; z-index: 200;
+      position: sticky;
+      top: 0;
+      z-index: 200;
       height: var(--nav-h);
-      background: rgba(242,239,233,0.92);
+      background: rgba(242, 239, 233, 0.92);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
     }
+
     .nav-inner {
       max-width: var(--content-w);
-      margin: 0 auto; padding: 0 2rem;
+      margin: 0 auto;
+      padding: 0 2rem;
       height: 100%;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
     .nav-monogram {
-      width: 30px; height: 30px;
-      background: var(--text-primary); color: var(--bg);
+      width: 30px;
+      height: 30px;
+      background: var(--text-primary);
+      color: var(--bg);
       border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
     }
+
     .nav-back {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 13px; color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
       transition: color 0.15s;
     }
-    .nav-back:hover { color: var(--text-primary); }
-    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .nav-back:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-back svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
 
     /* ── Layout ── */
-    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 6rem; }
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+    }
 
     /* ── Hero ── */
     .hero {
@@ -83,81 +136,152 @@
       margin-bottom: 3rem;
       position: relative;
     }
+
     .hero-eyebrow {
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+
     .hero-eyebrow::before {
-      content: ''; width: 24px; height: 2px;
-      background: var(--accent); border-radius: 1px;
+      content: '';
+      width: 24px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
     }
+
     .hero-title {
       font-size: clamp(2.2rem, 5vw, 3.4rem);
-      font-weight: 800; letter-spacing: -0.035em;
-      line-height: 1.05; margin-bottom: 16px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      margin-bottom: 16px;
     }
+
     .hero-sub {
-      font-size: 15px; color: var(--text-secondary);
-      line-height: 1.75; max-width: 600px; margin-bottom: 24px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      max-width: 600px;
+      margin-bottom: 24px;
     }
+
     .hero-meta {
-      display: flex; align-items: center; gap: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       flex-wrap: wrap;
     }
+
     .hero-badge {
-      display: inline-flex; align-items: center; gap: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 5px 12px;
-      background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: 999px; font-size: 12px; font-weight: 500;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--text-secondary);
     }
-    .hero-badge svg { width: 13px; height: 13px; stroke: var(--accent); fill: none; stroke-width: 2; }
+
+    .hero-badge svg {
+      width: 13px;
+      height: 13px;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 2;
+    }
 
     /* ── Section nav (TOC sidebar-like) ── */
     .toc-bar {
-      display: flex; gap: 6px; flex-wrap: wrap;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
       margin-bottom: 3rem;
       padding: 14px 16px;
-      background: var(--card-bg); border: 1px solid var(--border);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 12px;
     }
+
     .toc-btn {
-      padding: 5px 12px; border-radius: 999px;
-      font-size: 11.5px; font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
       border: 1px solid var(--border);
-      background: transparent; color: var(--text-secondary);
-      cursor: pointer; font-family: var(--font);
-      transition: all 0.15s; white-space: nowrap;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.15s;
+      white-space: nowrap;
     }
-    .toc-btn:hover { color: var(--text-primary); border-color: rgba(0,0,0,0.16); }
-    .toc-btn.active { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
+
+    .toc-btn:hover {
+      color: var(--text-primary);
+      border-color: rgba(0, 0, 0, 0.16);
+    }
+
+    .toc-btn.active {
+      background: var(--text-primary);
+      color: var(--bg);
+      border-color: var(--text-primary);
+    }
 
     /* ── Content sections ── */
-    .content-section { margin-bottom: 3rem; }
+    .content-section {
+      margin-bottom: 3rem;
+    }
 
     .section-label {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--text-tertiary); margin-bottom: 10px;
-      padding-bottom: 10px; border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
     }
+
     .section-label-dot {
-      width: 8px; height: 8px; border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
       flex-shrink: 0;
     }
 
     .section-heading {
-      font-size: 1.5rem; font-weight: 800;
-      letter-spacing: -0.025em; margin-bottom: 12px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
     }
+
     .section-body {
-      font-size: 14px; color: var(--text-secondary);
-      line-height: 1.8; margin-bottom: 16px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 16px;
     }
-    .section-body strong { color: var(--text-primary); font-weight: 700; }
+
+    .section-body strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
 
     /* ── Highlight callout (from PDF underlines) ── */
     .highlight {
@@ -169,11 +293,36 @@
       line-height: 1.7;
       font-style: italic;
     }
-    .highlight.red    { border-color: var(--rose);    background: rgba(244,63,94,0.05);    color: #7f1d1d; }
-    .highlight.blue   { border-color: var(--sky);     background: rgba(14,165,233,0.06);   color: #0c4a6e; }
-    .highlight.green  { border-color: var(--emerald); background: rgba(16,185,129,0.06);   color: #064e3b; }
-    .highlight.orange { border-color: var(--accent);  background: var(--accent-light);     color: #7c2d12; }
-    .highlight.violet { border-color: var(--violet);  background: rgba(139,92,246,0.06);   color: #4c1d95; }
+
+    .highlight.red {
+      border-color: var(--rose);
+      background: rgba(244, 63, 94, 0.05);
+      color: #7f1d1d;
+    }
+
+    .highlight.blue {
+      border-color: var(--sky);
+      background: rgba(14, 165, 233, 0.06);
+      color: #0c4a6e;
+    }
+
+    .highlight.green {
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.06);
+      color: #064e3b;
+    }
+
+    .highlight.orange {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: #7c2d12;
+    }
+
+    .highlight.violet {
+      border-color: var(--violet);
+      background: rgba(139, 92, 246, 0.06);
+      color: #4c1d95;
+    }
 
     /* ── Technique cards grid ── */
     .technique-grid {
@@ -182,969 +331,1424 @@
       gap: 10px;
       margin-bottom: 2rem;
     }
+
     .technique-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 18px 20px;
-      display: flex; flex-direction: column; gap: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       transition: transform 0.15s, box-shadow 0.15s;
     }
+
     .technique-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
     }
+
     .technique-icon {
-      width: 34px; height: 34px;
+      width: 34px;
+      height: 34px;
       border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 2px; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2px;
+      flex-shrink: 0;
     }
+
     .technique-icon svg {
-      width: 17px; height: 17px;
-      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+      width: 17px;
+      height: 17px;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
       fill: none;
     }
+
     .technique-name {
-      font-size: 0.9rem; font-weight: 800;
-      color: var(--text-primary); line-height: 1.2;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.2;
     }
+
     .technique-desc {
-      font-size: 12px; color: var(--text-secondary); line-height: 1.6;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
+
     .technique-tag {
-      display: inline-flex; align-self: flex-start;
-      padding: 2px 8px; border-radius: 999px;
-      font-size: 10px; font-weight: 700;
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
       margin-top: auto;
     }
 
     /* ── Parameter cards ── */
     .param-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
       margin: 16px 0;
     }
+
     .param-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px; padding: 16px 18px;
+      border-radius: 12px;
+      padding: 16px 18px;
     }
+
     .param-name {
-      font-size: 11px; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--text-tertiary); margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 6px;
     }
+
     .param-value {
-      font-size: 1.5rem; font-weight: 800;
-      letter-spacing: -0.02em; margin-bottom: 6px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
     }
-    .param-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+
+    .param-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
     .param-slider {
-      margin-top: 10px; height: 4px; border-radius: 2px;
-      background: var(--border); position: relative; overflow: visible;
+      margin-top: 10px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      position: relative;
+      overflow: visible;
     }
+
     .param-fill {
-      position: absolute; left: 0; top: 0; height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
       border-radius: 2px;
     }
+
     .param-marker {
-      position: absolute; top: -3px; width: 10px; height: 10px;
-      border-radius: 50%; border: 2px solid var(--card-bg);
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+      position: absolute;
+      top: -3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--card-bg);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
       transform: translateX(-50%);
     }
 
     /* ── Code block ── */
     .code-wrap {
-      background: #1a1a18; border-radius: 12px;
-      overflow: hidden; margin: 16px 0;
+      background: #1a1a18;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 16px 0;
     }
+
     .code-header {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 10px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
+
     .code-lang {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: rgba(255,255,255,0.4);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
       font-family: var(--mono);
     }
-    .code-dots { display: flex; gap: 5px; }
-    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .code-body {
-      padding: 16px 18px; overflow-x: auto;
-      font-family: var(--mono); font-size: 12.5px;
-      line-height: 1.65; color: #e8e4da;
+
+    .code-dots {
+      display: flex;
+      gap: 5px;
     }
-    .code-comment { color: #6b6b65; }
-    .code-keyword { color: #c792ea; }
-    .code-string  { color: #c3e88d; }
-    .code-number  { color: #f78c6c; }
-    .code-fn      { color: #82aaff; }
-    .code-var     { color: #f8f8f2; }
+
+    .code-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .code-body {
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: #e8e4da;
+    }
+
+    .code-comment {
+      color: #6b6b65;
+    }
+
+    .code-keyword {
+      color: #c792ea;
+    }
+
+    .code-string {
+      color: #c3e88d;
+    }
+
+    .code-number {
+      color: #f78c6c;
+    }
+
+    .code-fn {
+      color: #82aaff;
+    }
+
+    .code-var {
+      color: #f8f8f2;
+    }
 
     /* ── Prompt example table ── */
     .prompt-table {
-      background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: var(--radius); overflow: hidden; margin: 16px 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 16px 0;
     }
+
     .prompt-row {
-      display: grid; grid-template-columns: 130px 1fr;
+      display: grid;
+      grid-template-columns: 130px 1fr;
       border-bottom: 1px solid var(--border);
     }
-    .prompt-row:last-child { border-bottom: none; }
+
+    .prompt-row:last-child {
+      border-bottom: none;
+    }
+
     .prompt-key {
       padding: 10px 14px;
       background: var(--bg);
-      font-size: 11px; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       color: var(--text-tertiary);
       border-right: 1px solid var(--border);
-      display: flex; align-items: center;
+      display: flex;
+      align-items: center;
     }
+
     .prompt-val {
       padding: 10px 16px;
-      font-size: 13px; color: var(--text-secondary); line-height: 1.65;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.65;
     }
+
     .prompt-val.output {
-      font-family: var(--mono); font-size: 12.5px;
-      background: rgba(200,92,42,0.03); color: var(--text-primary);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      background: rgba(200, 92, 42, 0.03);
+      color: var(--text-primary);
     }
+
     .prompt-val.mono {
-      font-family: var(--mono); font-size: 12px; color: var(--text-primary);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-primary);
     }
 
     /* ── Best practices list ── */
-    .bp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
+    .bp-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
     .bp-card {
-      background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: 12px; padding: 16px 18px;
-      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
     }
+
     .bp-num {
-      width: 26px; height: 26px; border-radius: 7px;
-      background: var(--text-primary); color: var(--bg);
-      font-size: 11px; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-top: 1px;
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--text-primary);
+      color: var(--bg);
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
     }
-    .bp-text strong { display: block; font-size: 13px; font-weight: 800; margin-bottom: 3px; }
-    .bp-text span { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+
+    .bp-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .bp-text span {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
 
     /* ── Comparison DO / DON'T ── */
-    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
     .compare-card {
-      border-radius: 12px; padding: 14px 16px;
-      font-size: 13px; line-height: 1.65;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.65;
     }
+
     .compare-card.do {
-      background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2);
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.2);
     }
+
     .compare-card.dont {
-      background: rgba(244,63,94,0.05); border: 1px solid rgba(244,63,94,0.15);
+      background: rgba(244, 63, 94, 0.05);
+      border: 1px solid rgba(244, 63, 94, 0.15);
     }
+
     .compare-label {
-      font-size: 10px; font-weight: 800; letter-spacing: 0.12em;
-      text-transform: uppercase; margin-bottom: 7px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
     }
-    .compare-card.do .compare-label { color: var(--emerald); }
-    .compare-card.dont .compare-label { color: var(--rose); }
+
+    .compare-card.do .compare-label {
+      color: var(--emerald);
+    }
+
+    .compare-card.dont .compare-label {
+      color: var(--rose);
+    }
 
     /* ── Timeline / step ── */
-    .steps { display: flex; flex-direction: column; gap: 0; margin: 14px 0; }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 14px 0;
+    }
+
     .step {
-      display: flex; gap: 16px; padding: 14px 0;
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
       border-bottom: 1px solid var(--border);
     }
-    .step:last-child { border-bottom: none; }
-    .step-num {
-      width: 28px; height: 28px; border-radius: 50%;
-      border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 800;
-      color: var(--text-tertiary); flex-shrink: 0;
+
+    .step:last-child {
+      border-bottom: none;
     }
-    .step-body strong { display: block; font-size: 13.5px; font-weight: 700; margin-bottom: 3px; }
-    .step-body p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .step-body strong {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .step-body p {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
 
     /* ── Inline code ── */
     code {
-      font-family: var(--mono); font-size: 12px;
-      background: rgba(0,0,0,0.05); border: 1px solid var(--border);
-      border-radius: 5px; padding: 1px 6px;
+      font-family: var(--mono);
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 1px 6px;
       color: var(--accent);
     }
 
     /* ── Warning / Note box ── */
     .callout {
-      display: flex; gap: 12px; align-items: flex-start;
-      padding: 13px 16px; border-radius: 10px; margin: 14px 0;
-      font-size: 13px; line-height: 1.65;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 13px 16px;
+      border-radius: 10px;
+      margin: 14px 0;
+      font-size: 13px;
+      line-height: 1.65;
     }
-    .callout.warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
-    .callout.note    { background: rgba(14,165,233,0.07); border: 1px solid rgba(14,165,233,0.2); }
-    .callout-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-    .callout-body strong { display: block; font-weight: 700; margin-bottom: 3px; color: var(--text-primary); }
-    .callout-body span { color: var(--text-secondary); }
+
+    .callout.warning {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .callout.note {
+      background: rgba(14, 165, 233, 0.07);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+
+    .callout-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .callout-body strong {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 3px;
+      color: var(--text-primary);
+    }
+
+    .callout-body span {
+      color: var(--text-secondary);
+    }
 
     /* ── Settings recommended ── */
     .settings-row {
-      display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 12px 0;
     }
+
     .setting-pill {
-      padding: 6px 14px; border-radius: 999px;
-      font-size: 12px; font-weight: 600;
-      border: 1px solid var(--border); background: var(--card-bg);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
     }
-    .setting-pill span { color: var(--text-tertiary); margin-right: 4px; font-weight: 400; }
+
+    .setting-pill span {
+      color: var(--text-tertiary);
+      margin-right: 4px;
+      font-weight: 400;
+    }
 
     /* ── Footer ── */
     footer {
       border-top: 1px solid var(--border);
-      max-width: var(--content-w); margin: 0 auto;
-      padding: 2rem; font-size: 12px; color: var(--text-tertiary);
-      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 2rem;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    footer a { color: var(--text-tertiary); transition: color 0.15s; }
-    footer a:hover { color: var(--text-primary); }
+
+    footer a {
+      color: var(--text-tertiary);
+      transition: color 0.15s;
+    }
+
+    footer a:hover {
+      color: var(--text-primary);
+    }
 
     /* ── Responsive ── */
     @media (max-width: 820px) {
-      .technique-grid, .param-grid { grid-template-columns: repeat(2,1fr); }
-      .bp-grid, .compare-grid { grid-template-columns: 1fr; }
+
+      .technique-grid,
+      .param-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .bp-grid,
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
     }
+
     @media (max-width: 540px) {
-      .technique-grid, .param-grid { grid-template-columns: 1fr; }
-      .prompt-row { grid-template-columns: 1fr; }
-      .prompt-key { border-right: none; border-bottom: 1px solid var(--border); }
+
+      .technique-grid,
+      .param-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .prompt-row {
+        grid-template-columns: 1fr;
+      }
+
+      .prompt-key {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- ── Nav ── -->
-<nav>
-  <div class="nav-inner">
-    <a href="https://sumitkant.github.io/" class="nav-logo">
+  <!-- ── Nav ── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
         <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;">
         </object>
       </a>
-    <a href="../../genai-lab.html" class="nav-back">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      LLM Concepts
-    </a>
-  </div>
-</nav>
-
-<main class="page">
-
-  <!-- ── Hero ── -->
-  <header class="hero">
-    <p class="hero-eyebrow">Foundation &amp; Training · Prompt Engineering</p>
-    <h1 class="hero-title">Prompt<br>Engineering</h1>
-    <p class="hero-sub">A structured guide to designing high-quality prompts — covering output configuration, prompting techniques from zero-shot to ReAct, and best practices from Google's whitepaper by Lee Boonstra.</p>
-    <div class="hero-meta">
-      <span class="hero-badge">
-        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Source: Google Whitepaper, Feb 2025
-      </span>
-      <span class="hero-badge">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        ~30 min read
-      </span>
-      <span class="hero-badge">
-        <svg viewBox="0 0 24 24"><path d="M4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-        10 prompting techniques
-      </span>
+      <a href="../../genai-lab.html" class="nav-back">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        LLM Concepts
+      </a>
     </div>
-  </header>
+  </nav>
 
-  <!-- ── TOC ── -->
-  <div class="toc-bar" role="navigation">
-    <button class="toc-btn active" onclick="scrollTo('intro')">Introduction</button>
-    <button class="toc-btn" onclick="scrollTo('config')">Output Config</button>
-    <button class="toc-btn" onclick="scrollTo('techniques')">Techniques</button>
-    <button class="toc-btn" onclick="scrollTo('zero-shot')">Zero-shot</button>
-    <button class="toc-btn" onclick="scrollTo('few-shot')">Few-shot</button>
-    <button class="toc-btn" onclick="scrollTo('system-role')">System &amp; Role</button>
-    <button class="toc-btn" onclick="scrollTo('cot')">Chain of Thought</button>
-    <button class="toc-btn" onclick="scrollTo('react')">ReAct</button>
-    <button class="toc-btn" onclick="scrollTo('code')">Code Prompting</button>
-    <button class="toc-btn" onclick="scrollTo('best-practices')">Best Practices</button>
-  </div>
+  <main class="page">
 
-  <!-- ════════════════════════════════ -->
-  <!-- 1. INTRODUCTION                  -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="intro">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#6366f1;"></span>
-      Introduction
-    </div>
-    <h2 class="section-heading">What is Prompt Engineering?</h2>
-    <p class="section-body">An LLM is a <strong>prediction engine</strong>. It takes sequential text as input and predicts what the following token should be, based on training data. When you write a prompt, you're setting up the LLM to predict the right sequence of tokens.</p>
-
-    <div class="highlight orange">
-      "You don't need to be a data scientist or a machine learning engineer — everyone can write a prompt. However, crafting the most effective prompt can be complicated."
-    </div>
-
-    <p class="section-body">Prompt engineering is the process of designing high-quality prompts that guide LLMs to produce accurate outputs. It involves tinkering to find the best prompt, optimizing prompt length, and evaluating writing style and structure in relation to the task.</p>
-
-    <div class="highlight blue">
-      Many aspects of your prompt affect its efficacy: the model, training data, model configurations, word-choice, style and tone, structure, and context all matter. Prompt engineering is an <strong>iterative process</strong>.
-    </div>
-
-    <div class="callout note">
-      <span class="callout-icon">💡</span>
-      <div class="callout-body">
-        <strong>Key insight</strong>
-        <span>Prompts might need to be optimized for your specific model — whether you use Gemini, GPT, Claude, or an open-source model like Gemma or LLaMA. There is no universal prompt.</span>
+    <!-- ── Hero ── -->
+    <header class="hero">
+      <p class="hero-eyebrow">Foundation &amp; Training · Prompt Engineering</p>
+      <h1 class="hero-title">Prompt<br>Engineering</h1>
+      <p class="hero-sub">A structured guide to designing high-quality prompts — covering output configuration,
+        prompting techniques from zero-shot to ReAct, and best practices from Google's whitepaper by Lee Boonstra.</p>
+      <div class="hero-meta">
+        <span class="hero-badge">
+          <svg viewBox="0 0 24 24">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          Source: Google Whitepaper, Feb 2025
+        </span>
+        <span class="hero-badge">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          ~30 min read
+        </span>
+        <span class="hero-badge">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 17 10 11 4 5" />
+            <line x1="12" y1="19" x2="20" y2="19" />
+          </svg>
+          10 prompting techniques
+        </span>
       </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- ════════════════════════════════ -->
-  <!-- 2. OUTPUT CONFIGURATION          -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="config">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#0ea5e9;"></span>
-      LLM Output Configuration
+    <!-- ── TOC ── -->
+    <div class="toc-bar" role="navigation">
+      <button class="toc-btn active" onclick="scrollTo('intro')">Introduction</button>
+      <button class="toc-btn" onclick="scrollTo('config')">Output Config</button>
+      <button class="toc-btn" onclick="scrollTo('techniques')">Techniques</button>
+      <button class="toc-btn" onclick="scrollTo('zero-shot')">Zero-shot</button>
+      <button class="toc-btn" onclick="scrollTo('few-shot')">Few-shot</button>
+      <button class="toc-btn" onclick="scrollTo('system-role')">System &amp; Role</button>
+      <button class="toc-btn" onclick="scrollTo('cot')">Chain of Thought</button>
+      <button class="toc-btn" onclick="scrollTo('react')">ReAct</button>
+      <button class="toc-btn" onclick="scrollTo('code')">Code Prompting</button>
+      <button class="toc-btn" onclick="scrollTo('best-practices')">Best Practices</button>
     </div>
-    <h2 class="section-heading">Sampling Controls</h2>
-    <p class="section-body">LLMs don't formally predict a single token — they predict <strong>probabilities</strong> for what the next token could be. Temperature, Top-K, and Top-P control how those probabilities are sampled to choose the next output token.</p>
 
-    <div class="param-grid">
-      <div class="param-card">
-        <div class="param-name">Temperature</div>
-        <div class="param-value" style="color:var(--accent);">0 → 1+</div>
-        <div class="param-desc">Controls randomness. Low = deterministic, focused. High = creative, diverse. Temperature 0 always picks the highest probability token.</div>
-        <div class="param-slider">
-          <div class="param-fill" style="width:30%;background:linear-gradient(90deg,var(--emerald),var(--accent));"></div>
-          <div class="param-marker" style="left:30%;background:var(--accent);"></div>
+    <!-- ════════════════════════════════ -->
+    <!-- 1. INTRODUCTION                  -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="intro">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#6366f1;"></span>
+        Introduction
+      </div>
+      <h2 class="section-heading">What is Prompt Engineering?</h2>
+      <p class="section-body">An LLM is a <strong>prediction engine</strong>. It takes sequential text as input and
+        predicts what the following token should be, based on training data. When you write a prompt, you're setting up
+        the LLM to predict the right sequence of tokens.</p>
+
+      <div class="highlight orange">
+        "You don't need to be a data scientist or a machine learning engineer — everyone can write a prompt. However,
+        crafting the most effective prompt can be complicated."
+      </div>
+
+      <p class="section-body">Prompt engineering is the process of designing high-quality prompts that guide LLMs to
+        produce accurate outputs. It involves tinkering to find the best prompt, optimizing prompt length, and
+        evaluating writing style and structure in relation to the task.</p>
+
+      <div class="highlight blue">
+        Many aspects of your prompt affect its efficacy: the model, training data, model configurations, word-choice,
+        style and tone, structure, and context all matter. Prompt engineering is an <strong>iterative process</strong>.
+      </div>
+
+      <div class="callout note">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <strong>Key insight</strong>
+          <span>Prompts might need to be optimized for your specific model — whether you use Gemini, GPT, Claude, or an
+            open-source model like Gemma or LLaMA. There is no universal prompt.</span>
         </div>
       </div>
-      <div class="param-card">
-        <div class="param-name">Top-K</div>
-        <div class="param-value" style="color:var(--indigo);">1 → vocab</div>
-        <div class="param-desc">Selects the top K most likely tokens. Top-K of 1 = greedy decoding. Higher K = more variety in output. Recommended start: 30–40.</div>
-        <div class="param-slider">
-          <div class="param-fill" style="width:55%;background:linear-gradient(90deg,var(--indigo),var(--violet));"></div>
-          <div class="param-marker" style="left:55%;background:var(--indigo);"></div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 2. OUTPUT CONFIGURATION          -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="config">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#0ea5e9;"></span>
+        LLM Output Configuration
+      </div>
+      <h2 class="section-heading">Sampling Controls</h2>
+      <p class="section-body">LLMs don't formally predict a single token — they predict <strong>probabilities</strong>
+        for what the next token could be. Temperature, Top-K, and Top-P control how those probabilities are sampled to
+        choose the next output token.</p>
+
+      <div class="param-grid">
+        <div class="param-card">
+          <div class="param-name">Temperature</div>
+          <div class="param-value" style="color:var(--accent);">0 → 1+</div>
+          <div class="param-desc">Controls randomness. Low = deterministic, focused. High = creative, diverse.
+            Temperature 0 always picks the highest probability token.</div>
+          <div class="param-slider">
+            <div class="param-fill" style="width:30%;background:linear-gradient(90deg,var(--emerald),var(--accent));">
+            </div>
+            <div class="param-marker" style="left:30%;background:var(--accent);"></div>
+          </div>
+        </div>
+        <div class="param-card">
+          <div class="param-name">Top-K</div>
+          <div class="param-value" style="color:var(--indigo);">1 → vocab</div>
+          <div class="param-desc">Selects the top K most likely tokens. Top-K of 1 = greedy decoding. Higher K = more
+            variety in output. Recommended start: 30–40.</div>
+          <div class="param-slider">
+            <div class="param-fill" style="width:55%;background:linear-gradient(90deg,var(--indigo),var(--violet));">
+            </div>
+            <div class="param-marker" style="left:55%;background:var(--indigo);"></div>
+          </div>
+        </div>
+        <div class="param-card">
+          <div class="param-name">Top-P (Nucleus)</div>
+          <div class="param-value" style="color:var(--sky);">0 → 1</div>
+          <div class="param-desc">Selects tokens whose cumulative probability ≤ P. Top-P of 0 = most probable token
+            only. Top-P of 1 = all tokens considered. Recommended: 0.90–0.99.</div>
+          <div class="param-slider">
+            <div class="param-fill" style="width:72%;background:linear-gradient(90deg,var(--sky),var(--indigo));"></div>
+            <div class="param-marker" style="left:72%;background:var(--sky);"></div>
+          </div>
         </div>
       </div>
-      <div class="param-card">
-        <div class="param-name">Top-P (Nucleus)</div>
-        <div class="param-value" style="color:var(--sky);">0 → 1</div>
-        <div class="param-desc">Selects tokens whose cumulative probability ≤ P. Top-P of 0 = most probable token only. Top-P of 1 = all tokens considered. Recommended: 0.90–0.99.</div>
-        <div class="param-slider">
-          <div class="param-fill" style="width:72%;background:linear-gradient(90deg,var(--sky),var(--indigo));"></div>
-          <div class="param-marker" style="left:72%;background:var(--sky);"></div>
+
+      <div class="highlight red">
+        <strong>Repetition loop bug:</strong> A common issue where the model gets stuck generating the same filler word
+        or phrase repeatedly — exacerbated by inappropriate temperature and top-k/top-p settings. Can occur at both
+        extreme low AND high temperatures.
+      </div>
+
+      <h3 style="font-size:1rem;font-weight:800;margin:20px 0 12px;letter-spacing:-0.01em;">Recommended Starting Points
+      </h3>
+
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        <div
+          style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div style="font-size:13px;font-weight:700;">Balanced / Coherent</div>
+          <div class="settings-row" style="margin:0;">
+            <span class="setting-pill"><span>Temp</span>0.2</span>
+            <span class="setting-pill"><span>Top-P</span>0.95</span>
+            <span class="setting-pill"><span>Top-K</span>30</span>
+          </div>
+        </div>
+        <div
+          style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div style="font-size:13px;font-weight:700;">Creative / Diverse</div>
+          <div class="settings-row" style="margin:0;">
+            <span class="setting-pill"><span>Temp</span>0.9</span>
+            <span class="setting-pill"><span>Top-P</span>0.99</span>
+            <span class="setting-pill"><span>Top-K</span>40</span>
+          </div>
+        </div>
+        <div
+          style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div style="font-size:13px;font-weight:700;">Factual / Deterministic</div>
+          <div class="settings-row" style="margin:0;">
+            <span class="setting-pill"><span>Temp</span>0.0</span>
+            <span class="setting-pill"><span>Top-P</span>0.9</span>
+            <span class="setting-pill"><span>Top-K</span>20</span>
+          </div>
         </div>
       </div>
+
+      <div class="callout warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-body">
+          <strong>Important</strong>
+          <span>Reducing the output length doesn't make the LLM more succinct — it just stops predicting tokens once the
+            limit is reached. If you need short output, you must also engineer your prompt to accommodate.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 3. TECHNIQUES OVERVIEW           -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="techniques">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#10b981;"></span>
+        Prompting Techniques
+      </div>
+      <h2 class="section-heading">10 Techniques at a Glance</h2>
+      <p class="section-body">From simple zero-shot prompts to sophisticated multi-step reasoning frameworks — choose
+        the right technique for your task complexity.</p>
+
+      <div class="technique-grid">
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(99,102,241,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#6366f1">
+              <polyline points="4 17 10 11 4 5" />
+              <line x1="12" y1="19" x2="20" y2="19" />
+            </svg>
+          </div>
+          <span class="technique-name">Zero-shot</span>
+          <p class="technique-desc">No examples — just a clear task description. Works surprisingly well for general
+            tasks.</p>
+          <span class="technique-tag" style="background:rgba(99,102,241,0.1);color:#6366f1;">Simplest</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(14,165,233,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#0ea5e9">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+          </div>
+          <span class="technique-name">One-shot / Few-shot</span>
+          <p class="technique-desc">Provide 1–5 examples so the model learns the desired pattern or format.</p>
+          <span class="technique-tag" style="background:rgba(14,165,233,0.1);color:#0ea5e9;">Essential</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(16,185,129,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#10b981">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M3 9h18M9 21V9" />
+            </svg>
+          </div>
+          <span class="technique-name">System Prompting</span>
+          <p class="technique-desc">Set the model's overall context, purpose and output format at the system level.</p>
+          <span class="technique-tag" style="background:rgba(16,185,129,0.1);color:#10b981;">Control</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(245,158,11,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#f59e0b">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M6 20v-2a6 6 0 0 1 12 0v2" />
+            </svg>
+          </div>
+          <span class="technique-name">Role Prompting</span>
+          <p class="technique-desc">Assign a persona — travel guide, teacher, lawyer. Shapes tone, style and expertise.
+          </p>
+          <span class="technique-tag" style="background:rgba(245,158,11,0.1);color:#f59e0b;">Persona</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(244,63,94,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#f43f5e">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <span class="technique-name">Contextual Prompting</span>
+          <p class="technique-desc">Provide background information specific to the current task for nuanced responses.
+          </p>
+          <span class="technique-tag" style="background:rgba(244,63,94,0.1);color:#f43f5e;">Context</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(139,92,246,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#8b5cf6">
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+          </div>
+          <span class="technique-name">Step-back Prompting</span>
+          <p class="technique-desc">First ask a general question, then feed the answer as context to the specific task.
+          </p>
+          <span class="technique-tag" style="background:rgba(139,92,246,0.1);color:#8b5cf6;">Reasoning</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(200,92,42,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#c85c2a">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+          </div>
+          <span class="technique-name">Chain of Thought</span>
+          <p class="technique-desc">Instruct the model to show intermediate reasoning steps before giving the final
+            answer.</p>
+          <span class="technique-tag" style="background:rgba(200,92,42,0.1);color:#c85c2a;">Reasoning</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(99,102,241,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#6366f1">
+              <polyline points="17 1 21 5 17 9" />
+              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+              <polyline points="7 23 3 19 7 15" />
+              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+            </svg>
+          </div>
+          <span class="technique-name">Self-consistency</span>
+          <p class="technique-desc">Run the same prompt multiple times, take the most common answer. Higher accuracy via
+            majority voting.</p>
+          <span class="technique-tag" style="background:rgba(99,102,241,0.1);color:#6366f1;">Accuracy</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(14,165,233,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#0ea5e9">
+              <circle cx="12" cy="5" r="2" />
+              <circle cx="5" cy="19" r="2" />
+              <circle cx="19" cy="19" r="2" />
+              <line x1="12" y1="7" x2="5" y2="17" />
+              <line x1="12" y1="7" x2="19" y2="17" />
+            </svg>
+          </div>
+          <span class="technique-name">Tree of Thoughts</span>
+          <p class="technique-desc">Explore multiple reasoning paths simultaneously, like a tree. Best for complex
+            exploration tasks.</p>
+          <span class="technique-tag" style="background:rgba(14,165,233,0.1);color:#0ea5e9;">Advanced</span>
+        </div>
+        <div class="technique-card">
+          <div class="technique-icon" style="background:rgba(16,185,129,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#10b981">
+              <path
+                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+            </svg>
+          </div>
+          <span class="technique-name">ReAct</span>
+          <p class="technique-desc">Reason + Act: combines reasoning with external tool use (search, APIs) in a
+            thought-action loop.</p>
+          <span class="technique-tag" style="background:rgba(16,185,129,0.1);color:#10b981;">Agentic</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 4. ZERO-SHOT                     -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="zero-shot">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#6366f1;"></span>
+        Technique 01
+      </div>
+      <h2 class="section-heading">Zero-shot Prompting</h2>
+      <p class="section-body">The simplest prompt type — a description of a task and some text for the LLM to work with.
+        No examples provided. "Zero-shot" = zero examples.</p>
+
+      <div class="prompt-table">
+        <div class="prompt-row"><span class="prompt-key">Goal</span><span class="prompt-val">Classify movie reviews as
+            POSITIVE, NEUTRAL or NEGATIVE</span></div>
+        <div class="prompt-row"><span class="prompt-key">Model</span><span class="prompt-val">gemini-pro</span></div>
+        <div class="prompt-row"><span class="prompt-key">Temp / Tokens</span><span class="prompt-val">0.1 / 5</span>
+        </div>
+        <div class="prompt-row">
+          <span class="prompt-key">Prompt</span>
+          <span class="prompt-val mono">Classify movie reviews as POSITIVE, NEUTRAL or NEGATIVE.<br><br>Review: "Her" is
+            a disturbing study revealing the direction humanity is headed if AI is allowed to keep evolving, unchecked.
+            I wish there were more movies like this masterpiece.<br><br>Sentiment:</span>
+        </div>
+        <div class="prompt-row"><span class="prompt-key">Output</span><span class="prompt-val output">POSITIVE</span>
+        </div>
+      </div>
+
+      <div class="highlight green">
+        <strong>When to use:</strong> Works well for clear, unambiguous tasks where the model has strong prior
+        knowledge. If zero-shot doesn't work — move to few-shot.
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 5. FEW-SHOT                      -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="few-shot">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#0ea5e9;"></span>
+        Technique 02
+      </div>
+      <h2 class="section-heading">One-shot &amp; Few-shot Prompting</h2>
+      <p class="section-body">Provide examples to help the model understand the desired output pattern. A
+        <strong>one-shot</strong> provides a single example; <strong>few-shot</strong> provides multiple.</p>
+
+      <div class="highlight red">
+        The number of examples needed depends on task complexity, example quality, and model capability. <strong>Start
+          with 3–5 examples</strong> as a rule of thumb. Use at least 6 for classification tasks.
+      </div>
+
+      <div class="prompt-table">
+        <div class="prompt-row"><span class="prompt-key">Goal</span><span class="prompt-val">Parse pizza orders to
+            JSON</span></div>
+        <div class="prompt-row"><span class="prompt-key">Temp / Tokens</span><span class="prompt-val">0.1 / 250</span>
+        </div>
+        <div class="prompt-row">
+          <span class="prompt-key">Prompt</span>
+          <span class="prompt-val mono">Parse a customer's pizza order into valid JSON:<br><br>EXAMPLE: I want a small
+            pizza with cheese, tomato sauce, and pepperoni.<br>JSON: {"size": "small", "type": "normal", "ingredients":
+            [["cheese", "tomato sauce", "pepperoni"]]}<br><br>EXAMPLE: Can I get a large pizza with tomato sauce, basil
+            and mozzarella?<br>JSON: {"size": "large", "type": "normal", "ingredients": [["tomato sauce", "basil",
+            "mozzarella"]]}<br><br>Now, I would like a large pizza, with the first half cheese and mozzarella, the other
+            half tomato sauce, ham and pineapple.<br>JSON:</span>
+        </div>
+        <div class="prompt-row"><span class="prompt-key">Output</span><span class="prompt-val output">{"size": "large",
+            "type": "half-half", "ingredients": [["cheese", "mozzarella"], ["tomato sauce", "ham", "pineapple"]]}</span>
+        </div>
+      </div>
+
+      <div class="callout note">
+        <span class="callout-icon">📌</span>
+        <div class="callout-body">
+          <strong>For classification tasks</strong>
+          <span>Mix up the response classes in your few-shot examples. Never order them all one class then another — the
+            model may overfit to the order rather than learning the actual classification signal.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 6. SYSTEM, ROLE, CONTEXTUAL      -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="system-role">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#10b981;"></span>
+        Techniques 03 – 05
+      </div>
+      <h2 class="section-heading">System, Role &amp; Contextual Prompting</h2>
+
+      <div class="technique-grid" style="margin-bottom:20px;">
+        <div class="technique-card" style="border-left:3px solid #10b981;">
+          <span class="technique-name">System Prompt</span>
+          <p class="technique-desc">Defines the model's <strong>fundamental capabilities and overarching
+              purpose</strong> — e.g. "Classify reviews as positive, neutral, or negative. Only return the label in
+            uppercase."</p>
+        </div>
+        <div class="technique-card" style="border-left:3px solid #f59e0b;">
+          <span class="technique-name">Contextual Prompt</span>
+          <p class="technique-desc">Provides <strong>immediate, task-specific background</strong> to guide the response.
+            Dynamic and specific to the current input.</p>
+        </div>
+        <div class="technique-card" style="border-left:3px solid #8b5cf6;">
+          <span class="technique-name">Role Prompt</span>
+          <p class="technique-desc">Frames the model's <strong>output style and voice</strong> by assigning a character
+            — teacher, travel guide, lawyer, comedian.</p>
+        </div>
+      </div>
+
+      <div class="highlight blue">
+        Effective role styles: <strong>Confrontational, Descriptive, Direct, Formal, Humorous, Influential, Informal,
+          Inspirational, Persuasive</strong> — each produces measurably different output quality for the same task.
+      </div>
+
+      <div class="prompt-table">
+        <div class="prompt-row"><span class="prompt-key">Role Prompt</span><span class="prompt-val mono">I want you to
+            act as a travel guide. I will write to you about my location and you will suggest 3 places to visit near me
+            in a <strong>humorous style</strong>.<br><br>My suggestion: "I am in Manhattan."<br>Travel
+            Suggestions:</span></div>
+        <div class="prompt-row"><span class="prompt-key">Output</span><span class="prompt-val output">1. Behold the
+            Empire State of Mind: Ascend to the dizzying heights of the Empire State Building... feel like King Kong
+            atop the Big Apple, minus the giant ape-sized banana.<br>2. Get Arsy-Farsy at MoMA: Gaze upon masterpieces
+            that will make you question whether your stick-figure drawings have any artistic merit.<br>3. Shop 'Til You
+            Drop on Fifth Avenue: Brace yourself for sticker shock... because you're in Manhattan, embrace the
+            fabulousness!</span></div>
+      </div>
+
+      <div class="callout note">
+        <span class="callout-icon">🛡️</span>
+        <div class="callout-body">
+          <strong>System prompts for safety</strong>
+          <span>System prompts are valuable for controlling harmful output. Simply add:
+            <code>"You should be respectful in your answer."</code> to guide the model away from toxic content.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 7. STEP-BACK PROMPTING           -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="stepback">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#8b5cf6;"></span>
+        Technique 06
+      </div>
+      <h2 class="section-heading">Step-back Prompting</h2>
+      <p class="section-body">First prompt the LLM to consider a <strong>general question</strong> related to the task,
+        then feed that answer as context into a follow-up prompt for the specific task. This activates background
+        knowledge before solving.</p>
+
+      <div class="highlight violet">
+        It changes the final prompt by utilising more knowledge in the LLM's parameters than would otherwise come into
+        play when prompted directly — and can help mitigate biases by focusing on general principles.
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Ask the general step-back question</strong>
+            <p>"Based on popular first-person shooter games, what are 5 fictional key settings that contribute to a
+              challenging level storyline?"</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Collect the general answer</strong>
+            <p>LLM returns: Abandoned Military Base, Cyberpunk City, Alien Spaceship, Zombie Town, Underwater Facility.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Feed it as context into your real prompt</strong>
+            <p>"Context: [the 5 themes above]. Take one theme and write a one-paragraph storyline for a challenging game
+              level."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 8. CHAIN OF THOUGHT              -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="cot">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#c85c2a;"></span>
+        Technique 07–08
+      </div>
+      <h2 class="section-heading">Chain of Thought (CoT) &amp; Self-consistency</h2>
+      <p class="section-body">CoT prompting generates <strong>intermediate reasoning steps</strong>, helping the LLM
+        produce more accurate answers — especially for math, logic, and multi-step problems.</p>
+
+      <div class="compare-grid">
+        <div class="compare-card dont">
+          <div class="compare-label">❌ Without CoT</div>
+          <strong style="display:block;margin-bottom:4px;font-size:13px;">Prompt:</strong>
+          "When I was 3 years old, my partner was 3 times my age. Now I am 20. How old is my partner?"
+          <strong style="display:block;margin:8px 0 4px;font-size:13px;">Output:</strong>
+          <span style="color:var(--rose);font-weight:700;">63 years old</span> ← Wrong!
+        </div>
+        <div class="compare-card do">
+          <div class="compare-label">✅ With CoT</div>
+          <strong style="display:block;margin-bottom:4px;font-size:13px;">Prompt:</strong>
+          "...How old is my partner? <em>Let's think step by step.</em>"
+          <strong style="display:block;margin:8px 0 4px;font-size:13px;">Output:</strong>
+          Partner was 9 when I was 3. Age difference = 6. Now I'm 20, so partner is 20+6 = <span
+            style="color:var(--emerald);font-weight:700;">26 years old</span> ✓
+        </div>
+      </div>
+
+      <div class="highlight orange">
+        <strong>Advantages:</strong> Low-effort, works with off-the-shelf LLMs, provides interpretability (you can see
+        where reasoning went wrong), and improves robustness across different LLM versions.
+      </div>
+
+      <h3 style="font-size:1rem;font-weight:800;margin:20px 0 10px;">Self-consistency</h3>
+      <p class="section-body">Run the <em>same</em> CoT prompt multiple times with a higher temperature. Extract each
+        answer, then select the <strong>most common answer</strong> via majority voting. Gives a pseudo-probability that
+        the answer is correct.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Generate diverse reasoning paths</strong>
+            <p>Send the same prompt N times at higher temperature — each run produces a different chain of reasoning.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Extract the answer from each response</strong>
+            <p>Parse each output for the final answer token or sentence.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Choose the most common answer</strong>
+            <p>Majority vote wins. If 2/3 runs say "IMPORTANT", that's your answer.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout warning">
+        <span class="callout-icon">💰</span>
+        <div class="callout-body">
+          <strong>Cost caveat</strong>
+          <span>Self-consistency has high token costs — you're running the same prompt multiple times. Use it only when
+            accuracy justifies the compute spend. Always set temperature to 0 for standard CoT (single run).</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 9. REACT                         -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="react">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#10b981;"></span>
+        Technique 10
+      </div>
+      <h2 class="section-heading">ReAct: Reason &amp; Act</h2>
+      <p class="section-body">ReAct combines <strong>reasoning</strong> and <strong>acting</strong> into a
+        thought-action loop. The LLM reasons about a problem, takes an action (calls a tool, searches the web), observes
+        results, updates its reasoning, and repeats until it reaches a solution.</p>
+
+      <div class="highlight green">
+        ReAct mimics how humans operate in the real world — we reason verbally and take actions to gain information.
+        It's a first step toward full agent modeling and performs well against other approaches across a variety of
+        domains.
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">Python · LangChain + VertexAI</span>
+          <div class="code-dots">
+            <div class="code-dot" style="background:#ff5f56;"></div>
+            <div class="code-dot" style="background:#ffbd2e;"></div>
+            <div class="code-dot" style="background:#27c93f;"></div>
+          </div>
+        </div>
+        <div class="code-body"><span class="code-keyword">from</span> <span class="code-var">langchain.agents</span>
+          <span class="code-keyword">import</span> <span class="code-fn">load_tools</span>, <span
+            class="code-fn">initialize_agent</span>, <span class="code-var">AgentType</span>
+          <span class="code-keyword">from</span> <span class="code-var">langchain.llms</span> <span
+            class="code-keyword">import</span> <span class="code-var">VertexAI</span>
+
+          <span class="code-var">prompt</span> = <span class="code-string">"How many kids do the band members of
+            Metallica have?"</span>
+          <span class="code-var">llm</span> = <span class="code-fn">VertexAI</span>(temperature=<span
+            class="code-number">0.1</span>)
+          <span class="code-var">tools</span> = <span class="code-fn">load_tools</span>([<span
+            class="code-string">"serpapi"</span>], llm=<span class="code-var">llm</span>)
+
+          <span class="code-var">agent</span> = <span class="code-fn">initialize_agent</span>(
+          <span class="code-var">tools</span>, <span class="code-var">llm</span>,
+          agent=<span class="code-var">AgentType.ZERO_SHOT_REACT_DESCRIPTION</span>,
+          verbose=<span class="code-keyword">True</span>
+          )
+          <span class="code-var">agent</span>.<span class="code-fn">run</span>(<span class="code-var">prompt</span>)
+        </div>
+      </div>
+
+      <p class="section-body" style="margin-top:12px;">The agent makes 5 sequential searches — one per Metallica member
+        — chaining observations into thoughts, arriving at a final answer of <strong>10 children</strong>. The
+        thought-action-observation loop continues until the problem is solved.</p>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 10. CODE PROMPTING               -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="code">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#f43f5e;"></span>
+        Code Prompting
+      </div>
+      <h2 class="section-heading">Prompting for Code</h2>
+      <p class="section-body">LLMs are strong code generators. The same prompt principles apply — be specific, use
+        examples, and set low temperature for deterministic output.</p>
+
+      <div class="technique-grid">
+        <div class="technique-card" style="border-left:3px solid #6366f1;">
+          <div class="technique-icon" style="background:rgba(99,102,241,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#6366f1">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+          </div>
+          <span class="technique-name">Write Code</span>
+          <p class="technique-desc">Describe what the script should do precisely. Specify language, inputs, outputs and
+            edge cases.</p>
+        </div>
+        <div class="technique-card" style="border-left:3px solid #0ea5e9;">
+          <div class="technique-icon" style="background:rgba(14,165,233,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#0ea5e9">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+          <span class="technique-name">Explain Code</span>
+          <p class="technique-desc">Paste code and ask the LLM to explain it step by step — great for reading teammates'
+            code.</p>
+        </div>
+        <div class="technique-card" style="border-left:3px solid #10b981;">
+          <div class="technique-icon" style="background:rgba(16,185,129,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#10b981">
+              <polyline points="17 1 21 5 17 9" />
+              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+              <polyline points="7 23 3 19 7 15" />
+            </svg>
+          </div>
+          <span class="technique-name">Translate Code</span>
+          <p class="technique-desc">Convert code from one language to another — e.g. Bash → Python, Python → TypeScript.
+          </p>
+        </div>
+        <div class="technique-card" style="border-left:3px solid #f59e0b;">
+          <div class="technique-icon" style="background:rgba(245,158,11,0.1);">
+            <svg viewBox="0 0 24 24" stroke="#f59e0b">
+              <path
+                d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z" />
+              <path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+              <path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z" />
+              <path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z" />
+              <path
+                d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z" />
+              <path d="M15.5 9H14V7.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S16.33 9 15.5 9z" />
+              <path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z" />
+              <path d="M8.5 15H10v1.5c0 .83-.67 1.5-1.5 1.5S7 17.33 7 16.5 7.67 15 8.5 15z" />
+            </svg>
+          </div>
+          <span class="technique-name">Debug Code</span>
+          <p class="technique-desc">Paste the error + code. LLM identifies the bug, explains the fix, and often spots
+            additional issues.</p>
+        </div>
+      </div>
+
+      <div class="callout warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-body">
+          <strong>Always read and test LLM-generated code</strong>
+          <span>LLMs cannot reason — they repeat patterns from training data. Code output may look correct but contain
+            subtle bugs. Always test in an isolated environment before use in production.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ -->
+    <!-- 11. BEST PRACTICES               -->
+    <!-- ════════════════════════════════ -->
+    <section class="content-section" id="best-practices">
+      <div class="section-label">
+        <span class="section-label-dot" style="background:#f59e0b;"></span>
+        Best Practices
+      </div>
+      <h2 class="section-heading">12 Rules for Better Prompts</h2>
+
+      <div class="bp-grid">
+        <div class="bp-card">
+          <div class="bp-num">1</div>
+          <div class="bp-text">
+            <strong>Provide examples (few-shot)</strong>
+            <span>The single most impactful practice. Examples are a powerful teaching tool — they show the model a
+              target to aim for.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">2</div>
+          <div class="bp-text">
+            <strong>Design with simplicity</strong>
+            <span>If it's confusing for you, it's confusing for the model. Use clear verbs: Act, Analyze, Classify,
+              Generate, Summarize, Translate, Write.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">3</div>
+          <div class="bp-text">
+            <strong>Be specific about output</strong>
+            <span>"Generate a 3-paragraph blog post..." beats "Write a blog post." Specific context → specific, accurate
+              output.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">4</div>
+          <div class="bp-text">
+            <strong>Instructions over constraints</strong>
+            <span>Tell the model what TO do, not what NOT to do. Positive instructions communicate the desired outcome
+              clearly; constraints leave the model guessing.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">5</div>
+          <div class="bp-text">
+            <strong>Control max token length</strong>
+            <span>Either set a token limit in configuration, or specify in your prompt: "Explain quantum physics in a
+              tweet-length message."</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">6</div>
+          <div class="bp-text">
+            <strong>Use variables in prompts</strong>
+            <span>Store reusable values as variables: <code>{city}</code>, <code>{product}</code>,
+              <code>{language}</code>. Makes prompts dynamic, reusable, and maintainable.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">7</div>
+          <div class="bp-text">
+            <strong>Experiment with input formats</strong>
+            <span>The same goal can be a question, statement, or instruction — each produces different output. Try all
+              three before settling.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">8</div>
+          <div class="bp-text">
+            <strong>Mix classes in few-shot classification</strong>
+            <span>For classification tasks, never order all positive then all negative examples. Mix them so the model
+              learns features, not sequence.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">9</div>
+          <div class="bp-text">
+            <strong>Experiment with output formats</strong>
+            <span>For extraction, parsing, ranking tasks — request JSON or XML output. Forces structure, reduces
+              hallucination, gives you typed data.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">10</div>
+          <div class="bp-text">
+            <strong>CoT: set temperature to 0</strong>
+            <span>Chain of thought is based on greedy decoding. When reasoning to a single correct answer, always use
+              temperature = 0.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">11</div>
+          <div class="bp-text">
+            <strong>Adapt to model updates</strong>
+            <span>Stay on top of architecture changes and new capabilities. Test prompts on new model versions —
+              performance can shift with updates.</span>
+          </div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-num">12</div>
+          <div class="bp-text">
+            <strong>Document everything</strong>
+            <span>Track prompt name, goal, model, settings, full prompt text, and output in a structured log. You will
+              forget what you tried — your notes won't.</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:1rem;font-weight:800;margin:24px 0 12px;">Instructions vs Constraints</h3>
+      <div class="compare-grid">
+        <div class="compare-card do">
+          <div class="compare-label">✅ Do — Use instructions</div>
+          "Generate a 1-paragraph blog post about the top 5 video game consoles. Only discuss the console, the company
+          who made it, the year, and total sales."
+        </div>
+        <div class="compare-card dont">
+          <div class="compare-label">❌ Don't — Use constraints only</div>
+          "Generate a 1-paragraph blog post about the top 5 video game consoles. Do not list video game names."
+        </div>
+      </div>
+
+      <h3 style="font-size:1rem;font-weight:800;margin:24px 0 12px;">Prompt Documentation Template</h3>
+      <div class="prompt-table">
+        <div class="prompt-row"><span class="prompt-key">Name</span><span class="prompt-val">Name + version of the
+            prompt attempt</span></div>
+        <div class="prompt-row"><span class="prompt-key">Goal</span><span class="prompt-val">One sentence explaining the
+            goal of this attempt</span></div>
+        <div class="prompt-row"><span class="prompt-key">Model</span><span class="prompt-val">Name and version of the
+            model used</span></div>
+        <div class="prompt-row"><span class="prompt-key">Temp / Tokens</span><span class="prompt-val">Temperature, token
+            limit, Top-K, Top-P values</span></div>
+        <div class="prompt-row"><span class="prompt-key">Prompt</span><span class="prompt-val">Full prompt text — every
+            word</span></div>
+        <div class="prompt-row"><span class="prompt-key">Output</span><span class="prompt-val">Full output (or multiple
+            outputs if testing consistency)</span></div>
+        <div class="prompt-row"><span class="prompt-key">Result</span><span class="prompt-val">OK / NOT OK / SOMETIMES
+            OK + feedback notes</span></div>
+      </div>
+
+      <div class="highlight orange">
+        <strong>Prompt engineering is an iterative process.</strong> Craft and test different prompts, analyze and
+        document the results. Refine based on model performance. Keep experimenting until you achieve the desired
+        output. When you change models, start again.
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>© 2026 Sumit Kant · GenAI Lab</span>
+    <div style="display:flex;gap:16px;">
+      <a href="genai-lab.html">← Back to LLM Concepts</a>
+      <a href="https://sumitkant.github.io/">Website</a>
     </div>
+  </footer>
 
-    <div class="highlight red">
-      <strong>Repetition loop bug:</strong> A common issue where the model gets stuck generating the same filler word or phrase repeatedly — exacerbated by inappropriate temperature and top-k/top-p settings. Can occur at both extreme low AND high temperatures.
-    </div>
-
-    <h3 style="font-size:1rem;font-weight:800;margin:20px 0 12px;letter-spacing:-0.01em;">Recommended Starting Points</h3>
-
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
-      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-        <div style="font-size:13px;font-weight:700;">Balanced / Coherent</div>
-        <div class="settings-row" style="margin:0;">
-          <span class="setting-pill"><span>Temp</span>0.2</span>
-          <span class="setting-pill"><span>Top-P</span>0.95</span>
-          <span class="setting-pill"><span>Top-K</span>30</span>
-        </div>
-      </div>
-      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-        <div style="font-size:13px;font-weight:700;">Creative / Diverse</div>
-        <div class="settings-row" style="margin:0;">
-          <span class="setting-pill"><span>Temp</span>0.9</span>
-          <span class="setting-pill"><span>Top-P</span>0.99</span>
-          <span class="setting-pill"><span>Top-K</span>40</span>
-        </div>
-      </div>
-      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-        <div style="font-size:13px;font-weight:700;">Factual / Deterministic</div>
-        <div class="settings-row" style="margin:0;">
-          <span class="setting-pill"><span>Temp</span>0.0</span>
-          <span class="setting-pill"><span>Top-P</span>0.9</span>
-          <span class="setting-pill"><span>Top-K</span>20</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="callout warning">
-      <span class="callout-icon">⚠️</span>
-      <div class="callout-body">
-        <strong>Important</strong>
-        <span>Reducing the output length doesn't make the LLM more succinct — it just stops predicting tokens once the limit is reached. If you need short output, you must also engineer your prompt to accommodate.</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 3. TECHNIQUES OVERVIEW           -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="techniques">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#10b981;"></span>
-      Prompting Techniques
-    </div>
-    <h2 class="section-heading">10 Techniques at a Glance</h2>
-    <p class="section-body">From simple zero-shot prompts to sophisticated multi-step reasoning frameworks — choose the right technique for your task complexity.</p>
-
-    <div class="technique-grid">
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(99,102,241,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#6366f1"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-        </div>
-        <span class="technique-name">Zero-shot</span>
-        <p class="technique-desc">No examples — just a clear task description. Works surprisingly well for general tasks.</p>
-        <span class="technique-tag" style="background:rgba(99,102,241,0.1);color:#6366f1;">Simplest</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(14,165,233,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#0ea5e9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </div>
-        <span class="technique-name">One-shot / Few-shot</span>
-        <p class="technique-desc">Provide 1–5 examples so the model learns the desired pattern or format.</p>
-        <span class="technique-tag" style="background:rgba(14,165,233,0.1);color:#0ea5e9;">Essential</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(16,185,129,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#10b981"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        </div>
-        <span class="technique-name">System Prompting</span>
-        <p class="technique-desc">Set the model's overall context, purpose and output format at the system level.</p>
-        <span class="technique-tag" style="background:rgba(16,185,129,0.1);color:#10b981;">Control</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(245,158,11,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#f59e0b"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
-        </div>
-        <span class="technique-name">Role Prompting</span>
-        <p class="technique-desc">Assign a persona — travel guide, teacher, lawyer. Shapes tone, style and expertise.</p>
-        <span class="technique-tag" style="background:rgba(245,158,11,0.1);color:#f59e0b;">Persona</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(244,63,94,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#f43f5e"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </div>
-        <span class="technique-name">Contextual Prompting</span>
-        <p class="technique-desc">Provide background information specific to the current task for nuanced responses.</p>
-        <span class="technique-tag" style="background:rgba(244,63,94,0.1);color:#f43f5e;">Context</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(139,92,246,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#8b5cf6"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        </div>
-        <span class="technique-name">Step-back Prompting</span>
-        <p class="technique-desc">First ask a general question, then feed the answer as context to the specific task.</p>
-        <span class="technique-tag" style="background:rgba(139,92,246,0.1);color:#8b5cf6;">Reasoning</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(200,92,42,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#c85c2a"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <span class="technique-name">Chain of Thought</span>
-        <p class="technique-desc">Instruct the model to show intermediate reasoning steps before giving the final answer.</p>
-        <span class="technique-tag" style="background:rgba(200,92,42,0.1);color:#c85c2a;">Reasoning</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(99,102,241,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#6366f1"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-        </div>
-        <span class="technique-name">Self-consistency</span>
-        <p class="technique-desc">Run the same prompt multiple times, take the most common answer. Higher accuracy via majority voting.</p>
-        <span class="technique-tag" style="background:rgba(99,102,241,0.1);color:#6366f1;">Accuracy</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(14,165,233,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#0ea5e9"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><line x1="12" y1="7" x2="5" y2="17"/><line x1="12" y1="7" x2="19" y2="17"/></svg>
-        </div>
-        <span class="technique-name">Tree of Thoughts</span>
-        <p class="technique-desc">Explore multiple reasoning paths simultaneously, like a tree. Best for complex exploration tasks.</p>
-        <span class="technique-tag" style="background:rgba(14,165,233,0.1);color:#0ea5e9;">Advanced</span>
-      </div>
-      <div class="technique-card">
-        <div class="technique-icon" style="background:rgba(16,185,129,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#10b981"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        </div>
-        <span class="technique-name">ReAct</span>
-        <p class="technique-desc">Reason + Act: combines reasoning with external tool use (search, APIs) in a thought-action loop.</p>
-        <span class="technique-tag" style="background:rgba(16,185,129,0.1);color:#10b981;">Agentic</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 4. ZERO-SHOT                     -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="zero-shot">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#6366f1;"></span>
-      Technique 01
-    </div>
-    <h2 class="section-heading">Zero-shot Prompting</h2>
-    <p class="section-body">The simplest prompt type — a description of a task and some text for the LLM to work with. No examples provided. "Zero-shot" = zero examples.</p>
-
-    <div class="prompt-table">
-      <div class="prompt-row"><span class="prompt-key">Goal</span><span class="prompt-val">Classify movie reviews as POSITIVE, NEUTRAL or NEGATIVE</span></div>
-      <div class="prompt-row"><span class="prompt-key">Model</span><span class="prompt-val">gemini-pro</span></div>
-      <div class="prompt-row"><span class="prompt-key">Temp / Tokens</span><span class="prompt-val">0.1 / 5</span></div>
-      <div class="prompt-row">
-        <span class="prompt-key">Prompt</span>
-        <span class="prompt-val mono">Classify movie reviews as POSITIVE, NEUTRAL or NEGATIVE.<br><br>Review: "Her" is a disturbing study revealing the direction humanity is headed if AI is allowed to keep evolving, unchecked. I wish there were more movies like this masterpiece.<br><br>Sentiment:</span>
-      </div>
-      <div class="prompt-row"><span class="prompt-key">Output</span><span class="prompt-val output">POSITIVE</span></div>
-    </div>
-
-    <div class="highlight green">
-      <strong>When to use:</strong> Works well for clear, unambiguous tasks where the model has strong prior knowledge. If zero-shot doesn't work — move to few-shot.
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 5. FEW-SHOT                      -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="few-shot">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#0ea5e9;"></span>
-      Technique 02
-    </div>
-    <h2 class="section-heading">One-shot &amp; Few-shot Prompting</h2>
-    <p class="section-body">Provide examples to help the model understand the desired output pattern. A <strong>one-shot</strong> provides a single example; <strong>few-shot</strong> provides multiple.</p>
-
-    <div class="highlight red">
-      The number of examples needed depends on task complexity, example quality, and model capability. <strong>Start with 3–5 examples</strong> as a rule of thumb. Use at least 6 for classification tasks.
-    </div>
-
-    <div class="prompt-table">
-      <div class="prompt-row"><span class="prompt-key">Goal</span><span class="prompt-val">Parse pizza orders to JSON</span></div>
-      <div class="prompt-row"><span class="prompt-key">Temp / Tokens</span><span class="prompt-val">0.1 / 250</span></div>
-      <div class="prompt-row">
-        <span class="prompt-key">Prompt</span>
-        <span class="prompt-val mono">Parse a customer's pizza order into valid JSON:<br><br>EXAMPLE: I want a small pizza with cheese, tomato sauce, and pepperoni.<br>JSON: {"size": "small", "type": "normal", "ingredients": [["cheese", "tomato sauce", "pepperoni"]]}<br><br>EXAMPLE: Can I get a large pizza with tomato sauce, basil and mozzarella?<br>JSON: {"size": "large", "type": "normal", "ingredients": [["tomato sauce", "basil", "mozzarella"]]}<br><br>Now, I would like a large pizza, with the first half cheese and mozzarella, the other half tomato sauce, ham and pineapple.<br>JSON:</span>
-      </div>
-      <div class="prompt-row"><span class="prompt-key">Output</span><span class="prompt-val output">{"size": "large", "type": "half-half", "ingredients": [["cheese", "mozzarella"], ["tomato sauce", "ham", "pineapple"]]}</span></div>
-    </div>
-
-    <div class="callout note">
-      <span class="callout-icon">📌</span>
-      <div class="callout-body">
-        <strong>For classification tasks</strong>
-        <span>Mix up the response classes in your few-shot examples. Never order them all one class then another — the model may overfit to the order rather than learning the actual classification signal.</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 6. SYSTEM, ROLE, CONTEXTUAL      -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="system-role">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#10b981;"></span>
-      Techniques 03 – 05
-    </div>
-    <h2 class="section-heading">System, Role &amp; Contextual Prompting</h2>
-
-    <div class="technique-grid" style="margin-bottom:20px;">
-      <div class="technique-card" style="border-left:3px solid #10b981;">
-        <span class="technique-name">System Prompt</span>
-        <p class="technique-desc">Defines the model's <strong>fundamental capabilities and overarching purpose</strong> — e.g. "Classify reviews as positive, neutral, or negative. Only return the label in uppercase."</p>
-      </div>
-      <div class="technique-card" style="border-left:3px solid #f59e0b;">
-        <span class="technique-name">Contextual Prompt</span>
-        <p class="technique-desc">Provides <strong>immediate, task-specific background</strong> to guide the response. Dynamic and specific to the current input.</p>
-      </div>
-      <div class="technique-card" style="border-left:3px solid #8b5cf6;">
-        <span class="technique-name">Role Prompt</span>
-        <p class="technique-desc">Frames the model's <strong>output style and voice</strong> by assigning a character — teacher, travel guide, lawyer, comedian.</p>
-      </div>
-    </div>
-
-    <div class="highlight blue">
-      Effective role styles: <strong>Confrontational, Descriptive, Direct, Formal, Humorous, Influential, Informal, Inspirational, Persuasive</strong> — each produces measurably different output quality for the same task.
-    </div>
-
-    <div class="prompt-table">
-      <div class="prompt-row"><span class="prompt-key">Role Prompt</span><span class="prompt-val mono">I want you to act as a travel guide. I will write to you about my location and you will suggest 3 places to visit near me in a <strong>humorous style</strong>.<br><br>My suggestion: "I am in Manhattan."<br>Travel Suggestions:</span></div>
-      <div class="prompt-row"><span class="prompt-key">Output</span><span class="prompt-val output">1. Behold the Empire State of Mind: Ascend to the dizzying heights of the Empire State Building... feel like King Kong atop the Big Apple, minus the giant ape-sized banana.<br>2. Get Arsy-Farsy at MoMA: Gaze upon masterpieces that will make you question whether your stick-figure drawings have any artistic merit.<br>3. Shop 'Til You Drop on Fifth Avenue: Brace yourself for sticker shock... because you're in Manhattan, embrace the fabulousness!</span></div>
-    </div>
-
-    <div class="callout note">
-      <span class="callout-icon">🛡️</span>
-      <div class="callout-body">
-        <strong>System prompts for safety</strong>
-        <span>System prompts are valuable for controlling harmful output. Simply add: <code>"You should be respectful in your answer."</code> to guide the model away from toxic content.</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 7. STEP-BACK PROMPTING           -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="stepback">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#8b5cf6;"></span>
-      Technique 06
-    </div>
-    <h2 class="section-heading">Step-back Prompting</h2>
-    <p class="section-body">First prompt the LLM to consider a <strong>general question</strong> related to the task, then feed that answer as context into a follow-up prompt for the specific task. This activates background knowledge before solving.</p>
-
-    <div class="highlight violet">
-      It changes the final prompt by utilising more knowledge in the LLM's parameters than would otherwise come into play when prompted directly — and can help mitigate biases by focusing on general principles.
-    </div>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <strong>Ask the general step-back question</strong>
-          <p>"Based on popular first-person shooter games, what are 5 fictional key settings that contribute to a challenging level storyline?"</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <strong>Collect the general answer</strong>
-          <p>LLM returns: Abandoned Military Base, Cyberpunk City, Alien Spaceship, Zombie Town, Underwater Facility.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <strong>Feed it as context into your real prompt</strong>
-          <p>"Context: [the 5 themes above]. Take one theme and write a one-paragraph storyline for a challenging game level."</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 8. CHAIN OF THOUGHT              -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="cot">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#c85c2a;"></span>
-      Technique 07–08
-    </div>
-    <h2 class="section-heading">Chain of Thought (CoT) &amp; Self-consistency</h2>
-    <p class="section-body">CoT prompting generates <strong>intermediate reasoning steps</strong>, helping the LLM produce more accurate answers — especially for math, logic, and multi-step problems.</p>
-
-    <div class="compare-grid">
-      <div class="compare-card dont">
-        <div class="compare-label">❌ Without CoT</div>
-        <strong style="display:block;margin-bottom:4px;font-size:13px;">Prompt:</strong>
-        "When I was 3 years old, my partner was 3 times my age. Now I am 20. How old is my partner?"
-        <strong style="display:block;margin:8px 0 4px;font-size:13px;">Output:</strong>
-        <span style="color:var(--rose);font-weight:700;">63 years old</span> ← Wrong!
-      </div>
-      <div class="compare-card do">
-        <div class="compare-label">✅ With CoT</div>
-        <strong style="display:block;margin-bottom:4px;font-size:13px;">Prompt:</strong>
-        "...How old is my partner? <em>Let's think step by step.</em>"
-        <strong style="display:block;margin:8px 0 4px;font-size:13px;">Output:</strong>
-        Partner was 9 when I was 3. Age difference = 6. Now I'm 20, so partner is 20+6 = <span style="color:var(--emerald);font-weight:700;">26 years old</span> ✓
-      </div>
-    </div>
-
-    <div class="highlight orange">
-      <strong>Advantages:</strong> Low-effort, works with off-the-shelf LLMs, provides interpretability (you can see where reasoning went wrong), and improves robustness across different LLM versions.
-    </div>
-
-    <h3 style="font-size:1rem;font-weight:800;margin:20px 0 10px;">Self-consistency</h3>
-    <p class="section-body">Run the <em>same</em> CoT prompt multiple times with a higher temperature. Extract each answer, then select the <strong>most common answer</strong> via majority voting. Gives a pseudo-probability that the answer is correct.</p>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <strong>Generate diverse reasoning paths</strong>
-          <p>Send the same prompt N times at higher temperature — each run produces a different chain of reasoning.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <strong>Extract the answer from each response</strong>
-          <p>Parse each output for the final answer token or sentence.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <strong>Choose the most common answer</strong>
-          <p>Majority vote wins. If 2/3 runs say "IMPORTANT", that's your answer.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="callout warning">
-      <span class="callout-icon">💰</span>
-      <div class="callout-body">
-        <strong>Cost caveat</strong>
-        <span>Self-consistency has high token costs — you're running the same prompt multiple times. Use it only when accuracy justifies the compute spend. Always set temperature to 0 for standard CoT (single run).</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 9. REACT                         -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="react">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#10b981;"></span>
-      Technique 10
-    </div>
-    <h2 class="section-heading">ReAct: Reason &amp; Act</h2>
-    <p class="section-body">ReAct combines <strong>reasoning</strong> and <strong>acting</strong> into a thought-action loop. The LLM reasons about a problem, takes an action (calls a tool, searches the web), observes results, updates its reasoning, and repeats until it reaches a solution.</p>
-
-    <div class="highlight green">
-      ReAct mimics how humans operate in the real world — we reason verbally and take actions to gain information. It's a first step toward full agent modeling and performs well against other approaches across a variety of domains.
-    </div>
-
-    <div class="code-wrap">
-      <div class="code-header">
-        <span class="code-lang">Python · LangChain + VertexAI</span>
-        <div class="code-dots">
-          <div class="code-dot" style="background:#ff5f56;"></div>
-          <div class="code-dot" style="background:#ffbd2e;"></div>
-          <div class="code-dot" style="background:#27c93f;"></div>
-        </div>
-      </div>
-      <div class="code-body"><span class="code-keyword">from</span> <span class="code-var">langchain.agents</span> <span class="code-keyword">import</span> <span class="code-fn">load_tools</span>, <span class="code-fn">initialize_agent</span>, <span class="code-var">AgentType</span>
-<span class="code-keyword">from</span> <span class="code-var">langchain.llms</span> <span class="code-keyword">import</span> <span class="code-var">VertexAI</span>
-
-<span class="code-var">prompt</span> = <span class="code-string">"How many kids do the band members of Metallica have?"</span>
-<span class="code-var">llm</span> = <span class="code-fn">VertexAI</span>(temperature=<span class="code-number">0.1</span>)
-<span class="code-var">tools</span> = <span class="code-fn">load_tools</span>([<span class="code-string">"serpapi"</span>], llm=<span class="code-var">llm</span>)
-
-<span class="code-var">agent</span> = <span class="code-fn">initialize_agent</span>(
-    <span class="code-var">tools</span>, <span class="code-var">llm</span>,
-    agent=<span class="code-var">AgentType.ZERO_SHOT_REACT_DESCRIPTION</span>,
-    verbose=<span class="code-keyword">True</span>
-)
-<span class="code-var">agent</span>.<span class="code-fn">run</span>(<span class="code-var">prompt</span>)</div>
-    </div>
-
-    <p class="section-body" style="margin-top:12px;">The agent makes 5 sequential searches — one per Metallica member — chaining observations into thoughts, arriving at a final answer of <strong>10 children</strong>. The thought-action-observation loop continues until the problem is solved.</p>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 10. CODE PROMPTING               -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="code">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#f43f5e;"></span>
-      Code Prompting
-    </div>
-    <h2 class="section-heading">Prompting for Code</h2>
-    <p class="section-body">LLMs are strong code generators. The same prompt principles apply — be specific, use examples, and set low temperature for deterministic output.</p>
-
-    <div class="technique-grid">
-      <div class="technique-card" style="border-left:3px solid #6366f1;">
-        <div class="technique-icon" style="background:rgba(99,102,241,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#6366f1"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        </div>
-        <span class="technique-name">Write Code</span>
-        <p class="technique-desc">Describe what the script should do precisely. Specify language, inputs, outputs and edge cases.</p>
-      </div>
-      <div class="technique-card" style="border-left:3px solid #0ea5e9;">
-        <div class="technique-icon" style="background:rgba(14,165,233,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#0ea5e9"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </div>
-        <span class="technique-name">Explain Code</span>
-        <p class="technique-desc">Paste code and ask the LLM to explain it step by step — great for reading teammates' code.</p>
-      </div>
-      <div class="technique-card" style="border-left:3px solid #10b981;">
-        <div class="technique-icon" style="background:rgba(16,185,129,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#10b981"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/></svg>
-        </div>
-        <span class="technique-name">Translate Code</span>
-        <p class="technique-desc">Convert code from one language to another — e.g. Bash → Python, Python → TypeScript.</p>
-      </div>
-      <div class="technique-card" style="border-left:3px solid #f59e0b;">
-        <div class="technique-icon" style="background:rgba(245,158,11,0.1);">
-          <svg viewBox="0 0 24 24" stroke="#f59e0b"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 9H14V7.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S16.33 9 15.5 9z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 15H10v1.5c0 .83-.67 1.5-1.5 1.5S7 17.33 7 16.5 7.67 15 8.5 15z"/></svg>
-        </div>
-        <span class="technique-name">Debug Code</span>
-        <p class="technique-desc">Paste the error + code. LLM identifies the bug, explains the fix, and often spots additional issues.</p>
-      </div>
-    </div>
-
-    <div class="callout warning">
-      <span class="callout-icon">⚠️</span>
-      <div class="callout-body">
-        <strong>Always read and test LLM-generated code</strong>
-        <span>LLMs cannot reason — they repeat patterns from training data. Code output may look correct but contain subtle bugs. Always test in an isolated environment before use in production.</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════ -->
-  <!-- 11. BEST PRACTICES               -->
-  <!-- ════════════════════════════════ -->
-  <section class="content-section" id="best-practices">
-    <div class="section-label">
-      <span class="section-label-dot" style="background:#f59e0b;"></span>
-      Best Practices
-    </div>
-    <h2 class="section-heading">12 Rules for Better Prompts</h2>
-
-    <div class="bp-grid">
-      <div class="bp-card">
-        <div class="bp-num">1</div>
-        <div class="bp-text">
-          <strong>Provide examples (few-shot)</strong>
-          <span>The single most impactful practice. Examples are a powerful teaching tool — they show the model a target to aim for.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">2</div>
-        <div class="bp-text">
-          <strong>Design with simplicity</strong>
-          <span>If it's confusing for you, it's confusing for the model. Use clear verbs: Act, Analyze, Classify, Generate, Summarize, Translate, Write.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">3</div>
-        <div class="bp-text">
-          <strong>Be specific about output</strong>
-          <span>"Generate a 3-paragraph blog post..." beats "Write a blog post." Specific context → specific, accurate output.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">4</div>
-        <div class="bp-text">
-          <strong>Instructions over constraints</strong>
-          <span>Tell the model what TO do, not what NOT to do. Positive instructions communicate the desired outcome clearly; constraints leave the model guessing.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">5</div>
-        <div class="bp-text">
-          <strong>Control max token length</strong>
-          <span>Either set a token limit in configuration, or specify in your prompt: "Explain quantum physics in a tweet-length message."</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">6</div>
-        <div class="bp-text">
-          <strong>Use variables in prompts</strong>
-          <span>Store reusable values as variables: <code>{city}</code>, <code>{product}</code>, <code>{language}</code>. Makes prompts dynamic, reusable, and maintainable.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">7</div>
-        <div class="bp-text">
-          <strong>Experiment with input formats</strong>
-          <span>The same goal can be a question, statement, or instruction — each produces different output. Try all three before settling.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">8</div>
-        <div class="bp-text">
-          <strong>Mix classes in few-shot classification</strong>
-          <span>For classification tasks, never order all positive then all negative examples. Mix them so the model learns features, not sequence.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">9</div>
-        <div class="bp-text">
-          <strong>Experiment with output formats</strong>
-          <span>For extraction, parsing, ranking tasks — request JSON or XML output. Forces structure, reduces hallucination, gives you typed data.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">10</div>
-        <div class="bp-text">
-          <strong>CoT: set temperature to 0</strong>
-          <span>Chain of thought is based on greedy decoding. When reasoning to a single correct answer, always use temperature = 0.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">11</div>
-        <div class="bp-text">
-          <strong>Adapt to model updates</strong>
-          <span>Stay on top of architecture changes and new capabilities. Test prompts on new model versions — performance can shift with updates.</span>
-        </div>
-      </div>
-      <div class="bp-card">
-        <div class="bp-num">12</div>
-        <div class="bp-text">
-          <strong>Document everything</strong>
-          <span>Track prompt name, goal, model, settings, full prompt text, and output in a structured log. You will forget what you tried — your notes won't.</span>
-        </div>
-      </div>
-    </div>
-
-    <h3 style="font-size:1rem;font-weight:800;margin:24px 0 12px;">Instructions vs Constraints</h3>
-    <div class="compare-grid">
-      <div class="compare-card do">
-        <div class="compare-label">✅ Do — Use instructions</div>
-        "Generate a 1-paragraph blog post about the top 5 video game consoles. Only discuss the console, the company who made it, the year, and total sales."
-      </div>
-      <div class="compare-card dont">
-        <div class="compare-label">❌ Don't — Use constraints only</div>
-        "Generate a 1-paragraph blog post about the top 5 video game consoles. Do not list video game names."
-      </div>
-    </div>
-
-    <h3 style="font-size:1rem;font-weight:800;margin:24px 0 12px;">Prompt Documentation Template</h3>
-    <div class="prompt-table">
-      <div class="prompt-row"><span class="prompt-key">Name</span><span class="prompt-val">Name + version of the prompt attempt</span></div>
-      <div class="prompt-row"><span class="prompt-key">Goal</span><span class="prompt-val">One sentence explaining the goal of this attempt</span></div>
-      <div class="prompt-row"><span class="prompt-key">Model</span><span class="prompt-val">Name and version of the model used</span></div>
-      <div class="prompt-row"><span class="prompt-key">Temp / Tokens</span><span class="prompt-val">Temperature, token limit, Top-K, Top-P values</span></div>
-      <div class="prompt-row"><span class="prompt-key">Prompt</span><span class="prompt-val">Full prompt text — every word</span></div>
-      <div class="prompt-row"><span class="prompt-key">Output</span><span class="prompt-val">Full output (or multiple outputs if testing consistency)</span></div>
-      <div class="prompt-row"><span class="prompt-key">Result</span><span class="prompt-val">OK / NOT OK / SOMETIMES OK + feedback notes</span></div>
-    </div>
-
-    <div class="highlight orange">
-      <strong>Prompt engineering is an iterative process.</strong> Craft and test different prompts, analyze and document the results. Refine based on model performance. Keep experimenting until you achieve the desired output. When you change models, start again.
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <span>© 2026 Sumit Kant · GenAI Lab</span>
-  <div style="display:flex;gap:16px;">
-    <a href="genai-lab.html">← Back to LLM Concepts</a>
-    <a href="https://sumitkant.github.io/">Website</a>
-  </div>
-</footer>
-
-<script>
-  function scrollTo(id) {
-    var el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.querySelectorAll('.toc-btn').forEach(function(b) { b.classList.remove('active'); });
-    event.target.classList.add('active');
-  }
-
-  // Auto-highlight TOC on scroll
-  var sections = ['intro','config','techniques','zero-shot','few-shot','system-role','cot','react','code','best-practices'];
-  var btns = document.querySelectorAll('.toc-btn');
-
-  window.addEventListener('scroll', function() {
-    var scrollY = window.scrollY + 120;
-    var current = 'intro';
-    sections.forEach(function(id) {
+  <script>
+    function scrollTo(id) {
       var el = document.getElementById(id);
-      if (el && el.offsetTop <= scrollY) current = id;
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.toc-btn').forEach(function (b) { b.classList.remove('active'); });
+      event.target.classList.add('active');
+    }
+
+    // Auto-highlight TOC on scroll
+    var sections = ['intro', 'config', 'techniques', 'zero-shot', 'few-shot', 'system-role', 'cot', 'react', 'code', 'best-practices'];
+    var btns = document.querySelectorAll('.toc-btn');
+
+    window.addEventListener('scroll', function () {
+      var scrollY = window.scrollY + 120;
+      var current = 'intro';
+      sections.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollY) current = id;
+      });
+      btns.forEach(function (btn, i) {
+        btn.classList.toggle('active', sections[i] === current);
+      });
     });
-    btns.forEach(function(btn, i) {
-      btn.classList.toggle('active', sections[i] === current);
-    });
-  });
-</script>
+  </script>
 
 </body>
+
 </html>
