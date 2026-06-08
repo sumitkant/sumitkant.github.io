@@ -1,0 +1,4002 @@
+[
+  {
+    "number": 1,
+    "title": "Stormy Morning",
+    "slug": "stormy-morning",
+    "palette": [
+      "#6A89A7",
+      "#BDDDFC",
+      "#88BDF2",
+      "#384959"
+    ],
+    "background": "#BDDDFC",
+    "body_text": "#384959",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A polished and reliable theme built from cyan tones that conveys clarity, confidence, and professional calm.",
+    "best_used_for": "SaaS dashboards, professional reports, knowledge products, fintech tools, enterprise websites.",
+    "category": "professional",
+    "roles": [
+      [
+        "Background",
+        "#BDDDFC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#384959",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#88BDF2",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#6A89A7",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 2,
+    "title": "Mossy Hollow",
+    "slug": "mossy-hollow",
+    "palette": [
+      "#636B2F",
+      "#BAC095",
+      "#D4DE95",
+      "#3D4127"
+    ],
+    "background": "#D4DE95",
+    "body_text": "#3D4127",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from yellow tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#D4DE95",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#3D4127",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#636B2F",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#BAC095",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 3,
+    "title": "Blue Eclipse",
+    "slug": "blue-eclipse",
+    "palette": [
+      "#272757",
+      "#8686AC",
+      "#505081",
+      "#0F0E47"
+    ],
+    "background": "#8686AC",
+    "body_text": "#0F0E47",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from blue tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#8686AC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#0F0E47",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#272757",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#505081",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 4,
+    "title": "Lush Forest",
+    "slug": "lush-forest",
+    "palette": [
+      "#2E6F40",
+      "#CFFFDC",
+      "#68BA7F",
+      "#253D2C"
+    ],
+    "background": "#CFFFDC",
+    "body_text": "#253D2C",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from green tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#CFFFDC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#253D2C",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#2E6F40",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#68BA7F",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 5,
+    "title": "Green Juice",
+    "slug": "green-juice",
+    "palette": [
+      "#4CBB17",
+      "#48872B",
+      "#39542C",
+      "#293325"
+    ],
+    "background": "#4CBB17",
+    "body_text": "#293325",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from lime tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#4CBB17",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#293325",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#48872B",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#39542C",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 6,
+    "title": "Chili Spice",
+    "slug": "chili-spice",
+    "palette": [
+      "#CD1C18",
+      "#FFA896",
+      "#9B1313",
+      "#38000A"
+    ],
+    "background": "#38000A",
+    "body_text": "#FFA896",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A polished and reliable theme built from red tones that conveys clarity, confidence, and professional calm.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "professional",
+    "roles": [
+      [
+        "Background",
+        "#38000A",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FFA896",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#CD1C18",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#9B1313",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 7,
+    "title": "Chocolate Truffle",
+    "slug": "chocolate-truffle",
+    "palette": [
+      "#713600",
+      "#C05800",
+      "#FDFBD4",
+      "#38240D"
+    ],
+    "background": "#38240D",
+    "body_text": "#FDFBD4",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A polished and reliable theme built from orange, orange-red, and gold tones that conveys clarity, confidence, and professional calm.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "professional",
+    "roles": [
+      [
+        "Background",
+        "#38240D",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FDFBD4",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#C05800",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#713600",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 8,
+    "title": "Ink Wash",
+    "slug": "ink-wash",
+    "palette": [
+      "#4A4A4A",
+      "#CBCBCB",
+      "#FFFFE3",
+      "#6D8196"
+    ],
+    "background": "#FFFFE3",
+    "body_text": "#4A4A4A",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A polished and reliable theme built from charcoal, light gray, and gold tones that conveys clarity, confidence, and professional calm.",
+    "best_used_for": "SaaS dashboards, professional reports, knowledge products, fintech tools, enterprise websites.",
+    "category": "professional",
+    "roles": [
+      [
+        "Background",
+        "#FFFFE3",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#4A4A4A",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#6D8196",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#CBCBCB",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 9,
+    "title": "Golden Taupe",
+    "slug": "golden-taupe",
+    "palette": [
+      "#D4AF37",
+      "#BDB76B",
+      "#FDFBD4",
+      "#CE8946"
+    ],
+    "background": "#FDFBD4",
+    "body_text": "#CE8946",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A polished and reliable theme built from gold tones that conveys clarity, confidence, and professional calm.",
+    "best_used_for": "SaaS dashboards, professional reports, knowledge products, fintech tools, enterprise websites.",
+    "category": "professional",
+    "roles": [
+      [
+        "Background",
+        "#FDFBD4",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#CE8946",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#D4AF37",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#BDB76B",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 10,
+    "title": "Wisteria Bloom",
+    "slug": "wisteria-bloom",
+    "palette": [
+      "#D3D3FF",
+      "#9400D3",
+      "#D8BFD8",
+      "#ED80E9"
+    ],
+    "background": "#D3D3FF",
+    "body_text": "#9400D3",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from blue, violet, and magenta tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#D3D3FF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#9400D3",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#ED80E9",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#D8BFD8",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 11,
+    "title": "Burnt Sienna",
+    "slug": "burnt-sienna",
+    "palette": [
+      "#E35336",
+      "#F5F5DC",
+      "#F4A460",
+      "#A0522D"
+    ],
+    "background": "#F5F5DC",
+    "body_text": "#A0522D",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A polished and reliable theme built from red, gold, and orange-red tones that conveys clarity, confidence, and professional calm.",
+    "best_used_for": "SaaS dashboards, professional reports, knowledge products, fintech tools, enterprise websites.",
+    "category": "professional",
+    "roles": [
+      [
+        "Background",
+        "#F5F5DC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#A0522D",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#F4A460",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#E35336",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 12,
+    "title": "Blooming Romance",
+    "slug": "blooming-romance",
+    "palette": [
+      "#660033",
+      "#E673AC",
+      "#469110",
+      "#00520A"
+    ],
+    "background": "#E673AC",
+    "body_text": "#660033",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from pink and lime tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#E673AC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#660033",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#00520A",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#469110",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 13,
+    "title": "Desert Dusk",
+    "slug": "desert-dusk",
+    "palette": [
+      "#A2574F",
+      "#E68057",
+      "#BF7587",
+      "#993A8B"
+    ],
+    "background": "#E68057",
+    "body_text": "#993A8B",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from red, orange-red, and pink tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#E68057",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#993A8B",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#BF7587",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#A2574F",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 14,
+    "title": "Lavender Fields",
+    "slug": "lavender-fields",
+    "palette": [
+      "#FDFBD4",
+      "#BDB96A",
+      "#C1BFFF",
+      "#CF6DFC"
+    ],
+    "background": "#FDFBD4",
+    "body_text": "#CF6DFC",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from gold and blue tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#FDFBD4",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#CF6DFC",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#C1BFFF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#BDB96A",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 15,
+    "title": "Hydrangea",
+    "slug": "hydrangea",
+    "palette": [
+      "#FF8DA1",
+      "#FFC2BA",
+      "#FF9CE9",
+      "#AD56C4"
+    ],
+    "background": "#FFC2BA",
+    "body_text": "#AD56C4",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from pink, red, and magenta tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#FFC2BA",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#AD56C4",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF8DA1",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FF9CE9",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 16,
+    "title": "Cactus Flower",
+    "slug": "cactus-flower",
+    "palette": [
+      "#E491A6",
+      "#845763",
+      "#92E4BA",
+      "#90C67F"
+    ],
+    "background": "#92E4BA",
+    "body_text": "#845763",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from pink and green tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#92E4BA",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#845763",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#E491A6",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#90C67F",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 17,
+    "title": "Wildflowers",
+    "slug": "wildflowers",
+    "palette": [
+      "#A8DCAB",
+      "#519755",
+      "#DBAAA7",
+      "#BE91BE"
+    ],
+    "background": "#A8DCAB",
+    "body_text": "#519755",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from green and red tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#A8DCAB",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#519755",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#DBAAA7",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#BE91BE",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 18,
+    "title": "Country Garden",
+    "slug": "country-garden",
+    "palette": [
+      "#FFFFE3",
+      "#DBD4FF",
+      "#808034",
+      "#723480"
+    ],
+    "background": "#FFFFE3",
+    "body_text": "#723480",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from gold and indigo tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#FFFFE3",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#723480",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#DBD4FF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#808034",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 19,
+    "title": "Lotus Garden",
+    "slug": "lotus-garden",
+    "palette": [
+      "#ADEBB3",
+      "#FF857A",
+      "#EBAEE6",
+      "#6B403C"
+    ],
+    "background": "#ADEBB3",
+    "body_text": "#6B403C",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from green, red, and magenta tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#ADEBB3",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#6B403C",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF857A",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#EBAEE6",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 20,
+    "title": "Iris Garden",
+    "slug": "iris-garden",
+    "palette": [
+      "#A47DAB",
+      "#692475",
+      "#82AB7D",
+      "#6A6B4E"
+    ],
+    "background": "#82AB7D",
+    "body_text": "#692475",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from violet and green tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#82AB7D",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#692475",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#A47DAB",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#6A6B4E",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 21,
+    "title": "Fresh Peach",
+    "slug": "fresh-peach",
+    "palette": [
+      "#FFD3AC",
+      "#FFB5AB",
+      "#E39A7B",
+      "#DBB06B"
+    ],
+    "background": "#FFD3AC",
+    "body_text": "#E39A7B",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from orange, red, and orange-red tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#FFD3AC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#E39A7B",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FFB5AB",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#DBB06B",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 22,
+    "title": "Golden Hour",
+    "slug": "golden-hour",
+    "palette": [
+      "#FFBF00",
+      "#CFB53B",
+      "#E0B0FF",
+      "#ECE9C8"
+    ],
+    "background": "#ECE9C8",
+    "body_text": "#CFB53B",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from orange, gold, and violet tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#ECE9C8",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#CFB53B",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#E0B0FF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FFBF00",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 23,
+    "title": "Spiced Chai",
+    "slug": "spiced-chai",
+    "palette": [
+      "#FDFBD4",
+      "#D47E30",
+      "#8D5A2B",
+      "#825E34"
+    ],
+    "background": "#FDFBD4",
+    "body_text": "#825E34",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from gold and orange tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#FDFBD4",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#825E34",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#D47E30",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#8D5A2B",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 24,
+    "title": "Cherry Blossom",
+    "slug": "cherry-blossom",
+    "palette": [
+      "#F2C7C7",
+      "#FFFFFF",
+      "#D5F3D8",
+      "#FFB7C5"
+    ],
+    "background": "#FFFFFF",
+    "body_text": "#FFB7C5",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from red, green, and pink tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#FFFFFF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FFB7C5",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#F2C7C7",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#D5F3D8",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 25,
+    "title": "Evening Rose",
+    "slug": "evening-rose",
+    "palette": [
+      "#DCA1A1",
+      "#996666",
+      "#8E4585",
+      "#4A4A4A"
+    ],
+    "background": "#DCA1A1",
+    "body_text": "#4A4A4A",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from red and magenta tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#DCA1A1",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#4A4A4A",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#8E4585",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#996666",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 26,
+    "title": "Pastel Garden",
+    "slug": "pastel-garden",
+    "palette": [
+      "#C75F71",
+      "#F0B8B8",
+      "#A2AE9D",
+      "#54463A"
+    ],
+    "background": "#F0B8B8",
+    "body_text": "#54463A",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from pink, red, and lime tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#F0B8B8",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#54463A",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#C75F71",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#A2AE9D",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 27,
+    "title": "Tuscan Sunset",
+    "slug": "tuscan-sunset",
+    "palette": [
+      "#E35336",
+      "#FFD3AC",
+      "#9988A1",
+      "#8A2B0E"
+    ],
+    "background": "#FFD3AC",
+    "body_text": "#8A2B0E",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from red, orange, and violet tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#FFD3AC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#8A2B0E",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#E35336",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#9988A1",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 28,
+    "title": "Zesty Lemon",
+    "slug": "zesty-lemon",
+    "palette": [
+      "#FFFF66",
+      "#FFE566",
+      "#D6D58B",
+      "#B3B347"
+    ],
+    "background": "#FFFF66",
+    "body_text": "#B3B347",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from gold tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#FFFF66",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#B3B347",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FFE566",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#D6D58B",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 29,
+    "title": "California Beaches",
+    "slug": "california-beaches",
+    "palette": [
+      "#FFC067",
+      "#66F4FF",
+      "#66C4FF",
+      "#7D99AA"
+    ],
+    "background": "#66F4FF",
+    "body_text": "#7D99AA",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from orange, teal, and cyan tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Consumer apps, children's products, edtech, travel promotions, social campaigns, lively dashboards.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#66F4FF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#7D99AA",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#66C4FF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FFC067",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 30,
+    "title": "Freshly Squeezed",
+    "slug": "freshly-squeezed",
+    "palette": [
+      "#FFBF00",
+      "#F2CF7E",
+      "#FFE642",
+      "#FF7900"
+    ],
+    "background": "#FFE642",
+    "body_text": "#FF7900",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from orange and gold tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#FFE642",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FF7900",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FFBF00",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#F2CF7E",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 31,
+    "title": "Pistachio Dream",
+    "slug": "pistachio-dream",
+    "palette": [
+      "#80EF80",
+      "#E3F0A3",
+      "#BADBA2",
+      "#42D674"
+    ],
+    "background": "#E3F0A3",
+    "body_text": "#42D674",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from green, yellow, and lime tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Consumer apps, children's products, edtech, travel promotions, social campaigns, lively dashboards.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#E3F0A3",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#42D674",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#80EF80",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#BADBA2",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 32,
+    "title": "Mango Popsicle",
+    "slug": "mango-popsicle",
+    "palette": [
+      "#F2B949",
+      "#EDD377",
+      "#F2E829",
+      "#F27430"
+    ],
+    "background": "#F2E829",
+    "body_text": "#F27430",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from orange and gold tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#F2E829",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#F27430",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#F2B949",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#EDD377",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 33,
+    "title": "Guava",
+    "slug": "guava",
+    "palette": [
+      "#FF8559",
+      "#FFB578",
+      "#E65447",
+      "#CF5376"
+    ],
+    "background": "#FFB578",
+    "body_text": "#CF5376",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from orange-red and red tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#FFB578",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#CF5376",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF8559",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#E65447",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 34,
+    "title": "Glowing Horizon",
+    "slug": "glowing-horizon",
+    "palette": [
+      "#FFB343",
+      "#42EAFF",
+      "#4272FF",
+      "#FF7E42"
+    ],
+    "background": "#42EAFF",
+    "body_text": "#4272FF",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from orange, teal, and blue tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Consumer apps, children's products, edtech, travel promotions, social campaigns, lively dashboards.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#42EAFF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#4272FF",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF7E42",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FFB343",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 35,
+    "title": "Sunny Day",
+    "slug": "sunny-day",
+    "palette": [
+      "#FFBF00",
+      "#807040",
+      "#007EFF",
+      "#2400FF"
+    ],
+    "background": "#FFBF00",
+    "body_text": "#2400FF",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from orange, gold, and cyan tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Consumer apps, children's products, edtech, travel promotions, social campaigns, lively dashboards.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#FFBF00",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#2400FF",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#007EFF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#807040",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 36,
+    "title": "Retro Sunset",
+    "slug": "retro-sunset",
+    "palette": [
+      "#BE5103",
+      "#FFCE1B",
+      "#069494",
+      "#B7410E"
+    ],
+    "background": "#FFCE1B",
+    "body_text": "#B7410E",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from orange-red, gold, and teal tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Consumer apps, children's products, edtech, travel promotions, social campaigns, lively dashboards.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#FFCE1B",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#B7410E",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#BE5103",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#069494",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 37,
+    "title": "Bubblegum Pop",
+    "slug": "bubblegum-pop",
+    "palette": [
+      "#FF69B4",
+      "#069494",
+      "#FFFFFF",
+      "#00F0FF"
+    ],
+    "background": "#FFFFFF",
+    "body_text": "#069494",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from pink and teal tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Consumer apps, children's products, edtech, travel promotions, social campaigns, lively dashboards.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#FFFFFF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#069494",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF69B4",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#00F0FF",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 38,
+    "title": "Cotton Candy Skies",
+    "slug": "cotton-candy-skies",
+    "palette": [
+      "#B298E7",
+      "#B8E3E9",
+      "#F5B8D5",
+      "#F9BEDD"
+    ],
+    "background": "#B8E3E9",
+    "body_text": "#B298E7",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from indigo, teal, and pink tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#B8E3E9",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#B298E7",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#F9BEDD",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#F5B8D5",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 39,
+    "title": "Electric Kiwi",
+    "slug": "electric-kiwi",
+    "palette": [
+      "#CCFF00",
+      "#FFFF00",
+      "#DFFF00",
+      "#000000"
+    ],
+    "background": "#000000",
+    "body_text": "#FFFF00",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from yellow and gold tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#000000",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FFFF00",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#DFFF00",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#CCFF00",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 40,
+    "title": "Watermelon Splash",
+    "slug": "watermelon-splash",
+    "palette": [
+      "#FC6C85",
+      "#89F336",
+      "#4A4A4A",
+      "#ADEBB3"
+    ],
+    "background": "#ADEBB3",
+    "body_text": "#4A4A4A",
+    "header_font": "Poppins Bold",
+    "body_font": "Figtree",
+    "description": "A bright and energetic theme built from pink, lime, and charcoal tones that conveys optimism, motion, and approachability.",
+    "best_used_for": "Consumer apps, children's products, edtech, travel promotions, social campaigns, lively dashboards.",
+    "category": "playful",
+    "roles": [
+      [
+        "Background",
+        "#ADEBB3",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#4A4A4A",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FC6C85",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#89F336",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 41,
+    "title": "Alchemical Reaction",
+    "slug": "alchemical-reaction",
+    "palette": [
+      "#9D00FF",
+      "#DE811D",
+      "#6BFF00",
+      "#5B8040"
+    ],
+    "background": "#9D00FF",
+    "body_text": "#6BFF00",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from violet, orange, and lime tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#9D00FF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#6BFF00",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#DE811D",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#5B8040",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 42,
+    "title": "Electropop",
+    "slug": "electropop",
+    "palette": [
+      "#CCFF00",
+      "#FF6B00",
+      "#F900FF",
+      "#5200FF"
+    ],
+    "background": "#5200FF",
+    "body_text": "#CCFF00",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from yellow, orange-red, and violet tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#5200FF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#CCFF00",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF6B00",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#F900FF",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 43,
+    "title": "Cool Revival",
+    "slug": "cool-revival",
+    "palette": [
+      "#00FFFF",
+      "#00AEFF",
+      "#00DE94",
+      "#00FF52"
+    ],
+    "background": "#00FFFF",
+    "body_text": "#00AEFF",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from teal, cyan, and mint tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#00FFFF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#00AEFF",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#00DE94",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#00FF52",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 44,
+    "title": "Neon Jungle",
+    "slug": "neon-jungle",
+    "palette": [
+      "#89F336",
+      "#38A711",
+      "#F23598",
+      "#A835F2"
+    ],
+    "background": "#A835F2",
+    "body_text": "#89F336",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from lime and pink tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#A835F2",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#89F336",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#F23598",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#38A711",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 45,
+    "title": "Sharp Edge",
+    "slug": "sharp-edge",
+    "palette": [
+      "#898989",
+      "#D9D9D9",
+      "#FF4D4D",
+      "#4DFFBC"
+    ],
+    "background": "#4DFFBC",
+    "body_text": "#898989",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from gray, light gray, and red tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "Entertainment platforms, creator tools, youth brands, launch campaigns, experimental web experiences.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#4DFFBC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#898989",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF4D4D",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#D9D9D9",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 46,
+    "title": "Electric Fusion",
+    "slug": "electric-fusion",
+    "palette": [
+      "#00F0FF",
+      "#00FF81",
+      "#FFA900",
+      "#FF6800"
+    ],
+    "background": "#00FF81",
+    "body_text": "#FF6800",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from teal, mint, and orange tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#00FF81",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FF6800",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FFA900",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#00F0FF",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 47,
+    "title": "Fireworks",
+    "slug": "fireworks",
+    "palette": [
+      "#ED2100",
+      "#E88A38",
+      "#960016",
+      "#BF00AC"
+    ],
+    "background": "#960016",
+    "body_text": "#E88A38",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from red and orange-red tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#960016",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#E88A38",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#ED2100",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#BF00AC",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 48,
+    "title": "Space Berries",
+    "slug": "space-berries",
+    "palette": [
+      "#FD3DB5",
+      "#FFB8DC",
+      "#FB6A2C",
+      "#8C1946"
+    ],
+    "background": "#8C1946",
+    "body_text": "#FFB8DC",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from magenta, pink, and orange-red tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#8C1946",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FFB8DC",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FD3DB5",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FB6A2C",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 49,
+    "title": "Pop Art",
+    "slug": "pop-art",
+    "palette": [
+      "#00F0FF",
+      "#FF46A2",
+      "#FFFF00",
+      "#EE4B2B"
+    ],
+    "background": "#FFFF00",
+    "body_text": "#EE4B2B",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from teal, pink, and gold tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#FFFF00",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#EE4B2B",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF46A2",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#00F0FF",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 50,
+    "title": "Urban Graffiti",
+    "slug": "urban-graffiti",
+    "palette": [
+      "#FF2400",
+      "#2CFF05",
+      "#00F0FF",
+      "#5A5A5A"
+    ],
+    "background": "#5A5A5A",
+    "body_text": "#2CFF05",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from red, green, and teal tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#5A5A5A",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#2CFF05",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#00F0FF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FF2400",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 51,
+    "title": "Neon Noir",
+    "slug": "neon-noir",
+    "palette": [
+      "#000000",
+      "#2CFF05",
+      "#BF00FF",
+      "#2D2D2D"
+    ],
+    "background": "#000000",
+    "body_text": "#2CFF05",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from green and violet tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#000000",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#2CFF05",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#BF00FF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#2D2D2D",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 52,
+    "title": "Tropical Punch",
+    "slug": "tropical-punch",
+    "palette": [
+      "#FF8243",
+      "#FFC0CB",
+      "#FCE883",
+      "#069494"
+    ],
+    "background": "#FCE883",
+    "body_text": "#069494",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from orange-red, pink, and gold tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#FCE883",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#069494",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FF8243",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FFC0CB",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 53,
+    "title": "Cobalt Sky",
+    "slug": "cobalt-sky",
+    "palette": [
+      "#0047AB",
+      "#000080",
+      "#82C8E5",
+      "#6D8196"
+    ],
+    "background": "#000080",
+    "body_text": "#82C8E5",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from blue and cyan tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#000080",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#82C8E5",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#0047AB",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#6D8196",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 54,
+    "title": "Technicolor Dream",
+    "slug": "technicolor-dream",
+    "palette": [
+      "#FF00FF",
+      "#00FFFF",
+      "#CCFF00",
+      "#191970"
+    ],
+    "background": "#191970",
+    "body_text": "#CCFF00",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from magenta, teal, and yellow tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#191970",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#CCFF00",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#00FFFF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FF00FF",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 55,
+    "title": "Jewel Box",
+    "slug": "jewel-box",
+    "palette": [
+      "#50C878",
+      "#0F52BA",
+      "#9966CC",
+      "#CFB53B"
+    ],
+    "background": "#0F52BA",
+    "body_text": "#CFB53B",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from green, blue, and indigo tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "Entertainment platforms, creator tools, youth brands, launch campaigns, experimental web experiences.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#0F52BA",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#CFB53B",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#50C878",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#9966CC",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 56,
+    "title": "Salt and Pepper",
+    "slug": "salt-and-pepper",
+    "palette": [
+      "#FFFFFF",
+      "#D4D4D4",
+      "#B3B3B3",
+      "#2B2B2B"
+    ],
+    "background": "#FFFFFF",
+    "body_text": "#2B2B2B",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from light gray and gray tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#FFFFFF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#2B2B2B",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#B3B3B3",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#D4D4D4",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 57,
+    "title": "Quite Clear",
+    "slug": "quite-clear",
+    "palette": [
+      "#CBCBCB",
+      "#F2F2F2",
+      "#174D38",
+      "#4D1717"
+    ],
+    "background": "#F2F2F2",
+    "body_text": "#4D1717",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from light gray, mint, and red tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#F2F2F2",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#4D1717",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#174D38",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#CBCBCB",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 58,
+    "title": "Gothic Noir",
+    "slug": "gothic-noir",
+    "palette": [
+      "#000000",
+      "#D1D0D0",
+      "#988686",
+      "#5C4E4E"
+    ],
+    "background": "#000000",
+    "body_text": "#D1D0D0",
+    "header_font": "Space Grotesk Bold",
+    "body_font": "Inter",
+    "description": "A bold and high-impact theme built from light gray and red tones that conveys experimentation, momentum, and attention.",
+    "best_used_for": "AI products, gaming interfaces, music apps, creative campaigns, high-energy landing pages.",
+    "category": "vibrant",
+    "roles": [
+      [
+        "Background",
+        "#000000",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#D1D0D0",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#5C4E4E",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#988686",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 59,
+    "title": "Yacht Club",
+    "slug": "yacht-club",
+    "palette": [
+      "#F2F0EF",
+      "#BBBDBC",
+      "#245F73",
+      "#733E24"
+    ],
+    "background": "#F2F0EF",
+    "body_text": "#733E24",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from orange-red, gray, and cyan tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#F2F0EF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#733E24",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#245F73",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#BBBDBC",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 60,
+    "title": "Quiet Luxury",
+    "slug": "quiet-luxury",
+    "palette": [
+      "#F7E6CA",
+      "#E8D59E",
+      "#D9BBB0",
+      "#AD9C8E"
+    ],
+    "background": "#F7E6CA",
+    "body_text": "#AD9C8E",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A balanced and refined theme built from orange and orange-red tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#F7E6CA",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#AD9C8E",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#E8D59E",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#D9BBB0",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 61,
+    "title": "Night Sands",
+    "slug": "night-sands",
+    "palette": [
+      "#CBBD93",
+      "#FAE8B4",
+      "#80775C",
+      "#574A24"
+    ],
+    "background": "#574A24",
+    "body_text": "#FAE8B4",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A balanced and refined theme built from gold and orange tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#574A24",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FAE8B4",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#CBBD93",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#80775C",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 62,
+    "title": "Harbor Haze",
+    "slug": "harbor-haze",
+    "palette": [
+      "#909EAE",
+      "#5C8DC5",
+      "#AD9E90",
+      "#736F60"
+    ],
+    "background": "#AD9E90",
+    "body_text": "#736F60",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from cyan and orange tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#AD9E90",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#736F60",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#5C8DC5",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#909EAE",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 63,
+    "title": "Old Photograph",
+    "slug": "old-photograph",
+    "palette": [
+      "#FDFBD4",
+      "#D9D7B6",
+      "#878672",
+      "#545333"
+    ],
+    "background": "#FDFBD4",
+    "body_text": "#545333",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A balanced and refined theme built from gold tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#FDFBD4",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#545333",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#D9D7B6",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#878672",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 64,
+    "title": "Cappuccino",
+    "slug": "cappuccino",
+    "palette": [
+      "#D6B588",
+      "#C6C0B9",
+      "#705E46",
+      "#422701"
+    ],
+    "background": "#C6C0B9",
+    "body_text": "#422701",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A balanced and refined theme built from orange tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#C6C0B9",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#422701",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#D6B588",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#705E46",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 65,
+    "title": "Breakfast Tea",
+    "slug": "breakfast-tea",
+    "palette": [
+      "#FFD3AC",
+      "#CCBEB1",
+      "#664036",
+      "#331008"
+    ],
+    "background": "#FFD3AC",
+    "body_text": "#331008",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A balanced and refined theme built from orange and orange-red tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#FFD3AC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#331008",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#664036",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#CCBEB1",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 66,
+    "title": "Cozy Campfire",
+    "slug": "cozy-campfire",
+    "palette": [
+      "#895129",
+      "#AD7A32",
+      "#8A6E29",
+      "#660F09"
+    ],
+    "background": "#660F09",
+    "body_text": "#AD7A32",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A balanced and refined theme built from orange-red and orange tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#660F09",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#AD7A32",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#8A6E29",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#895129",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 67,
+    "title": "Stone Path",
+    "slug": "stone-path",
+    "palette": [
+      "#A49A87",
+      "#A5A58D",
+      "#968F83",
+      "#E8E5DF"
+    ],
+    "background": "#E8E5DF",
+    "body_text": "#968F83",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from orange and gold tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#E8E5DF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#968F83",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#A49A87",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#A5A58D",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 68,
+    "title": "Desert Mirage",
+    "slug": "desert-mirage",
+    "palette": [
+      "#C2B280",
+      "#E35336",
+      "#98A869",
+      "#272757"
+    ],
+    "background": "#C2B280",
+    "body_text": "#272757",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from gold, red, and yellow tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#C2B280",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#272757",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#E35336",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#98A869",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 69,
+    "title": "Honeycomb",
+    "slug": "honeycomb",
+    "palette": [
+      "#FFC107",
+      "#F9E076",
+      "#FFFDD0",
+      "#895129"
+    ],
+    "background": "#FFFDD0",
+    "body_text": "#895129",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from gold tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#FFFDD0",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#895129",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FFC107",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#F9E076",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 70,
+    "title": "Urban Loft",
+    "slug": "urban-loft",
+    "palette": [
+      "#0C0A1A",
+      "#A35E47",
+      "#000000",
+      "#464646"
+    ],
+    "background": "#000000",
+    "body_text": "#A35E47",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from navy, orange-red, and charcoal tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#000000",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#A35E47",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#0C0A1A",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#464646",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 71,
+    "title": "Spiced Mocha",
+    "slug": "spiced-mocha",
+    "palette": [
+      "#6F4E37",
+      "#D47E30",
+      "#F5F5DC",
+      "#6D3B07"
+    ],
+    "background": "#6D3B07",
+    "body_text": "#F5F5DC",
+    "header_font": "Plus Jakarta Sans Bold",
+    "body_font": "Inter",
+    "description": "A balanced and refined theme built from orange-red, orange, and gold tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#6D3B07",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#F5F5DC",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#D47E30",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#6F4E37",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 72,
+    "title": "Charming Seaside",
+    "slug": "charming-seaside",
+    "palette": [
+      "#B3EBF2",
+      "#85D1DB",
+      "#B6F2D1",
+      "#C0FDF2"
+    ],
+    "background": "#C0FDF2",
+    "body_text": "#85D1DB",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from teal and green tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#C0FDF2",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#85D1DB",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#B3EBF2",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#B6F2D1",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 73,
+    "title": "Calm Blue",
+    "slug": "calm-blue",
+    "palette": [
+      "#90D5FF",
+      "#57B0FF",
+      "#77B1D4",
+      "#517891"
+    ],
+    "background": "#90D5FF",
+    "body_text": "#517891",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from cyan tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#90D5FF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#517891",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#57B0FF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#77B1D4",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 74,
+    "title": "Beachfront Views",
+    "slug": "beachfront-views",
+    "palette": [
+      "#EDE8D0",
+      "#6E632E",
+      "#DBD1ED",
+      "#ABBEED"
+    ],
+    "background": "#EDE8D0",
+    "body_text": "#6E632E",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from gold and indigo tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#EDE8D0",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#6E632E",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#ABBEED",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#DBD1ED",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 75,
+    "title": "Under the Moonlight",
+    "slug": "under-the-moonlight",
+    "palette": [
+      "#CCCCFF",
+      "#A3A3CC",
+      "#5C5C99",
+      "#292966"
+    ],
+    "background": "#CCCCFF",
+    "body_text": "#292966",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from blue tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#CCCCFF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#292966",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#A3A3CC",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#5C5C99",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 76,
+    "title": "Lavender Lullaby",
+    "slug": "lavender-lullaby",
+    "palette": [
+      "#B5C7EB",
+      "#9EF0FF",
+      "#A4A5F5",
+      "#8E70CF"
+    ],
+    "background": "#9EF0FF",
+    "body_text": "#8E70CF",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from blue and teal tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Beauty brands, event planning, wedding websites, fashion lookbooks, lifestyle and wellness content.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#9EF0FF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#8E70CF",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#A4A5F5",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#B5C7EB",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 77,
+    "title": "Minty Fresh",
+    "slug": "minty-fresh",
+    "palette": [
+      "#98FBCB",
+      "#BFFFED",
+      "#7FCFA8",
+      "#558B71"
+    ],
+    "background": "#BFFFED",
+    "body_text": "#558B71",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from mint tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#BFFFED",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#558B71",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#98FBCB",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#7FCFA8",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 78,
+    "title": "Retro Calm",
+    "slug": "retro-calm",
+    "palette": [
+      "#81D8D0",
+      "#D99E82",
+      "#D7D982",
+      "#AE82D9"
+    ],
+    "background": "#D7D982",
+    "body_text": "#AE82D9",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from mint, orange-red, and gold tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#D7D982",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#AE82D9",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#D99E82",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#81D8D0",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 79,
+    "title": "Siltstone",
+    "slug": "siltstone",
+    "palette": [
+      "#CBBD93",
+      "#FFF5B8",
+      "#FFB16E",
+      "#CCA25A"
+    ],
+    "background": "#FFF5B8",
+    "body_text": "#CCA25A",
+    "header_font": "Inter Display Bold",
+    "body_font": "Public Sans",
+    "description": "A balanced and refined theme built from gold and orange-red tones that conveys restraint, trust, and quiet sophistication.",
+    "best_used_for": "Corporate presentations, editorial layouts, premium retail, consulting reports, minimalist product interfaces.",
+    "category": "neutral",
+    "roles": [
+      [
+        "Background",
+        "#FFF5B8",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#CCA25A",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#FFB16E",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#CBBD93",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 80,
+    "title": "Emerald Odyssey",
+    "slug": "emerald-odyssey",
+    "palette": [
+      "#00674F",
+      "#73E6CB",
+      "#3EBB9E",
+      "#0A3C30"
+    ],
+    "background": "#73E6CB",
+    "body_text": "#0A3C30",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from mint tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#73E6CB",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#0A3C30",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#00674F",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#3EBB9E",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 81,
+    "title": "Ocean Tide",
+    "slug": "ocean-tide",
+    "palette": [
+      "#00D1D1",
+      "#4052D6",
+      "#00ADAD",
+      "#005C5C"
+    ],
+    "background": "#00D1D1",
+    "body_text": "#005C5C",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from teal and blue tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#00D1D1",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#005C5C",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#00ADAD",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#4052D6",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 82,
+    "title": "Peach Skyline",
+    "slug": "peach-skyline",
+    "palette": [
+      "#FFDBBB",
+      "#BADDFF",
+      "#BAFFF5",
+      "#496580"
+    ],
+    "background": "#BAFFF5",
+    "body_text": "#496580",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A soft and expressive theme built from orange, cyan, and mint tones that conveys warmth, elegance, and invitation.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "romantic",
+    "roles": [
+      [
+        "Background",
+        "#BAFFF5",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#496580",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#BADDFF",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FFDBBB",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 83,
+    "title": "Mountain Mist",
+    "slug": "mountain-mist",
+    "palette": [
+      "#6D8196",
+      "#B0C4DE",
+      "#01796F",
+      "#5A5A5A"
+    ],
+    "background": "#B0C4DE",
+    "body_text": "#5A5A5A",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from cyan and teal tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#B0C4DE",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#5A5A5A",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#01796F",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#6D8196",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 84,
+    "title": "Morning Dew",
+    "slug": "morning-dew",
+    "palette": [
+      "#AFEEEE",
+      "#ADEBB3",
+      "#C4C4C4",
+      "#D3D3D3"
+    ],
+    "background": "#AFEEEE",
+    "body_text": "#C4C4C4",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from teal, green, and light gray tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#AFEEEE",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#C4C4C4",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#ADEBB3",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#D3D3D3",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 85,
+    "title": "Frozen Lake",
+    "slug": "frozen-lake",
+    "palette": [
+      "#6D8196",
+      "#ADD8E6",
+      "#FFFAFA",
+      "#000080"
+    ],
+    "background": "#FFFAFA",
+    "body_text": "#000080",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from cyan, teal, and red tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#FFFAFA",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#000080",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#ADD8E6",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#6D8196",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 86,
+    "title": "Olive Grove",
+    "slug": "olive-grove",
+    "palette": [
+      "#808000",
+      "#228B22",
+      "#636B2F",
+      "#F2F0EF"
+    ],
+    "background": "#F2F0EF",
+    "body_text": "#636B2F",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from gold, green, and yellow tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#F2F0EF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#636B2F",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#808000",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#228B22",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 87,
+    "title": "Coastal Morning",
+    "slug": "coastal-morning",
+    "palette": [
+      "#93C572",
+      "#89CFF0",
+      "#F5F5DC",
+      "#82C8E5"
+    ],
+    "background": "#F5F5DC",
+    "body_text": "#93C572",
+    "header_font": "Lexend Bold",
+    "body_font": "Inter",
+    "description": "A airy and tranquil theme built from lime, cyan, and gold tones that conveys ease, focus, and gentle momentum.",
+    "best_used_for": "Wellness apps, travel guides, healthcare content, productivity tools, clean editorial experiences.",
+    "category": "calm",
+    "roles": [
+      [
+        "Background",
+        "#F5F5DC",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#93C572",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#89CFF0",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#82C8E5",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 88,
+    "title": "Eucalyptus Grove",
+    "slug": "eucalyptus-grove",
+    "palette": [
+      "#B2AC88",
+      "#898989",
+      "#F2F0EF",
+      "#4B6E48"
+    ],
+    "background": "#F2F0EF",
+    "body_text": "#4B6E48",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from gold, gray, and orange-red tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#F2F0EF",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#4B6E48",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#B2AC88",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#898989",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 89,
+    "title": "Soft Spring",
+    "slug": "soft-spring",
+    "palette": [
+      "#6395EE",
+      "#90B8D6",
+      "#88CFA8",
+      "#85DECB"
+    ],
+    "background": "#85DECB",
+    "body_text": "#6395EE",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from blue, cyan, and green tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#85DECB",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#6395EE",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#90B8D6",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#88CFA8",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 90,
+    "title": "Autumn Leaves",
+    "slug": "autumn-leaves",
+    "palette": [
+      "#FFB343",
+      "#DB9A39",
+      "#B37E2E",
+      "#614419"
+    ],
+    "background": "#614419",
+    "body_text": "#FFB343",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from orange tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#614419",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FFB343",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#DB9A39",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#B37E2E",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 91,
+    "title": "Winter Chill",
+    "slug": "winter-chill",
+    "palette": [
+      "#B8E3E9",
+      "#93B1B5",
+      "#4F7C82",
+      "#0B2E33"
+    ],
+    "background": "#B8E3E9",
+    "body_text": "#0B2E33",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from teal tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#B8E3E9",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#0B2E33",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#4F7C82",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#93B1B5",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 92,
+    "title": "Spring Energy",
+    "slug": "spring-energy",
+    "palette": [
+      "#89F336",
+      "#FFFC30",
+      "#4FE0CB",
+      "#00BF33"
+    ],
+    "background": "#FFFC30",
+    "body_text": "#00BF33",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from lime, gold, and mint tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#FFFC30",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#00BF33",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#89F336",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#4FE0CB",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 93,
+    "title": "Pumpkin Spice Season",
+    "slug": "pumpkin-spice-season",
+    "palette": [
+      "#BE5103",
+      "#8C4C1F",
+      "#544823",
+      "#332216"
+    ],
+    "background": "#332216",
+    "body_text": "#BE5103",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from orange-red and gold tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#332216",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#BE5103",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#8C4C1F",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#544823",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 94,
+    "title": "Island Oasis",
+    "slug": "island-oasis",
+    "palette": [
+      "#CCFF00",
+      "#FFF37E",
+      "#9DE05A",
+      "#FFAE25"
+    ],
+    "background": "#FFF37E",
+    "body_text": "#FFAE25",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from yellow, gold, and lime tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#FFF37E",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FFAE25",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#CCFF00",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#9DE05A",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 95,
+    "title": "Autumn Orchard",
+    "slug": "autumn-orchard",
+    "palette": [
+      "#BEA58E",
+      "#DAA520",
+      "#2E6F40",
+      "#660033"
+    ],
+    "background": "#DAA520",
+    "body_text": "#660033",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from orange and green tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#DAA520",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#660033",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#2E6F40",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#BEA58E",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 96,
+    "title": "Tropical Rainforest",
+    "slug": "tropical-rainforest",
+    "palette": [
+      "#50C878",
+      "#7E8C54",
+      "#4F7942",
+      "#71AA34"
+    ],
+    "background": "#50C878",
+    "body_text": "#4F7942",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from green and yellow tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#50C878",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#4F7942",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#71AA34",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#7E8C54",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 97,
+    "title": "Wildflower Meadow",
+    "slug": "wildflower-meadow",
+    "palette": [
+      "#FBF9E7",
+      "#FDB813",
+      "#82C8E5",
+      "#7CFC00"
+    ],
+    "background": "#FBF9E7",
+    "body_text": "#82C8E5",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from gold, orange, and cyan tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#FBF9E7",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#82C8E5",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#7CFC00",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#FDB813",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 98,
+    "title": "Harvest Moon",
+    "slug": "harvest-moon",
+    "palette": [
+      "#800020",
+      "#FFCE1B",
+      "#A52A2A",
+      "#BE5103"
+    ],
+    "background": "#800020",
+    "body_text": "#FFCE1B",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from pink, gold, and red tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Food and beverage brands, hospitality decks, lifestyle campaigns, restaurant websites, seasonal promotions.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#800020",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FFCE1B",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#BE5103",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#A52A2A",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 99,
+    "title": "Winter Berry",
+    "slug": "winter-berry",
+    "palette": [
+      "#8E0A1E",
+      "#2E6F40",
+      "#ADD8E6",
+      "#FFFFFF"
+    ],
+    "background": "#8E0A1E",
+    "body_text": "#FFFFFF",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from red, green, and teal tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#8E0A1E",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#FFFFFF",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#ADD8E6",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#2E6F40",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  },
+  {
+    "number": 100,
+    "title": "Summer Breeze",
+    "slug": "summer-breeze",
+    "palette": [
+      "#FFEB3B",
+      "#F88379",
+      "#82C8E5",
+      "#E6D8C4"
+    ],
+    "background": "#FFEB3B",
+    "body_text": "#F88379",
+    "header_font": "DM Sans Bold",
+    "body_font": "Source Sans 3",
+    "description": "A organic and restorative theme built from gold, red, and cyan tones that conveys freshness, connection, and grounded energy.",
+    "best_used_for": "Sustainability reports, outdoor brands, wellness products, agriculture, ecological campaigns, nature-focused portfolios.",
+    "category": "nature",
+    "roles": [
+      [
+        "Background",
+        "#FFEB3B",
+        "Chosen page and canvas background"
+      ],
+      [
+        "Body Text",
+        "#F88379",
+        "Primary readable text color"
+      ],
+      [
+        "Primary Accent",
+        "#82C8E5",
+        "Buttons, links, and key visual emphasis"
+      ],
+      [
+        "Secondary Accent",
+        "#E6D8C4",
+        "Highlights, badges, charts, and supporting details"
+      ]
+    ]
+  }
+]

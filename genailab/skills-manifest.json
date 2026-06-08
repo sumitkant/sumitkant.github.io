@@ -215,6 +215,24 @@
   ],
   "custom": [
     {
+      "folder": "book-distiller",
+      "name": "book-distiller",
+      "description": "Distill a book, paper, or long document into three grounded deliverables — a Fact Book, an Insight Book, and a Story that stitches them together. Use this whenever the user uploads a PDF/document and wants the key ideas, the \"few things worth reading,\" a distillation, a summary they can trust, or asks to be told what a book is really about. Trigger it for any \"read this book/paper for me,\" \"what are the main ideas,\" \"give me the facts and the takeaways,\" or \"condense this\" request over a substantial document — even if the user doesn't say the word \"distill.\"",
+      "skill_md": "genailab/skills/custom/book-distiller/SKILL.md"
+    },
+    {
+      "folder": "coolors-modern",
+      "name": "coolers-modern",
+      "description": "Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reports, HTML landing pages, etc. There are 48 pre-set themes with colors/fonts that you can apply to any artifact that has been created, or you can generate a new theme on-the-fly.",
+      "skill_md": "genailab/skills/custom/coolors-modern/SKILL.md"
+    },
+    {
+      "folder": "figma-theme-factory",
+      "name": "figma-theme-factory",
+      "description": "Toolkit for styling Figma designs with a theme. Apply a cohesive color palette and font pairing to any Figma file, frame, or component set — landing pages, app screens, design systems, dashboards, decks. There are 100 pre-set themes, each with a curated palette and header/body font pairing, or generate a new theme on-the-fly when none fit.",
+      "skill_md": "genailab/skills/custom/figma-theme-factory/SKILL.md"
+    },
+    {
       "folder": "karpathy-guidelines",
       "name": "karpathy-guidelines",
       "description": "Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.",
@@ -227,10 +245,22 @@
       "skill_md": "genailab/skills/custom/ken-style-writer/SKILL.md"
     },
     {
+      "folder": "moneycontrol-fetcher",
+      "name": "moneycontrol-fetcher",
+      "description": "> Fetches historical OHLCV (Open, High, Low, Close, Volume) price data from MoneyControl's price API for Indian stock market tickers. Use this skill whenever the user wants to download, fetch, scrape, or collect historical stock price data from MoneyControl, even if they just say \"get stock data\", \"download price history\", or \"fetch OHLCV data for NSE/BSE stocks\". Also triggers for requests involving MoneyControl symbols, bulk ticker downloads, intraday/1-minute candle data, or saving stock data to .pkl or .csv files. Always use this skill when multiprocessing or parallel fetching of MoneyControl data is involved.",
+      "skill_md": "genailab/skills/custom/moneycontrol-fetcher/SKILL.md"
+    },
+    {
       "folder": "the-ken-charts-skill",
       "name": "the-ken-charts",
       "description": "Write Plotly code in The Ken's editorial data-journalism style. Use when a user wants to create a chart in The Ken's visual style, asks what makes The Ken's visualizations compelling, or wants to turn a dataset into a story the way The Ken does. The skill covers their editorial principles (opinionated titles, hero numbers, annotation-as-narration, color-as-character, shape-as-emphasis), their recurring visual elements, and how to implement everything in interactive Plotly HTML.",
       "skill_md": "genailab/skills/custom/the-ken-charts-skill/SKILL.md"
+    },
+    {
+      "folder": "tradingview-data",
+      "name": "tradingview-data",
+      "description": "> Fetch market data from TradingView via WebSocket for any ticker — Indian equities, NSE/BSE stocks, crypto, forex, indices, and commodities. Pulls OHLCV (Open, High, Low, Close, Volume) candlestick/bar data, intraday tick data, raw market data, fundamental/financial data (valuation ratios, margins, analyst estimates, price targets, earnings history, balance-sheet & cash-flow statement fields), and per-symbol news flow. Use this skill whenever the user wants to pull historical bars, intraday data, company fundamentals, financial statements, analyst recommendations/price targets, earnings data, or news headlines from TradingView. Triggers include: \"fetch OHLCV from TradingView\", \"get candlestick data\", \"download historical data\", \"pull intraday data\", \"get market data for [ticker]\", \"fetch NSE/BSE data\", \"get price history\", \"get fundamentals for [ticker]\", \"fetch financials\", \"get P/E / margins / market cap\", \"analyst price target\", \"earnings history\", \"get TradingView news\" — even if the user just says \"get me some stock data\" without naming TradingView explicitly.",
+      "skill_md": "genailab/skills/custom/tradingview-data/SKILL.md"
     }
   ]
 }
