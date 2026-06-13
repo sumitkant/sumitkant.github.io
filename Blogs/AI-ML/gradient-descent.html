@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Logistic regression with gradient descent, built from the ground up — weights, biases, sigmoid, loss, cost, gradients, vectorization, and a NumPy + PyTorch implementation.">
+<title>Logistic Regression &amp; Gradient Descent — The Atom of Machine Learning</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- KaTeX: real web fonts, crisp rendering, no scrollbar quirks -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // 1) Render every .math-block as a DISPLAY equation (centered, full size).
+    //    These divs hold one or more $$...$$ equations, one per line.
+    document.querySelectorAll('.math-block').forEach(function (block) {
+      var raw = block.textContent;
+      // split into individual $$...$$ equations
+      var parts = raw.split('$$').map(function (s) { return s.trim(); }).filter(Boolean);
+      block.textContent = '';
+      parts.forEach(function (tex) {
+        var row = document.createElement('div');
+        row.className = 'katex-display-row';
+        try {
+          katex.render(tex, row, { displayMode: true, throwOnError: false, output: 'htmlAndMathml' });
+        } catch (e) { row.textContent = tex; }
+        block.appendChild(row);
+      });
+    });
+
+    // 2) Render inline math everywhere else ($$...$$ inside prose, callouts, lists, captions).
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: false },
+        { left: "\\(", right: "\\)", display: false }
+      ],
+      ignoredClasses: ["math-block", "katex-display-row"],
+      throwOnError: false,
+      output: "htmlAndMathml"
+    });
+  });
+</script>
+
+<style>
+  /* ─── Design tokens · Cool Coastal Vibes ──────────── */
+  :root{
+    --deep-blue:   #2B2D42;
+    --sky-blue:    #8D99AE;
+    --soft-white:  #EDF2F4;
+    --rose:        #EF233C;
+    --rose-deep:   #D90429;
+
+    --bg:            #EDF2F4;
+    --bg-surface:    #e3e9ee;
+    --bg-raised:     #d9e1e7;
+    --bg-hover:      #cdd7df;
+    --border:        rgba(43, 45, 66, 0.12);
+    --border-hover:  rgba(43, 45, 66, 0.28);
+    --text-primary:  #2B2D42;
+    --text-secondary:#4a4d63;
+    --text-tertiary: #8D99AE;
+    --accent:        #D90429;
+    --accent-mid:    #EF233C;
+    --accent-hot:    #EF233C;
+    --dark-bg:       #2B2D42;
+    --dark-text:     #EDF2F4;
+
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  14px;
+    --nav-h:      72px;
+    --content-w:  1100px;
+    --prose-w:    720px;
+    --font:       'Inter', system-ui, sans-serif;
+    --font-display:'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono:  'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  /* ─── Reset ───────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── Reading progress ────────────────────────────── */
+  #progress{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg,var(--rose-deep),var(--rose));
+    z-index:200; transition:width .08s linear;
+  }
+
+  /* ─── Nav ─────────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    height: var(--nav-h);
+    border-bottom: 1px solid var(--border);
+    background: rgba(237, 242, 244, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .nav-inner {
+    max-width: var(--content-w); margin: 0 auto; padding: 0 2rem;
+    height: 100%; display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; letter-spacing: 0.01em; font-family: var(--font-display); }
+  .nav-monogram {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+    color: #fff;
+    border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; letter-spacing: -0.02em; flex-shrink: 0;
+  }
+  .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 13.5px; color: var(--text-secondary); transition: color 0.15s; letter-spacing: 0.01em; }
+  .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+  .nav-links a.active { font-weight: 600; }
+
+  /* ─── Page wrapper ────────────────────────────────── */
+  .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+  /* ─── Hero (Cool Coastal Vibes — original look) ──── */
+  .post-banner {
+    margin: 3rem 0 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    background: var(--deep-blue);
+    color: var(--soft-white);
+    padding: 64px 48px 58px;
+  }
+  .post-banner::after{
+    content:""; position:absolute; right:-110px; top:-110px;
+    width:360px; height:360px; border-radius:50%;
+    background:radial-gradient(circle at center, rgba(239,35,60,.30), transparent 65%);
+    pointer-events:none;
+  }
+  .banner-inner{ position:relative; max-width: 760px; }
+  .banner-eyebrow{
+    font-family:var(--font-mono); font-size:.78rem; letter-spacing:.20em;
+    text-transform:uppercase; color:var(--sky-blue); margin-bottom:20px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .banner-eyebrow::before{ content:""; width:34px; height:2px; background:var(--rose); display:inline-block; }
+  .banner-title{
+    font-family:var(--font-display); font-weight:800;
+    font-size:clamp(2.1rem,5vw,3.2rem); line-height:1.05; letter-spacing:-.02em;
+    margin-bottom:20px; color:var(--soft-white);
+  }
+  .banner-title .accent{ color:var(--rose); }
+  .banner-sub{ font-size:1.08rem; line-height:1.6; color:#cdd5dd; max-width:62ch; }
+  .banner-chips{ margin-top:28px; display:flex; flex-wrap:wrap; gap:10px; }
+  .banner-chip{
+    font-family:var(--font-mono); font-size:.7rem; letter-spacing:.04em;
+    padding:6px 12px; border-radius:999px;
+    border:1px solid rgba(141,153,174,.4); color:var(--sky-blue);
+  }
+
+  /* ─── Meta ────────────────────────────────────────── */
+  .post-meta {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+    padding: 1.25rem 0; border-bottom: 1px solid var(--border);
+  }
+  .meta-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border);
+    font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono);
+    letter-spacing: 0.03em; background: var(--bg-surface);
+  }
+  .meta-tag.accent-tag {
+    background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+    color: #fff; border-color: transparent; font-weight: 600;
+  }
+  .meta-tag.rose-tag {
+    background: var(--rose); color: #fff; border-color: transparent; font-weight: 600;
+  }
+  .meta-dot { color: var(--text-tertiary); font-size: 10px; }
+
+  /* ─── Layout: prose left, sticky TOC right ────────── */
+  .post-layout {
+    display: grid;
+    grid-template-columns: var(--prose-w) 1fr;
+    gap: 0 3rem;
+    align-items: start;
+    padding-top: 3rem;
+  }
+  .post-prose { min-width: 0; }
+  .post-toc {
+    position: sticky; top: calc(var(--nav-h) + 1.5rem);
+    padding-left: 1.5rem;
+    border-left: 2px solid var(--border);
+  }
+  .toc-label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px;
+  }
+  .toc-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .toc-list a { font-size: 12.5px; color: var(--text-secondary); transition: color 0.15s; display: block; line-height: 1.4; }
+  .toc-list a:hover, .toc-list a.active { color: var(--accent); }
+  .toc-list a.active { font-weight: 600; }
+  .toc-list .toc-sub { padding-left: 12px; }
+  .toc-list .toc-sub a { font-size: 11.5px; color: var(--text-tertiary); }
+
+  /* ─── Prose ───────────────────────────────────────── */
+  .post-prose section { margin-bottom: 3rem; scroll-margin-top: calc(var(--nav-h) + 1rem); }
+  .post-prose h2 {
+    font-family: var(--font-display);
+    font-size: 1.45rem; font-weight: 800; letter-spacing: -0.025em;
+    color: var(--text-primary); margin-bottom: 1rem;
+    padding-top: 2.5rem; border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .post-prose h2:first-child { border-top: none; padding-top: 0; }
+  .h2-num {
+    font-size: 10px; font-family: var(--font-mono); color: #fff;
+    letter-spacing: 0.12em; padding: 4px 8px; border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+    white-space: nowrap; font-weight: 700;
+  }
+  .post-prose h3 {
+    font-family: var(--font-display);
+    font-size: 1.08rem; font-weight: 700; letter-spacing: -0.015em;
+    color: var(--text-primary); margin: 1.9rem 0 0.6rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .post-prose h4 {
+    font-family: var(--font-display);
+    font-size: 0.98rem; font-weight: 600; color: var(--text-primary);
+    margin: 1.4rem 0 0.5rem;
+  }
+  .post-prose p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; font-size: 15px; }
+  .post-prose p:last-child { margin-bottom: 0; }
+  .post-prose strong { color: var(--text-primary); font-weight: 700; }
+  .post-prose em { font-style: italic; }
+  .post-prose a.inline { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(217,4,41,0.3); }
+  .post-prose a.inline:hover { text-decoration-color: var(--accent); }
+
+  /* ─── Lists ───────────────────────────────────────── */
+  .post-prose ul { list-style: none; margin: 1rem 0; padding: 0; }
+  .post-prose ul li {
+    position: relative; padding-left: 24px; margin-bottom: 9px;
+    color: var(--text-secondary); line-height: 1.7; font-size: 14.5px;
+  }
+  .post-prose ul li::before {
+    content: ""; position: absolute; left: 3px; top: .6em;
+    width: 8px; height: 8px; border-radius: 2px; background: var(--rose);
+    transform: rotate(45deg);
+  }
+
+  /* ─── Callout ─────────────────────────────────────── */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--bg-surface);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 1rem 1.25rem; margin: 1.25rem 0;
+    font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+  }
+  .callout strong { color: var(--text-primary); }
+  .callout .c-tag {
+    display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--text-tertiary); margin-bottom:6px;
+  }
+  .callout.key { border-left-color: var(--rose-deep); }
+  .callout.key .c-tag { color: var(--rose-deep); }
+  .callout.sky { border-left-color: var(--sky-blue); }
+  .callout.sky .c-tag { color: var(--sky-blue); }
+
+  /* ─── Intuition (dark) box ────────────────────────── */
+  .intuition {
+    background: var(--deep-blue); color: var(--soft-white);
+    border-radius: var(--radius-md); padding: 1.15rem 1.3rem; margin: 1.25rem 0;
+  }
+  .intuition .c-tag {
+    display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:.15em;
+    text-transform:uppercase; color:var(--rose); font-weight:600; margin-bottom:9px;
+  }
+  .intuition p { color:#d4dbe2; line-height:1.75; font-size:14px; margin-bottom:10px; }
+  .intuition p:last-child { margin-bottom:0; }
+  .intuition strong { color:#fff; }
+
+  /* ─── Math wrappers (KaTeX) ───────────────────────── */
+  .math-block {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 10px 18px; margin: 1.1rem 0;
+  }
+  /* each display equation on its own centered row; wrap instead of scroll */
+  .katex-display-row {
+    display: flex; justify-content: center;
+    padding: 6px 0; max-width: 100%;
+  }
+  .katex-display-row + .katex-display-row { border-top: 1px dashed var(--border); margin-top: 2px; }
+  .katex-display-row .katex { color: var(--deep-blue); }
+  /* KaTeX's own display wrapper can scroll horizontally only when truly needed,
+     but we hide the bar and let very wide rows shrink to fit */
+  .katex-display-row > .katex-display { margin: 0; overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+  .katex-display-row > .katex-display::-webkit-scrollbar { height: 0; background: transparent; }
+
+  /* inline math */
+  .katex { color: var(--deep-blue); font-size: 1.12em; }
+  .katex-display-row .katex { font-size: 1.18em; }
+  .intuition .katex, .intuition .math { color: var(--soft-white); }
+  /* keep tiny inline fragments from forcing a scrollbar anywhere */
+  .post-prose .katex { white-space: normal; }
+
+  /* ─── Figures ─────────────────────────────────────── */
+  figure { margin: 1.4rem 0; text-align: center; }
+  figure img { max-width: 100%; border-radius: var(--radius-md); border: 1px solid var(--border); background:#fff; }
+  figcaption {
+    font-size: 12.5px; color: var(--sky-blue); margin-top: 9px;
+    font-family: var(--font); line-height: 1.5;
+  }
+
+  /* ─── Animated SVG figures ────────────────────────── */
+  .svg-fig {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 14px 14px 10px; margin: 1.4rem 0;
+  }
+  .svg-fig svg { width: 100%; height: auto; display: block; }
+  .fig-controls { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .fig-controls button {
+    font-family: var(--font-mono); font-size: 11.5px;
+    border: 1px solid var(--border); background: var(--bg-surface); color: var(--deep-blue);
+    border-radius: var(--radius-sm); padding: 5px 13px; cursor: pointer; transition: background .15s, border-color .15s;
+  }
+  .fig-controls button:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+  .fig-legend { display: flex; gap: 18px; justify-content: center; margin-top: 9px; font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary); flex-wrap: wrap; }
+  .fig-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .fig-legend i { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+  @media (prefers-reduced-motion: reduce) {
+    .svg-fig svg path, .svg-fig svg circle, .svg-fig svg line { transition: none !important; }
+  }
+
+  /* ─── Step flow ───────────────────────────────────── */
+  .step-flow {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    margin: 1.1rem 0; font-family: var(--font-mono); font-size: 12.5px;
+  }
+  .step-flow .node {
+    background: #fff; border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; color: var(--deep-blue); font-weight: 500;
+  }
+  .step-flow .arrow { color: var(--rose); font-weight: 700; }
+
+  /* ─── Code blocks · Mac window style ──────────────── */
+  .code-wrap {
+    margin: 1.2rem 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(43,45,66,0.18);
+    box-shadow: 0 12px 30px -18px rgba(43,45,66,0.55);
+    background: var(--dark-bg);
+  }
+  .code-titlebar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px;
+    background: #353852;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .code-dots { display: flex; gap: 7px; flex-shrink: 0; }
+  .code-dots i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .code-dots .r { background: #ff5f57; }
+  .code-dots .y { background: #febc2e; }
+  .code-dots .g { background: #28c840; }
+  .code-lang {
+    flex: 1; text-align: center;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em;
+    color: rgba(237,242,244,0.55); text-transform: lowercase;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .code-copy {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em;
+    color: rgba(237,242,244,0.7);
+    background: rgba(237,242,244,0.08);
+    border: 1px solid rgba(237,242,244,0.12);
+    border-radius: var(--radius-sm);
+    padding: 3px 9px; cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .code-copy:hover { background: rgba(237,242,244,0.16); color: #fff; border-color: rgba(237,242,244,0.25); }
+  .code-copy.copied { background: var(--rose-deep); color: #fff; border-color: var(--rose-deep); }
+  .code-copy svg { width: 12px; height: 12px; display: block; }
+  .code-block {
+    background: var(--dark-bg); color: #e6ebf0;
+    padding: 1.15rem 1.4rem;
+    font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7;
+    overflow-x: auto; white-space: pre;
+    margin: 0;
+  }
+  .tok-kw  { color: #ff9eaa; }
+  .tok-fn  { color: #9fb8ff; }
+  .tok-str { color: #9be7c4; }
+  .tok-num { color: #ffd58a; }
+  .tok-com { color: #7f8aa3; font-style: italic; }
+  p code, li code {
+    font-family: var(--font-mono); font-size: 12px;
+    background: var(--bg-raised); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 4px; color: var(--accent);
+  }
+
+  /* ─── Footer ──────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--text-tertiary); flex-wrap: wrap; gap: 10px;
+  }
+  footer a { color: var(--text-tertiary); transition: color 0.15s; }
+  footer a:hover { color: var(--text-primary); }
+
+  /* ─── Responsive ──────────────────────────────────── */
+  @media (max-width: 900px) {
+    .post-layout { grid-template-columns: 1fr; }
+    .post-toc { display: none; }
+  }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .page { padding: 0 1rem 4rem; }
+    .nav-inner { padding: 0 1rem; }
+    .post-banner { padding: 44px 26px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ─── Nav (same structure as uploaded file) ──────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+      <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;"></object>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../../blog.html" class="active">Blog</a></li>
+      <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+      <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+      <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+      <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ─── Hero (Cool Coastal Vibes) ──────────────────── -->
+  <div class="post-banner">
+    <div class="banner-inner">
+      <p class="banner-eyebrow">Foundations · Neural Networks &amp; Deep Learning</p>
+      <h1 class="banner-title">Logistic Regression &amp; <span class="accent">Gradient Descent</span>:<br>the atom of machine learning</h1>
+      <p class="banner-sub">
+        Strip away the layers of a transformer, a diffusion model, or a deep convolutional net and you keep arriving
+        at the same primitive: a weighted sum, a non-linearity, a loss, and a derivative that nudges the weights.
+        Master logistic regression with gradient descent and you have already met every moving part of modern ML, DL,
+        and Gen&nbsp;AI — just at a scale you can hold in your head.
+      </p>
+      <div class="banner-chips">
+        <span class="banner-chip">weights · biases · sigmoid</span>
+        <span class="banner-chip">loss · cost · gradients</span>
+        <span class="banner-chip">vectorization · NumPy · PyTorch</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Meta ───────────────────────────────────────── -->
+  <div class="post-meta">
+    <span class="meta-tag accent-tag">Logistic Regression</span>
+    <span class="meta-tag rose-tag">Gradient Descent</span>
+    <span class="meta-tag">Deep Learning</span>
+    <span class="meta-tag">Vectorization</span>
+    <span class="meta-dot">·</span>
+    <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--text-tertiary);padding-left:0;">
+      12 min read
+    </span>
+  </div>
+
+  <!-- ─── Post Layout ────────────────────────────────── -->
+  <div class="post-layout">
+
+    <!-- ─── Prose ──────────────────────────────────── -->
+    <article class="post-prose">
+
+      <!-- 00 Intro -->
+      <section id="intro">
+        <h2><span class="h2-num">00</span> From one neuron to a billion parameters</h2>
+        <p>Every conversation about deep learning eventually wants to start at the top — attention heads, billion-parameter models, emergent behaviour. This post starts at the bottom, on purpose. We are going to build a <strong>cat classifier</strong> with a single neuron and train it by hand, equation by equation, until the machinery is impossible to forget.</p>
+
+        <p>The task is <strong>binary classification</strong>: given an image, decide cat&nbsp;(1) or not-cat&nbsp;(0). A logistic regression model is the smallest honest answer to that question. It is also — and this is the point — structurally identical to a single unit inside any large network. The weighted sum, the non-linearity, the loss, and the gradient update you'll see below are the four verbs that every larger model conjugates billions of times.</p>
+
+        <h3>Turning an image into a vector</h3>
+        <p>A color image isn't a list of numbers yet, so we unroll it. A <span class="math">$$64 \times 64$$</span> RGB image is three stacked channel matrices; we flatten them into one tall column vector:</p>
+
+        <div class="math-block">
+        $$ \underbrace{64 \times 64\ \text{Image}}_{\text{pixels}} \;\rightarrow\; \underbrace{\text{RGB}\,(64 \times 64 \times 3)}_{\text{three channels}} \;\rightarrow\; \begin{bmatrix} R_{11} \\ R_{21} \\ \vdots \\ G_{11} \\ G_{21} \\ \vdots \\ B_{11} \\ B_{21} \\ \vdots \end{bmatrix} $$
+        </div>
+
+        <p>That gives a feature vector <span class="math">$$x \in \mathbb{R}^{n_x}$$</span> with <span class="math">$$n_x = 64 \times 64 \times 3 = 12{,}288$$</span> numbers. Everything that follows operates on this <span class="math">$$x$$</span>.</p>
+
+        <h4>Notation we'll reuse throughout</h4>
+        <p>A single training example is a pair <span class="math">$$(x,y)$$</span> with <span class="math">$$x \in \mathbb{R}^{n_x}$$</span> and label <span class="math">$$y \in \{0,1\}$$</span>. A dataset is <span class="math">$$m$$</span> such pairs:</p>
+        <div class="math-block">
+        $$\{(x^{(1)},y^{(1)}),\,\dots,\,(x^{(m)},y^{(m)})\}$$
+        </div>
+        <p>We stack the examples column-by-column into matrices <span class="math">$$X$$</span> and <span class="math">$$Y$$</span> — the shape choice that makes vectorization clean later:</p>
+        <div class="math-block">
+        $$X = \begin{bmatrix} | & | & & | \\ x^{(1)} & x^{(2)} & \cdots & x^{(m)} \\ | & | & & | \end{bmatrix},\quad X \in \mathbb{R}^{(n_x,\,m)}$$
+        $$Y = \begin{bmatrix} y^{(1)} & y^{(2)} & \cdots & y^{(m)} \end{bmatrix},\quad Y \in \mathbb{R}^{(1,\,m)}$$
+        </div>
+        <p>We write <span class="math">$$m_{\text{train}}$$</span> and <span class="math">$$m_{\text{test}}$$</span> when the split matters.</p>
+      </section>
+
+      <!-- 01 Weights -->
+      <section id="weights">
+        <h2><span class="h2-num">01</span> Weights</h2>
+        <p>We want a probability estimate <span class="math">$$\hat{y} = P(y=1 \mid x)$$</span> — "how confident are we this is a cat?" The model's first job is to score the evidence in <span class="math">$$x$$</span>, and it does this with a <strong>weight</strong> for every feature.</p>
+
+        <p>The weights live in a vector <span class="math">$$w \in \mathbb{R}^{n_x}$$</span>, one weight per pixel-channel. The score is the dot product <span class="math">$$w^Tx$$</span>: each feature is multiplied by its weight and the results are summed.</p>
+
+        <div class="intuition">
+          <span class="c-tag">Intuition</span>
+          <p>A weight is the model's opinion about a feature. A large positive <span class="math">$$w_i$$</span> says "when pixel <span class="math">$$i$$</span> is bright, lean toward <em>cat</em>." A large negative weight pushes the other way. A weight near zero says the feature is noise. Training is nothing more than <strong>discovering the right opinions</strong> from data.</p>
+          <p>This same dot product is what every neuron in a deep network computes. Scale <span class="math">$$n_x$$</span> up, stack thousands of these units, and you have a layer.</p>
+        </div>
+      </section>
+
+      <!-- 02 Biases -->
+      <section id="biases">
+        <h2><span class="h2-num">02</span> Biases</h2>
+        <p>Weights tilt the decision; the <strong>bias</strong> shifts it. The bias <span class="math">$$b \in \mathbb{R}$$</span> is a single number added after the weighted sum, giving the model's raw score:</p>
+
+        <div class="math-block">
+        $$z = w^Tx + b$$
+        </div>
+
+        <p>Without a bias, the decision boundary is forced through the origin — the model can only ask "which features are present" and never "is there a baseline tendency toward cat regardless of the pixels?" The bias supplies exactly that adjustable threshold.</p>
+
+        <div class="callout key">
+          <span class="c-tag">Parameters of the model</span>
+          Logistic regression has precisely two learnable objects: <span class="math">$$w \in \mathbb{R}^{n_x}$$</span> and <span class="math">$$b \in \mathbb{R}$$</span>. Everything in the rest of this post is in service of choosing good values for these two.
+        </div>
+      </section>
+
+      <!-- 03 Sigmoid -->
+      <section id="sigmoid">
+        <h2><span class="h2-num">03</span> The Sigmoid Function</h2>
+        <p>The score <span class="math">$$z = w^Tx + b$$</span> can be any real number — wildly positive, wildly negative. But we promised a <em>probability</em>, which must live in <span class="math">$$[0,1]$$</span>. The <strong>sigmoid</strong> <span class="math">$$\sigma$$</span> is the squashing function that performs the conversion:</p>
+
+        <div class="math-block">
+        $$\hat{y} = \sigma(w^Tx + b),\qquad \sigma(z) = \frac{1}{1+e^{-z}}$$
+        </div>
+
+        <div class="svg-fig">
+          <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" id="sig-svg" role="img" aria-label="Animated sigmoid curve growing from the center to both saturation limits">
+            <g stroke="#8D99AE" stroke-dasharray="3 4" stroke-width="1" opacity="0.5">
+              <line x1="55" y1="40" x2="690" y2="40"/>
+              <line x1="55" y1="147.5" x2="690" y2="147.5"/>
+              <line x1="55" y1="255" x2="690" y2="255"/>
+            </g>
+            <line x1="372.5" y1="30" x2="372.5" y2="278" stroke="#2B2D42" stroke-width="1.5"/>
+            <line x1="48" y1="255" x2="700" y2="255" stroke="#2B2D42" stroke-width="1.5"/>
+            <g font-family="'JetBrains Mono',monospace" font-size="12" fill="#2B2D42" text-anchor="end">
+              <text x="44" y="44">1.0</text><text x="44" y="151.5">0.5</text><text x="44" y="259">0.0</text>
+            </g>
+            <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2B2D42" text-anchor="middle">
+              <text x="55" y="272">-8</text><text x="213.75" y="272">-4</text>
+              <text x="372.5" y="272">0</text><text x="531.25" y="272">4</text><text x="690" y="272">8</text>
+            </g>
+            <text x="698" y="250" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2B2D42" text-anchor="end">z</text>
+            <text x="384" y="40" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2B2D42">φ(z)</text>
+            <g transform="translate(95,72)" fill="#D90429">
+              <text font-family="Georgia,serif" font-style="italic" font-size="20">φ(z) =</text>
+              <text x="150" y="-7" font-family="Georgia,serif" font-size="16" text-anchor="middle">1</text>
+              <line x1="120" y1="-2" x2="180" y2="-2" stroke="#D90429" stroke-width="1.4"/>
+              <text x="120" y="17" font-family="Georgia,serif" font-style="italic" font-size="16">1 + e</text>
+              <text x="171" y="10" font-family="Georgia,serif" font-style="italic" font-size="11">−z</text>
+            </g>
+            <path id="sig-right" fill="none" stroke="#EF233C" stroke-width="3" stroke-linecap="round"
+              d="M372.5,147.5 L380.4,136.8 L388.4,126.3 L396.3,116.2 L404.2,106.7 L412.2,97.8 L420.1,89.8 L428.1,82.5 L436.0,76.1 L443.9,70.5 L451.9,65.6 L459.8,61.4 L467.8,57.9 L475.7,54.9 L483.6,52.3 L491.6,50.2 L499.5,48.4 L507.4,46.9 L515.4,45.7 L523.3,44.7 L531.2,43.9 L539.2,43.2 L547.1,42.6 L555.1,42.1 L563.0,41.8 L570.9,41.4 L578.9,41.2 L586.8,41.0 L594.8,40.8 L602.7,40.6 L610.6,40.5 L618.6,40.4 L626.5,40.4 L634.4,40.3 L642.4,40.2 L650.3,40.2"/>
+            <path id="sig-left" fill="none" stroke="#EF233C" stroke-width="3" stroke-linecap="round"
+              d="M372.5,147.5 L364.6,158.2 L356.6,168.7 L348.7,178.8 L340.8,188.3 L332.8,197.2 L324.9,205.2 L316.9,212.5 L309.0,218.9 L301.1,224.5 L293.1,229.4 L285.2,233.6 L277.2,237.1 L269.3,240.1 L261.4,242.7 L253.4,244.8 L245.5,246.6 L237.6,248.1 L229.6,249.3 L221.7,250.3 L213.7,251.1 L205.8,251.8 L197.9,252.4 L189.9,252.9 L182.0,253.2 L174.1,253.6 L166.1,253.8 L158.2,254.0 L150.2,254.2 L142.3,254.4 L134.4,254.5 L126.4,254.6 L118.5,254.6 L110.6,254.7 L102.6,254.8 L94.7,254.8"/>
+            <circle cx="372.5" cy="147.5" r="4.5" fill="#D90429"/>
+          </svg>
+          <div class="fig-controls"><button type="button" onclick="playSig()">▶ Replay</button></div>
+          <figcaption>The sigmoid maps all of ℝ into (0, 1). The spline grows outward from the center (0, 0.5) toward both saturation limits.</figcaption>
+        </div>
+
+        <p>Reading the curve at its extremes tells you everything about its behaviour:</p>
+        <ul>
+          <li>If <span class="math">$$z$$</span> is very large, then <span class="math">$$e^{-z} \approx 0$$</span>, so <span class="math">$$\sigma(z) \approx 1$$</span> — confidently "cat."</li>
+          <li>If <span class="math">$$z$$</span> is very small (large negative), then <span class="math">$$e^{-z} \to \infty$$</span>, so <span class="math">$$\sigma(z) \approx 0$$</span> — confidently "not cat."</li>
+          <li>At <span class="math">$$z = 0$$</span>, <span class="math">$$\sigma(0) = 0.5$$</span> — maximal uncertainty.</li>
+        </ul>
+
+        <div class="intuition">
+          <span class="c-tag">Why this matters downstream</span>
+          <p>The sigmoid is the original "activation function." Modern networks mostly swap it for ReLU in hidden layers, but it survives wherever you need a probability — the final layer of a classifier, the gates inside an LSTM, attention masks. The squash-into-a-range idea never leaves you.</p>
+        </div>
+      </section>
+
+      <!-- 04 Loss -->
+      <section id="loss">
+        <h2><span class="h2-num">04</span> The Loss Function</h2>
+        <p>We now have a prediction <span class="math">$$\hat{y}$$</span>. To improve it we need a number that says <strong>how wrong we were on a single example</strong>. That number is the <strong>loss</strong>.</p>
+
+        <h3>The tempting (wrong) choice: squared error</h3>
+        <p>The obvious loss is squared error:</p>
+        <div class="math-block">
+        $$\mathscr{L}(\hat{y},y) = \tfrac{1}{2}(\hat{y}-y)^2$$
+        </div>
+        <p>It works for linear regression, but it sabotages logistic regression. Because <span class="math">$$\hat{y}$$</span> comes through the sigmoid, the resulting optimization surface is <strong>non-convex</strong> — riddled with local minima where gradient descent can get stuck. We want a bowl, not a mountain range.</p>
+
+        <h3>The right choice: log loss</h3>
+        <p>Instead we use the <strong>binary cross-entropy</strong> (log) loss:</p>
+        <div class="math-block">
+        $$\mathscr{L}(\hat{y},y) = -\Big[\,y\log{\hat{y}} + (1-y)\log{(1-\hat{y})}\,\Big]$$
+        </div>
+
+        <p>It looks opaque until you plug in the two possible labels — then it reads like plain English:</p>
+
+        <div class="callout key">
+          <span class="c-tag">When y = 1</span>
+          The second term vanishes, leaving <span class="math">$$\mathscr{L} = -\log{\hat{y}}$$</span>. To make the loss small, <span class="math">$$\log{\hat{y}}$$</span> must be large, so <span class="math">$$\hat{y}$$</span> must be pushed toward its ceiling of <strong>1</strong> — exactly what we want for a true cat. The sigmoid caps it at 1.
+        </div>
+        <div class="callout key">
+          <span class="c-tag">When y = 0</span>
+          The first term vanishes, leaving <span class="math">$$\mathscr{L} = -\log{(1-\hat{y})}$$</span>. To make the loss small, <span class="math">$$1-\hat{y}$$</span> must be large, so <span class="math">$$\hat{y}$$</span> must be pushed toward its floor of <strong>0</strong> — exactly what we want for a non-cat. The sigmoid caps it at 0.
+        </div>
+
+        <p>The loss is engineered so that "small loss" and "correct, confident prediction" mean the same thing. And crucially, it is <strong>convex</strong> in <span class="math">$$w,b$$</span> — a single global minimum to descend into.</p>
+      </section>
+
+      <!-- 05 Cost -->
+      <section id="cost">
+        <h2><span class="h2-num">05</span> The Cost Function</h2>
+        <p>Loss scores <em>one</em> example. To train, we need a verdict on the <strong>whole training set</strong>. That's the <strong>cost function</strong> <span class="math">$$J$$</span> — the average loss over all <span class="math">$$m$$</span> examples:</p>
+
+        <div class="math-block">
+        $$J(w,b) = \frac{1}{m} \sum_{i=1}^{m} \mathscr{L}\!\left(\hat{y}^{(i)},\,y^{(i)}\right)$$
+        </div>
+
+        <p>Expanding the loss gives the form we'll actually differentiate:</p>
+
+        <div class="math-block">
+        $$J(w,b) = -\frac{1}{m} \sum_{i=1}^{m} \Big[\,y^{(i)}\log{\hat{y}^{(i)}} + (1-y^{(i)})\log{(1-\hat{y}^{(i)})}\,\Big]$$
+        </div>
+
+        <div class="callout sky">
+          <span class="c-tag">Loss vs. cost — the one-line distinction</span>
+          <strong>Loss</strong> measures performance on a <em>single</em> example. <strong>Cost</strong> measures performance over the <em>entire</em> training set. Training means finding <span class="math">$$w, b$$</span> that <strong>minimize</strong> <span class="math">$$J(w,b)$$</span>.
+        </div>
+
+        <p>And that — minimizing a function — is a job for calculus. Enter gradient descent.</p>
+      </section>
+
+      <!-- 06 Gradient Descent -->
+      <section id="gradient-descent">
+        <h2><span class="h2-num">06</span> Gradient Descent</h2>
+        <p>We have a cost surface <span class="math">$$J(w,b)$$</span> and we want its lowest point. We can't solve for it directly, so we walk downhill. <strong>Gradient descent</strong> is the rule for taking each step:</p>
+
+        <div class="math-block">
+        $$\text{Repeat:}\quad w := w - \alpha\,\frac{\partial J(w)}{ \partial w}$$
+        </div>
+
+        <p>where</p>
+        <ul>
+          <li><span class="math">$$\alpha$$</span> is the <strong>learning rate</strong> — the step size,</li>
+          <li><span class="math">$$\dfrac{\partial J(w)}{\partial w}$$</span> is the slope of the cost at the current point,</li>
+          <li><span class="math">$$:=$$</span> means "update / assign."</li>
+        </ul>
+
+        <div class="svg-fig">
+          <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" id="gd-svg" role="img" aria-label="Animated gradient descent: the weight steps downhill toward the cost minimum">
+            <defs>
+              <marker id="gd-arrow" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#2B2D42"/>
+              </marker>
+              <marker id="step-arrow" markerWidth="8" markerHeight="8" refX="5" refY="2.5" orient="auto">
+                <path d="M0,0 L5,2.5 L0,5 Z" fill="#2B2D42"/>
+              </marker>
+            </defs>
+            <line x1="70" y1="30" x2="70" y2="293" stroke="#2B2D42" stroke-width="2" marker-end="url(#gd-arrow)"/>
+            <line x1="62" y1="288" x2="662" y2="288" stroke="#2B2D42" stroke-width="2" marker-end="url(#gd-arrow)"/>
+            <text x="38" y="44" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2B2D42">J(w)</text>
+            <text x="352" y="312" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2B2D42">w</text>
+            <path fill="none" stroke="#8D99AE" stroke-width="5" stroke-linecap="round"
+              d="M110.0,150.9 L150.0,190.1 L190.0,220.1 L230.0,240.9 L270.0,252.4 L302.0,255.0 L334.0,251.7 L374.0,239.2 L414.0,217.5 L454.0,186.6 L494.0,146.4 L534.0,97.0 L562.0,57.0"/>
+            <line id="gd-tangent" x1="478" y1="171.4" x2="582" y2="33.4" stroke="#2B2D42" stroke-width="1.6" stroke-dasharray="5 4"/>
+            <text x="588" y="40" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2B2D42">Gradient</text>
+            <g id="gd-steps" stroke="#2B2D42" stroke-width="1.8" fill="none"></g>
+            <circle cx="300" cy="255" r="3" fill="#D90429"/>
+            <text x="300" y="278" font-family="'JetBrains Mono',monospace" font-size="11" fill="#D90429" text-anchor="middle">J_min(w)</text>
+            <circle id="gd-ball" cx="530" cy="102.4" r="11" fill="#2B2D42"/>
+            <text id="gd-label" x="530" y="78" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2B2D42" text-anchor="middle">initial weight</text>
+          </svg>
+          <div class="fig-controls"><button type="button" onclick="playGD()">▶ Replay descent</button></div>
+          <figcaption>Each iteration subtracts α·(dJ/dw), stepping the weight downhill along the gradient toward the global cost minimum.</figcaption>
+        </div>
+
+        <p>The sign of the slope handles direction automatically:</p>
+        <ul>
+          <li>Start on the <strong>right</strong> of the bowl: <span class="math">$$\frac{\partial J}{\partial w} > 0$$</span>, so we subtract a positive quantity and the point moves <strong>left</strong>, toward the minimum.</li>
+          <li>Start on the <strong>left</strong>: <span class="math">$$\frac{\partial J}{\partial w} < 0$$</span>, so we subtract a negative quantity — effectively add — and the point moves <strong>right</strong>, toward the minimum.</li>
+        </ul>
+        <p>Either way, the point approaches the bottom. That self-correcting behaviour is why convexity (from the log loss) mattered so much.</p>
+
+        <p>Since <span class="math">$$J$$</span> depends on <em>both</em> parameters, we update each with its own partial derivative:</p>
+        <div class="math-block">
+        $$w := w - \alpha\,\frac{\partial J(w,b)}{\partial w},\qquad b := b - \alpha\,\frac{\partial J(w,b)}{\partial b}$$
+        </div>
+        <p>The symbol <span class="math">$$\partial$$</span> is the partial derivative — the same idea as <span class="math">$$d$$</span>, used when a function depends on more than one variable.</p>
+
+        <h3>The computation graph: bookkeeping for derivatives</h3>
+        <p>Before differentiating the real model, it helps to see <em>how</em> derivatives flow through a chain of operations. Take a toy function <span class="math">$$J(a,b,c) = 3(a+bc)$$</span> and break it into atomic steps:</p>
+
+        <div class="step-flow">
+          <span class="node">u = b·c</span><span class="arrow">→</span>
+          <span class="node">v = u + a</span><span class="arrow">→</span>
+          <span class="node">J = 3v</span>
+        </div>
+
+        <div class="svg-fig">
+          <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" id="cg-svg" role="img" aria-label="Computation graph with separate forward pass and backward pass highlighting">
+            <defs>
+              <marker id="fwd-arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#D90429"/>
+              </marker>
+              <marker id="bwd-arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#8D99AE"/>
+              </marker>
+            </defs>
+            <text x="20" y="34" font-family="'Plus Jakarta Sans',sans-serif" font-size="16" font-weight="700" fill="#2B2D42">Computing derivatives</text>
+            <g font-family="'JetBrains Mono',monospace" font-size="14" fill="#2B2D42">
+              <text x="34" y="100">a = 5</text>
+              <text x="34" y="185">b = 3</text>
+              <text x="34" y="230">c = 2</text>
+            </g>
+            <rect x="140" y="190" width="92" height="34" rx="6" fill="#fff" stroke="#2B2D42" stroke-width="1.5"/>
+            <text x="186" y="212" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2B2D42" text-anchor="middle">u = bc</text>
+            <rect x="330" y="83" width="112" height="34" rx="6" fill="#fff" stroke="#2B2D42" stroke-width="1.5"/>
+            <text x="386" y="105" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2B2D42" text-anchor="middle">v = a + u</text>
+            <text x="386" y="70" font-family="'JetBrains Mono',monospace" font-size="12" fill="#8D99AE" text-anchor="middle">11</text>
+            <rect x="542" y="83" width="92" height="34" rx="6" fill="#fff" stroke="#2B2D42" stroke-width="1.5"/>
+            <text x="588" y="105" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2B2D42" text-anchor="middle">J = 3v</text>
+            <text x="588" y="70" font-family="'JetBrains Mono',monospace" font-size="12" fill="#8D99AE" text-anchor="middle">33</text>
+
+            <g id="cg-fwd" stroke="#D90429" stroke-width="2" fill="none">
+              <path d="M92,180 L138,202" marker-end="url(#fwd-arrow)"/>
+              <path d="M92,225 L138,212" marker-end="url(#fwd-arrow)"/>
+              <path d="M92,95 C220,95 250,100 328,100" marker-end="url(#fwd-arrow)"/>
+              <path d="M234,205 C292,196 300,124 350,118" marker-end="url(#fwd-arrow)"/>
+              <path d="M442,100 L540,100" marker-end="url(#fwd-arrow)"/>
+            </g>
+            <g id="cg-bwd" stroke="#8D99AE" stroke-width="2" fill="none">
+              <path d="M540,112 L444,112" marker-end="url(#bwd-arrow)"/>
+              <text x="492" y="133" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8D99AE" text-anchor="middle">dJ/dv=3</text>
+              <path d="M352,130 C300,138 296,210 236,217" marker-end="url(#bwd-arrow)"/>
+              <path d="M328,112 C240,116 210,116 96,112" marker-end="url(#bwd-arrow)"/>
+              <path d="M140,222 C112,230 108,234 96,234" marker-end="url(#bwd-arrow)"/>
+            </g>
+
+            <g font-family="'JetBrains Mono',monospace" font-size="11">
+              <rect id="cg-fwd-pill" x="70" y="296" width="232" height="26" rx="13" fill="#D90429"/>
+              <text x="186" y="313" fill="#fff" text-anchor="middle" font-size="11">▶ Forward pass — compute J</text>
+              <rect id="cg-bwd-pill" x="318" y="296" width="300" height="26" rx="13" fill="#8D99AE"/>
+              <text x="468" y="313" fill="#fff" text-anchor="middle" font-size="11">◀ Backward pass — chain-rule gradients</text>
+            </g>
+          </svg>
+          <div class="fig-controls">
+            <button type="button" onclick="playCG('fwd')">▶ Forward pass</button>
+            <button type="button" onclick="playCG('bwd')">◀ Backward pass</button>
+            <button type="button" onclick="playCG('both')">Show both</button>
+          </div>
+          <div class="fig-legend">
+            <span><i style="background:#D90429"></i> forward — compute values</span>
+            <span><i style="background:#8D99AE"></i> backward — compute derivatives</span>
+          </div>
+          <figcaption>Forward pass computes J left-to-right; backward pass propagates derivatives right-to-left via the chain rule.</figcaption>
+        </div>
+
+        <p>Computing <span class="math">$$J$$</span> left-to-right is the <strong>forward pass</strong>. Computing derivatives right-to-left is the <strong>backward pass</strong>. With sample values <span class="math">$$a=5,\,b=3,\,c=2$$</span> (so <span class="math">$$u=6,\,v=11,\,J=33$$</span>):</p>
+
+        <p>One step back — nudge <span class="math">$$v$$</span> by <span class="math">$$0.001$$</span> and <span class="math">$$J$$</span> moves by <span class="math">$$0.003$$</span>, so:</p>
+        <div class="math-block">$$\frac{dJ}{dv} = 3$$</div>
+
+        <p>The <strong>chain rule</strong> propagates this backward through every node:</p>
+        <div class="math-block">
+        $$\frac{\partial J}{\partial a} = \frac{\partial J}{\partial v}\cdot\frac{\partial v}{\partial a} = 3\cdot 1 = 3$$
+        $$\frac{\partial J}{\partial u} = \frac{\partial J}{\partial v}\cdot\frac{\partial v}{\partial u} = 3\cdot 1 = 3$$
+        $$\frac{\partial J}{\partial b} = \frac{\partial J}{\partial u}\cdot\frac{\partial u}{\partial b} = 3\cdot c = 3\cdot 2 = 6$$
+        $$\frac{\partial J}{\partial c} = \frac{\partial J}{\partial u}\cdot\frac{\partial u}{\partial c} = 3\cdot b = 3\cdot 3 = 9$$
+        </div>
+
+        <div class="intuition">
+          <span class="c-tag">This is backpropagation</span>
+          <p>The computation graph plus the chain rule <em>is</em> backprop. The only difference in a deep network is that the graph is enormous and the special output node being minimized is the cost <span class="math">$$J$$</span>. Autograd engines like PyTorch's automate exactly this backward pass.</p>
+        </div>
+      </section>
+
+      <!-- 07 GD + LR -->
+      <section id="gd-logistic">
+        <h2><span class="h2-num">07</span> Gradient Descent on Logistic Regression</h2>
+        <p>Now we apply the graph to the actual model — for a single example with two features <span class="math">$$x_1, x_2$$</span>, weights <span class="math">$$w_1, w_2$$</span>, and bias <span class="math">$$b$$</span>.</p>
+
+        <h3>Forward pass</h3>
+        <div class="math-block">
+        $$z = w^Tx + b$$
+        $$\hat{y} = a = \sigma(z)$$
+        $$\mathscr{L}(a,y) = -\big(y\log a + (1-y)\log(1-a)\big)$$
+        </div>
+
+        <div class="svg-fig">
+          <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" id="lrcg-svg" role="img" aria-label="Logistic regression computation graph: forward and backward pass">
+            <defs>
+              <marker id="lr-fwd" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#D90429"/>
+              </marker>
+              <marker id="lr-bwd" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#8D99AE"/>
+              </marker>
+            </defs>
+            <!-- input labels -->
+            <g font-family="'JetBrains Mono',monospace" font-size="13" fill="#2B2D42" text-anchor="end">
+              <text x="70" y="55">w₁</text><text x="70" y="92">x₁</text>
+              <text x="70" y="160">w₂</text><text x="70" y="197">x₂</text>
+              <text x="70" y="252">b</text>
+            </g>
+            <!-- z node -->
+            <rect x="250" y="118" width="150" height="44" rx="8" fill="#fff" stroke="#2B2D42" stroke-width="1.5"/>
+            <text x="325" y="139" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2B2D42" text-anchor="middle">z = w·x + b</text>
+            <text x="325" y="155" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8D99AE" text-anchor="middle">linear score</text>
+            <!-- a node -->
+            <rect x="460" y="118" width="110" height="44" rx="8" fill="#fff" stroke="#2B2D42" stroke-width="1.5"/>
+            <text x="515" y="139" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2B2D42" text-anchor="middle">a = σ(z)</text>
+            <text x="515" y="155" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8D99AE" text-anchor="middle">activation</text>
+            <!-- L node -->
+            <rect x="610" y="118" width="92" height="44" rx="8" fill="#fff" stroke="#2B2D42" stroke-width="1.5"/>
+            <text x="656" y="139" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2B2D42" text-anchor="middle">𝓛(a, y)</text>
+            <text x="656" y="155" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8D99AE" text-anchor="middle">loss</text>
+            <!-- forward edges -->
+            <g id="lrcg-fwd" stroke="#D90429" stroke-width="2" fill="none">
+              <path d="M78,50 C160,55 180,120 248,128" marker-end="url(#lr-fwd)"/>
+              <path d="M78,88 C160,92 180,128 248,135" marker-end="url(#lr-fwd)"/>
+              <path d="M78,155 C160,150 180,140 248,142" marker-end="url(#lr-fwd)"/>
+              <path d="M78,192 C160,188 180,150 248,148" marker-end="url(#lr-fwd)"/>
+              <path d="M78,247 C170,240 190,160 248,154" marker-end="url(#lr-fwd)"/>
+              <path d="M400,140 L458,140" marker-end="url(#lr-fwd)"/>
+              <path d="M570,140 L608,140" marker-end="url(#lr-fwd)"/>
+            </g>
+            <!-- backward edges -->
+            <g id="lrcg-bwd" stroke="#8D99AE" stroke-width="2" fill="none">
+              <path d="M608,168 L572,168" marker-end="url(#lr-bwd)"/>
+              <text x="590" y="188" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8D99AE" text-anchor="middle">da</text>
+              <path d="M458,168 L402,168" marker-end="url(#lr-bwd)"/>
+              <text x="430" y="188" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8D99AE" text-anchor="middle">dz = a − y</text>
+              <path d="M248,170 C190,185 175,200 90,210" marker-end="url(#lr-bwd)"/>
+              <text x="165" y="205" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8D99AE" text-anchor="middle">dw, db</text>
+            </g>
+            <!-- pills -->
+            <g font-family="'JetBrains Mono',monospace" font-size="11">
+              <rect id="lrcg-fwd-pill" x="86" y="262" width="262" height="26" rx="13" fill="#D90429"/>
+              <text x="217" y="279" fill="#fff" text-anchor="middle" font-size="11">▶ Forward — predict &amp; score loss</text>
+              <rect id="lrcg-bwd-pill" x="364" y="262" width="290" height="26" rx="13" fill="#8D99AE"/>
+              <text x="509" y="279" fill="#fff" text-anchor="middle" font-size="11">◀ Backward — dz = a − y, then dw, db</text>
+            </g>
+          </svg>
+          <div class="fig-controls">
+            <button type="button" onclick="playLRCG('fwd')">▶ Forward pass</button>
+            <button type="button" onclick="playLRCG('bwd')">◀ Backward pass</button>
+            <button type="button" onclick="playLRCG('both')">Show both</button>
+          </div>
+          <figcaption>The logistic regression computation graph: inputs flow forward to the loss; gradients flow backward, with the clean dz = a − y at its core.</figcaption>
+        </div>
+
+        <h3>Backward pass — the gradients</h3>
+        <p>Working right-to-left through the graph. First the derivative of loss with respect to the activation:</p>
+        <div class="math-block">
+        $$da = \frac{\partial \mathscr{L}}{\partial a} = -\frac{y}{a} + \frac{1-y}{1-a}$$
+        </div>
+
+        <p>Then the famous simplification. Because the sigmoid's derivative is <span class="math">$$\frac{\partial a}{\partial z} = a(1-a)$$</span>, the messy <span class="math">$$\frac{\partial a}{\partial z}$$</span> collapses beautifully:</p>
+        <div class="math-block">
+        $$dz = \frac{\partial \mathscr{L}}{\partial z} = \frac{\partial \mathscr{L}}{\partial a}\cdot\frac{\partial a}{\partial z} = \left(-\frac{y}{a} + \frac{1-y}{1-a}\right)\cdot a(1-a) = a - y$$
+        </div>
+
+        <div class="callout key">
+          <span class="c-tag">The one equation to memorize</span>
+          <span class="math">$$dz = a - y$$</span> — the gradient at the score is simply <strong>prediction minus truth</strong>. This elegant cancellation is precisely why log loss pairs with sigmoid. The error signal is the raw mistake.
+        </div>
+
+        <p>From <span class="math">$$dz$$</span>, the parameter gradients follow by one more chain-rule hop:</p>
+        <div class="math-block">
+        $$dw_1 = x_1\cdot dz,\qquad dw_2 = x_2\cdot dz,\qquad db = dz$$
+        </div>
+
+        <h3>Update the parameters</h3>
+        <div class="math-block">
+        $$w_1 := w_1 - \alpha\,dw_1,\qquad w_2 := w_2 - \alpha\,dw_2,\qquad b := b - \alpha\,db$$
+        </div>
+        <p>One example, one downhill step. Now scale it to the whole dataset.</p>
+      </section>
+
+      <!-- 08 GD on m examples -->
+      <section id="gd-m-examples">
+        <h2><span class="h2-num">08</span> Gradient Descent Across m Examples</h2>
+        <p>The cost averages the loss over all examples, so its gradient averages the per-example gradients:</p>
+
+        <div class="math-block">
+        $$J(w,b) = \frac{1}{m}\sum_{i=1}^{m}\mathscr{L}\!\left(a^{(i)},y^{(i)}\right),\qquad a^{(i)} = \hat{y}^{(i)} = \sigma\!\left(w^Tx^{(i)} + b\right)$$
+        $$\frac{\partial J(w,b)}{\partial w_1} = \frac{1}{m}\sum_{i=1}^{m}\frac{\partial}{\partial w_1}\mathscr{L}\!\left(a^{(i)},y^{(i)}\right)$$
+        </div>
+
+        <h3>The naive algorithm (two nested loops)</h3>
+        <p>Translated directly into code-like pseudocode, with <span class="math">$$n=2$$</span> features:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar">
+            <span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="code-lang">pseudocode</span>
+            <button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button>
+          </div>
+          <div class="code-block"><span class="tok-com"># initialize accumulators</span>
+J = 0 ; dw1 = 0 ; dw2 = 0 ; db = 0
+
+<span class="tok-kw">for</span> i = 1 <span class="tok-kw">to</span> m:                 <span class="tok-com"># loop 1: over examples</span>
+    z[i]  = wᵀ·x[i] + b
+    a[i]  = sigmoid(z[i])
+    J    -= y[i]·log(a[i]) + (1-y[i])·log(1-a[i])
+    dz[i] = a[i] - y[i]
+    dw1  += x1[i]·dz[i]            <span class="tok-com"># loop 2 hides here (per feature)</span>
+    dw2  += x2[i]·dz[i]
+    db   += dz[i]
+
+J /= m ; dw1 /= m ; dw2 /= m ; db /= m     <span class="tok-com"># average</span>
+
+w1 = w1 - alpha·dw1                <span class="tok-com"># one gradient-descent step</span>
+w2 = w2 - alpha·dw2
+b  = b  - alpha·db</div>
+        </div>
+
+        <div class="callout sky">
+          <span class="c-tag">Where this breaks down</span>
+          There are <strong>two</strong> for-loops: an outer one over the <span class="math">$$m$$</span> examples, and an inner one over the <span class="math">$$n_x$$</span> features (here unrolled into <code>dw1</code>, <code>dw2</code>). For a 12,288-feature image and millions of examples, explicit Python loops are catastrophically slow. We need to delete the loops without changing the math. That's vectorization.
+        </div>
+      </section>
+
+      <!-- 09 Vectorization -->
+      <section id="vectorization">
+        <h2><span class="h2-num">09</span> Vectorization</h2>
+        <p>Vectorization replaces explicit loops with whole-array operations. Computing <span class="math">$$z = w^Tx + b$$</span> in vectorized form rather than a Python loop can be <strong>over 300× faster</strong>, because it exploits <strong>SIMD</strong> (Single Instruction, Multiple Data) hardware — the CPU/GPU applies one instruction across many data points at once.</p>
+
+        <div class="callout key">
+          <span class="c-tag">Rule of thumb</span>
+          Avoid explicit for-loops within reason. If you're iterating element-by-element in Python, there is almost always a matrix operation that does it faster.
+        </div>
+
+        <h3>Vectorized forward propagation</h3>
+        <p>For one example we had <span class="math">$$z^{(i)} = w^Tx^{(i)} + b$$</span> and <span class="math">$$a^{(i)} = \sigma(z^{(i)})$$</span>. For all <span class="math">$$m$$</span> at once, stack the examples into <span class="math">$$X \in \mathbb{R}^{(n_x,m)}$$</span> and compute every score in a single matrix product:</p>
+
+        <div class="math-block">
+        $$Z = w^TX + \begin{bmatrix} b & b & \cdots & b \end{bmatrix} = \begin{bmatrix} w^Tx^{(1)}+b & w^Tx^{(2)}+b & \cdots & w^Tx^{(m)}+b \end{bmatrix}$$
+        $$Z = \begin{bmatrix} z^{(1)} & z^{(2)} & \cdots & z^{(m)} \end{bmatrix}$$
+        </div>
+
+        <p>In NumPy the scalar <span class="math">$$b$$</span> is <strong>broadcast</strong> automatically into the row:</p>
+        <div class="code-wrap">
+          <div class="code-titlebar">
+            <span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="code-lang">python</span>
+            <button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button>
+          </div>
+          <div class="code-block">Z = np.dot(w.T, X) + b</div>
+        </div>
+
+        <p>The activation applies sigmoid element-wise across the whole row:</p>
+        <div class="math-block">
+        $$A = \sigma(Z) = \begin{bmatrix} \sigma(z^{(1)}) & \cdots & \sigma(z^{(m)}) \end{bmatrix} = \begin{bmatrix} a^{(1)} & \cdots & a^{(m)} \end{bmatrix}$$
+        </div>
+        <div class="code-wrap">
+          <div class="code-titlebar">
+            <span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="code-lang">python</span>
+            <button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button>
+          </div>
+          <div class="code-block">A = sigmoid(Z)</div>
+        </div>
+
+        <h3>Vectorized backward propagation</h3>
+        <p>The single-example gradient <span class="math">$$dz^{(i)} = a^{(i)} - y^{(i)}$$</span> becomes one elementwise subtraction across the whole dataset:</p>
+        <div class="math-block">
+        $$dZ = A - Y = \begin{bmatrix} a^{(1)}-y^{(1)} & a^{(2)}-y^{(2)} & \cdots & a^{(m)}-y^{(m)} \end{bmatrix}$$
+        </div>
+        <div class="code-wrap">
+          <div class="code-titlebar">
+            <span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="code-lang">python</span>
+            <button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button>
+          </div>
+          <div class="code-block">dZ = A - Y</div>
+        </div>
+
+        <p>The weight gradient — previously an accumulation loop <span class="math">$$dw\mathrel{+}=x^{(i)}dz^{(i)}$$</span> followed by a divide — is a single matrix product:</p>
+        <div class="math-block">
+        $$dw = \frac{1}{m}\,X\,dZ^{T}$$
+        </div>
+        <div class="code-wrap">
+          <div class="code-titlebar">
+            <span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="code-lang">python</span>
+            <button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button>
+          </div>
+          <div class="code-block">dw = np.dot(X, dZ.T) / m</div>
+        </div>
+
+        <p>And the bias gradient is just the averaged sum:</p>
+        <div class="math-block">
+        $$db = \frac{1}{m}\sum_{i=1}^{m} dz^{(i)}$$
+        </div>
+        <div class="code-wrap">
+          <div class="code-titlebar">
+            <span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="code-lang">python</span>
+            <button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button>
+          </div>
+          <div class="code-block">db = np.sum(dZ) / m</div>
+        </div>
+
+        <p>Both for-loops are gone, replaced by four array operations the hardware executes in parallel.</p>
+      </section>
+
+      <!-- 10 NumPy + PyTorch -->
+      <section id="implementation">
+        <h2><span class="h2-num">10</span> Implementation — NumPy &amp; PyTorch</h2>
+
+        <h3>The whole training loop in NumPy</h3>
+        <p>Every equation above collapses into a tight loop over gradient-descent iterations. The inner loops over examples and features have completely vanished:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar">
+            <span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="code-lang">python · numpy</span>
+            <button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button>
+          </div>
+          <div class="code-block"><span class="tok-kw">import</span> numpy <span class="tok-kw">as</span> np
+
+<span class="tok-kw">def</span> <span class="tok-fn">sigmoid</span>(z):
+    <span class="tok-kw">return</span> <span class="tok-num">1</span> / (<span class="tok-num">1</span> + np.exp(-z))
+
+<span class="tok-com"># X: (n_x, m) features   Y: (1, m) labels</span>
+<span class="tok-com"># w: (n_x, 1) weights    b: scalar bias</span>
+w = np.zeros((X.shape[<span class="tok-num">0</span>], <span class="tok-num">1</span>))
+b = <span class="tok-num">0.0</span>
+alpha = <span class="tok-num">0.01</span>
+m = X.shape[<span class="tok-num">1</span>]
+
+<span class="tok-kw">for</span> i <span class="tok-kw">in</span> <span class="tok-fn">range</span>(<span class="tok-num">1000</span>):
+    Z  = np.dot(w.T, X) + b        <span class="tok-com"># forward: scores</span>
+    A  = sigmoid(Z)                <span class="tok-com"># forward: probabilities</span>
+
+    dZ = A - Y                     <span class="tok-com"># backward: dz = a - y</span>
+    dw = np.dot(X, dZ.T) / m       <span class="tok-com"># backward: weight gradient</span>
+    db = np.sum(dZ) / m            <span class="tok-com"># backward: bias gradient</span>
+
+    w  = w - alpha * dw            <span class="tok-com"># update</span>
+    b  = b - alpha * db</div>
+        </div>
+
+        <p>That is a complete, working classifier — built from nothing but the dot product, the sigmoid, the log loss, and a derivative.</p>
+
+        <h3>The same model in PyTorch</h3>
+        <p>PyTorch hides the backward pass behind <strong>autograd</strong> — the computation graph from Section&nbsp;6, built and differentiated automatically. You write only the forward pass; <code>loss.backward()</code> fills in every gradient:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar">
+            <span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="code-lang">python · pytorch</span>
+            <button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button>
+          </div>
+          <div class="code-block"><span class="tok-kw">import</span> torch
+<span class="tok-kw">import</span> torch.nn <span class="tok-kw">as</span> nn
+
+<span class="tok-com"># X: (m, n_x)   y: (m, 1)   — PyTorch convention: rows = examples</span>
+model     = nn.Linear(n_x, <span class="tok-num">1</span>)              <span class="tok-com"># holds w and b</span>
+criterion = nn.BCEWithLogitsLoss()           <span class="tok-com"># sigmoid + log loss, fused</span>
+optimizer = torch.optim.SGD(model.parameters(), lr=<span class="tok-num">0.01</span>)
+
+<span class="tok-kw">for</span> epoch <span class="tok-kw">in</span> <span class="tok-fn">range</span>(<span class="tok-num">1000</span>):
+    logits = model(X)                <span class="tok-com"># forward: z = w·x + b</span>
+    loss   = criterion(logits, y)    <span class="tok-com"># cost J</span>
+
+    optimizer.zero_grad()            <span class="tok-com"># reset accumulated grads</span>
+    loss.backward()                  <span class="tok-com"># autograd backward pass</span>
+    optimizer.step()                 <span class="tok-com"># w -= alpha·dw ; b -= alpha·db</span></div>
+        </div>
+
+        <div class="callout sky">
+          <span class="c-tag">Map it back to the math</span>
+          <code>nn.Linear</code> is <span class="math">$$w^Tx + b$$</span>. <code>BCEWithLogitsLoss</code> fuses the sigmoid and the log loss — and applies the <span class="math">$$dz = a - y$$</span> simplification internally for numerical stability. <code>loss.backward()</code> <em>is</em> the backward pass through the computation graph. <code>optimizer.step()</code> <em>is</em> the gradient-descent update. Nothing new — just automated.
+        </div>
+
+        <h3>Where this goes next</h3>
+        <p>Swap <code>nn.Linear(n_x, 1)</code> for a stack of linear layers with non-linearities between them and you have a deep neural network. Replace the dense layers with convolutions and you have a vision model. Replace them with attention and you have a transformer. In every case the four verbs are unchanged: <strong>score with weights and a bias, squash with a non-linearity, measure with a loss, and descend the gradient.</strong></p>
+
+        <p>That's why logistic regression is worth this much attention. It isn't a stepping stone you leave behind — it's the atom every larger model is built from.</p>
+      </section>
+
+    </article>
+
+    <!-- ─── TOC (fixed, right side) ──────────────────── -->
+    <aside class="post-toc">
+      <p class="toc-label">On this page</p>
+      <ul class="toc-list">
+        <li><a href="#weights">01 · Weights</a></li>
+        <li><a href="#biases">02 · Biases</a></li>
+        <li><a href="#sigmoid">03 · Sigmoid function</a></li>
+        <li><a href="#loss">04 · Loss function</a></li>
+        <li><a href="#cost">05 · Cost function</a></li>
+        <li><a href="#gradient-descent">06 · Gradient descent</a></li>
+        <li class="toc-sub"><a href="#gradient-descent">Computation graph</a></li>
+        <li><a href="#gd-logistic">07 · GD on logistic regression</a></li>
+        <li><a href="#gd-m-examples">08 · GD across m examples</a></li>
+        <li><a href="#vectorization">09 · Vectorization</a></li>
+        <li><a href="#implementation">10 · NumPy &amp; PyTorch</a></li>
+        <li class="toc-sub"><a href="#implementation">NumPy training loop</a></li>
+        <li class="toc-sub"><a href="#implementation">PyTorch version</a></li>
+      </ul>
+    </aside>
+
+  </div><!-- /post-layout -->
+
+  <footer>
+    <span>Course&nbsp;1 · Neural Networks &amp; Deep Learning</span>
+    <span>Weights · Biases · Sigmoid · Loss · Cost · Gradient Descent · Vectorization</span>
+  </footer>
+
+</main>
+
+<script>
+  /* ── Sigmoid: grow both spline halves outward from center ── */
+  function animatePath(el, dur, delay){
+    if (!el) return;
+    const len = el.getTotalLength();
+    el.style.transition = 'none';
+    el.style.strokeDasharray = len + ' ' + len;
+    el.style.strokeDashoffset = len;
+    el.getBoundingClientRect();
+    el.style.transition = 'stroke-dashoffset ' + dur + 'ms ease-out ' + (delay||0) + 'ms';
+    el.style.strokeDashoffset = '0';
+  }
+  function playSig(){
+    animatePath(document.getElementById('sig-right'), 1300, 120);
+    animatePath(document.getElementById('sig-left'), 1300, 120);
+  }
+
+  /* ── Gradient descent: ball steps downhill each iteration ── */
+  const gdPts = [[530.0,102.4],[447.2,192.5],[394.2,229.4],[360.3,244.5],[338.6,250.7],[324.7,253.2],[315.8,254.3],[310.1,254.7]];
+  let gdTimer = null;
+  function playGD(){
+    const ball = document.getElementById('gd-ball');
+    const label = document.getElementById('gd-label');
+    const tangent = document.getElementById('gd-tangent');
+    const steps = document.getElementById('gd-steps');
+    if (!ball) return;
+    if (gdTimer) clearTimeout(gdTimer);
+    steps.innerHTML = '';
+    tangent.style.opacity = '1';
+    ball.style.transition = 'none';
+    ball.setAttribute('cx', gdPts[0][0]); ball.setAttribute('cy', gdPts[0][1]);
+    label.textContent = 'initial weight';
+    label.setAttribute('x', gdPts[0][0]); label.setAttribute('y', gdPts[0][1]-24);
+    let i = 0;
+    function step(){
+      if (i >= gdPts.length-1) return;
+      const a = gdPts[i], b = gdPts[i+1];
+      const seg = document.createElementNS('http://www.w3.org/2000/svg','line');
+      seg.setAttribute('x1', a[0]); seg.setAttribute('y1', a[1]);
+      seg.setAttribute('x2', b[0]); seg.setAttribute('y2', b[1]);
+      seg.setAttribute('marker-end', 'url(#step-arrow)');
+      steps.appendChild(seg);
+      ball.style.transition = 'cx .5s ease-in-out, cy .5s ease-in-out';
+      ball.setAttribute('cx', b[0]); ball.setAttribute('cy', b[1]);
+      if (i === 0){ label.textContent = 'descending…'; tangent.style.transition = 'opacity .5s'; tangent.style.opacity = '.25'; }
+      label.setAttribute('x', b[0]); label.setAttribute('y', b[1]-24);
+      i++;
+      if (i >= gdPts.length-1){ gdTimer = setTimeout(()=>{ label.textContent = 'J_min reached'; }, 500); }
+      else { gdTimer = setTimeout(step, 650); }
+    }
+    gdTimer = setTimeout(step, 350);
+  }
+
+  /* ── Computation graph: toggle forward / backward highlight ── */
+  function setGroup(id, on){
+    const g = document.getElementById(id);
+    if (!g) return;
+    [...g.children].forEach(c => { c.style.transition = 'opacity .4s'; c.style.opacity = on ? '1' : '0.1'; });
+  }
+  function playCG(which){
+    const fwdPill = document.getElementById('cg-fwd-pill');
+    const bwdPill = document.getElementById('cg-bwd-pill');
+    if (which === 'fwd'){ setGroup('cg-fwd', true); setGroup('cg-bwd', false); fwdPill.style.opacity='1'; bwdPill.style.opacity='.3'; }
+    else if (which === 'bwd'){ setGroup('cg-fwd', false); setGroup('cg-bwd', true); fwdPill.style.opacity='.3'; bwdPill.style.opacity='1'; }
+    else { setGroup('cg-fwd', true); setGroup('cg-bwd', true); fwdPill.style.opacity='1'; bwdPill.style.opacity='1'; }
+  }
+
+  /* ── Logistic-regression computation graph: same toggle ── */
+  function playLRCG(which){
+    const fwdPill = document.getElementById('lrcg-fwd-pill');
+    const bwdPill = document.getElementById('lrcg-bwd-pill');
+    if (which === 'fwd'){ setGroup('lrcg-fwd', true); setGroup('lrcg-bwd', false); fwdPill.style.opacity='1'; bwdPill.style.opacity='.3'; }
+    else if (which === 'bwd'){ setGroup('lrcg-fwd', false); setGroup('lrcg-bwd', true); fwdPill.style.opacity='.3'; bwdPill.style.opacity='1'; }
+    else { setGroup('lrcg-fwd', true); setGroup('lrcg-bwd', true); fwdPill.style.opacity='1'; bwdPill.style.opacity='1'; }
+  }
+
+  /* ── Autoplay each figure when it scrolls into view ── */
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const seen = new Set();
+  const figObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if (e.isIntersecting && !seen.has(e.target.id)){
+        seen.add(e.target.id);
+        if (reduceMotion){
+          if (e.target.id === 'cg-svg') playCG('both');
+          else if (e.target.id === 'lrcg-svg') playLRCG('both');
+          // sigmoid & gd render in final state without motion
+          return;
+        }
+        if (e.target.id === 'sig-svg') playSig();
+        else if (e.target.id === 'gd-svg') playGD();
+        else if (e.target.id === 'cg-svg') playCG('fwd');
+        else if (e.target.id === 'lrcg-svg') playLRCG('fwd');
+      }
+    });
+  }, { threshold: 0.4 });
+  ['sig-svg','gd-svg','cg-svg','lrcg-svg'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) figObserver.observe(el);
+  });
+  // computation graphs start with forward highlighted
+  playCG('fwd');
+  playLRCG('fwd');
+</script>
+
+<script>
+  // reading progress bar
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    if (bar) bar.style.width = (scrolled * 100) + '%';
+  };
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // active TOC highlight via scroll-spy
+  const links = [...document.querySelectorAll('.toc-list a')];
+  const map = new Map();
+  links.forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    if (!map.has(id)) map.set(id, a);
+  });
+  const sections = [...document.querySelectorAll('.post-prose section')];
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+  sections.forEach(s => spy.observe(s));
+</script>
+
+<script>
+  // copy code to clipboard (delegated)
+  document.addEventListener('click', function (ev) {
+    const btn = ev.target.closest('.code-copy');
+    if (!btn) return;
+    const wrap = btn.closest('.code-wrap');
+    const codeEl = wrap && wrap.querySelector('.code-block');
+    if (!codeEl) return;
+    const text = codeEl.innerText;
+    const label = btn.querySelector('.copy-text');
+    const done = () => {
+      btn.classList.add('copied');
+      if (label) label.textContent = 'Copied';
+      setTimeout(() => { btn.classList.remove('copied'); if (label) label.textContent = 'Copy'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  });
+  function fallbackCopy(text, cb) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); cb(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+</script>
+
+</body>
+</html>

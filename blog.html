@@ -633,6 +633,90 @@
 
     <div class="grid">
 
+      <!-- Gradient-descent -->
+      <a class="item post-card" href="/Blogs/AI-ML/gradient-descent.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+          <defs>
+            <linearGradient id="lr-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#23253a" />
+              <stop offset="60%" stop-color="#2b2d42" />
+              <stop offset="100%" stop-color="#32354f" />
+            </linearGradient>
+            <pattern id="lr-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(141,153,174,0.08)" stroke-width="0.6" />
+            </pattern>
+            <radialGradient id="lr-glow" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0%" stop-color="rgba(239,35,60,0.25)" />
+              <stop offset="100%" stop-color="rgba(239,35,60,0)" />
+            </radialGradient>
+          </defs>
+
+          <!-- Background -->
+          <rect width="320" height="200" fill="url(#lr-bg)" />
+          <rect width="320" height="200" fill="url(#lr-grid)" />
+          <circle cx="255" cy="70" r="90" fill="url(#lr-glow)" />
+
+          <!-- Gradient-descent bowl — right side -->
+          <g transform="translate(208,38)" opacity="0.9">
+            <!-- the convex cost curve J(w) -->
+            <path d="M 4,8 C 30,118 78,118 104,8"
+              fill="none" stroke="rgba(141,153,174,0.55)" stroke-width="2.4" stroke-linecap="round" />
+            <!-- dashed gradient/tangent line at start point -->
+            <line x1="86" y1="44" x2="112" y2="-2" stroke="rgba(255,255,255,0.18)" stroke-width="1"
+              stroke-dasharray="3 3" />
+            <!-- descent step arrows -->
+            <g stroke="#2b2d42" stroke-width="1.4" fill="none" opacity="0.85">
+              <line x1="84" y1="46" x2="68" y2="74" />
+              <line x1="68" y1="74" x2="56" y2="92" />
+              <line x1="56" y1="92" x2="50" y2="103" />
+            </g>
+            <!-- minimum marker -->
+            <circle cx="46" cy="108" r="2.6" fill="#d90429" />
+            <!-- descending weight ball -->
+            <circle cx="50" cy="103" r="7.5" fill="#edf2f4" />
+            <!-- start ghost -->
+            <circle cx="86" cy="44" r="3" fill="rgba(237,242,244,0.3)" />
+          </g>
+
+          <!-- Eyebrow -->
+          <text x="18" y="42" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" font-weight="700"
+            letter-spacing="2" fill="rgba(239,35,60,0.7)">DEEP LEARNING · FROM SCRATCH</text>
+
+          <!-- Title -->
+          <text x="17" y="78" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="21" font-weight="800"
+            letter-spacing="-0.6" fill="#ffffff" opacity="0.98">Logistic Regression</text>
+
+          <!-- Rose rule -->
+          <rect x="17" y="86" width="150" height="2" rx="1" fill="#d90429" opacity="0.8" />
+
+          <!-- Subtitle -->
+          <text x="17" y="108" font-family="Georgia,serif" font-size="12" font-style="italic"
+            fill="rgba(237,242,244,0.5)">The atom of machine</text>
+          <text x="17" y="124" font-family="Georgia,serif" font-size="12" font-style="italic"
+            fill="rgba(237,242,244,0.5)">learning</text>
+
+          <!-- Sub label -->
+          <text x="17" y="148" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" letter-spacing="1.2"
+            fill="rgba(237,242,244,0.25)">SIGMOID · LOSS · GRADIENT DESCENT</text>
+
+          <!-- Concept pills -->
+          <rect x="17" y="158" width="74" height="13" rx="3" fill="rgba(239,35,60,0.16)" stroke="rgba(239,35,60,0.4)"
+            stroke-width="0.8" />
+          <text x="54" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#ef6072" text-anchor="middle">Gradient Descent</text>
+
+          <rect x="97" y="158" width="58" height="13" rx="3" fill="rgba(141,153,174,0.14)" stroke="rgba(141,153,174,0.3)"
+            stroke-width="0.8" />
+          <text x="126" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#aab4c5" text-anchor="middle">Vectorization</text>
+        </svg>
+        <div class="post-body">
+          <div class="post-tags"><span class="p">Machine Learning</span>, Deep Learning</div>
+          <span class="post-title">Logistic Regression — The Atom of Machine Learning</span>
+          <p class="post-desc">Build a classifier by hand from weights, biases, sigmoid, loss, and gradient descent — the four moving parts inside every larger model.</p>
+        </div>
+      </a>
+
       <!-- Inside The Ken's Chart Room — Blog Card -->
       <!-- Drop this into your blog index wherever other post-cards appear.     -->
       <!-- Update href to wherever you saved the-ken-charts-blog.html           -->
