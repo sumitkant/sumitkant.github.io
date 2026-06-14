@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Backpropagation from scratch — what training a neural net really does, built up step by step with manual gradients, a tiny scalar autograd engine (micrograd), the chain rule, topological ordering, and the same thing in PyTorch.">
+<title>Backpropagation, From Scratch</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.math-block').forEach(function (block) {
+      var raw = block.textContent;
+      var parts = raw.split('$$').map(function (s) { return s.trim(); }).filter(Boolean);
+      block.textContent = '';
+      parts.forEach(function (tex) {
+        var row = document.createElement('div');
+        row.className = 'katex-display-row';
+        try { katex.render(tex, row, { displayMode: true, throwOnError: false, output: 'htmlAndMathml' }); }
+        catch (e) { row.textContent = tex; }
+        block.appendChild(row);
+      });
+    });
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: false },
+        { left: "\\(", right: "\\)", display: false }
+      ],
+      ignoredClasses: ["math-block", "katex-display-row"],
+      throwOnError: false,
+      output: "htmlAndMathml"
+    });
+  });
+</script>
+
+<style>
+  /* ─── Design tokens · Blue + Pink ─────────────────── */
+  :root{
+    --deep-blue:   #18225C;
+    --blue:        #2F5BE8;   /* vivid royal blue — data / forward */
+    --blue-soft:   #6E8BF0;
+    --sky-blue:    #8C9BD8;
+    --soft-white:  #EEF1FB;
+    --rose:        #EC4899;   /* pink — gradients / accent */
+    --rose-deep:   #DB2777;
+
+    --bg:            #F3F5FC;
+    --bg-surface:    #EAEEF9;
+    --bg-raised:     #E0E6F5;
+    --bg-hover:      #D4DCF0;
+    --border:        rgba(24, 34, 92, 0.12);
+    --border-hover:  rgba(24, 34, 92, 0.28);
+    --text-primary:  #18225C;
+    --text-secondary:#3D4670;
+    --text-tertiary: #8C9BD8;
+    --accent:        #DB2777;
+    --accent-mid:    #EC4899;
+    --accent-hot:    #F472B6;
+    --dark-bg:       #141B45;
+    --dark-text:     #EEF1FB;
+
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  14px;
+    --nav-h:      72px;
+    --content-w:  1100px;
+    --prose-w:    720px;
+    --font:       'Inter', system-ui, sans-serif;
+    --font-display:'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono:  'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  #progress{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg,var(--blue),var(--rose));
+    z-index:200; transition:width .08s linear;
+  }
+
+  /* ─── Nav ─────────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    height: var(--nav-h);
+    border-bottom: 1px solid var(--border);
+    background: rgba(243, 245, 252, 0.9);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .nav-inner {
+    max-width: var(--content-w); margin: 0 auto; padding: 0 2rem;
+    height: 100%; display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; letter-spacing: 0.01em; font-family: var(--font-display); color: var(--text-primary); }
+  .nav-monogram {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--blue), var(--rose));
+    color: #fff;
+    border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; flex-shrink: 0;
+  }
+  .nav-links { display: flex; align-items: center; gap: 26px; list-style: none; }
+  .nav-links a { font-size: 13.5px; color: var(--text-secondary); transition: color 0.15s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+
+  /* ─── Hero ────────────────────────────────────────── */
+  .post-banner {
+    margin: 3rem 0 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    background: var(--deep-blue);
+    color: var(--soft-white);
+    padding: 64px 48px 58px;
+  }
+  .post-banner::after{
+    content:""; position:absolute; right:-110px; top:-110px;
+    width:380px; height:380px; border-radius:50%;
+    background:radial-gradient(circle at center, rgba(236,72,153,.34), transparent 66%);
+    pointer-events:none;
+  }
+  .post-banner::before{
+    content:""; position:absolute; left:-120px; bottom:-140px;
+    width:340px; height:340px; border-radius:50%;
+    background:radial-gradient(circle at center, rgba(47,91,232,.30), transparent 66%);
+    pointer-events:none;
+  }
+  .banner-inner{ position:relative; max-width: 760px; }
+  .banner-eyebrow{
+    font-family:var(--font-mono); font-size:.78rem; letter-spacing:.20em;
+    text-transform:uppercase; color:var(--sky-blue); margin-bottom:20px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .banner-eyebrow::before{ content:""; width:34px; height:2px; background:var(--rose); display:inline-block; }
+  .banner-title{
+    font-family:var(--font-display); font-weight:800;
+    font-size:clamp(2.1rem,5vw,3.2rem); line-height:1.06; letter-spacing:-.02em;
+    margin-bottom:20px; color:var(--soft-white);
+  }
+  .banner-title .accent{ color:var(--rose); }
+  .banner-sub{ font-size:1.06rem; line-height:1.6; color:#cdd5e8; max-width:62ch; }
+  .banner-grid{ display:flex; align-items:center; gap:32px; justify-content:space-between; }
+  .banner-grid .banner-inner{ max-width:none; }
+  .banner-art{ flex:0 0 auto; width:300px; max-width:40%; }
+  .banner-art svg{ width:100%; height:auto; display:block; overflow:visible; }
+  @media (max-width:820px){ .banner-art{ display:none; } }
+
+  .post-meta {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+    padding: 1.25rem 0; border-bottom: 1px solid var(--border);
+  }
+  .meta-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border);
+    font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono);
+    letter-spacing: 0.03em; background: var(--bg-surface);
+  }
+  .meta-tag.accent-tag {
+    background: linear-gradient(135deg, var(--blue), var(--blue-soft));
+    color: #fff; border-color: transparent; font-weight: 600;
+  }
+  .meta-tag.rose-tag { background: var(--rose); color: #fff; border-color: transparent; font-weight: 600; }
+  .meta-dot { color: var(--text-tertiary); font-size: 10px; }
+
+  /* ─── Layout ──────────────────────────────────────── */
+  .post-layout {
+    display: grid;
+    grid-template-columns: var(--prose-w) 1fr;
+    gap: 0 3rem;
+    align-items: start;
+    padding-top: 3rem;
+  }
+  .post-prose { min-width: 0; }
+  .post-toc {
+    position: sticky; top: calc(var(--nav-h) + 1.5rem);
+    padding-left: 1.5rem;
+    border-left: 2px solid var(--border);
+  }
+  .toc-label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 12px;
+  }
+  .toc-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .toc-list a { font-size: 12.5px; color: var(--text-secondary); transition: color 0.15s; display: block; line-height: 1.4; }
+  .toc-list a:hover, .toc-list a.active { color: var(--accent); }
+  .toc-list a.active { font-weight: 600; }
+  .toc-list .toc-sub { padding-left: 12px; }
+  .toc-list .toc-sub a { font-size: 11.5px; color: var(--text-tertiary); }
+
+  /* ─── Prose ───────────────────────────────────────── */
+  .post-prose section { margin-bottom: 3rem; scroll-margin-top: calc(var(--nav-h) + 1rem); }
+  .post-prose h2 {
+    font-family: var(--font-display);
+    font-size: 1.45rem; font-weight: 800; letter-spacing: -0.025em;
+    color: var(--text-primary); margin-bottom: 1rem;
+    padding-top: 2.5rem; border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .post-prose h2:first-child { border-top: none; padding-top: 0; }
+  .h2-num {
+    font-size: 10px; font-family: var(--font-mono); color: #fff;
+    letter-spacing: 0.12em; padding: 4px 8px; border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--blue), var(--rose));
+    white-space: nowrap; font-weight: 700;
+  }
+  .post-prose h3 {
+    font-family: var(--font-display);
+    font-size: 1.08rem; font-weight: 700; letter-spacing: -0.015em;
+    color: var(--text-primary); margin: 1.9rem 0 0.6rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .post-prose h4 {
+    font-family: var(--font-display);
+    font-size: 0.98rem; font-weight: 600; color: var(--text-primary);
+    margin: 1.4rem 0 0.5rem;
+  }
+  .post-prose p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; font-size: 15px; }
+  .post-prose p:last-child { margin-bottom: 0; }
+  .post-prose strong { color: var(--text-primary); font-weight: 700; }
+  .post-prose em { font-style: italic; }
+  .post-prose a.inline { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(219,39,119,0.35); }
+  .post-prose a.inline:hover { text-decoration-color: var(--accent); }
+
+  .post-prose ul { list-style: none; margin: 1rem 0; padding: 0; }
+  .post-prose ul li {
+    position: relative; padding-left: 24px; margin-bottom: 9px;
+    color: var(--text-secondary); line-height: 1.7; font-size: 14.5px;
+  }
+  .post-prose ul li::before {
+    content: ""; position: absolute; left: 3px; top: .6em;
+    width: 8px; height: 8px; border-radius: 2px; background: var(--rose);
+    transform: rotate(45deg);
+  }
+
+  /* ─── Callouts ────────────────────────────────────── */
+  .callout {
+    border-left: 3px solid var(--blue);
+    background: var(--bg-surface);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 1rem 1.25rem; margin: 1.25rem 0;
+    font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+  }
+  .callout strong { color: var(--text-primary); }
+  .callout .c-tag {
+    display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--text-tertiary); margin-bottom:6px;
+  }
+  .callout.key { border-left-color: var(--rose-deep); }
+  .callout.key .c-tag { color: var(--rose-deep); }
+  .callout.sky { border-left-color: var(--sky-blue); }
+  .callout.sky .c-tag { color: var(--sky-blue); }
+
+  .intuition {
+    background: var(--deep-blue); color: var(--soft-white);
+    border-radius: var(--radius-md); padding: 1.15rem 1.3rem; margin: 1.25rem 0;
+  }
+  .intuition .c-tag {
+    display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:.15em;
+    text-transform:uppercase; color:var(--rose); font-weight:600; margin-bottom:9px;
+  }
+  .intuition p { color:#d4dbee; line-height:1.75; font-size:14px; margin-bottom:10px; }
+  .intuition p:last-child { margin-bottom:0; }
+  .intuition strong { color:#fff; }
+
+  /* ─── Math ────────────────────────────────────────── */
+  .math-block {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 10px 18px; margin: 1.1rem 0;
+  }
+  .katex-display-row { display: flex; justify-content: center; padding: 6px 0; max-width: 100%; }
+  .katex-display-row + .katex-display-row { border-top: 1px dashed var(--border); margin-top: 2px; }
+  .katex-display-row .katex { color: var(--deep-blue); }
+  .katex-display-row > .katex-display { margin: 0; overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+  .katex-display-row > .katex-display::-webkit-scrollbar { height: 0; background: transparent; }
+  .katex { color: var(--deep-blue); font-size: 1.12em; }
+  .katex-display-row .katex { font-size: 1.18em; }
+  .intuition .katex { color: var(--soft-white); }
+  .post-prose .katex { white-space: normal; }
+
+  /* ─── Figures ─────────────────────────────────────── */
+  figure { margin: 1.4rem 0; text-align: center; }
+  figure img { max-width: 100%; border-radius: var(--radius-md); border: 1px solid var(--border); background:#fff; }
+  figcaption { font-size: 12.5px; color: var(--sky-blue); margin-top: 9px; font-family: var(--font); line-height: 1.5; }
+
+  .svg-fig {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 14px 14px 10px; margin: 1.4rem 0;
+  }
+  .svg-fig svg { width: 100%; height: auto; display: block; }
+  .fig-controls { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .fig-controls button {
+    font-family: var(--font-mono); font-size: 11.5px;
+    border: 1px solid var(--border); background: var(--bg-surface); color: var(--deep-blue);
+    border-radius: var(--radius-sm); padding: 5px 13px; cursor: pointer; transition: background .15s, border-color .15s;
+  }
+  .fig-controls button:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+  .fig-legend { display: flex; gap: 18px; justify-content: center; margin-top: 9px; font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary); flex-wrap: wrap; }
+  .fig-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .fig-legend i { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+
+  /* ─── Step flow ───────────────────────────────────── */
+  .step-flow {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    margin: 1.1rem 0; font-family: var(--font-mono); font-size: 12.5px;
+  }
+  .step-flow .node { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; color: var(--deep-blue); font-weight: 500; }
+  .step-flow .arrow { color: var(--rose); font-weight: 700; }
+
+  /* ─── Code blocks ─────────────────────────────────── */
+  .code-wrap {
+    margin: 1.2rem 0; border-radius: var(--radius-md); overflow: hidden;
+    border: 1px solid rgba(24,34,92,0.18);
+    box-shadow: 0 12px 30px -18px rgba(24,34,92,0.55);
+    background: var(--dark-bg);
+  }
+  .code-titlebar { display: flex; align-items: center; gap: 10px; padding: 9px 14px; background: #20295C; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .code-dots { display: flex; gap: 7px; flex-shrink: 0; }
+  .code-dots i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .code-dots .r { background: #ff5f57; }
+  .code-dots .y { background: #febc2e; }
+  .code-dots .g { background: #28c840; }
+  .code-lang { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: rgba(238,241,251,0.55); text-transform: lowercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .code-copy {
+    flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em;
+    color: rgba(238,241,251,0.7); background: rgba(238,241,251,0.08);
+    border: 1px solid rgba(238,241,251,0.12); border-radius: var(--radius-sm);
+    padding: 3px 9px; cursor: pointer; transition: background .15s, color .15s, border-color .15s;
+  }
+  .code-copy:hover { background: rgba(238,241,251,0.16); color: #fff; border-color: rgba(238,241,251,0.25); }
+  .code-copy.copied { background: var(--rose-deep); color: #fff; border-color: var(--rose-deep); }
+  .code-copy svg { width: 12px; height: 12px; display: block; }
+  .code-block {
+    background: var(--dark-bg); color: #e6ebf7;
+    padding: 1.15rem 1.4rem; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7;
+    overflow-x: auto; white-space: pre; margin: 0;
+  }
+  .tok-kw  { color: #f9a8d4; }
+  .tok-fn  { color: #93b4ff; }
+  .tok-str { color: #8ee7c0; }
+  .tok-num { color: #ffd58a; }
+  .tok-com { color: #7e8ab5; font-style: italic; }
+  p code, li code {
+    font-family: var(--font-mono); font-size: 12px;
+    background: var(--bg-raised); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 4px; color: var(--accent);
+  }
+
+  /* ─── Footer ──────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--text-tertiary); flex-wrap: wrap; gap: 10px;
+  }
+  footer a { color: var(--accent); transition: color 0.15s; }
+  footer a:hover { color: var(--rose-deep); }
+
+  @media (max-width: 900px) {
+    .post-layout { grid-template-columns: 1fr; }
+    .post-toc { display: none; }
+  }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .page { padding: 0 1rem 4rem; }
+    .nav-inner { padding: 0 1rem; }
+    .post-banner { padding: 44px 26px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+      <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;"></object>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../../blog.html" class="active">Blog</a></li>
+      <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+      <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+      <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+      <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page" id="top">
+
+  <!-- ─── Hero ──────────────────────────────────────── -->
+  <div class="post-banner">
+    <div class="banner-grid">
+      <div class="banner-inner">
+        <p class="banner-eyebrow">Foundations · Neural nets from the ground up</p>
+        <h1 class="banner-title"><span class="accent">Backpropagation</span>,<br>from scratch</h1>
+        <p class="banner-sub">
+          A neural net is just a big mathematical expression. Training it means asking one question over and over —
+          <em>how does each weight affect the loss?</em> — and nudging accordingly. That question is answered by
+          backpropagation.
+        </p>
+      </div>
+      <div class="banner-art" aria-hidden="true">
+        <svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A small computation graph with a blue forward pass and a pink backward pass of gradients">
+          <defs>
+            <marker id="h-fwd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9DB3FF"/></marker>
+            <marker id="h-bwd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#F9A8D4"/></marker>
+          </defs>
+          <text x="170" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" letter-spacing="0.12em" fill="#9DB3FF">FORWARD</text>
+          <g fill="none" stroke="#9DB3FF" stroke-width="2.4">
+            <path d="M70,76 C100,50 140,50 168,72" marker-end="url(#h-fwd)"/>
+            <path d="M180,72 C208,50 248,50 278,76" marker-end="url(#h-fwd)"/>
+          </g>
+          <g fill="none" stroke="#F9A8D4" stroke-width="2.4">
+            <path d="M270,118 C242,142 202,142 174,122" marker-end="url(#h-bwd)"/>
+            <path d="M160,122 C132,142 92,142 64,118" marker-end="url(#h-bwd)"/>
+          </g>
+          <g>
+            <circle cx="60" cy="96" r="25" fill="rgba(255,255,255,0.06)" stroke="#6E8BF0" stroke-width="2"/>
+            <circle cx="170" cy="96" r="25" fill="rgba(255,255,255,0.06)" stroke="#6E8BF0" stroke-width="2"/>
+            <circle cx="280" cy="96" r="25" fill="rgba(236,72,153,0.16)" stroke="#F472B6" stroke-width="2.4"/>
+          </g>
+          <g font-family="'Plus Jakarta Sans',sans-serif" fill="#EEF1FB" text-anchor="middle">
+            <text x="60" y="103" font-size="19" font-weight="700">x</text>
+            <text x="170" y="106" font-size="22" font-weight="700">·</text>
+            <text x="280" y="103" font-size="19" font-weight="700">L</text>
+          </g>
+          <text x="170" y="172" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" letter-spacing="0.12em" fill="#F9A8D4">BACKWARD ∂L</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Meta ──────────────────────────────────────── -->
+  <div class="post-meta">
+    <span class="meta-tag accent-tag">Backpropagation</span>
+    <span class="meta-tag rose-tag">Neural Networks</span>
+    <span class="meta-tag">Chain Rule</span>
+    <span class="meta-tag">micrograd</span>
+    <span class="meta-dot">·</span>
+    <span class="meta-tag" style="background:transparent;border-color:transparent;color:var(--text-tertiary);padding-left:0;">15 min read</span>
+  </div>
+
+  <div class="post-layout">
+
+    <!-- ─── Prose ───────────────────────────────────── -->
+    <article class="post-prose">
+
+      <!-- 00 -->
+      <section id="intro">
+        <h2><span class="h2-num">00</span> What's under the hood</h2>
+        <p>Every serious neural network in the world is trained by one algorithm — and most of the people who rely on it have never watched it run.</p>
+
+        <p>They import it. A single line, <code>loss.backward()</code>, and a rack of GPUs quietly sets about adjusting millions of weights. What actually happens inside that call is treated, reasonably enough, as someone else's problem.</p>
+
+        <p>Andrej Karpathy's <strong>micrograd</strong> lecture is built on the hunch that this is a mistake. The move is almost contrarian in its plainness: shut the libraries, drop the GPUs, and rebuild the whole machine by hand on ordinary numbers in a blank notebook — until a small neural network <strong>defines and trains itself</strong> in front of you, every operation visible, nothing tucked away.</p>
+
+        <p>What micrograd actually implements — the thing doing the work behind that one <code>loss.backward()</code> line — is <strong>backpropagation</strong>: the algorithm that efficiently works out the gradient of a loss function with respect to a network's weights. That gradient is the signal we use to nudge the weights so the loss goes down and the predictions improve — and it sits at the mathematical heart of every serious deep-learning framework, PyTorch and JAX included.</p>
+
+        <div class="callout sky">
+          <span class="c-tag">A surprisingly small idea</span>
+          The engine that gives you the full power of neural-network training is about <strong>100 lines</strong> of very simple Python. The neural-network library on top of it is another ~150. Everything else in a production framework is just efficiency.
+        </div>
+
+        <p>One disclaimer up front: micrograd is a <strong>scalar-valued</strong> engine. It works on individual numbers like <code>2.0</code> and <code>-3.0</code>, breaking neural nets all the way down to the atoms of little pluses and times. You'd never do this in production — real libraries pack scalars into n-dimensional tensors so the work can run in parallel. But none of the math changes. Doing it at the scalar level is what makes the ideas impossible to forget.</p>
+
+
+        <p style="font-size:13px;color:var(--text-tertiary);">This post follows Andrej Karpathy's lecture <em>&ldquo;The spelled-out intro to neural networks and backpropagation: building micrograd.&rdquo;</em> &nbsp;<a class="inline" href="https://youtu.be/VMj-3S1tku0" target="_blank" rel="noopener">Video</a> · <a class="inline" href="https://github.com/karpathy/micrograd" target="_blank" rel="noopener">micrograd on GitHub</a></p>
+      </section>
+
+      <!-- 01 -->
+      <section id="what-is">
+        <h2><span class="h2-num">01</span> What backpropagation actually is</h2>
+        <p>A neural network takes two kinds of input — the <strong>data</strong> and the <strong>weights</strong> — runs them through a mathematical expression, and produces predictions and, ultimately, a single <strong>loss</strong>: a number measuring how wrong the predictions are. We want that number small.</p>
+
+        <p>Backpropagation answers exactly one question, but for every weight at once: <strong>if I nudge this weight a tiny bit, which way does the loss move, and how strongly?</strong> That sensitivity is the gradient. Once you have it for every weight, you know how to change all of them to push the loss down.</p>
+
+        <div class="svg-fig">
+          <svg viewBox="0 0 720 224" xmlns="http://www.w3.org/2000/svg" id="loop-svg" role="img" aria-label="The training loop: forward pass, then backward pass, then update weights, then repeat">
+            <defs>
+              <marker id="lp-fwd" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0,0 L6.5,3 L0,6 Z" fill="#2F5BE8"/></marker>
+              <marker id="lp-bwd" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0,0 L6.5,3 L0,6 Z" fill="#EC4899"/></marker>
+              <marker id="lp-loop" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0,0 L6.5,3 L0,6 Z" fill="#18225C"/></marker>
+            </defs>
+            <!-- Box 1: forward pass (blue) -->
+            <rect x="24" y="36" width="180" height="80" rx="14" fill="rgba(47,91,232,0.06)" stroke="#2F5BE8" stroke-width="2"/>
+            <text x="114" y="72" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="17" font-weight="700" fill="#18225C">Forward pass</text>
+            <text x="114" y="94" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12.5" fill="#5B668A">compute the loss</text>
+            <!-- Box 2: backward pass (pink) -->
+            <rect x="270" y="36" width="180" height="80" rx="14" fill="rgba(236,72,153,0.06)" stroke="#EC4899" stroke-width="2"/>
+            <text x="360" y="72" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="17" font-weight="700" fill="#18225C">Backward pass</text>
+            <text x="360" y="94" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12.5" fill="#5B668A">chain rule → gradients</text>
+            <!-- Box 3: update (deep blue) -->
+            <rect x="516" y="36" width="180" height="80" rx="14" fill="rgba(24,34,92,0.05)" stroke="#18225C" stroke-width="2"/>
+            <text x="606" y="72" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="17" font-weight="700" fill="#18225C">Update weights</text>
+            <text x="606" y="94" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12.5" fill="#5B668A">step down the gradient</text>
+            <!-- forward arrow box1 -> box2 (blue) -->
+            <line x1="210" y1="76" x2="262" y2="76" stroke="#2F5BE8" stroke-width="2.4" marker-end="url(#lp-fwd)"/>
+            <!-- backward arrow box2 -> box3 (pink) -->
+            <line x1="456" y1="76" x2="508" y2="76" stroke="#EC4899" stroke-width="2.4" marker-end="url(#lp-bwd)"/>
+            <!-- loop back: box3 bottom -> box1 bottom (deep blue, dashed), arrow points up -->
+            <path d="M 606,116 L 606,178 Q 606,194 590,194 L 130,194 Q 114,194 114,178 L 114,120" fill="none" stroke="#18225C" stroke-width="2.2" stroke-dasharray="6 5" marker-end="url(#lp-loop)"/>
+            <text x="360" y="198" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="600" fill="#18225C" style="paint-order:stroke;stroke:#fff;stroke-width:6px;">repeat — one training step</text>
+          </svg>
+          <div class="fig-legend">
+            <span><i style="background:#2F5BE8"></i> forward (data → loss)</span>
+            <span><i style="background:#EC4899"></i> backward (loss → gradients)</span>
+            <span><i style="background:#18225C"></i> update &amp; repeat</span>
+          </div>
+        </div>
+
+        <p>This loop — forward, backward, nudge, repeat — is the mathematical core of every modern deep-learning library, PyTorch and JAX included. And it's more general than neural nets: backprop doesn't care what the expression <em>means</em>. It computes derivatives through any chain of operations. We just happen to point that machinery at neural networks.</p>
+
+        <div class="callout key">
+          <span class="c-tag">The plan</span>
+          We'll make this concrete in four moves: <strong>(1)</strong> get a gut feel for what a gradient is, <strong>(2)</strong> compute one by hand, <strong>(3)</strong> backpropagate through a small expression manually, then <strong>(4)</strong> wrap the whole thing in code and confirm it against PyTorch.
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section id="gradient">
+        <h2><span class="h2-num">02</span> What is a gradient?</h2>
+        <p>A gradient is just a derivative — and a derivative is just a <strong>slope</strong>. It measures the instantaneous rate at which a function's output changes when you nudge its input. Geometrically, it's the slope of the line that grazes the curve at a point. Formally, it's a limit:</p>
+
+        <div class="math-block">$$f'(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$$</div>
+
+        <p>Read it plainly: bump the input by a tiny amount $$h$$, see how much the output moved, and divide by $$h$$. Does the function go up or down, and how steeply? That ratio — rise over run — is the slope at that point.</p>
+
+        <h3>Intuition: the slope changes along the curve</h3>
+        <p>Take a simple parabola, $$f(x)=3x^2-4x+5$$. We don't need to symbolically differentiate it (no one differentiates a real neural net by hand — the expression would have tens of thousands of terms). We just need to <em>feel</em> what the slope is doing at different points.</p>
+
+        <div class="svg-fig">
+          <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" id="deriv-svg" role="img" aria-label="A parabola with three tangent lines showing negative, zero, and positive slope">
+            <defs>
+              <marker id="ax-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8C9BD8"/></marker>
+            </defs>
+            <!-- axes -->
+            <line x1="64" y1="300" x2="708" y2="300" stroke="#8C9BD8" stroke-width="1.2" marker-end="url(#ax-arrow)"/>
+            <line x1="64" y1="312" x2="64" y2="24" stroke="#8C9BD8" stroke-width="1.2" marker-end="url(#ax-arrow)"/>
+            <text x="700" y="320" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8C9BD8">x</text>
+            <text x="44" y="34" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8C9BD8">f(x)</text>
+            <!-- x ticks -->
+            <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#8C9BD8" text-anchor="middle">
+              <text x="86.3" y="316">-2</text><text x="197.9" y="316">-1</text><text x="309.5" y="316">0</text>
+              <text x="421.1" y="316">1</text><text x="532.6" y="316">2</text><text x="644.2" y="316">3</text>
+            </g>
+            <!-- curve -->
+            <polyline id="deriv-curve" fill="none" stroke="#2F5BE8" stroke-width="2.6" stroke-linecap="round"
+              points="64.0,44.3 80.0,67.7 96.1,89.9 112.1,110.9 128.1,130.7 144.2,149.3 160.2,166.7 176.2,182.9 192.3,197.9 208.3,211.7 224.3,224.2 240.4,235.6 256.4,245.8 272.4,254.7 288.5,262.5 304.5,269.1 320.5,274.4 336.6,278.6 352.6,281.5 368.6,283.3 384.7,283.8 400.7,283.1 416.7,281.3 432.8,278.2 448.8,273.9 464.8,268.5 480.9,261.8 496.9,253.9 512.9,244.8 529.0,234.5 545.0,223.0 561.0,210.3 577.1,196.4 593.1,181.3 609.1,165.0 625.2,147.5 641.2,128.8 657.2,108.9 673.3,87.7 689.3,65.4 700.0,49.9"/>
+            <!-- tangents (pink = the slope) -->
+            <g id="deriv-tangents" font-family="'JetBrains Mono',monospace" font-size="11">
+              <!-- negative slope at x = -1 -->
+              <line x1="97.5" y1="115.4" x2="298.3" y2="290.3" stroke="#EC4899" stroke-width="2.2"/>
+              <circle cx="197.9" cy="202.9" r="4.5" fill="#DB2777"/>
+              <text x="150" y="150" fill="#DB2777" text-anchor="middle" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;">slope &lt; 0</text>
+              <!-- zero slope at vertex -->
+              <line x1="283.4" y1="283.8" x2="484.3" y2="283.8" stroke="#EC4899" stroke-width="2.2"/>
+              <circle cx="383.9" cy="283.8" r="4.5" fill="#DB2777"/>
+              <text x="384" y="305" fill="#DB2777" text-anchor="middle" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;">slope = 0</text>
+              <!-- positive slope at x = 2 -->
+              <line x1="432.2" y1="301.9" x2="633.1" y2="162.1" stroke="#EC4899" stroke-width="2.2"/>
+              <circle cx="532.6" cy="232.0" r="4.5" fill="#DB2777"/>
+              <text x="566" y="205" fill="#DB2777" text-anchor="middle" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;">slope &gt; 0</text>
+            </g>
+          </svg>
+          <div class="fig-controls"><button type="button" onclick="playDeriv()">▶ Replay</button></div>
+          <div class="fig-legend">
+            <span><i style="background:#2F5BE8"></i> f(x)</span>
+            <span><i style="background:#EC4899"></i> tangent — the slope at that point</span>
+          </div>
+          <figcaption>Same curve, three points, three different slopes. On the left the function is heading down (negative slope); at the bottom it's momentarily flat (slope zero); on the right it's climbing (positive slope).</figcaption>
+        </div>
+
+        <p>To get an actual number, we don't take $$h$$ all the way to zero — we just pick something tiny, like $$0.0001$$, and apply the definition directly:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+          <div class="code-block"><span class="tok-kw">def</span> <span class="tok-fn">f</span>(x):
+    <span class="tok-kw">return</span> <span class="tok-num">3</span>*x**<span class="tok-num">2</span> - <span class="tok-num">4</span>*x + <span class="tok-num">5</span>
+
+h = <span class="tok-num">0.0001</span>
+x = <span class="tok-num">3.0</span>
+slope = (<span class="tok-fn">f</span>(x + h) - <span class="tok-fn">f</span>(x)) / h
+<span class="tok-fn">print</span>(slope)        <span class="tok-com"># ≈ 14.0   (and indeed f'(x) = 6x − 4, so f'(3) = 14)</span></div>
+        </div>
+
+        <p>Bump $$x$$ up from 3 and the output grows with slope ~14. Try $$x=-3$$ and you'd get a <em>negative</em> number — there the curve heads down. And right at the bottom of the parabola the slope is zero: nudging the input barely moves the output at all. That sign and magnitude is the entire signal backprop is after.</p>
+
+        <h3>Computing a gradient by hand</h3>
+        <p>Now a function of several inputs, $$d = a\cdot b + c$$, so we can ask for the slope with respect to each one separately. Same trick: fix the inputs, nudge <em>one</em> of them by $$h$$, and measure the response.</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+          <div class="code-block">h = <span class="tok-num">0.0001</span>
+a, b, c = <span class="tok-num">2.0</span>, -<span class="tok-num">3.0</span>, <span class="tok-num">10.0</span>
+
+d1 = a*b + c
+d2 = (a + h)*b + c          <span class="tok-com"># nudge a</span>
+<span class="tok-fn">print</span>((d2 - d1) / h)        <span class="tok-com"># -3.0   →  dd/da = b</span>
+
+d2 = a*(b + h) + c          <span class="tok-com"># nudge b</span>
+<span class="tok-fn">print</span>((d2 - d1) / h)        <span class="tok-com">#  2.0   →  dd/db = a</span>
+
+d2 = a*b + (c + h)          <span class="tok-com"># nudge c</span>
+<span class="tok-fn">print</span>((d2 - d1) / h)        <span class="tok-com">#  1.0   →  dd/dc = 1</span></div>
+        </div>
+
+        <p>The results line up with calculus exactly: differentiating $$a\cdot b + c$$ with respect to $$a$$ gives $$b$$ (which is $$-3$$), with respect to $$b$$ gives $$a$$ (which is $$2$$), and with respect to $$c$$ gives $$1$$. Each gradient tells us how its input is pulling on the output. That's all we ever compute — we just need a way to do it through a much longer chain of operations <em>without</em> nudging every input numerically. That way is the <a class="inline" href="#chain-rule">chain rule</a>.</p>
+      </section>
+
+      <!-- 03 -->
+      <section id="by-hand">
+        <h2><span class="h2-num">03</span> Backpropagation by hand</h2>
+        <p>Let's build a slightly bigger expression and propagate gradients all the way through it manually. With inputs $$a=2,\,b=-3,\,c=10,\,f=-2$$, define:</p>
+
+        <div class="step-flow">
+          <span class="node">e = a · b</span><span class="arrow">→</span>
+          <span class="node">d = e + c</span><span class="arrow">→</span>
+          <span class="node">L = d · f</span>
+        </div>
+
+        <h3>First, the forward pass</h3>
+        <p>The <strong>forward pass</strong> just evaluates the expression left-to-right, substituting numbers as we go. Nothing clever happens here — it is ordinary arithmetic:</p>
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">forward pass</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+        <div class="code-block">e = a * b   =   <span class="tok-num">2</span> * (<span class="tok-num">-3</span>)   =  <span class="tok-num">-6</span>
+d = e + c   =  <span class="tok-num">-6</span> + <span class="tok-num">10</span>    =   <span class="tok-num">4</span>
+L = d * f   =   <span class="tok-num">4</span> * (<span class="tok-num">-2</span>)   =  <span class="tok-num">-8</span></div>
+        </div>
+
+        <p>Reading it line by line: <code>e</code> multiplies the two inputs, $$2$$ and $$-3$$, giving $$-6$$. Then <code>d</code> adds $$c=10$$ to that result, landing on $$4$$. Finally <code>L</code> multiplies by $$f=-2$$, for an output of $$-8$$. Nothing here is special to neural networks — it is the same substitution you'd do on paper.</p>
+        <p>Along the way every intermediate value is recorded — $$e=-6$$ and $$d=4$$ — because the backward pass will need them. Now we want the gradient of $$L$$ with respect to every node, including the leaves $$a,b,c,f$$. In a real network those leaves would be the weights and $$L$$ would be the loss. We compute these right-to-left: the <strong>backward pass</strong>.</p>
+
+        <div class="svg-fig">
+          <svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" id="cg-svg" role="img" aria-label="Computation graph for L = (a*b + c) * f, with forward values in blue and backward gradients in pink">
+            <defs>
+              <marker id="fwd-a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2F5BE8"/></marker>
+              <marker id="bwd-a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#EC4899"/></marker>
+            </defs>
+
+            <!-- forward edges -->
+            <g id="cg-fwd" fill="none" stroke="#2F5BE8" stroke-width="2.2">
+              <path d="M132,68 C175,78 195,108 217,118" marker-end="url(#fwd-a)"/>
+              <path d="M132,176 C172,162 195,134 217,126" marker-end="url(#fwd-a)"/>
+              <path d="M247,121 L268,121" marker-end="url(#fwd-a)"/>
+              <path d="M374,128 C398,142 405,168 418,180" marker-end="url(#fwd-a)"/>
+              <path d="M132,288 C250,272 320,212 418,196" marker-end="url(#fwd-a)"/>
+              <path d="M447,189 L468,189" marker-end="url(#fwd-a)"/>
+              <path d="M574,196 C588,212 588,232 586,246" marker-end="url(#fwd-a)"/>
+              <path d="M404,324 C480,312 535,286 580,270" marker-end="url(#fwd-a)"/>
+              <path d="M609,259 L630,259" marker-end="url(#fwd-a)"/>
+            </g>
+
+            <!-- backward edges + local-derivative labels -->
+            <g id="cg-bwd" fill="none" stroke="#EC4899" stroke-width="2">
+              <path d="M214,114 C190,100 170,76 136,68" marker-end="url(#bwd-a)"/>
+              <path d="M214,131 C188,146 172,170 136,178" marker-end="url(#bwd-a)"/>
+              <path d="M415,184 C398,170 392,146 378,132" marker-end="url(#bwd-a)"/>
+              <path d="M414,202 C320,216 250,276 138,294" marker-end="url(#bwd-a)"/>
+              <path d="M586,248 C590,228 588,212 578,200" marker-end="url(#bwd-a)"/>
+              <path d="M580,272 C534,288 480,314 408,330" marker-end="url(#bwd-a)"/>
+            </g>
+            <g id="cg-bwd-lab" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#DB2777" text-anchor="middle" style="paint-order:stroke;stroke:#fff;stroke-width:3px;">
+              <text x="168" y="84">× b</text>
+              <text x="168" y="168">× a</text>
+              <text x="398" y="150">+ 1</text>
+              <text x="300" y="252">+ 1</text>
+              <text x="606" y="226">× f</text>
+              <text x="486" y="312">× d</text>
+            </g>
+
+            <!-- op nodes -->
+            <g font-family="'JetBrains Mono',monospace" font-size="15" text-anchor="middle">
+              <circle cx="232" cy="121" r="15" fill="#EAEEF9" stroke="#18225C" stroke-width="1.5"/><text x="232" y="126" fill="#18225C">×</text>
+              <circle cx="432" cy="189" r="15" fill="#EAEEF9" stroke="#18225C" stroke-width="1.5"/><text x="432" y="195" fill="#18225C">+</text>
+              <circle cx="594" cy="259" r="15" fill="#EAEEF9" stroke="#18225C" stroke-width="1.5"/><text x="594" y="264" fill="#18225C">×</text>
+            </g>
+
+            <!-- value boxes -->
+            <g font-family="'JetBrains Mono',monospace" text-anchor="middle">
+              <!-- a -->
+              <rect x="28" y="36" width="104" height="58" rx="9" fill="#fff" stroke="#18225C" stroke-width="1.5"/>
+              <text x="80" y="55" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#18225C">a</text>
+              <text x="80" y="72" font-size="11.5" fill="#2F5BE8">data 2.00</text>
+              <text x="80" y="87" font-size="11.5" fill="#DB2777">grad 6.00</text>
+              <!-- b -->
+              <rect x="28" y="150" width="104" height="58" rx="9" fill="#fff" stroke="#18225C" stroke-width="1.5"/>
+              <text x="80" y="169" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#18225C">b</text>
+              <text x="80" y="186" font-size="11.5" fill="#2F5BE8">data -3.00</text>
+              <text x="80" y="201" font-size="11.5" fill="#DB2777">grad -4.00</text>
+              <!-- c -->
+              <rect x="28" y="264" width="104" height="58" rx="9" fill="#fff" stroke="#18225C" stroke-width="1.5"/>
+              <text x="80" y="283" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#18225C">c</text>
+              <text x="80" y="300" font-size="11.5" fill="#2F5BE8">data 10.00</text>
+              <text x="80" y="315" font-size="11.5" fill="#DB2777">grad -2.00</text>
+              <!-- e -->
+              <rect x="270" y="92" width="104" height="58" rx="9" fill="#fff" stroke="#18225C" stroke-width="1.8"/>
+              <text x="322" y="111" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#18225C">e = a×b</text>
+              <text x="322" y="128" font-size="11.5" fill="#2F5BE8">data -6.00</text>
+              <text x="322" y="143" font-size="11.5" fill="#DB2777">grad -2.00</text>
+              <!-- d -->
+              <rect x="470" y="160" width="104" height="58" rx="9" fill="#fff" stroke="#18225C" stroke-width="1.8"/>
+              <text x="522" y="179" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#18225C">d = e+c</text>
+              <text x="522" y="196" font-size="11.5" fill="#2F5BE8">data 4.00</text>
+              <text x="522" y="211" font-size="11.5" fill="#DB2777">grad -2.00</text>
+              <!-- f -->
+              <rect x="300" y="300" width="104" height="58" rx="9" fill="#fff" stroke="#18225C" stroke-width="1.5"/>
+              <text x="352" y="319" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#18225C">f</text>
+              <text x="352" y="336" font-size="11.5" fill="#2F5BE8">data -2.00</text>
+              <text x="352" y="351" font-size="11.5" fill="#DB2777">grad 4.00</text>
+              <!-- L -->
+              <rect x="632" y="230" width="104" height="58" rx="9" fill="#18225C" stroke="#18225C" stroke-width="1.8"/>
+              <text x="684" y="249" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#fff">L = d×f</text>
+              <text x="684" y="266" font-size="11.5" fill="#9DB3FF">data -8.00</text>
+              <text x="684" y="281" font-size="11.5" fill="#F9A8D4">grad 1.00</text>
+            </g>
+
+            <!-- pills -->
+            <g font-family="'JetBrains Mono',monospace" font-size="11">
+              <rect id="cg-fwd-pill" x="120" y="406" width="232" height="26" rx="13" fill="#2F5BE8"/>
+              <text x="236" y="423" fill="#fff" text-anchor="middle">▶ Forward — compute data</text>
+              <rect id="cg-bwd-pill" x="364" y="406" width="288" height="26" rx="13" fill="#EC4899"/>
+              <text x="508" y="423" fill="#fff" text-anchor="middle">◀ Backward — chain-rule gradients</text>
+            </g>
+          </svg>
+          <div class="fig-controls">
+            <button type="button" onclick="playCG('fwd')">▶ Forward pass</button>
+            <button type="button" onclick="playCG('bwd')">◀ Backward pass</button>
+            <button type="button" onclick="playCG('both')">Show both</button>
+          </div>
+          <div class="fig-legend">
+            <span><i style="background:#2F5BE8"></i> data &amp; forward flow</span>
+            <span><i style="background:#EC4899"></i> grad &amp; backward flow</span>
+          </div>
+          <figcaption>Each box carries two numbers: <strong>data</strong> (the forward value, blue) and <strong>grad</strong> (the derivative of L with respect to it, pink). Pink edges are labelled with the <em>local</em> derivative at each operation.</figcaption>
+        </div>
+
+        <h3>The one rule we need: the chain rule</h3>
+        <p>The backward pass is nothing but the <strong>chain rule</strong> from calculus, applied over and over:</p>
+
+        <div class="callout key" id="chain-rule" style="scroll-margin-top:90px;">
+          <span class="c-tag">Definition · the chain rule</span>
+          If a variable $$z$$ depends on a variable $$y$$, which itself depends on a variable $$x$$, then $$z$$ depends on $$x$$ as well — through the intermediate variable $$y$$ — and the derivatives multiply:
+          <div class="math-block">$$\frac{dz}{dx}=\frac{dz}{dy}\cdot\frac{dy}{dx}$$</div>
+          In plain terms: to find how $$x$$ affects $$z$$, multiply how $$x$$ affects $$y$$ by how $$y$$ affects $$z$$. Backpropagation is this one rule applied over and over, from the output back to every input.
+        </div>
+        <p>That single fact is the whole engine. To get the gradient of $$L$$ at some node deep in the graph, we take the gradient already computed one step closer to the output and multiply it by the <em>local</em> derivative of the operation connecting them. Chaining these one-step multiplications from the output all the way back to the leaves is exactly backpropagation.</p>
+
+        <p>The backward pass is mechanical once you see the pattern. Start at the output, where the base case is trivial — nudge $$L$$ and $$L$$ moves by the same amount:</p>
+        <div class="math-block">$$\frac{dL}{dL}=1$$</div>
+
+        <p><strong>Through the last multiply, $$L=d\cdot f$$.</strong> The derivative of a product with respect to one factor is the <em>other</em> factor:</p>
+        <div class="math-block">$$\frac{dL}{dd}=f=-2,\qquad \frac{dL}{df}=d=4$$</div>
+
+        <p><strong>Through the plus, $$d=e+c$$.</strong> Here's the crux of the whole algorithm. We already know how $$L$$ depends on $$d$$. We need how $$L$$ depends on $$c$$ (and $$e$$). The <em>local</em> question — how does $$c$$ affect $$d$$? — is easy: the derivative of a sum is $$1$$. The <a class="inline" href="#chain-rule"><strong>chain rule</strong></a> says we multiply the local derivative by the gradient that already arrived from above:</p>
+        <div class="math-block">
+        $$\frac{dL}{dc}=\frac{dL}{dd}\cdot\frac{dd}{dc}=-2\cdot 1=-2$$
+        $$\frac{dL}{de}=\frac{dL}{dd}\cdot\frac{dd}{de}=-2\cdot 1=-2$$
+        </div>
+
+        <div class="callout key">
+          <span class="c-tag">A plus node just routes gradient</span>
+          Because the local derivative of addition is exactly $$1$$, a <code>+</code> node copies its incoming gradient, unchanged, to <em>both</em> of its inputs. Gradient flows straight through it.
+        </div>
+
+        <p><strong>Through the first multiply, $$e=a\cdot b$$.</strong> Same recipe — local derivative (the other factor) times the gradient on $$e$$:</p>
+        <div class="math-block">
+        $$\frac{dL}{da}=\frac{dL}{de}\cdot\frac{de}{da}=-2\cdot b=-2\cdot(-3)=6$$
+        $$\frac{dL}{db}=\frac{dL}{de}\cdot\frac{de}{db}=-2\cdot a=-2\cdot 2=-4$$
+        </div>
+
+        <div class="intuition">
+          <span class="c-tag">This is the entire algorithm</span>
+          <p>That's it. We walked from the output backward, and at every node we did one small step: take the gradient that arrived from above, multiply by the local derivative of that node's operation, and pass it to the children. <strong>Backpropagation is just a recursive application of the chain rule, backward through the graph.</strong></p>
+          <p>Each node only ever needs to know its own little operation — how its inputs map to its output. It knows nothing about the giant graph it sits inside. That locality is what makes it scale to billions of parameters.</p>
+        </div>
+
+        <p>And the payoff: those gradients are directions. $$\tfrac{dL}{da}=6$$ means a small <em>increase</em> in $$a$$ makes $$L$$ go up; to make $$L$$ go <em>down</em>, we'd step $$a$$ the other way. Do that for every leaf and you've taken one step of training.</p>
+      </section>
+
+      <!-- 04 -->
+      <section id="code">
+        <h2><span class="h2-num">04</span> Backpropagation in code</h2>
+        <p>Doing this by hand is obviously not a plan. So we build a small <code>Value</code> object that wraps a single number and remembers how it was made — what operation produced it and from which children. That bookkeeping is exactly what lets us replay the chain rule automatically.</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python · engine.py</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+          <div class="code-block"><span class="tok-kw">class</span> <span class="tok-fn">Value</span>:
+    <span class="tok-kw">def</span> <span class="tok-fn">__init__</span>(self, data, _children=(), _op=<span class="tok-str">''</span>):
+        self.data = data
+        self.grad = <span class="tok-num">0.0</span>                 <span class="tok-com"># 0 = "no effect on the output yet"</span>
+        self._backward = <span class="tok-kw">lambda</span>: <span class="tok-kw">None</span>   <span class="tok-com"># how to push grad to children</span>
+        self._prev = <span class="tok-fn">set</span>(_children)      <span class="tok-com"># who made me</span>
+        self._op = _op                   <span class="tok-com"># which operation made me</span>
+
+    <span class="tok-kw">def</span> <span class="tok-fn">__repr__</span>(self):
+        <span class="tok-kw">return</span> <span class="tok-str">f"Value(data={self.data}, grad={self.grad})"</span></div>
+        </div>
+
+        <p>Two ideas live in every node: <code>grad</code> starts at <code>0.0</code> (a node is assumed to have no influence until proven otherwise), and <code>_backward</code> is a little function that knows how to take this node's gradient and distribute it to its inputs. Each operation fills in its own <code>_backward</code>. The constructor also stashes <code>_prev</code> — the set of children this value was built from — and <code>_op</code>, a short label for the operation that produced it; together those two fields are what let us recover the computational graph later. <code>__repr__</code> is pure convenience: it just makes a <code>Value</code> print as something readable like <code>Value(data=-8.0, grad=1.0)</code>.</p>
+
+        <p>Now the operations. Each one builds the output value, records its children, and stores the local chain-rule step as a closure:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+          <div class="code-block">    <span class="tok-kw">def</span> <span class="tok-fn">__add__</span>(self, other):
+        out = <span class="tok-fn">Value</span>(self.data + other.data, (self, other), <span class="tok-str">'+'</span>)
+        <span class="tok-kw">def</span> <span class="tok-fn">_backward</span>():
+            self.grad  += <span class="tok-num">1.0</span> * out.grad      <span class="tok-com"># local deriv of + is 1</span>
+            other.grad += <span class="tok-num">1.0</span> * out.grad
+        out._backward = _backward
+        <span class="tok-kw">return</span> out
+
+    <span class="tok-kw">def</span> <span class="tok-fn">__mul__</span>(self, other):
+        out = <span class="tok-fn">Value</span>(self.data * other.data, (self, other), <span class="tok-str">'*'</span>)
+        <span class="tok-kw">def</span> <span class="tok-fn">_backward</span>():
+            self.grad  += other.data * out.grad   <span class="tok-com"># local deriv is the *other* input</span>
+            other.grad += self.data  * out.grad
+        out._backward = _backward
+        <span class="tok-kw">return</span> out</div>
+        </div>
+
+        <p>Notice these closures encode exactly the hand rules from the last section: <code>+</code> routes the gradient (multiply by 1), and <code>*</code> sends each input the other input's data, both scaled by the gradient arriving on <code>out</code>. Both write with <code>+=</code> rather than <code>=</code> — why that matters is the first gotcha at the end of this section.</p>
+
+        <p>Two more operations round out the arithmetic. <code>__pow__</code> raises a value to a fixed power via the power rule, $$\frac{d}{dx}x^{n}=n\,x^{n-1}$$. And because Python only calls <code>__add__</code> or <code>__mul__</code> when the <code>Value</code> sits on the <em>left</em> of the operator, we add the reversed hooks <code>__radd__</code> and <code>__rmul__</code> so that a bare number on the left — as in <code>2 * a</code> — works too:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+        <div class="code-block">    <span class="tok-kw">def</span> <span class="tok-fn">__pow__</span>(self, other):
+        <span class="tok-kw">assert</span> <span class="tok-fn">isinstance</span>(other, (<span class="tok-fn">int</span>, <span class="tok-fn">float</span>))   <span class="tok-com"># only int/float powers</span>
+        out = <span class="tok-fn">Value</span>(self.data**other, (self,), <span class="tok-str">f'**{other}'</span>)
+        <span class="tok-kw">def</span> <span class="tok-fn">_backward</span>():
+            self.grad += other * self.data**(other-<span class="tok-num">1</span>) * out.grad   <span class="tok-com"># power rule</span>
+        out._backward = _backward
+        <span class="tok-kw">return</span> out
+
+    <span class="tok-kw">def</span> <span class="tok-fn">__radd__</span>(self, other):   <span class="tok-com"># 2 + a  ->  a + 2</span>
+        <span class="tok-kw">return</span> self + other
+
+    <span class="tok-kw">def</span> <span class="tok-fn">__rmul__</span>(self, other):   <span class="tok-com"># 2 * a  ->  a * 2</span>
+        <span class="tok-kw">return</span> self * other</div>
+        </div>
+
+        <p>With <code>__pow__</code> in hand, negation, subtraction and division all fall out for free — <code>-a</code> is <code>a * -1</code>, <code>a - b</code> is <code>a + (-b)</code>, and <code>a / b</code> is <code>a * b**-1</code> — so none of them needs a hand-written <code>_backward</code> of its own.</p>
+
+        <p>Operations don't have to be atomic. As long as you can write a forward value and a local derivative, the node can be as composite as you like. A neuron's squashing function $$\tanh$$ is a good example — its derivative is famously $$1-\tanh^2$$:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+          <div class="code-block">    <span class="tok-kw">def</span> <span class="tok-fn">tanh</span>(self):
+        x = self.data
+        t = (<span class="tok-fn">math.exp</span>(<span class="tok-num">2</span>*x) - <span class="tok-num">1</span>) / (<span class="tok-fn">math.exp</span>(<span class="tok-num">2</span>*x) + <span class="tok-num">1</span>)
+        out = <span class="tok-fn">Value</span>(t, (self,), <span class="tok-str">'tanh'</span>)
+        <span class="tok-kw">def</span> <span class="tok-fn">_backward</span>():
+            self.grad += (<span class="tok-num">1</span> - t**<span class="tok-num">2</span>) * out.grad   <span class="tok-com"># d/dx tanh(x) = 1 − tanh²(x)</span>
+        out._backward = _backward
+        <span class="tok-kw">return</span> out</div>
+        </div>
+
+        <p>The level you carve your operations at is entirely up to you. All that matters is a correct forward value and a correct local gradient — then the chain rule stitches them together.</p>
+
+        <div class="callout key">
+          <span class="c-tag">Two bugs that will bite you</span>
+          <strong>1. Accumulate gradients with <code>+=</code>, never <code>=</code>.</strong> If a value is used more than once in an expression, gradient arrives along several paths, and the multivariable <a class="inline" href="#chain-rule">chain rule</a> says those contributions <em>add</em>. Because every <code>grad</code> starts at <code>0.0</code>, <code>+=</code> sums them correctly; plain <code>=</code> lets the second path silently overwrite the first — a classic, hard-to-spot bug.
+          <br><br>
+          <strong>2. Reset gradients to zero before each backward pass.</strong> That same accumulation works against you across training steps: gradients left over from the previous iteration would pile onto the new ones and corrupt the update. So every pass through the training loop must first set each parameter's <code>.grad</code> back to <code>0.0</code> and only then call <code>backward()</code>. Forgetting this <code>zero_grad</code> step is the single most common training bug — it is exactly what PyTorch's <code>optimizer.zero_grad()</code> exists to do.
+        </div>
+      </section>
+
+      <!-- 05 -->
+      <section id="topo">
+        <h2><span class="h2-num">05</span> Getting the order right: topological sort</h2>
+        <p>The one remaining job is calling each node's <code>_backward</code> in the correct order. A node can't push gradient to its children until <em>its own</em> gradient is finished — which means everything downstream of it must run first. We never want to back-propagate through a node before everything that depends on it has already deposited its share.</p>
+
+        <p>This ordering problem is exactly what a <strong>topological sort</strong> solves. For <em>any</em> directed acyclic graph it produces a linear order in which every node comes after all the nodes it depends on — and a graph can have several equally valid such orders. The figure below shows the idea on an abstract graph; micrograd builds one of these orderings for our own expression graph with a depth-first walk that adds a node only <em>after</em> all of its children, then runs the backward pass over that list in reverse — starting at the output.</p>
+
+        <div class="svg-fig">
+          <svg viewBox="0 0 720 350" xmlns="http://www.w3.org/2000/svg" id="topo-svg" role="img" aria-label="A directed acyclic graph and two of its valid topological orderings">
+            <defs>
+              <marker id="td-edge" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748B"/></marker>
+            </defs>
+            <text x="24" y="20" font-family="'Inter',sans-serif" font-size="11.5" fill="#64748B">Directed acyclic graph (DAG) &mdash; every edge points forward</text>
+            <g stroke="#64748B" stroke-width="1.7" fill="none">
+              <line x1="116.1" y1="104.3" x2="231.9" y2="59.7" marker-end="url(#td-edge)"/>
+              <line x1="116.1" y1="119.7" x2="231.9" y2="164.3" marker-end="url(#td-edge)"/>
+              <line x1="252" y1="73.5" x2="252" y2="150.5" marker-end="url(#td-edge)"/>
+              <line x1="273.5" y1="52" x2="386.5" y2="52" marker-end="url(#td-edge)"/>
+              <line x1="273.5" y1="172" x2="386.5" y2="172" marker-end="url(#td-edge)"/>
+              <line x1="408" y1="73.5" x2="408" y2="150.5" marker-end="url(#td-edge)"/>
+              <line x1="429.5" y1="52" x2="590.5" y2="52" marker-end="url(#td-edge)"/>
+              <line x1="612" y1="150.5" x2="612" y2="73.5" marker-end="url(#td-edge)"/>
+              <line x1="590.5" y1="172" x2="429.5" y2="172" marker-end="url(#td-edge)"/>
+            </g>
+            <g font-family="'Plus Jakarta Sans',sans-serif" font-size="15" font-weight="700" text-anchor="middle">
+              <circle cx="96" cy="112" r="21" fill="#EF8A8A" stroke="#D96A6A" stroke-width="1.6"/><text x="96" y="117" fill="#1f2937">A</text>
+              <circle cx="252" cy="52" r="21" fill="#7FA8F0" stroke="#5B8AE0" stroke-width="1.6"/><text x="252" y="57" fill="#1f2937">B</text>
+              <circle cx="252" cy="172" r="21" fill="#F2CE6B" stroke="#D9B24C" stroke-width="1.6"/><text x="252" y="177" fill="#1f2937">C</text>
+              <circle cx="408" cy="52" r="21" fill="#82C07F" stroke="#5FA85C" stroke-width="1.6"/><text x="408" y="57" fill="#1f2937">D</text>
+              <circle cx="408" cy="172" r="21" fill="#B295E0" stroke="#9072C8" stroke-width="1.6"/><text x="408" y="177" fill="#1f2937">E</text>
+              <circle cx="612" cy="52" r="21" fill="#E89CC4" stroke="#D67AAC" stroke-width="1.6"/><text x="612" y="57" fill="#1f2937">F</text>
+              <circle cx="612" cy="172" r="21" fill="#EF8A8A" stroke="#D96A6A" stroke-width="1.6"/><text x="612" y="177" fill="#1f2937">G</text>
+            </g>
+            <text x="24" y="224" font-family="'Inter',sans-serif" font-size="11.5" fill="#64748B">One valid topological order &mdash; each node after the ones it depends on</text>
+            <g stroke="#64748B" stroke-width="1.7" fill="none">
+              <line x1="98" y1="251" x2="132" y2="251" marker-end="url(#td-edge)"/>
+              <line x1="188" y1="251" x2="222" y2="251" marker-end="url(#td-edge)"/>
+              <line x1="278" y1="251" x2="312" y2="251" marker-end="url(#td-edge)"/>
+              <line x1="368" y1="251" x2="402" y2="251" marker-end="url(#td-edge)"/>
+              <line x1="458" y1="251" x2="492" y2="251" marker-end="url(#td-edge)"/>
+              <line x1="548" y1="251" x2="582" y2="251" marker-end="url(#td-edge)"/>
+            </g>
+            <g font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" text-anchor="middle">
+              <rect x="44" y="236" width="54" height="30" rx="8" fill="#EF8A8A" stroke="#D96A6A" stroke-width="1.5"/><text x="71" y="256" fill="#1f2937">A</text>
+              <rect x="134" y="236" width="54" height="30" rx="8" fill="#7FA8F0" stroke="#5B8AE0" stroke-width="1.5"/><text x="161" y="256" fill="#1f2937">B</text>
+              <rect x="224" y="236" width="54" height="30" rx="8" fill="#F2CE6B" stroke="#D9B24C" stroke-width="1.5"/><text x="251" y="256" fill="#1f2937">C</text>
+              <rect x="314" y="236" width="54" height="30" rx="8" fill="#82C07F" stroke="#5FA85C" stroke-width="1.5"/><text x="341" y="256" fill="#1f2937">D</text>
+              <rect x="404" y="236" width="54" height="30" rx="8" fill="#EF8A8A" stroke="#D96A6A" stroke-width="1.5"/><text x="431" y="256" fill="#1f2937">G</text>
+              <rect x="494" y="236" width="54" height="30" rx="8" fill="#E89CC4" stroke="#D67AAC" stroke-width="1.5"/><text x="521" y="256" fill="#1f2937">F</text>
+              <rect x="584" y="236" width="54" height="30" rx="8" fill="#B295E0" stroke="#9072C8" stroke-width="1.5"/><text x="611" y="256" fill="#1f2937">E</text>
+            </g>
+            <text x="24" y="288" font-family="'Inter',sans-serif" font-size="11.5" fill="#64748B">Another valid order &mdash; same graph, still legal</text>
+            <g stroke="#64748B" stroke-width="1.7" fill="none">
+              <line x1="98" y1="315" x2="132" y2="315" marker-end="url(#td-edge)"/>
+              <line x1="188" y1="315" x2="222" y2="315" marker-end="url(#td-edge)"/>
+              <line x1="278" y1="315" x2="312" y2="315" marker-end="url(#td-edge)"/>
+              <line x1="368" y1="315" x2="402" y2="315" marker-end="url(#td-edge)"/>
+              <line x1="458" y1="315" x2="492" y2="315" marker-end="url(#td-edge)"/>
+              <line x1="548" y1="315" x2="582" y2="315" marker-end="url(#td-edge)"/>
+            </g>
+            <g font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" text-anchor="middle">
+              <rect x="44" y="300" width="54" height="30" rx="8" fill="#EF8A8A" stroke="#D96A6A" stroke-width="1.5"/><text x="71" y="320" fill="#1f2937">A</text>
+              <rect x="134" y="300" width="54" height="30" rx="8" fill="#EF8A8A" stroke="#D96A6A" stroke-width="1.5"/><text x="161" y="320" fill="#1f2937">G</text>
+              <rect x="224" y="300" width="54" height="30" rx="8" fill="#7FA8F0" stroke="#5B8AE0" stroke-width="1.5"/><text x="251" y="320" fill="#1f2937">B</text>
+              <rect x="314" y="300" width="54" height="30" rx="8" fill="#82C07F" stroke="#5FA85C" stroke-width="1.5"/><text x="341" y="320" fill="#1f2937">D</text>
+              <rect x="404" y="300" width="54" height="30" rx="8" fill="#F2CE6B" stroke="#D9B24C" stroke-width="1.5"/><text x="431" y="320" fill="#1f2937">C</text>
+              <rect x="494" y="300" width="54" height="30" rx="8" fill="#E89CC4" stroke="#D67AAC" stroke-width="1.5"/><text x="521" y="320" fill="#1f2937">F</text>
+              <rect x="584" y="300" width="54" height="30" rx="8" fill="#B295E0" stroke="#9072C8" stroke-width="1.5"/><text x="611" y="320" fill="#1f2937">E</text>
+            </g>
+          </svg>
+          <figcaption>A topological sort lays a directed acyclic graph out so every edge points forward &mdash; each node after the ones it was built from. A graph can have several valid orderings (two are shown here). Reverse any of them and you get a legal order for the <strong>backward pass</strong>: every node receives its full gradient before it has to pass any on.</figcaption>
+        </div>
+
+        <p>We hide all of this behind a single <code>backward()</code> method on the output node. It builds the order, seeds the base case $$\tfrac{dL}{dL}=1$$, and fires each node's local step:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+          <div class="code-block">    <span class="tok-kw">def</span> <span class="tok-fn">backward</span>(self):
+        topo = []
+        visited = <span class="tok-fn">set</span>()
+        <span class="tok-kw">def</span> <span class="tok-fn">build_topo</span>(v):
+            <span class="tok-kw">if</span> v <span class="tok-kw">not in</span> visited:
+                visited.<span class="tok-fn">add</span>(v)
+                <span class="tok-kw">for</span> child <span class="tok-kw">in</span> v._prev:
+                    <span class="tok-fn">build_topo</span>(child)
+                topo.<span class="tok-fn">append</span>(v)
+        <span class="tok-fn">build_topo</span>(self)
+
+        self.grad = <span class="tok-num">1.0</span>                 <span class="tok-com"># base case: dL/dL = 1</span>
+        <span class="tok-kw">for</span> node <span class="tok-kw">in</span> <span class="tok-fn">reversed</span>(topo):
+            node._backward()</div>
+        </div>
+
+        <p>Now the whole thing runs itself. We rebuild the same expression from Section&nbsp;03 and call <code>backward()</code> once:</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+          <div class="code-block">a = <span class="tok-fn">Value</span>(<span class="tok-num">2.0</span>)
+b = <span class="tok-fn">Value</span>(-<span class="tok-num">3.0</span>)
+c = <span class="tok-fn">Value</span>(<span class="tok-num">10.0</span>)
+f = <span class="tok-fn">Value</span>(-<span class="tok-num">2.0</span>)
+
+e = a * b          <span class="tok-com"># -6</span>
+d = e + c          <span class="tok-com">#  4</span>
+L = d * f          <span class="tok-com"># -8</span>
+
+L.<span class="tok-fn">backward</span>()
+<span class="tok-fn">print</span>(a.grad, b.grad, c.grad, f.grad)   <span class="tok-com"># 6.0  -4.0  -2.0  4.0</span></div>
+        </div>
+
+        <p>The same numbers we ground out by hand — <code>6, -4, -2, 4</code> — now fall out of one call. That's a working autograd engine.</p>
+      </section>
+
+      <!-- 06 -->
+      <section id="pytorch">
+        <h2><span class="h2-num">06</span> The same thing in PyTorch</h2>
+        <p>Everything we built mirrors a production library. PyTorch is what you'd actually use — and our <code>Value</code> object was modelled on its API. The big difference is that PyTorch is built around <strong>tensors</strong> (n-dimensional arrays of scalars) so the same operations run massively in parallel. Our scalar engine is simply the special case where every tensor holds a single element.</p>
+
+        <p>Here is the exact expression from above, in PyTorch. We cast to <code>double</code> to match Python's default float precision, and mark the leaves as requiring gradients (PyTorch skips them by default for efficiency):</p>
+
+        <div class="code-wrap">
+          <div class="code-titlebar"><span class="code-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="code-lang">python · pytorch</span><button type="button" class="code-copy" aria-label="Copy code to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="copy-text">Copy</span></button></div>
+          <div class="code-block"><span class="tok-kw">import</span> torch
+
+a = torch.<span class="tok-fn">tensor</span>([<span class="tok-num">2.0</span>],  dtype=torch.double, requires_grad=<span class="tok-kw">True</span>)
+b = torch.<span class="tok-fn">tensor</span>([-<span class="tok-num">3.0</span>], dtype=torch.double, requires_grad=<span class="tok-kw">True</span>)
+c = torch.<span class="tok-fn">tensor</span>([<span class="tok-num">10.0</span>], dtype=torch.double, requires_grad=<span class="tok-kw">True</span>)
+f = torch.<span class="tok-fn">tensor</span>([-<span class="tok-num">2.0</span>], dtype=torch.double, requires_grad=<span class="tok-kw">True</span>)
+
+e = a * b
+d = e + c
+L = d * f
+L.<span class="tok-fn">backward</span>()
+
+<span class="tok-fn">print</span>(a.grad.<span class="tok-fn">item</span>(), b.grad.<span class="tok-fn">item</span>(),
+      c.grad.<span class="tok-fn">item</span>(), f.grad.<span class="tok-fn">item</span>())   <span class="tok-com"># 6.0  -4.0  -2.0  4.0</span></div>
+        </div>
+
+        <p>Identical gradients. PyTorch tensors carry a <code>.data</code> and a <code>.grad</code> just like our <code>Value</code>, expose a <code>.backward()</code>, and run the very same <a class="inline" href="#chain-rule">chain rule</a> under the hood — only over big arrays instead of single numbers, with all the parallelism that buys.</p>
+
+        <div class="callout sky">
+          <span class="c-tag">Same skeleton, all the way up</span>
+          A real network swaps the toy expression for a much bigger graph, the loss for something like cross-entropy, and plain gradient descent for fancier update rules. But the core never changes: build a graph, run forward to a single loss, call backward to get gradients, nudge the weights, repeat. Master this and you've met every moving part of training — from a 41-parameter net to a model with hundreds of billions.
+        </div>
+      </section>
+
+      <!-- 07 -->
+      <section id="recap">
+        <h2><span class="h2-num">07</span> The big picture</h2>
+        <p>Stepping back, here is the whole story in one breath. A neural net is a fairly simple mathematical expression that takes the data and the weights as input, runs a forward pass, and ends in a loss function measuring how good the predictions are. We arrange that loss so it is <em>low</em> when the network behaves well.</p>
+        <ul>
+          <li><strong>Forward pass</strong> — evaluate the expression left-to-right to get the loss.</li>
+          <li><strong>Backward pass</strong> — apply the <a class="inline" href="#chain-rule">chain rule</a> right-to-left to get the gradient of the loss with respect to every weight.</li>
+          <li><strong>Gradient descent</strong> — nudge each weight a small step <em>against</em> its gradient, lowering the loss locally, and iterate many times.</li>
+        </ul>
+        <p>That's backpropagation, and that's training. The gradient gives us a handle on a quantity we can't otherwise control — the final loss — and following it, over and over, is what lets a blob of simulated neural tissue learn to do remarkably complex things. Everything past this point is efficiency and scale.</p>
+
+        <div class="callout key">
+          <span class="c-tag">Keep going</span>
+          The natural next step is to stack these <code>Value</code> nodes into a neuron, neurons into a layer, layers into a multi-layer perceptron, define a loss over a dataset, and run the train loop. The engine you just built is all you need — see the full <a class="inline" href="https://github.com/karpathy/micrograd" target="_blank" rel="noopener">micrograd repository</a> and Karpathy's <a class="inline" href="https://youtu.be/VMj-3S1tku0" target="_blank" rel="noopener">lecture</a>.
+        </div>
+      </section>
+
+    </article>
+
+    <!-- ─── TOC ─────────────────────────────────────── -->
+    <aside class="post-toc">
+      <div class="toc-label">On this page</div>
+      <ul class="toc-list">
+        <li><a href="#intro">00 · What's under the hood</a></li>
+        <li><a href="#what-is">01 · What backprop is</a></li>
+        <li><a href="#gradient">02 · What is a gradient</a></li>
+        <li class="toc-sub"><a href="#gradient">Intuition: the slope</a></li>
+        <li class="toc-sub"><a href="#gradient">Computing one by hand</a></li>
+        <li><a href="#by-hand">03 · Backprop by hand</a></li>
+        <li><a href="#code">04 · Backprop in code</a></li>
+        <li><a href="#topo">05 · Topological sort</a></li>
+        <li><a href="#pytorch">06 · The same in PyTorch</a></li>
+        <li><a href="#recap">07 · The big picture</a></li>
+      </ul>
+    </aside>
+
+  </div>
+
+  <footer>
+    <span>Built around Andrej Karpathy's <a href="https://github.com/karpathy/micrograd" target="_blank" rel="noopener">micrograd</a></span>
+    <span>Forward · Backward · Chain rule · Gradient descent</span>
+  </footer>
+
+</main>
+
+<script>
+  /* ── Parabola: animate the curve, then fade in tangents ── */
+  function animatePath(el, dur, delay){
+    if (!el) return;
+    const len = el.getTotalLength();
+    el.style.transition = 'none';
+    el.style.strokeDasharray = len + ' ' + len;
+    el.style.strokeDashoffset = len;
+    el.getBoundingClientRect();
+    el.style.transition = 'stroke-dashoffset ' + dur + 'ms ease-out ' + (delay||0) + 'ms';
+    el.style.strokeDashoffset = '0';
+  }
+  function playDeriv(){
+    const curve = document.getElementById('deriv-curve');
+    const tan = document.getElementById('deriv-tangents');
+    if (!curve) return;
+    animatePath(curve, 1200, 80);
+    if (tan){ tan.style.transition = 'none'; tan.style.opacity = '0';
+      tan.getBoundingClientRect();
+      tan.style.transition = 'opacity 700ms ease-out 900ms'; tan.style.opacity = '1'; }
+  }
+
+  /* ── Computation graph: forward / backward highlight ── */
+  function setGroup(id, on){
+    const g = document.getElementById(id);
+    if (!g) return;
+    [...g.children].forEach(c => { c.style.transition = 'opacity .4s'; c.style.opacity = on ? '1' : '0.09'; });
+  }
+  function playCG(which){
+    const fwdPill = document.getElementById('cg-fwd-pill');
+    const bwdPill = document.getElementById('cg-bwd-pill');
+    const labOn = (on) => { const l = document.getElementById('cg-bwd-lab'); if (l){ l.style.transition='opacity .4s'; l.style.opacity = on ? '1':'0.09'; } };
+    if (which === 'fwd'){ setGroup('cg-fwd', true); setGroup('cg-bwd', false); labOn(false); fwdPill.style.opacity='1'; bwdPill.style.opacity='.35'; }
+    else if (which === 'bwd'){ setGroup('cg-fwd', false); setGroup('cg-bwd', true); labOn(true); fwdPill.style.opacity='.35'; bwdPill.style.opacity='1'; }
+    else { setGroup('cg-fwd', true); setGroup('cg-bwd', true); labOn(true); fwdPill.style.opacity='1'; bwdPill.style.opacity='1'; }
+  }
+
+  /* ── Autoplay each figure when it scrolls into view ── */
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const seen = new Set();
+  const figObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if (e.isIntersecting && !seen.has(e.target.id)){
+        seen.add(e.target.id);
+        if (e.target.id === 'cg-svg'){ playCG(reduceMotion ? 'both' : 'fwd'); }
+        else if (e.target.id === 'deriv-svg' && !reduceMotion){ playDeriv(); }
+      }
+    });
+  }, { threshold: 0.4 });
+  ['deriv-svg','cg-svg'].forEach(id=>{ const el = document.getElementById(id); if (el) figObserver.observe(el); });
+  playCG('fwd');
+</script>
+
+<script>
+  // reading progress bar
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    if (bar) bar.style.width = (scrolled * 100) + '%';
+  };
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // active TOC highlight via scroll-spy
+  const links = [...document.querySelectorAll('.toc-list a')];
+  const map = new Map();
+  links.forEach(a => { const id = a.getAttribute('href').slice(1); if (!map.has(id)) map.set(id, a); });
+  const sections = [...document.querySelectorAll('.post-prose section')];
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+  sections.forEach(s => spy.observe(s));
+</script>
+
+<script>
+  // copy code to clipboard (delegated)
+  document.addEventListener('click', function (ev) {
+    const btn = ev.target.closest('.code-copy');
+    if (!btn) return;
+    const wrap = btn.closest('.code-wrap');
+    const codeEl = wrap && wrap.querySelector('.code-block');
+    if (!codeEl) return;
+    const text = codeEl.innerText;
+    const label = btn.querySelector('.copy-text');
+    const done = () => {
+      btn.classList.add('copied');
+      if (label) label.textContent = 'Copied';
+      setTimeout(() => { btn.classList.remove('copied'); if (label) label.textContent = 'Copy'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else { fallbackCopy(text, done); }
+  });
+  function fallbackCopy(text, cb) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); cb(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+</script>
+
+</body>
+</html>

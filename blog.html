@@ -633,6 +633,96 @@
 
     <div class="grid">
 
+      <!-- Backpropagation -->
+      <a class="item post-card" href="/Blogs/AI-ML/backpropagation.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+          <defs>
+            <linearGradient id="bp-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#23253a" />
+              <stop offset="60%" stop-color="#2b2d42" />
+              <stop offset="100%" stop-color="#32354f" />
+            </linearGradient>
+            <pattern id="bp-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(141,153,174,0.08)" stroke-width="0.6" />
+            </pattern>
+            <radialGradient id="bp-glow" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0%" stop-color="rgba(236,72,153,0.22)" />
+              <stop offset="100%" stop-color="rgba(236,72,153,0)" />
+            </radialGradient>
+            <marker id="bp-fwd" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto"><path d="M0,0 L5,3 L0,6 Z" fill="#9DB3FF" /></marker>
+            <marker id="bp-bwd" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto"><path d="M0,0 L5,3 L0,6 Z" fill="#F9A8D4" /></marker>
+          </defs>
+
+          <!-- Background -->
+          <rect width="320" height="200" fill="url(#bp-bg)" />
+          <rect width="320" height="200" fill="url(#bp-grid)" />
+          <circle cx="255" cy="70" r="90" fill="url(#bp-glow)" />
+
+          <!-- Forward / backward computation graph — right side -->
+          <g transform="translate(206,44)">
+            <!-- forward arcs (blue, over the top) -->
+            <g fill="none" stroke="#9DB3FF" stroke-width="1.6">
+              <path d="M 20,43 C 30,25 38,25 48,43" marker-end="url(#bp-fwd)" />
+              <path d="M 64,43 C 74,25 82,25 92,43" marker-end="url(#bp-fwd)" />
+            </g>
+            <!-- backward arcs (pink, under the bottom) -->
+            <g fill="none" stroke="#F9A8D4" stroke-width="1.6">
+              <path d="M 92,61 C 82,79 74,79 64,61" marker-end="url(#bp-bwd)" />
+              <path d="M 48,61 C 38,79 30,79 20,61" marker-end="url(#bp-bwd)" />
+            </g>
+            <!-- nodes -->
+            <circle cx="12" cy="52" r="13" fill="rgba(255,255,255,0.06)" stroke="#6E8BF0" stroke-width="1.4" />
+            <circle cx="56" cy="52" r="13" fill="rgba(255,255,255,0.06)" stroke="#6E8BF0" stroke-width="1.4" />
+            <circle cx="100" cy="52" r="13" fill="rgba(236,72,153,0.18)" stroke="#F472B6" stroke-width="1.6" />
+            <g font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-weight="700" text-anchor="middle">
+              <text x="12" y="56" font-size="12" fill="#EEF1FB">x</text>
+              <text x="56" y="58" font-size="16" fill="#EEF1FB">·</text>
+              <text x="100" y="56" font-size="12" fill="#F9CFE6">L</text>
+            </g>
+            <!-- flow labels -->
+            <text x="56" y="12" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5" font-weight="700" letter-spacing="1.5" fill="#9DB3FF" text-anchor="middle">FORWARD</text>
+            <text x="56" y="96" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5" font-weight="700" letter-spacing="1.5" fill="#F9A8D4" text-anchor="middle">BACKWARD ∂</text>
+          </g>
+
+          <!-- Eyebrow -->
+          <text x="18" y="42" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" font-weight="700"
+            letter-spacing="2" fill="rgba(236,72,153,0.7)">DEEP LEARNING · FROM SCRATCH</text>
+
+          <!-- Title -->
+          <text x="17" y="78" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="20" font-weight="800"
+            letter-spacing="-0.6" fill="#ffffff" opacity="0.98">Backpropagation</text>
+
+          <!-- Rose rule -->
+          <rect x="17" y="86" width="150" height="2" rx="1" fill="#EC4899" opacity="0.85" />
+
+          <!-- Subtitle -->
+          <text x="17" y="108" font-family="Georgia,serif" font-size="12" font-style="italic"
+            fill="rgba(237,242,244,0.5)">The engine inside</text>
+          <text x="17" y="124" font-family="Georgia,serif" font-size="12" font-style="italic"
+            fill="rgba(237,242,244,0.5)">every model</text>
+
+          <!-- Sub label -->
+          <text x="17" y="148" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" letter-spacing="1.2"
+            fill="rgba(237,242,244,0.25)">FORWARD · CHAIN RULE · GRADIENTS</text>
+
+          <!-- Concept pills -->
+          <rect x="17" y="158" width="84" height="13" rx="3" fill="rgba(236,72,153,0.16)" stroke="rgba(236,72,153,0.4)"
+            stroke-width="0.8" />
+          <text x="59" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#EC8FBE" text-anchor="middle">Backpropagation</text>
+
+          <rect x="107" y="158" width="58" height="13" rx="3" fill="rgba(141,153,174,0.14)" stroke="rgba(141,153,174,0.3)"
+            stroke-width="0.8" />
+          <text x="136" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#aab4c5" text-anchor="middle">Chain Rule</text>
+        </svg>
+        <div class="post-body">
+          <div class="post-tags"><span class="p">Machine Learning</span>, Deep Learning</div>
+          <span class="post-title">Backpropagation — The Engine Under Every Neural Net</span>
+          <p class="post-desc">Work out gradients by hand, then build a tiny autograd engine in ~100 lines — the forward pass, the chain rule, and the backward pass that trains every neural network.</p>
+        </div>
+      </a>
+
       <!-- Gradient-descent -->
       <a class="item post-card" href="/Blogs/AI-ML/gradient-descent.html">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
@@ -684,7 +774,7 @@
 
           <!-- Title -->
           <text x="17" y="78" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="21" font-weight="800"
-            letter-spacing="-0.6" fill="#ffffff" opacity="0.98">Logistic Regression</text>
+            letter-spacing="-0.6" fill="#ffffff" opacity="0.98">Gradient Descent</text>
 
           <!-- Rose rule -->
           <rect x="17" y="86" width="150" height="2" rx="1" fill="#d90429" opacity="0.8" />
@@ -712,7 +802,7 @@
         </svg>
         <div class="post-body">
           <div class="post-tags"><span class="p">Machine Learning</span>, Deep Learning</div>
-          <span class="post-title">Logistic Regression — The Atom of Machine Learning</span>
+          <span class="post-title">Gradient Descent — The Atom of Machine Learning</span>
           <p class="post-desc">Build a classifier by hand from weights, biases, sigmoid, loss, and gradient descent — the four moving parts inside every larger model.</p>
         </div>
       </a>
