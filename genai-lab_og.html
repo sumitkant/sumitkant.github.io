@@ -99,6 +99,63 @@
     .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
     .nav-links a.active { font-weight: 500; }
 
+    /* ── Hamburger + mobile menu ──────────────────── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 1.5rem 16px;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(-110%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 99;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .mobile-menu.open { transform: translateY(0); }
+
+    .mobile-menu a {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.15s;
+    }
+
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover, .mobile-menu a.active { color: var(--text-primary); }
+
     /* ── Page layout ─────────────────────────────── */
     .page {
       max-width: var(--content-w);
@@ -252,6 +309,7 @@
     /* ── Section ─────────────────────────────────── */
     .section {
       display: none;
+      scroll-margin-top: var(--nav-h);
     }
 
     .section.active { display: block; }
@@ -1248,9 +1306,13 @@
       .card-grid, .card-grid-4 { grid-template-columns: repeat(2, 1fr); }
     }
 
+    @media (max-width: 700px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+
     @media (max-width: 540px) {
       .card-grid, .card-grid-4, .card-grid-2 { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
       .page { padding: 0 1rem 4rem; }
       .model-table th:nth-child(n+4), .model-table td:nth-child(n+4) { display: none; }
     }
@@ -1368,7 +1430,7 @@
   <nav>
     <div class="nav-inner">
       <a href="https://sumitkant.github.io/" class="nav-logo">
-        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block;">
+        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;">
         </object>
       </a>
       <ul class="nav-links">
@@ -1378,8 +1440,21 @@
         <li><a href="genai-lab.html" class="active">GenAI Lab</a></li>
         <li><a href="neuralnotework.html">My Second Brain</a></li>
       </ul>
+
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu" role="navigation">
+    <a href="blog.html" onclick="closeMobileMenu()">Blog</a>
+    <a href="bookshelf.html" onclick="closeMobileMenu()">Books &amp; Reading</a>
+    <a href="johnnysmusiclab.html" onclick="closeMobileMenu()">Music Lab</a>
+    <a href="genai-lab.html" class="active" onclick="closeMobileMenu()">GenAI Lab</a>
+    <a href="neuralnotework.html" onclick="closeMobileMenu()">My Second Brain</a>
+  </div>
 
   <main class="page">
 
@@ -1487,9 +1562,9 @@
             <text x="185" y="18" font-family="monospace" font-size="6" fill="#fff" opacity="0.35" writing-mode="tb">ATTENTION</text>
           </g>
           <!-- prompt terminal -->
-          <rect x="12" y="90" width="82" height="40" rx="5" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
-          <text x="18" y="107" font-family="monospace" font-size="7.5" fill="#fff" opacity="0.55">&gt;_ prompt</text>
-          <text x="18" y="120" font-family="monospace" font-size="7.5" fill="#a89eff" opacity="0.7">token · token</text>
+          <!-- <rect x="12" y="90" width="82" height="40" rx="5" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.3"/> -->
+          <!-- <text x="18" y="107" font-family="monospace" font-size="7.5" fill="#fff" opacity="0.55">&gt;_ prompt</text>
+          <text x="18" y="120" font-family="monospace" font-size="7.5" fill="#a89eff" opacity="0.7">token · token</text> -->
         </svg>
         <div class="tile-content">
           <!-- <span class="tile-eyebrow">9 articles</span> -->
@@ -1542,14 +1617,14 @@
           <!-- glow dot -->
           <circle cx="180" cy="75" r="7" fill="#4dd9ac" opacity="0.2"/>
           <!-- stack layers -->
-          <rect x="12" y="30" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.15" stroke="#4dd9ac" stroke-width="0.6"/>
+          <!-- <rect x="12" y="30" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.15" stroke="#4dd9ac" stroke-width="0.6"/>
           <text x="20" y="40" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.8">API Layer</text>
           <rect x="12" y="50" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.1" stroke="#4dd9ac" stroke-width="0.6"/>
           <text x="20" y="60" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.7">Models</text>
           <rect x="12" y="70" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.07" stroke="#4dd9ac" stroke-width="0.6"/>
           <text x="20" y="80" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.6">Frameworks</text>
           <rect x="12" y="90" width="70" height="12" rx="3" fill="#4dd9ac" opacity="0.05" stroke="#4dd9ac" stroke-width="0.6"/>
-          <text x="20" y="100" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.5">Resources</text>
+          <text x="20" y="100" font-family="monospace" font-size="7" fill="#4dd9ac" opacity="0.5">Resources</text> -->
         </svg>
         <div class="tile-content">
           <!-- <span class="tile-eyebrow">12 links</span> -->
@@ -1593,8 +1668,8 @@
           <!-- icon -->
           <circle cx="50" cy="55" r="28" fill="none" stroke="#d4a84b" stroke-width="1" opacity="0.25"/>
           <circle cx="50" cy="55" r="18" fill="none" stroke="#d4a84b" stroke-width="0.8" opacity="0.35"/>
-          <text x="50" y="52" font-family="monospace" font-size="9" fill="#d4a84b" opacity="0.7" text-anchor="middle">∑</text>
-          <text x="50" y="64" font-family="monospace" font-size="7" fill="#d4a84b" opacity="0.45" text-anchor="middle">digest</text>
+          <text x="50" y="58" font-family="monospace" font-size="9" fill="#d4a84b" opacity="0.7" text-anchor="middle">∑</text>
+          <!-- <text x="50" y="64" font-family="monospace" font-size="7" fill="#d4a84b" opacity="0.45" text-anchor="middl e">digest</text> -->
           <!-- dots around circle -->
           <circle cx="50" cy="27" r="2.5" fill="#d4a84b" opacity="0.5"/>
           <circle cx="78" cy="55" r="2.5" fill="#d4a84b" opacity="0.5"/>
@@ -1637,15 +1712,15 @@
           <!-- wave line chart -->
           <polyline points="100,95 120,78 140,85 160,65 180,72 200,55 210,58" fill="none" stroke="#fff" stroke-width="1.4" opacity="0.35" stroke-dasharray="3 2"/>
           <!-- left side label -->
-          <text x="15" y="60" font-family="monospace" font-size="7.5" fill="#FCBF49" opacity="0.55" text-anchor="middle">MMLU</text>
-          <text x="15" y="72" font-family="monospace" font-size="6" fill="#FCBF49" opacity="0.35" text-anchor="middle">Bench</text>
+          <!-- <text x="15" y="60" font-family="monospace" font-size="7.5" fill="#FCBF49" opacity="0.55" text-anchor="middle">MMLU</text>
+          <text x="15" y="72" font-family="monospace" font-size="6" fill="#FCBF49" opacity="0.35" text-anchor="middle">Bench</text> -->
           <!-- model dots -->
-          <circle cx="20" cy="100" r="3" fill="#c85c2a" opacity="0.9"/>
+          <!-- <circle cx="20" cy="100" r="3" fill="#c85c2a" opacity="0.9"/>
           <text x="28" y="104" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">Claude</text>
           <circle cx="20" cy="113" r="3" fill="#10a37f" opacity="0.9"/>
           <text x="28" y="117" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">GPT-4o</text>
           <circle cx="20" cy="126" r="3" fill="#5a5ab4" opacity="0.9"/>
-          <text x="28" y="130" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">Gemini</text>
+          <text x="28" y="130" font-family="monospace" font-size="6" fill="#fff" opacity="0.5">Gemini</text> -->
         </svg>
         <div class="tile-content">
           <!-- <span class="tile-eyebrow">7 models</span> -->
@@ -2009,108 +2084,441 @@
     <section class="section" id="section-tools">
       <div class="section-header">
         <h2 class="section-title">Tool Stack</h2>
-        <span class="section-count">Resources, platforms & tools I use and explore</span>
+        <!-- <span class="section-count">Resources, platforms &amp; tools — organised by theme</span> -->
       </div>
 
-      <div class="card-grid-4">
+      <!-- ── AI ASSISTANTS ── -->
+      <div class="theme-group">
+        <p class="theme-label">🤖 AI Assistants</p>
+        <div class="card-grid-4">
 
-        <a class="tool-card" href="https://docs.anthropic.com" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(200,92,42,0.1);">🧠</div>
-          <span class="tool-category">Documentation</span>
-          <span class="tool-name">Anthropic Docs</span>
-          <p class="tool-desc">Official docs for Claude — API reference, prompt engineering guides, model cards, and skill patterns.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>docs.anthropic.com</div>
-        </a>
+          <a class="tool-card" href="https://claude.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,92,42,0.1);">✦</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Claude</span>
+            <p class="tool-desc">Anthropic's flagship model — excellent for coding, analysis, long-context reasoning, and agentic workflows. Claude Sonnet 4 is my primary work environment.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>claude.ai</div>
+          </a>
 
-        <a class="tool-card" href="https://platform.openai.com/docs" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(16,163,127,0.1);">⚡</div>
-          <span class="tool-category">Documentation</span>
-          <span class="tool-name">OpenAI Platform</span>
-          <p class="tool-desc">GPT-4o, Assistants API, embeddings, fine-tuning, and function calling — OpenAI's developer hub.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>platform.openai.com</div>
-        </a>
+          <a class="tool-card" href="https://chatgpt.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(16,163,127,0.1);">⚡</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">ChatGPT</span>
+            <p class="tool-desc">OpenAI's consumer AI — GPT-4o and o3 models with voice, image generation, browsing, code interpreter, and custom GPTs.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>chatgpt.com</div>
+          </a>
 
-        <a class="tool-card" href="https://www.deeplearning.ai" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(90,90,180,0.1);">🎓</div>
-          <span class="tool-category">Learning</span>
-          <span class="tool-name">DeepLearning.AI</span>
-          <p class="tool-desc">Short courses on GenAI, agents, RAG, LangChain, and more from Andrew Ng and leading AI labs.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
-        </a>
+          <a class="tool-card" href="https://gemini.google.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(66,133,244,0.1);">💎</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Gemini</span>
+            <p class="tool-desc">Google's multimodal AI — Gemini 2.5 Pro with 1M token context, Deep Research, and tight integration with Google Workspace.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>gemini.google.com</div>
+          </a>
 
-        <a class="tool-card" href="https://huggingface.co" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(255,180,0,0.1);">🤗</div>
-          <span class="tool-category">Model Hub</span>
-          <span class="tool-name">Hugging Face</span>
-          <p class="tool-desc">Open-source models, datasets, Spaces demos, and the Transformers library for hands-on experimentation.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huggingface.co</div>
-        </a>
+          <a class="tool-card" href="https://chat.deepseek.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,60,200,0.1);">🐋</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">DeepSeek</span>
+            <p class="tool-desc">Chinese open-weight frontier model — DeepSeek-R2 with exceptional reasoning and coding at a fraction of the cost of competitors.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>chat.deepseek.com</div>
+          </a>
 
-        <a class="tool-card" href="https://arxiv.org/search/?searchtype=all&query=LLM+agents" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(180,30,30,0.1);">📄</div>
-          <span class="tool-category">Research</span>
-          <span class="tool-name">arXiv — AI/ML</span>
-          <p class="tool-desc">Pre-print server for AI research papers. Essential for staying current on LLM advances, agent frameworks, and benchmarks.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>arxiv.org</div>
-        </a>
+          <a class="tool-card" href="https://grok.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,0,0,0.06);">𝕏</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Grok</span>
+            <p class="tool-desc">xAI's model with real-time X (Twitter) data access, Grok 3 with deep reasoning mode, and image generation via Aurora.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>grok.com</div>
+          </a>
 
-        <a class="tool-card" href="https://lmsys.org/blog/2023-05-03-arena/" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(0,120,200,0.1);">🏟️</div>
-          <span class="tool-category">Benchmarking</span>
-          <span class="tool-name">LM Arena</span>
-          <p class="tool-desc">Chatbot Arena by LMSYS — head-to-head model comparisons with ELO ratings from human preference votes.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>lmarena.ai</div>
-        </a>
+          <a class="tool-card" href="https://chat.mistral.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,120,0,0.1);">🌊</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Le Chat (Mistral)</span>
+            <p class="tool-desc">Mistral AI's chat interface — fast, European, and multilingual. Mistral Large 2 and the open-source Mistral 7B family.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>chat.mistral.ai</div>
+          </a>
 
-        <a class="tool-card" href="https://langchain.com" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(30,160,80,0.1);">🔗</div>
-          <span class="tool-category">Framework</span>
-          <span class="tool-name">LangChain</span>
-          <p class="tool-desc">Framework for building LLM applications — chains, agents, retrievers, memory, and integrations with 100+ tools.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>langchain.com</div>
-        </a>
+          <a class="tool-card" href="https://www.perplexity.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,200,0.1);">🔍</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">Perplexity AI</span>
+            <p class="tool-desc">AI-native search engine with real-time web retrieval. Great for research, citations, and grounded answers with source links.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>perplexity.ai</div>
+          </a>
 
-        <a class="tool-card" href="https://www.llamaindex.ai" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(180,80,200,0.1);">🦙</div>
-          <span class="tool-category">Framework</span>
-          <span class="tool-name">LlamaIndex</span>
-          <p class="tool-desc">Data framework for LLM applications — indexing, querying, and connecting private data to large language models.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>llamaindex.ai</div>
-        </a>
+          <a class="tool-card" href="https://huggingface.co/chat" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,180,0,0.1);">🤗</div>
+            <span class="tool-category">AI Assistant</span>
+            <span class="tool-name">HuggingChat</span>
+            <p class="tool-desc">Open-source chat interface by Hugging Face — run Llama 3.3, Mistral, Qwen, and Command R+ for free with web search.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huggingface.co/chat</div>
+          </a>
 
-        <a class="tool-card" href="https://simonwillison.net" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(200,150,30,0.1);">✍️</div>
-          <span class="tool-category">Blog / Reading</span>
-          <span class="tool-name">Simon Willison's Blog</span>
-          <p class="tool-desc">Hands-on LLM experiments, tool use, prompt injection research, and GenAI product analysis — one of the best technical voices.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>simonwillison.net</div>
-        </a>
-
-        <a class="tool-card" href="https://www.youtube.com/@AndrejKarpathy" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(255,0,0,0.08);">📺</div>
-          <span class="tool-category">Video / Learning</span>
-          <span class="tool-name">Andrej Karpathy</span>
-          <p class="tool-desc">Zero-to-hero neural network series, GPT from scratch, and state-of-LLM lectures — essential deep learning content.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@AndrejKarpathy</div>
-        </a>
-
-        <a class="tool-card" href="https://paperswithcode.com" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(30,80,200,0.1);">💻</div>
-          <span class="tool-category">Research</span>
-          <span class="tool-name">Papers With Code</span>
-          <p class="tool-desc">ML papers with code implementations, state-of-the-art benchmarks, and datasets — bridging research and practice.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>paperswithcode.com</div>
-        </a>
-
-        <a class="tool-card" href="https://claude.ai" target="_blank" rel="noopener">
-          <div class="tool-icon" style="background:rgba(200,92,42,0.1);">✦</div>
-          <span class="tool-category">AI Assistant</span>
-          <span class="tool-name">Claude (claude.ai)</span>
-          <p class="tool-desc">My primary AI work environment — coding, analysis, writing, and building skills and agentic workflows with Claude Sonnet.</p>
-          <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>claude.ai</div>
-        </a>
-
+        </div>
       </div>
+
+      <!-- ── LLM FRAMEWORKS ── -->
+      <div class="theme-group">
+        <p class="theme-label">🔗 Frameworks</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://langchain.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,80,0.1);">🔗</div>
+            <span class="tool-category">Framework</span>
+            <span class="tool-name">LangChain</span>
+            <p class="tool-desc">The most popular LLM application framework — chains, retrievers, memory, and 100+ integrations. Foundation for most production RAG pipelines.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>langchain.com</div>
+          </a>
+
+          <a class="tool-card" href="https://www.llamaindex.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(180,80,200,0.1);">🦙</div>
+            <span class="tool-category">Framework</span>
+            <span class="tool-name">LlamaIndex</span>
+            <p class="tool-desc">Data framework for connecting private data to LLMs — indexing, querying, and 100+ data connectors. Best for RAG-heavy applications.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>llamaindex.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://huggingface.co" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,180,0,0.1);">🤗</div>
+            <span class="tool-category">Framework / Hub</span>
+            <span class="tool-name">Hugging Face</span>
+            <p class="tool-desc">Open-source model hub, Transformers library, PEFT, datasets, and Spaces — the central ecosystem for open-weight AI development.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huggingface.co</div>
+          </a>
+
+          <a class="tool-card" href="https://ai.pydantic.dev" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(230,0,80,0.1);">🐍</div>
+            <span class="tool-category">Framework</span>
+            <span class="tool-name">PydanticAI</span>
+            <p class="tool-desc">Type-safe agent framework from the Pydantic team — structured outputs, dependency injection, and model-agnostic agent layer with validation built in.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>ai.pydantic.dev</div>
+          </a>
+
+          <a class="tool-card" href="https://sdk.vercel.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,0,0,0.06);">▲</div>
+            <span class="tool-category">Framework</span>
+            <span class="tool-name">Vercel AI SDK</span>
+            <p class="tool-desc">TypeScript-first SDK for building AI-powered web apps — streaming, tool use, React hooks, and support for all major LLM providers.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>sdk.vercel.ai</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── AGENTIC FRAMEWORKS ── -->
+      <div class="theme-group">
+        <p class="theme-label">🕸️ Agentic Frameworks</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,80,0.1);">🕸️</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">LangGraph</span>
+            <p class="tool-desc">Graph-based stateful agent framework — nodes, edges, and checkpointing for complex multi-step reasoning, human-in-the-loop, and production workflows.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>langchain-ai.github.io/langgraph</div>
+          </a>
+
+          <a class="tool-card" href="https://crewai.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(220,50,50,0.1);">👥</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">CrewAI</span>
+            <p class="tool-desc">Role-based multi-agent collaboration — define crews of agents with tasks and goals. Adopted by 60%+ of Fortune 500 for enterprise agent deployments.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>crewai.com</div>
+          </a>
+
+          <a class="tool-card" href="https://microsoft.github.io/autogen/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,120,212,0.1);">🔄</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">AutoGen (Microsoft)</span>
+            <p class="tool-desc">Microsoft Research's multi-agent conversation framework — agents debate, collaborate, and review each other's outputs. Best for research-grade workflows.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>microsoft.github.io/autogen</div>
+          </a>
+
+          <a class="tool-card" href="https://openai.github.io/openai-agents-python/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(16,163,127,0.1);">🤝</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">OpenAI Agents SDK</span>
+            <p class="tool-desc">Production-grade replacement for Swarm — explicit agent handoffs, built-in tracing, and first-party tool integrations for OpenAI-native deployments.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>openai.github.io/openai-agents-python</div>
+          </a>
+
+          <a class="tool-card" href="https://google.github.io/adk-docs/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(66,133,244,0.1);">🌐</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">Google ADK</span>
+            <p class="tool-desc">Google's Agent Development Kit — hierarchical agent trees, native Vertex AI and Gemini integration, and A2A protocol for cross-framework agent communication.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>google.github.io/adk-docs</div>
+          </a>
+
+          <a class="tool-card" href="https://huggingface.co/docs/smolagents" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,180,0,0.1);">⚡</div>
+            <span class="tool-category">Agentic Framework</span>
+            <span class="tool-name">Smolagents (HF)</span>
+            <p class="tool-desc">Hugging Face's lightweight agent library — minimal code, code-writing agents, and model-agnostic tool use. Great for fast prototyping.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huggingface.co/docs/smolagents</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── LOCAL HOSTING ── -->
+      <div class="theme-group">
+        <p class="theme-label">🖥️ Local Hosting</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://ollama.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,0,0,0.06);">🦙</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">Ollama</span>
+            <p class="tool-desc">The developer standard for local LLMs — one command to pull and run Llama 3.3, Qwen3, Mistral, DeepSeek, and more with an OpenAI-compatible API.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>ollama.com</div>
+          </a>
+
+          <a class="tool-card" href="https://lmstudio.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(120,80,200,0.1);">🖥️</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">LM Studio</span>
+            <p class="tool-desc">Best GUI for local LLMs — visual model browser, download manager, and a local server that mimics OpenAI's API. Excellent on Apple Silicon.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>lmstudio.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://jan.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,180,100,0.1);">💬</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">Jan</span>
+            <p class="tool-desc">100% offline desktop AI — clean ChatGPT-style UI, zero telemetry, and agentic Project workspaces with Browser MCP for fully private AI workflows.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>jan.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://openwebui.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,150,200,0.1);">🌐</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">Open WebUI</span>
+            <p class="tool-desc">Self-hosted ChatGPT-style interface wrapping Ollama or any OpenAI-compatible backend — multi-user, RAG, plugins, and conversation history.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>openwebui.com</div>
+          </a>
+
+          <a class="tool-card" href="https://docs.vllm.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,50,50,0.1);">🚀</div>
+            <span class="tool-category">Local Hosting</span>
+            <span class="tool-name">vLLM</span>
+            <p class="tool-desc">High-throughput inference engine for production — PagedAttention for GPU memory efficiency, best-in-class tool calling, and OpenAI-compatible serving at scale.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>docs.vllm.ai</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── BLOGS ── -->
+      <div class="theme-group">
+        <p class="theme-label">✍️ Blogs</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://lilianweng.github.io" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,92,42,0.1);">📝</div>
+            <span class="tool-category">Blog</span>
+            <span class="tool-name">Lil'Log — Lilian Weng</span>
+            <p class="tool-desc">Deep-dive survey posts by ex-OpenAI VP of Research — transformers, diffusion models, RL, and agent memory. Essential for conceptual depth.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>lilianweng.github.io</div>
+          </a>
+
+          <a class="tool-card" href="https://simonwillison.net" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,150,30,0.1);">🔬</div>
+            <span class="tool-category">Blog</span>
+            <span class="tool-name">Simon Willison's Blog</span>
+            <p class="tool-desc">Hands-on LLM experiments, tool use, and prompt injection research — one of the best builder-focused technical voices in the GenAI space.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>simonwillison.net</div>
+          </a>
+
+          <a class="tool-card" href="https://magazine.sebastianraschka.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">📊</div>
+            <span class="tool-category">Blog / Newsletter</span>
+            <span class="tool-name">Ahead of AI — Raschka</span>
+            <p class="tool-desc">Sebastian Raschka's newsletter — LLM architecture comparisons, training deep dives, and rigorous code-first explanations of cutting-edge research.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>magazine.sebastianraschka.com</div>
+          </a>
+
+          <a class="tool-card" href="https://huyenchip.com/blog" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,180,120,0.1);">⚙️</div>
+            <span class="tool-category">Blog</span>
+            <span class="tool-name">Chip Huyen's Blog</span>
+            <p class="tool-desc">Real-world MLOps and production ML systems — AI engineering patterns, inference optimization, and hard-won lessons from building LLM products.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>huyenchip.com/blog</div>
+          </a>
+
+          <a class="tool-card" href="https://eugeneyan.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,120,0,0.1);">🔭</div>
+            <span class="tool-category">Blog</span>
+            <span class="tool-name">Eugene Yan's Blog</span>
+            <p class="tool-desc">Applied ML, recsys, and LLM engineering from Amazon Principal Scientist — bridges academia and product with practical patterns for shipping AI systems.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>eugeneyan.com</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── VIDEOS ── -->
+      <div class="theme-group">
+        <p class="theme-label">📺 Videos</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://www.youtube.com/@AndrejKarpathy" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,0,0,0.08);">🎓</div>
+            <span class="tool-category">Video</span>
+            <span class="tool-name">Andrej Karpathy</span>
+            <p class="tool-desc">Zero-to-hero neural network series, GPT from scratch, and state-of-LLM lectures — the single best deep learning resource on YouTube.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@AndrejKarpathy</div>
+          </a>
+
+          <a class="tool-card" href="https://www.youtube.com/@lexfridman" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,30,30,0.08);">🎙️</div>
+            <span class="tool-category">Video / Podcast</span>
+            <span class="tool-name">Lex Fridman</span>
+            <p class="tool-desc">Long-form interviews with Sam Altman, Ilya Sutskever, Yann LeCun, and other AI leaders — philosophy, research, and the future of intelligence.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@lexfridman</div>
+          </a>
+
+          <a class="tool-card" href="https://www.youtube.com/@3blue1brown" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(60,100,255,0.1);">🔵</div>
+            <span class="tool-category">Video</span>
+            <span class="tool-name">3Blue1Brown</span>
+            <p class="tool-desc">Visual deep learning — animated explanations of neural networks, attention, and transformers that make abstract math intuitive and memorable.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@3blue1brown</div>
+          </a>
+
+          <a class="tool-card" href="https://www.youtube.com/@YannicKilcher" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(200,30,30,0.08);">📄</div>
+            <span class="tool-category">Video</span>
+            <span class="tool-name">Yannic Kilcher</span>
+            <p class="tool-desc">In-depth ML paper walkthroughs — transformers, reasoning models, and RL explained with whiteboard-level rigour for serious practitioners.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@YannicKilcher</div>
+          </a>
+
+          <a class="tool-card" href="https://www.youtube.com/@TwoMinutePapers" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,200,0.1);">⚡</div>
+            <span class="tool-category">Video</span>
+            <span class="tool-name">Two Minute Papers</span>
+            <p class="tool-desc">Fast, engaging breakdowns of the latest AI research papers — Károly Zsolnai-Fehér distills key ideas from complex work into digestible 5-minute videos.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>youtube.com/@TwoMinutePapers</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── COURSES ── -->
+      <div class="theme-group">
+        <p class="theme-label">🎓 Courses</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://www.deeplearning.ai/courses/chatgpt-prompt-eng" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">✏️</div>
+            <span class="tool-category">Course — DeepLearning.AI</span>
+            <span class="tool-name">Prompt Engineering for Devs</span>
+            <p class="tool-desc">Andrew Ng &amp; Isa Fulford's free short course — iterative prompt development, summarisation, inference, transformation, and chatbot building with the OpenAI API.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.deeplearning.ai/courses/retrieval-augmented-generation-rag/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">🗄️</div>
+            <span class="tool-category">Course — DeepLearning.AI</span>
+            <span class="tool-name">Retrieval Augmented Generation</span>
+            <p class="tool-desc">End-to-end RAG course — chunking, vector databases, hybrid search, reranking, evaluation, and production deployment. ~5hrs/week for one month.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.deeplearning.ai/courses/building-agentic-rag-with-llamaindex" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">🤖</div>
+            <span class="tool-category">Course — DeepLearning.AI</span>
+            <span class="tool-name">Agentic RAG with LlamaIndex</span>
+            <p class="tool-desc">Build routers, tool-calling agents, and multi-document research assistants with LlamaIndex. Taught by Jerry Liu, LlamaIndex co-founder and CEO.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.deeplearning.ai/courses/langchain-chat-with-your-data/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(90,90,180,0.1);">🔗</div>
+            <span class="tool-category">Course — DeepLearning.AI</span>
+            <span class="tool-name">LangChain: Chat with Your Data</span>
+            <p class="tool-desc">Learn document loading, splitting, embeddings, vector stores, retrieval, and Q&amp;A chains using LangChain — a hands-on intro to RAG applications.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>deeplearning.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://www.coursera.org/specializations/deep-learning" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,86,210,0.1);">🏛️</div>
+            <span class="tool-category">Course — Coursera</span>
+            <span class="tool-name">Deep Learning Specialization</span>
+            <p class="tool-desc">Andrew Ng's 5-course foundational program — neural networks, CNNs, sequence models, and structuring ML projects. The canonical entry point to deep learning.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>coursera.org</div>
+          </a>
+
+          <a class="tool-card" href="https://www.coursera.org/learn/generative-ai-for-everyone" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(0,86,210,0.1);">🌍</div>
+            <span class="tool-category">Course — Coursera</span>
+            <span class="tool-name">Generative AI for Everyone</span>
+            <p class="tool-desc">Andrew Ng's non-technical GenAI course — how LLMs work, prompt engineering, real-world applications, and responsible AI use. Rated 4.8★ with 3300+ reviews.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>coursera.org</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── WEB SEARCH APIs ── -->
+      <div class="theme-group">
+        <p class="theme-label">🔎 Web Search APIs</p>
+        <div class="card-grid-4">
+
+          <a class="tool-card" href="https://tavily.com" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,140,255,0.1);">🔭</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Tavily</span>
+            <p class="tool-desc">Purpose-built search API for AI agents — relevance filtering, answer extraction, and structured results ready for LLM consumption. 1M+ downloads. Acquired by Nebius (2026).</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>tavily.com</div>
+          </a>
+
+          <a class="tool-card" href="https://exa.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(80,50,200,0.1);">🧲</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Exa AI</span>
+            <p class="tool-desc">Neural semantic search API for agents — find pages by meaning rather than keywords, with full content extraction. Strong for technical doc retrieval.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>exa.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://brave.com/search/api/" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,80,0,0.1);">🦁</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Brave Search API</span>
+            <p class="tool-desc">Independent search index — not a Google/Bing wrapper. Top scorer in 2026 agentic benchmarks (14.89). LLM Context API optimised for agent consumption.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>brave.com/search/api</div>
+          </a>
+
+          <a class="tool-card" href="https://docs.perplexity.ai" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,160,200,0.1);">💡</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Perplexity Sonar API</span>
+            <p class="tool-desc">Perplexity's API for grounded LLM answers — Sonar and Sonar Pro return LLM-synthesised responses with cited sources. Best for factual Q&amp;A agents.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>docs.perplexity.ai</div>
+          </a>
+
+          <a class="tool-card" href="https://serper.dev" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(30,180,80,0.1);">⚡</div>
+            <span class="tool-category">Search API</span>
+            <span class="tool-name">Serper</span>
+            <p class="tool-desc">Google Search API wrapper — fast, cheap at scale ($0.30–$1/1k queries), JSON results, and a 2500-query free tier. Great for cost-sensitive high-volume agents.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>serper.dev</div>
+          </a>
+
+          <a class="tool-card" href="https://www.firecrawl.dev" target="_blank" rel="noopener">
+            <div class="tool-icon" style="background:rgba(255,80,0,0.08);">🔥</div>
+            <span class="tool-category">Search API / Scraper</span>
+            <span class="tool-name">Firecrawl</span>
+            <p class="tool-desc">Web scraping and crawling API for LLMs — turns any URL into clean markdown, handles JS-rendered pages, and pairs with search APIs for full-content agent pipelines.</p>
+            <div class="tool-link-row"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>firecrawl.dev</div>
+          </a>
+
+        </div>
+      </div>
+
     </section>
 
     <!-- ════════════════════════════════════════════ -->
@@ -2170,23 +2578,120 @@
     <!--  5. MODEL LANDSCAPE                          -->
     <!-- ════════════════════════════════════════════ -->
     <section class="section" id="section-models">
+      
+            <!-- ════════════════════════════════════════════ -->
+      <!--  LLM Benchmarks feature card → links to blog   -->
+      <!-- ════════════════════════════════════════════ -->
       <div class="section-header">
-        <h2 class="section-title">Model Landscape</h2>
-        <span class="section-count">Live LiveBench leaderboard, fetched in your browser</span>
+        <h2 class="section-title">LLM Benchmarks</h2>
+        <span class="section-count">A plain-English guide to how AI models are tested</span>
       </div>
 
+      <style>
+        /* Self-contained styles for the LLM Benchmarks feature card (clay-hero replica) */
+        .lbh-card{
+          --lbh-surface:#EFEBE6; --lbh-text:#3A342F; --lbh-text2:#5F564E;
+          --lbh-muted:#8C7C6E; --lbh-rose:#99604F; --lbh-blush:#E5C0B6;
+          --lbh-shl:rgba(255,253,250,0.85);
+          position:relative; display:block; overflow:hidden;
+          margin:0 0 var(--gap); padding:46px 48px 44px;
+          border-radius:22px; background:var(--lbh-surface);
+          border:1px solid rgba(176,166,154,0.18);
+          box-shadow:11px 20px 44px rgba(122,78,48,0.17), -6px -6px 11px var(--lbh-shl);
+          text-decoration:none; transition:transform .25s ease, box-shadow .25s ease;
+        }
+        .lbh-card:hover{
+          transform:translateY(-3px);
+          box-shadow:14px 26px 54px rgba(122,78,48,0.21), -6px -6px 12px var(--lbh-shl);
+        }
+        .lbh-inner{ position:relative; z-index:2; display:block; max-width:640px; }
+        .lbh-eyebrow{
+          display:flex; align-items:center; gap:11px; margin-bottom:18px;
+          font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500;
+          letter-spacing:.2em; text-transform:uppercase; color:var(--lbh-muted);
+        }
+        .lbh-eyebrow::before{ content:""; width:28px; height:8px; border-radius:999px; background:var(--lbh-blush); }
+        .lbh-title{
+          display:block; font-weight:800; font-size:clamp(1.8rem,3.6vw,2.7rem);
+          line-height:1.05; letter-spacing:-.03em; color:var(--lbh-text); margin-bottom:14px;
+        }
+        .lbh-title .ac{ color:var(--lbh-rose); position:relative; }
+        .lbh-title .ac::after{
+          content:""; position:absolute; left:0; right:0; bottom:.08em; height:.32em;
+          background:var(--lbh-blush); opacity:.55; border-radius:6px; z-index:-1;
+        }
+        .lbh-sub{
+          display:block; font-size:14.5px; line-height:1.7; color:var(--lbh-text2);
+          max-width:54ch; margin-bottom:24px;
+        }
+        .lbh-meta{ display:flex; flex-wrap:wrap; gap:11px; margin-bottom:26px; }
+        .lbh-pill{
+          font-size:12px; color:var(--lbh-text2); padding:8px 15px; border-radius:999px;
+          background:var(--lbh-surface);
+          box-shadow:4px 4px 10px rgba(122,78,48,0.14), -4px -4px 10px var(--lbh-shl);
+        }
+        .lbh-pill strong{ color:var(--lbh-rose); font-weight:700; }
+        .lbh-cta{
+          display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700;
+          color:#fff; background:var(--lbh-rose); padding:10px 18px; border-radius:999px;
+          box-shadow:6px 8px 18px rgba(153,96,79,0.30); transition:background .2s;
+        }
+        .lbh-card:hover .lbh-cta{ background:#84513f; }
+        .lbh-cta svg{ width:14px; height:14px; stroke:#fff; fill:none; stroke-width:2.2; }
+        .lbh-sphere{ position:absolute; border-radius:50%; z-index:1; pointer-events:none; }
+        .lbh-s1{ width:130px; height:130px; top:-24px; right:64px;
+          background:radial-gradient(circle at 34% 30%, #F2D8D0, #E0AC9F 70%);
+          box-shadow:8px 12px 26px rgba(176,166,154,.45); }
+        .lbh-s2{ width:64px; height:64px; top:104px; right:210px;
+          background:radial-gradient(circle at 34% 30%, #DCF0EC, #B6DDD6 72%);
+          box-shadow:6px 9px 20px rgba(176,166,154,.4); }
+        .lbh-s3{ width:46px; height:46px; top:34px; right:26px;
+          background:radial-gradient(circle at 34% 30%, #F0E7DA, #D8C7B2 72%);
+          box-shadow:5px 7px 16px rgba(176,166,154,.4); }
+        @media (max-width:700px){
+          .lbh-card{ padding:34px 26px 32px; }
+          .lbh-sphere{ display:none; }
+        }
+      </style>
+
+      <a class="lbh-card" href="Blogs/AI-ML/llm-benchmarks.html">
+        <span class="lbh-sphere lbh-s1"></span>
+        <span class="lbh-sphere lbh-s2"></span>
+        <span class="lbh-sphere lbh-s3"></span>
+        <span class="lbh-inner">
+          <span class="lbh-eyebrow">Reference Guide · 2025–2026</span>
+          <span class="lbh-title">LLM <span class="ac">Benchmarks</span> Decoded</span>
+          <span class="lbh-sub">A plain-English guide to how AI models are tested — what each benchmark measures, how it's set up, what the scores mean, and where they can be gamed.</span>
+          <span class="lbh-meta">
+            <span class="lbh-pill"><strong>22</strong> Benchmarks</span>
+            <span class="lbh-pill"><strong>9</strong> Themes</span>
+            <span class="lbh-pill">Updated <strong>June 2026</strong></span>
+          </span>
+          <span class="lbh-cta">Read the guide
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </span>
+      </a>
+      <br>
+
+      <div class="section-header">
+        <h2 class="section-title">Model Landscape</h2>
+        <span class="section-count">Live LiveBench leaderboard</span>
+      </div>
+
+      
 
       <div id="livebench-explorer">
         <p class="lb-intro">
-          A live model leaderboard built from <strong>LiveBench</strong> benchmark CSVs. The script fetches every public release, adds a <code>_date</code> column, computes simple category averages, and renders them as parallel-coordinate and trend charts. It loads automatically — pick a category to drill into individual benchmarks, or select multiple dates to see how models move over time.
+          A live model leaderboard built from <strong>LiveBench</strong> benchmark CSVs. Pick a category to drill into individual benchmarks, or select multiple dates to see how models move over time.
         </p>
 
         <div class="controls-grid">
           <div class="control-card">
             <label class="control-label" for="dataSource">Data source</label>
             <select id="dataSource">
-              <option value="github" selected>GitHub raw mirror (CORS-friendly)</option>
-              <option value="livebench">livebench.ai direct URLs</option>
+              <option value="github" selected>Github</option>
+              <option value="livebench">LiveBench</option>
             </select>
             <div class="button-row">
               <button class="action-btn" id="loadBtn">Load / Refresh</button>
@@ -2253,7 +2758,7 @@
           <div class="viz-header">
             <div>
               <div class="viz-title">Parallel profile by broad category</div>
-              <div class="viz-sub">Compresses many benchmark columns into simple buckets: reasoning, coding, language, data transformation, and spatial/logical tasks. Model names sit at each end of every line; hover a line to focus it. Pick a category above to drill into its individual axes.</div>
+              <div class="viz-sub">Pick a category above to drill into its individual axes.</div>
             </div>
             <span class="lb-badge" id="profileContext">Waiting for data</span>
           </div>
@@ -3081,7 +3586,7 @@
       'custom': { emoji: '🔵', badgeClass: 'badge-custom',    badgeText: 'Custom'    }
     };
  
-    var PROVIDER_ORDER = ['claude', 'openai', 'custom'];
+    var PROVIDER_ORDER = ['custom', 'claude', 'openai'];
  
     var DOWNLOAD_ICON = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
     var GH_ICON = '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:3px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>';
@@ -3465,6 +3970,26 @@
         window.location.href = card.dataset.href;
       });
     });
+  </script>
+
+  <!-- ── Mobile menu toggle ── -->
+  <script>
+    var hamburger = document.getElementById('hamburger');
+    var mobileMenu = document.getElementById('mobileMenu');
+
+    function toggleMobileMenu() {
+      var open = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+
+    hamburger.addEventListener('click', toggleMobileMenu);
   </script>
 
 </body>

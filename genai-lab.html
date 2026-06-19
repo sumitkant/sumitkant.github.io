@@ -1357,6 +1357,36 @@
     #livebench-explorer .metric-value { font-size:1.85rem; font-weight:800; letter-spacing:-0.035em; line-height:1.1; margin-bottom:6px; }
     #livebench-explorer .metric-desc { font-size:12px; color:var(--text-secondary); line-height:1.55; }
 
+    /* ── Score dials ─────────────────────────────────── */
+    #livebench-explorer .score-dials { display:grid; grid-template-columns:1.05fr 1fr; gap:14px; margin:16px 0 1.5rem; align-items:stretch; }
+    #livebench-explorer .score-overall { background:var(--lb-card); border:1px solid var(--border); border-radius:16px; padding:18px 22px 20px; display:flex; flex-direction:column; align-items:center; }
+    #livebench-explorer .score-overall-title { align-self:flex-start; font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:4px; }
+    #livebench-explorer .score-overall-gauge { width:100%; max-width:300px; margin-top:2px; }
+    #livebench-explorer .score-overall-gauge svg { width:100%; height:auto; display:block; }
+    #livebench-explorer .score-overall-model { margin-top:10px; font-size:1.2rem; font-weight:800; letter-spacing:-0.02em; color:var(--text-primary); text-align:center; line-height:1.2; }
+    #livebench-explorer .score-pills { display:flex; flex-direction:column; gap:12px; }
+    #livebench-explorer .score-pill { flex:1; background:var(--lb-card); border:1px solid var(--border); border-radius:14px; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+    #livebench-explorer .pill-label { font-size:10px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:4px; }
+    #livebench-explorer .pill-model { font-size:0.98rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.01em; line-height:1.2; }
+    #livebench-explorer .pill-gauge { width:92px; flex-shrink:0; }
+    #livebench-explorer .pill-gauge svg { width:100%; height:auto; display:block; }
+    @media (max-width:700px){ #livebench-explorer .score-dials { grid-template-columns:1fr; } }
+
+    /* ── Effort comparison grid ──────────────────────── */
+    #livebench-explorer .effort-section { margin:18px 0; }
+    #livebench-explorer .effort-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    #livebench-explorer .effort-card { background:var(--lb-card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; }
+    #livebench-explorer .effort-card-title { font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:14px; }
+    #livebench-explorer .effort-row { margin-bottom:13px; }
+    #livebench-explorer .effort-row:last-child { margin-bottom:0; }
+    #livebench-explorer .effort-row-top { display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:5px; }
+    #livebench-explorer .effort-label { font-size:12.5px; color:var(--text-secondary); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    #livebench-explorer .effort-val { font-size:12.5px; font-weight:800; color:var(--text-primary); flex-shrink:0; }
+    #livebench-explorer .effort-bar-track { height:8px; background:rgba(0,0,0,0.06); border-radius:999px; overflow:hidden; }
+    #livebench-explorer .effort-bar-fill { height:100%; border-radius:999px; transition:width 0.5s ease; }
+    #livebench-explorer .effort-empty { font-size:12px; color:var(--text-tertiary); }
+    @media (max-width:700px){ #livebench-explorer .effort-grid { grid-template-columns:1fr; } }
+
     #livebench-explorer .viz-card { background:var(--lb-card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin:16px 0; overflow:hidden; }
     #livebench-explorer .viz-card.is-hidden { display:none; }
     #livebench-explorer .viz-card.is-disabled .svg-wrap,
@@ -2686,7 +2716,42 @@
           A live model leaderboard built from <strong>LiveBench</strong> benchmark CSVs. Pick a category to drill into individual benchmarks, or select multiple dates to see how models move over time.
         </p>
 
-        <div class="controls-grid">
+        <div class="score-dials">
+          <div class="score-overall">
+            <div class="score-overall-title">Top Overall Model</div>
+            <div class="score-overall-gauge" id="overallGauge"></div>
+            <div class="score-overall-model" id="kpiTopOverall">--</div>
+          </div>
+          <div class="score-pills">
+            <div class="score-pill">
+              <div class="pill-info"><div class="pill-label">Top Coding Model</div><div class="pill-model" id="kpiCoding">--</div></div>
+              <div class="pill-gauge" id="codingGauge"></div>
+            </div>
+            <div class="score-pill">
+              <div class="pill-info"><div class="pill-label">Top Data Analysis Model</div><div class="pill-model" id="kpiData">--</div></div>
+              <div class="pill-gauge" id="dataGauge"></div>
+            </div>
+            <div class="score-pill">
+              <div class="pill-info"><div class="pill-label">Top Agentic Coding Model</div><div class="pill-model" id="kpiAgentic">--</div></div>
+              <div class="pill-gauge" id="agenticGauge"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. Broad-category profile — always the first chart -->
+        <div class="viz-card" id="profileCard">
+          <div class="viz-header">
+            <div>
+              <div class="viz-title">Top Models by Category</div>
+              <div class="viz-sub" id="profileInsight">Loading the latest leaderboard…</div>
+            </div>
+            <button class="action-btn" id="refreshBtn" type="button" title="Reload data and refresh charts" style="flex-shrink:0;">↻ Refresh</button>
+          </div>
+          <div class="svg-wrap"><svg id="profileChart" class="chart small" role="img" aria-label="Category profile chart"></svg></div>
+          <div class="legend" id="profileLegend"></div>
+        </div>
+
+        <div class="controls-grid" style="display:none;">
           <div class="control-card">
             <label class="control-label" for="dataSource">Data source</label>
             <select id="dataSource">
@@ -2718,7 +2783,7 @@
           </div>
         </div>
 
-        <div class="controls-grid">
+        <div class="controls-grid" style="display:none;">
           <div class="control-card">
             <label class="control-label" for="minScore">Minimum selected-category score</label>
             <input id="minScore" type="number" min="0" max="100" step="1" value="0"/>
@@ -2744,27 +2809,7 @@
           </div>
         </div>
 
-        <div class="status-line" id="status">Loading the latest LiveBench release…</div>
-
-        <div class="metric-grid">
-          <div class="metric-card"><div class="metric-name">Rows loaded</div><div class="metric-value" id="kpiRows">--</div><div class="metric-desc">Model-date records after combining every release.</div></div>
-          <div class="metric-card"><div class="metric-name">Models in view</div><div class="metric-value" id="kpiModels">--</div><div class="metric-desc">Unique models matching the active filters.</div></div>
-          <div class="metric-card"><div class="metric-name">Top model</div><div class="metric-value" id="kpiTop" style="font-size:1.25rem;line-height:1.25;">--</div><div class="metric-desc" id="kpiTopDesc">Based on selected category average.</div></div>
-          <div class="metric-card"><div class="metric-name">Benchmark axes</div><div class="metric-value" id="kpiAxes">--</div><div class="metric-desc">Metric columns used in the parallel chart.</div></div>
-        </div>
-
-        <!-- 1. Broad-category profile — always the first chart -->
-        <div class="viz-card" id="profileCard">
-          <div class="viz-header">
-            <div>
-              <div class="viz-title">Parallel profile by broad category</div>
-              <div class="viz-sub">Pick a category above to drill into its individual axes.</div>
-            </div>
-            <span class="lb-badge" id="profileContext">Waiting for data</span>
-          </div>
-          <div class="svg-wrap"><svg id="profileChart" class="chart small" role="img" aria-label="Category profile chart"></svg></div>
-          <div class="legend" id="profileLegend"></div>
-        </div>
+        <div class="status-line" id="status" style="display:none;">Loading the latest LiveBench release…</div>
 
         <!-- 2. Metric-level breakdown — loads once a specific category is selected -->
         <div class="viz-card is-hidden" id="parallelCard">
@@ -2780,7 +2825,7 @@
         </div>
 
         <!-- 3. Trend chart — always visible, disabled until 2+ dates selected -->
-        <div class="viz-card is-disabled" id="trendCard">
+        <div class="viz-card is-disabled" id="trendCard" style="display:none;">
           <div class="viz-header">
             <div>
               <div class="viz-title">Trend over release dates</div>
@@ -2793,10 +2838,17 @@
           <div class="legend" id="trendLegend"></div>
         </div>
 
+        <!-- Latest model per family compared across thinking-effort levels -->
+        <div class="effort-section">
+          <div class="viz-title" style="margin-bottom:4px;">Latest models by thinking effort</div>
+          <div class="viz-sub" style="margin-bottom:14px;">Each family's strongest current model, compared by overall score at the same reasoning-effort setting.</div>
+          <div class="effort-grid" id="effortGrid"></div>
+        </div>
+
         <!-- Filtered leaderboard table -->
         <div class="prompt-table" style="overflow:auto;max-height:560px;">
           <table class="data-table" id="modelTable">
-            <thead><tr><th>Date</th><th>Model</th><th>Category</th><th>Overall</th><th>Reasoning</th><th>Coding</th><th>Language</th><th>Data</th></tr></thead>
+            <thead><tr><th>Date</th><th>Model</th><th>Overall</th><th>Reasoning</th><th>Coding</th><th>Agentic</th><th>Math</th><th>Data</th><th>Language</th><th>Instruction</th></tr></thead>
             <tbody><tr><td colspan="8">Loading data…</td></tr></tbody>
           </table>
         </div>
@@ -2833,35 +2885,45 @@
     '2025-04-25', '2025-05-30', '2025-11-25', '2025-12-23', '2026-01-08'
   ];
 
+  // Canonical category → benchmark-metric mapping (from the LiveBench CSVs).
+  // Each category average is the simple mean of its listed metrics.
   const CATEGORY_GROUPS = {
     all: {
       label: 'All benchmarks',
       metrics: []
     },
     reasoning: {
-      label: 'Reasoning / math / logic',
-      metrics: ['AMPS_Hard', 'math_comp', 'olympiad', 'logic_with_navigation', 'zebra_puzzle', 'theory_of_mind', 'simplify', 'integrals_with_game', 'connections', 'consecutive_events', 'spatial']
+      label: 'Reasoning',
+      metrics: ['theory_of_mind', 'zebra_puzzle', 'spatial', 'logic_with_navigation']
     },
     coding: {
       label: 'Coding',
-      metrics: ['code_completion', 'code_generation', 'javascript', 'python', 'typescript']
+      metrics: ['code_generation', 'code_completion']
     },
-    language: {
-      label: 'Language quality',
-      metrics: ['story_generation', 'summarize', 'paraphrase', 'typos']
+    agentic: {
+      label: 'Agentic Coding',
+      metrics: ['javascript', 'typescript', 'python']
+    },
+    mathematics: {
+      label: 'Mathematics',
+      metrics: ['AMPS_Hard', 'integrals_with_game', 'math_comp', 'olympiad']
     },
     data: {
-      label: 'Data transformation',
-      metrics: ['tablejoin', 'tablereformat', 'plot_unscrambling']
+      label: 'Data Analysis',
+      metrics: ['consecutive_events', 'tablejoin', 'tablereformat']
     },
-    spatial: {
-      label: 'Spatial and puzzle-heavy',
-      metrics: ['spatial', 'zebra_puzzle', 'connections', 'logic_with_navigation', 'consecutive_events']
+    language: {
+      label: 'Language',
+      metrics: ['connections', 'plot_unscrambling', 'typos']
+    },
+    if: {
+      label: 'Instruction Following',
+      metrics: ['paraphrase', 'simplify', 'story_generation', 'summarize']
     }
   };
 
   const CATEGORY_COLORS = {
-    all: '#1a1a18', reasoning: '#c85c2a', coding: '#6366f1', language: '#10b981', data: '#0ea5e9', spatial: '#8b5cf6'
+    all: '#1a1a18', reasoning: '#c85c2a', coding: '#6366f1', agentic: '#8b5cf6', mathematics: '#ef4444', data: '#0ea5e9', language: '#10b981', if: '#f59e0b'
   };
 
   let allRows = [];
@@ -2892,7 +2954,7 @@
     profileCard: document.getElementById('profileCard'),
     parallelCard: document.getElementById('parallelCard'),
     trendCard: document.getElementById('trendCard'),
-    profileContext: document.getElementById('profileContext'),
+    profileInsight: document.getElementById('profileInsight'),
     trendContext: document.getElementById('trendContext'),
     parallelLegend: document.getElementById('parallelLegend'),
     profileLegend: document.getElementById('profileLegend'),
@@ -2900,11 +2962,14 @@
     modelTable: document.getElementById('modelTable').querySelector('tbody'),
     tooltip: document.getElementById('tooltip'),
     chartContext: document.getElementById('chartContext'),
-    kpiRows: document.getElementById('kpiRows'),
-    kpiModels: document.getElementById('kpiModels'),
-    kpiTop: document.getElementById('kpiTop'),
-    kpiTopDesc: document.getElementById('kpiTopDesc'),
-    kpiAxes: document.getElementById('kpiAxes'),
+    kpiTopOverall: document.getElementById('kpiTopOverall'),
+    kpiTopOverallDesc: document.getElementById('kpiTopOverallDesc'),
+    kpiCoding: document.getElementById('kpiCoding'),
+    kpiCodingDesc: document.getElementById('kpiCodingDesc'),
+    kpiData: document.getElementById('kpiData'),
+    kpiDataDesc: document.getElementById('kpiDataDesc'),
+    kpiAgentic: document.getElementById('kpiAgentic'),
+    kpiAgenticDesc: document.getElementById('kpiAgenticDesc'),
     blogLead: document.getElementById('blogLead'),
     blogTakeaway: document.getElementById('blogTakeaway'),
     generatedBlog: document.getElementById('generatedBlog')
@@ -2912,9 +2977,29 @@
 
   function setStatus(message) { els.status.textContent = message; }
   function tableFileName(date) { return `table_${date.replaceAll('-', '_')}.csv`; }
-  function getCsvUrl(fileName) {
-    if (els.dataSource.value === 'livebench') return `https://livebench.ai/${fileName}`;
-    return `https://raw.githubusercontent.com/LiveBench/livebench.github.io/main/public/${fileName}`;
+  function githubUrl(fileName) { return `https://raw.githubusercontent.com/LiveBench/livebench.github.io/main/public/${fileName}`; }
+  function livebenchUrl(fileName) { return `https://livebench.ai/${fileName}`; }
+
+  // Return candidate URLs in priority order based on the selected source,
+  // so a failure on one backend automatically falls back to the other.
+  function getCsvUrls(fileName) {
+    return els.dataSource.value === 'livebench'
+      ? [livebenchUrl(fileName), githubUrl(fileName)]
+      : [githubUrl(fileName), livebenchUrl(fileName)];
+  }
+
+  // Try each candidate URL in turn; return the first that succeeds.
+  async function fetchCsvWithFallback(fileName) {
+    const urls = getCsvUrls(fileName);
+    let lastErr;
+    for (const url of urls) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) return { text: await response.text(), url };
+        lastErr = new Error(`HTTP ${response.status} — ${url}`);
+      } catch (err) { lastErr = err; }
+    }
+    throw lastErr || new Error(`Could not fetch ${fileName}`);
   }
 
   function parseCsvLine(line) {
@@ -2964,11 +3049,8 @@
     const columns = new Set(['_date', '_source_file', '_source_url']);
     for (const date of LIVEBENCH_DATES) {
       const fileName = tableFileName(date);
-      const url = getCsvUrl(fileName);
-      setStatus(`Fetching ${fileName} from ${els.dataSource.value}...`);
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Failed ${url}: HTTP ${response.status}`);
-      const text = await response.text();
+      setStatus(`Fetching ${fileName}...`);
+      const { text, url } = await fetchCsvWithFallback(fileName);
       const parsed = parseCsv(text);
       parsed.headers.forEach(h => columns.add(h));
       parsed.rows.forEach(row => {
@@ -2992,6 +3074,15 @@
 
   function fmt(n, digits = 1) {
     return Number.isFinite(n) ? n.toFixed(digits) : '--';
+  }
+
+  // "2026-01-08" → "Jan'26"
+  function shortDate(d) {
+    const parts = String(d || '').split('-');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const mi = parseInt(parts[1], 10) - 1;
+    if (!parts[0] || isNaN(mi) || !months[mi]) return d;
+    return `${months[mi]}'${parts[0].slice(2)}`;
   }
 
   function inferProvider(model) {
@@ -3021,6 +3112,7 @@
       const next = { ...row };
       next._provider = inferProvider(row.model);
       next._overall = avg(numericColumns.map(c => row[c]));
+      // Per-category averages (_reasoning, _coding, _agentic, _mathematics, _data, _language, _if, _all).
       for (const [key, group] of Object.entries(CATEGORY_GROUPS)) {
         next[`_${key}`] = key === 'all' ? next._overall : avg(group.metrics.map(c => row[c]));
       }
@@ -3031,9 +3123,13 @@
   function unique(arr) { return Array.from(new Set(arr)).filter(Boolean); }
 
   function initControls() {
-    const latestDate = LIVEBENCH_DATES.slice().sort().at(-1);
-    els.dateFilters.innerHTML = LIVEBENCH_DATES.slice().sort().map(date => `
-      <label class="check-pill"><input type="checkbox" value="${date}" ${date === latestDate ? 'checked' : ''}/> ${date}</label>
+    // Default to the two most recent releases: the profile chart honours
+    // "latest selected date only" (so it shows just the latest), while the
+    // trend chart uses both to plot latest-vs-previous movement.
+    const sortedDates = LIVEBENCH_DATES.slice().sort();
+    const defaultDates = sortedDates.slice(-2);
+    els.dateFilters.innerHTML = sortedDates.map(date => `
+      <label class="check-pill"><input type="checkbox" value="${date}" ${defaultDates.includes(date) ? 'checked' : ''}/> ${date}</label>
     `).join('');
 
     els.categorySelect.innerHTML = Object.entries(CATEGORY_GROUPS).map(([key, value]) => `
@@ -3093,6 +3189,125 @@
   function colorFor(index, total) {
     const hue = Math.round((index * 360 / Math.max(total, 1) + 12) % 360);
     return `hsl(${hue} 68% 42%)`;
+  }
+
+  // Colour families for the chart lines. Grok shares GPT's black but is drawn dashed.
+  const MODEL_FAMILIES = [
+    { key: 'claude', color: '#c85c2a', label: 'Claude',  dash: false },
+    { key: 'gpt',    color: '#1a1a18', label: 'GPT',     dash: false },
+    { key: 'gemini', color: '#2563eb', label: 'Gemini',  dash: false },
+    { key: 'grok',   color: '#1a1a18', label: 'Grok',    dash: true  },
+    { key: 'qwen',   color: '#7c3aed', label: 'Qwen',    dash: false },
+    { key: 'kimi',   color: '#92400e', label: 'Kimi',    dash: false },
+    { key: 'glm',    color: '#15a34a', label: 'GLM',     dash: false },
+    { key: 'other',  color: '#9aa0a6', label: 'Others',  dash: false }
+  ];
+  const FAMILY_BY_KEY = Object.fromEntries(MODEL_FAMILIES.map(f => [f.key, f]));
+  function familyOf(model) {
+    const m = String(model || '').toLowerCase();
+    if (m.includes('claude')) return FAMILY_BY_KEY.claude;
+    if (m.includes('grok')) return FAMILY_BY_KEY.grok;
+    if (m.includes('gpt') || m.includes('o3') || m.includes('o4')) return FAMILY_BY_KEY.gpt;
+    if (m.includes('gemini') || m.includes('gemma')) return FAMILY_BY_KEY.gemini;
+    if (m.includes('qwen')) return FAMILY_BY_KEY.qwen;
+    if (m.includes('kimi')) return FAMILY_BY_KEY.kimi;
+    if (m.includes('glm')) return FAMILY_BY_KEY.glm;
+    return FAMILY_BY_KEY.other;
+  }
+  function familyLegendHtml() {
+    return MODEL_FAMILIES.map(f => {
+      const sw = f.dash
+        ? `background:repeating-linear-gradient(90deg, ${f.color} 0 4px, transparent 4px 7px);`
+        : `background:${f.color};`;
+      return `<span class="legend-item"><span class="legend-swatch" style="${sw}"></span>${f.label}</span>`;
+    }).join('');
+  }
+  // Place one label per family at the right end of its topmost line; nudge to avoid overlap.
+  function addFamilyEndLabels(svg, anchors, rightX) {
+    const items = Object.values(anchors).filter(a => a.label).sort((a, b) => a.y - b.y);
+    let lastY = -Infinity;
+    items.forEach(a => {
+      let yy = a.y + 3.4;
+      if (yy - lastY < 15) yy = lastY + 15;
+      lastY = yy;
+      const t = makeSvg('text', { x: rightX, y: yy, 'text-anchor': 'start', fill: a.color, class: 'line-label', 'font-weight': 700 });
+      t.textContent = a.label;
+      svg.appendChild(t);
+    });
+  }
+
+  // Right-end labels, one per plotted line, nudged so they don't overlap.
+  function addLineLabels(svg, items, rightX) {
+    const sorted = items.slice().sort((a, b) => a.y - b.y);
+    let lastY = -Infinity;
+    sorted.forEach(a => {
+      let yy = a.y + 3.4;
+      if (yy - lastY < 13) yy = lastY + 13;
+      lastY = yy;
+      const t = makeSvg('text', { x: rightX, y: yy, 'text-anchor': 'start', fill: a.color, class: 'line-label', 'font-weight': 600 });
+      t.textContent = a.label;
+      svg.appendChild(t);
+    });
+  }
+
+  // ── Organization + display-name mapping ──────────────────────────────
+  // Drop-in overrides sourced from LiveBench's main.js (model slug → org + display name).
+  // Until populated, organizationOf() falls back to inferProvider() and displayName()
+  // falls back to a prettified slug.
+  const LIVEBENCH_MODEL_META = {
+    // 'gpt-5.5-xhigh': { org: 'OpenAI', display: 'GPT-5.5 (xhigh)' },
+    // 'claude-opus-4-8-xhigh-effort': { org: 'Anthropic', display: 'Claude Opus 4.8' },
+  };
+  function organizationOf(model) {
+    const meta = LIVEBENCH_MODEL_META[model];
+    return (meta && meta.org) || inferProvider(model);
+  }
+  function displayName(model) {
+    const meta = LIVEBENCH_MODEL_META[model];
+    if (meta && meta.display) return meta.display;
+    // Fallback: strip effort / thinking / size suffixes for a cleaner label.
+    return String(model || '')
+      .replace(/[-_]thinking.*$/i, '')
+      .replace(/[-_](x?high|medium|low|auto)([-_]effort)?$/i, '')
+      .replace(/[-_]\d+k$/i, '')
+      .replace(/[-_]effort$/i, '');
+  }
+
+  function bestByKey(rows, key) {
+    const valid = rows.filter(r => Number.isFinite(r[key]));
+    if (!valid.length) return null;
+    return valid.reduce((best, r) => (r[key] > best[key] ? r : best));
+  }
+
+  // Keep only each organization's single best model on the given metric, then rank orgs.
+  function topModelsByOrg(rows, key, n) {
+    const best = new Map();
+    rows.forEach(r => {
+      if (!Number.isFinite(r[key])) return;
+      const org = organizationOf(r.model);
+      const cur = best.get(org);
+      if (!cur || r[key] > cur[key]) best.set(org, r);
+    });
+    return Array.from(best.values()).sort((a, b) => (b[key] ?? -Infinity) - (a[key] ?? -Infinity)).slice(0, n);
+  }
+
+  // One-sentence headline summarizing who leads.
+  function buildProfileInsight(rows) {
+    const overall = bestByKey(rows, '_overall');
+    if (!overall) return 'Load data to see the leaderboard insight.';
+    const cats = ['reasoning', 'coding', 'agentic', 'mathematics', 'data', 'language', 'if'];
+    const leaderModels = new Set();
+    let exampleCat = null, exampleLeader = null;
+    cats.forEach(c => {
+      const t = bestByKey(rows, '_' + c);
+      if (!t) return;
+      leaderModels.add(t.model);
+      if (t.model !== overall.model && !exampleLeader) { exampleLeader = t; exampleCat = c; }
+    });
+    if (leaderModels.size <= 1 || !exampleLeader) {
+      return `${displayName(overall.model)} leads every category, with the best overall average of ${fmt(overall._overall)}.`;
+    }
+    return `${displayName(overall.model)} has the strongest overall profile (${fmt(overall._overall)}), but no model wins everything — ${displayName(exampleLeader.model)} tops ${CATEGORY_GROUPS[exampleCat].label}.`;
   }
 
   function clearSvg(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
@@ -3219,52 +3434,59 @@
       svg.appendChild(label);
     });
 
-    const leftLabelX = pad.left - 36;
     const rightLabelX = width - pad.right + 8;
-    plotRows.forEach((row, index) => {
-      const color = colorFor(index, plotRows.length);
+    const famAnchors = {};
+    plotRows.forEach((row) => {
+      const fam = familyOf(row.model);
+      const color = fam.color;
       const finitePts = metrics.map((metric, i) => ({ x: x(i), y: y(toNumber(row[metric])), v: toNumber(row[metric]) })).filter(p => Number.isFinite(p.v));
       if (!finitePts.length) return;
       const group = makeSvg('g', { class: 'lb-model-group' });
       if (els.fadeOlder.checked && latestDate && row._date !== latestDate) group.setAttribute('opacity', '0.28');
-      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
-      path.addEventListener('mousemove', event => showTooltip(`<strong>${row.model}</strong><span>${row._date} · ${row._provider}<br/>Selected avg: ${fmt(row['_' + els.categorySelect.value])} · Overall: ${fmt(row._overall)}</span>`, event));
+      const pathAttrs = { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color };
+      if (fam.dash) pathAttrs['stroke-dasharray'] = '7 4';
+      const path = makeSvg('path', pathAttrs);
+      path.addEventListener('mousemove', event => showTooltip(`<strong>${escapeHtml(displayName(row.model))}</strong><span>${row._date} · ${row._provider}<br/>Selected avg: ${fmt(row['_' + els.categorySelect.value])} · Overall: ${fmt(row._overall)}</span>`, event));
       path.addEventListener('mouseleave', hideTooltip);
       group.appendChild(path);
 
       if (els.showPoints.checked) {
         finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3.2, fill: color, class: 'dot' })));
       }
-      addEndLabels(group, row.model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
+      if (fam.label && !famAnchors[fam.key]) famAnchors[fam.key] = { y: finitePts[finitePts.length - 1].y, color, label: fam.label };
       addModelGroupHover(svg, group);
       svg.appendChild(group);
     });
+    addFamilyEndLabels(svg, famAnchors, rightLabelX);
 
-    els.parallelLegend.innerHTML = plotRows.slice(0, 16).map((row, index) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, plotRows.length)}"></span>${escapeHtml(row.model)}</span>`).join('');
+    els.parallelLegend.innerHTML = familyLegendHtml();
     els.chartContext.textContent = `${plotRows.length} lines · ${metrics.length} axes`;
   }
 
   function renderProfileChart(rows) {
     const svg = els.profileChart;
     clearSvg(svg);
-    const axes = ['reasoning', 'coding', 'language', 'data', 'spatial'];
+    const axes = ['reasoning', 'coding', 'agentic', 'mathematics', 'data', 'language', 'if'];
+    if (els.profileInsight) els.profileInsight.textContent = buildProfileInsight(rows);
     if (!rows.length) {
       svg.appendChild(makeSvg('text', { x: 28, y: 52, fill: '#6b6b65', 'font-size': 14 })).textContent = 'No profile rows available.';
       els.profileLegend.innerHTML = '';
-      if (els.profileContext) els.profileContext.textContent = 'No data';
       return;
     }
-    const width = 980, height = 400, pad = { left: 120, right: 120, top: 36, bottom: 72 };
+    const width = 980, height = 400, pad = { left: 120, right: 140, top: 36, bottom: 72 };
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     const innerW = width - pad.left - pad.right, innerH = height - pad.top - pad.bottom;
     const topN = Math.max(3, Math.min(20, Number(els.topN.value) || 12));
-    const plotRows = rows.slice(0, topN);
+    // "Top models by category": keep only each organization's best model, ranked by the selected category.
+    const rankKey = '_' + (els.categorySelect.value || 'all');
+    const plotRows = topModelsByOrg(rows, rankKey, topN);
     const x = i => pad.left + i * innerW / (axes.length - 1);
 
     // Scale to the visible category averages (not from zero).
     const visibleValues = [];
     plotRows.forEach(row => axes.forEach(axis => visibleValues.push(row['_' + axis])));
-    const scale = computeScale(visibleValues);
+    // Fixed 0–100 axis with ticks at 0/25/50/75/100.
+    const scale = { min: 0, max: 100, ticks: [0, 25, 50, 75, 100] };
     const y = value => {
       const v = Math.max(scale.min, Math.min(scale.max, value));
       return pad.top + (scale.max - v) / (scale.max - scale.min) * innerH;
@@ -3274,35 +3496,53 @@
       const yy = y(tick);
       svg.appendChild(makeSvg('line', { x1: pad.left, x2: width - pad.right, y1: yy, y2: yy, class: 'grid-line' }));
       const label = makeSvg('text', { x: pad.left - 8, y: yy + 4, 'text-anchor': 'end', fill: '#a8a8a0', 'font-size': 10 });
-      label.textContent = fmt(tick, 1);
+      label.textContent = String(tick);
       svg.appendChild(label);
     });
     axes.forEach((axis, i) => {
       const xx = x(i);
       svg.appendChild(makeSvg('line', { x1: xx, x2: xx, y1: pad.top, y2: pad.top + innerH, stroke: 'rgba(0,0,0,0.18)' }));
       const label = makeSvg('text', { x: xx, y: pad.top + innerH + 24, 'text-anchor': 'middle', fill: '#6b6b65', 'font-size': 11 });
-      label.textContent = CATEGORY_GROUPS[axis].label.replace(' / math / logic', '');
+      const AXIS_SHORT = { reasoning: 'Reasoning', coding: 'Coding', agentic: 'Agentic', mathematics: 'Math', data: 'Data', language: 'Language', if: 'Instruction' };
+      label.textContent = AXIS_SHORT[axis] || CATEGORY_GROUPS[axis].label;
       svg.appendChild(label);
     });
 
-    const leftLabelX = pad.left - 36;
     const rightLabelX = width - pad.right + 8;
-    plotRows.forEach((row, index) => {
-      const color = colorFor(index, plotRows.length);
+    const entries = [];
+    plotRows.forEach((row) => {
+      const fam = familyOf(row.model);
+      const color = fam.color;
       const finitePts = axes.map((axis, i) => ({ x: x(i), y: y(row['_' + axis]), v: row['_' + axis] })).filter(p => Number.isFinite(p.v));
       if (!finitePts.length) return;
       const group = makeSvg('g', { class: 'lb-model-group' });
-      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
-      path.addEventListener('mousemove', event => showTooltip(`<strong>${row.model}</strong><span>${row._date}<br/>Reasoning ${fmt(row._reasoning)} · Coding ${fmt(row._coding)} · Data ${fmt(row._data)}</span>`, event));
+      const pathAttrs = { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color };
+      if (fam.dash) pathAttrs['stroke-dasharray'] = '7 4';
+      const path = makeSvg('path', pathAttrs);
+      path.addEventListener('mousemove', event => showTooltip(`<strong>${escapeHtml(displayName(row.model))}</strong><span>${escapeHtml(organizationOf(row.model))} · ${shortDate(row._date)}<br/>Reasoning ${fmt(row._reasoning)} · Coding ${fmt(row._coding)} · Data ${fmt(row._data)}</span>`, event));
       path.addEventListener('mouseleave', hideTooltip);
       group.appendChild(path);
       finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3, fill: color, class: 'dot' })));
-      addEndLabels(group, row.model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
-      addModelGroupHover(svg, group);
+      // Always-visible right-side label (display name).
+      const labelEl = makeSvg('text', { x: rightLabelX, y: finitePts[finitePts.length - 1].y + 3.4, 'text-anchor': 'start', fill: color, class: 'line-label', 'font-weight': 600 });
+      labelEl.textContent = displayName(row.model);
+      group.appendChild(labelEl);
+      entries.push({ group, labelEl, endY: finitePts[finitePts.length - 1].y });
       svg.appendChild(group);
     });
-    els.profileLegend.innerHTML = plotRows.slice(0, 12).map((row, index) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, plotRows.length)}"></span>${escapeHtml(row.model)}</span>`).join('');
-    if (els.profileContext) els.profileContext.textContent = `${plotRows.length} models · ${axes.length} categories`;
+
+    // Stack labels from the bottom of the chart upward so none overlap.
+    entries.slice().sort((a, b) => b.endY - a.endY).reduce((lowerY, e) => {
+      let yy = e.endY + 3.4;
+      if (lowerY - yy < 13) yy = lowerY - 13;
+      e.labelEl.setAttribute('y', yy);
+      return yy;
+    }, Infinity);
+
+    // Hover: focus the hovered line and grey out the rest.
+    entries.forEach(({ group }) => addModelGroupHover(svg, group));
+
+    els.profileLegend.innerHTML = familyLegendHtml();
   }
 
   function renderTrendChart(rows) {
@@ -3368,54 +3608,184 @@
       svg.appendChild(label);
     });
 
-    const leftLabelX = pad.left - 36;
     const rightLabelX = width - pad.right + 8;
     seriesByModel.forEach(({ model, index, series }) => {
-      const color = colorFor(index, seriesByModel.length);
+      const fam = familyOf(model);
+      const color = fam.color;
       const finitePts = series.map(row => ({ x: x(dates.indexOf(row._date)), y: y(row[key]), v: row[key] })).filter(p => Number.isFinite(p.v));
       if (finitePts.length < 2) return;
       const group = makeSvg('g', { class: 'lb-model-group' });
-      const path = makeSvg('path', { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color });
-      path.addEventListener('mousemove', event => showTooltip(`<strong>${model}</strong><span>${CATEGORY_GROUPS[category].label}<br/>${fmt(series[0][key])} → ${fmt(series.at(-1)[key])}</span>`, event));
+      const pathAttrs = { d: smoothPath(finitePts.map(p => [p.x, p.y])), class: 'model-line', stroke: color };
+      if (fam.dash) pathAttrs['stroke-dasharray'] = '7 4';
+      const path = makeSvg('path', pathAttrs);
+      path.addEventListener('mousemove', event => showTooltip(`<strong>${escapeHtml(displayName(model))}</strong><span>${CATEGORY_GROUPS[category].label}<br/>${fmt(series[0][key])} → ${fmt(series.at(-1)[key])}</span>`, event));
       path.addEventListener('mouseleave', hideTooltip);
       group.appendChild(path);
       finitePts.forEach(p => group.appendChild(makeSvg('circle', { cx: p.x, cy: p.y, r: 3, fill: color, class: 'dot' })));
-      addEndLabels(group, model, color, leftLabelX, finitePts[0].y, rightLabelX, finitePts[finitePts.length - 1].y);
+      const tLabel = makeSvg('text', { x: rightLabelX, y: finitePts[finitePts.length - 1].y + 3.4, 'text-anchor': 'start', fill: color, class: 'line-label', 'font-weight': 600 });
+      tLabel.textContent = displayName(model);
+      group.appendChild(tLabel);
       addModelGroupHover(svg, group);
       svg.appendChild(group);
     });
-    els.trendLegend.innerHTML = seriesByModel.slice(0, 10).map(({ model, index }) => `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(index, seriesByModel.length)}"></span>${escapeHtml(model)}</span>`).join('');
+    els.trendLegend.innerHTML = familyLegendHtml();
   }
 
   function renderTable(rows) {
     if (!rows.length) {
-      els.modelTable.innerHTML = '<tr><td colspan="8">No rows match the active filters.</td></tr>';
+      els.modelTable.innerHTML = '<tr><td colspan="10">No rows match the active filters.</td></tr>';
       return;
     }
-    const category = els.categorySelect.value || 'all';
     els.modelTable.innerHTML = rows.slice(0, 120).map(row => `
       <tr>
-        <td>${row._date}</td>
-        <td><span class="model-name">${escapeHtml(row.model)}</span><br/><span class="provider-tag">${escapeHtml(row._provider)}</span></td>
-        <td class="num">${fmt(row['_' + category])}</td>
+        <td>${shortDate(row._date)}</td>
+        <td><span class="model-name">${escapeHtml(row.model)}</span><br/><span class="provider-tag">${escapeHtml(organizationOf(row.model))}</span></td>
         <td class="num">${fmt(row._overall)}</td>
         <td class="num">${fmt(row._reasoning)}</td>
         <td class="num">${fmt(row._coding)}</td>
-        <td class="num">${fmt(row._language)}</td>
+        <td class="num">${fmt(row._agentic)}</td>
+        <td class="num">${fmt(row._mathematics)}</td>
         <td class="num">${fmt(row._data)}</td>
+        <td class="num">${fmt(row._language)}</td>
+        <td class="num">${fmt(row._if)}</td>
       </tr>
     `).join('');
   }
 
+  // ── Effort comparison (latest version of each model line at each thinking effort) ──
+  function effortOf(model) {
+    const m = String(model || '').toLowerCase();
+    if (/xhigh|x-high|extra/.test(m)) return 'xhigh';
+    if (/high/.test(m)) return 'high';
+    if (/medium|[-_]med([-_]|$)|mid/.test(m)) return 'medium';
+    if (/low|minimal/.test(m)) return 'low';
+    return null;
+  }
+
+  // Words in a slug that describe effort/reasoning rather than the model line.
+  const EFFORT_WORDS = new Set(['xhigh', 'x', 'high', 'medium', 'med', 'mid', 'low', 'minimal', 'extra', 'effort', 'thinking', 'auto', 'reasoning', 'latest']);
+  function slugTokens(slug) { return String(slug || '').toLowerCase().split(/[-_]/).filter(Boolean); }
+  const isSizeTok = t => /^\d+k$/.test(t);          // 64k context budget
+  const isDateTok = t => /^\d{6,8}$/.test(t);        // 20251101
+
+  // Identity of a model line, e.g. gpt-5.5-xhigh & gpt-5.4-xhigh → "gpt";
+  // gpt-5.4-mini-xhigh → "gpt mini"; claude-opus-4-8-… → "claude opus".
+  function modelLineKey(slug) {
+    return slugTokens(slug)
+      .filter(t => /[a-z]/.test(t) && !EFFORT_WORDS.has(t) && !isSizeTok(t) && !isDateTok(t))
+      .join(' ');
+  }
+  // Numeric version of a model, e.g. claude-opus-4-8 → [4,8]; gpt-5.5 → [5.5].
+  function versionTuple(slug) {
+    const nums = [];
+    slugTokens(slug).forEach(t => {
+      if (isSizeTok(t) || isDateTok(t)) return;
+      const m = t.match(/^v?(\d+(?:\.\d+)?)$/);
+      if (m) nums.push(parseFloat(m[1]));
+    });
+    return nums;
+  }
+  // >0 if version a is newer than b.
+  function compareVersion(a, b) {
+    const n = Math.max(a.length, b.length);
+    for (let i = 0; i < n; i++) {
+      const x = a[i] ?? -1, y = b[i] ?? -1;
+      if (x !== y) return x - y;
+    }
+    return 0;
+  }
+
+  function renderEffortGrid() {
+    const el = document.getElementById('effortGrid');
+    if (!el) return;
+    if (!allRows.length) { el.innerHTML = ''; return; }
+    const latest = allRows.map(r => r._date).sort().at(-1);
+    const pool = allRows.filter(r => r._date === latest);
+    const efforts = [
+      { key: 'low', label: 'Low Effort' },
+      { key: 'medium', label: 'Medium Effort' },
+      { key: 'high', label: 'High Effort' },
+      { key: 'xhigh', label: 'Extra High Effort' }
+    ];
+    el.innerHTML = efforts.map(eff => {
+      // One entry per model line, keeping that line's newest version at this effort.
+      const best = {};
+      pool.forEach(r => {
+        if (effortOf(r.model) !== eff.key || !Number.isFinite(r._overall)) return;
+        const lineKey = modelLineKey(r.model);
+        const cur = best[lineKey];
+        if (!cur) { best[lineKey] = r; return; }
+        const cmp = compareVersion(versionTuple(r.model), versionTuple(cur.model));
+        if (cmp > 0 || (cmp === 0 && r._overall > cur._overall)) best[lineKey] = r;
+      });
+      const items = Object.values(best).sort((a, b) => b._overall - a._overall);
+      const body = items.length
+        ? items.map(r => {
+            const color = familyOf(r.model).color;
+            const w = Math.max(0, Math.min(100, r._overall));
+            return `<div class="effort-row">
+              <div class="effort-row-top"><span class="effort-label">${escapeHtml(displayName(r.model))}</span><span class="effort-val">${fmt(r._overall)}</span></div>
+              <div class="effort-bar-track"><div class="effort-bar-fill" style="width:${w}%;background:${color}"></div></div>
+            </div>`;
+          }).join('')
+        : '<div class="effort-empty">No models at this effort.</div>';
+      return `<div class="effort-card"><div class="effort-card-title">${eff.label}</div>${body}</div>`;
+    }).join('');
+  }
+
+  // ── Gauge dials ──────────────────────────────────────────────────────
+  function gaugePolar(cx, cy, r, deg) { const a = deg * Math.PI / 180; return [cx + r * Math.cos(a), cy - r * Math.sin(a)]; }
+  function gaugeArc(cx, cy, r, startDeg, endDeg) {
+    const [x1, y1] = gaugePolar(cx, cy, r, startDeg);
+    const [x2, y2] = gaugePolar(cx, cy, r, endDeg);
+    const large = Math.abs(startDeg - endDeg) > 180 ? 1 : 0;
+    return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+  }
+  // Big tick-style semicircle gauge (overall): shows the value only, 0→100.
+  function buildTickGauge(value, color) {
+    const v = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0;
+    const frac = v / 100, cx = 120, cy = 120, rI = 82, rO = 104, N = 44;
+    let ticks = '';
+    for (let i = 0; i < N; i++) {
+      const t = i / (N - 1), deg = 180 - 180 * t;
+      const [x1, y1] = gaugePolar(cx, cy, rI, deg);
+      const [x2, y2] = gaugePolar(cx, cy, rO, deg);
+      ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${t <= frac ? color : '#e2e2dd'}" stroke-width="3.4" stroke-linecap="round"/>`;
+    }
+    return `<svg viewBox="0 0 240 142" xmlns="http://www.w3.org/2000/svg">${ticks}` +
+      `<text x="120" y="116" text-anchor="middle" font-family="${'Plus Jakarta Sans, sans-serif'}" font-size="46" font-weight="800" fill="#1a1a18">${Number.isFinite(value) ? Math.round(v) : '--'}</text>` +
+      `<text x="18" y="138" text-anchor="middle" font-size="11" fill="#a8a8a0">0</text>` +
+      `<text x="222" y="138" text-anchor="middle" font-size="11" fill="#a8a8a0">100</text></svg>`;
+  }
+  // Small filled semicircle gauge: background 0→100, filled to value, number to 1 decimal.
+  function buildArcGauge(value, color) {
+    const v = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0;
+    const cx = 50, cy = 47, r = 38;
+    const bg = gaugeArc(cx, cy, r, 180, 0);
+    const fg = gaugeArc(cx, cy, r, 180, 180 - 180 * (v / 100));
+    return `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">` +
+      `<path d="${bg}" fill="none" stroke="#e6e6e0" stroke-width="8" stroke-linecap="round"/>` +
+      `<path d="${fg}" fill="none" stroke="${color}" stroke-width="8" stroke-linecap="round"/>` +
+      `<text x="50" y="45" text-anchor="middle" font-family="${'Plus Jakarta Sans, sans-serif'}" font-size="21" font-weight="800" fill="#1a1a18">${Number.isFinite(value) ? value.toFixed(1) : '--'}</text></svg>`;
+  }
+
   function renderKPIs(rows) {
-    const uniqueModels = unique(rows.map(r => r.model));
-    const category = els.categorySelect.value || 'all';
-    const top = rows[0];
-    els.kpiRows.textContent = allRows.length ? allRows.length.toLocaleString() : '--';
-    els.kpiModels.textContent = uniqueModels.length ? uniqueModels.length.toLocaleString() : '--';
-    els.kpiTop.textContent = top ? top.model : '--';
-    els.kpiTopDesc.textContent = top ? `${fmt(top['_' + category])} average in ${CATEGORY_GROUPS[category].label}` : 'Based on selected category average.';
-    els.kpiAxes.textContent = selectedMetrics().length || '--';
+    function topBy(key) {
+      const valid = rows.filter(r => Number.isFinite(r[key]));
+      return valid.length ? valid.reduce((best, r) => (r[key] > best[key] ? r : best)) : null;
+    }
+    function setDial(gaugeId, modelId, key, builder) {
+      const top = topBy(key);
+      const gaugeEl = document.getElementById(gaugeId);
+      const modelEl = document.getElementById(modelId);
+      const color = top ? familyOf(top.model).color : '#9aa0a6';
+      if (gaugeEl) gaugeEl.innerHTML = builder(top ? top[key] : NaN, color);
+      if (modelEl) modelEl.textContent = top ? displayName(top.model) : '--';
+    }
+    setDial('overallGauge', 'kpiTopOverall', '_overall', buildTickGauge);
+    setDial('codingGauge', 'kpiCoding', '_coding', buildArcGauge);
+    setDial('dataGauge', 'kpiData', '_data', buildArcGauge);
+    setDial('agenticGauge', 'kpiAgentic', '_agentic', buildArcGauge);
   }
 
   function categoryWinner(rows, category) {
@@ -3429,7 +3799,7 @@
     const category = els.categorySelect.value || 'all';
     const topOverall = [...rows].sort((a,b) => b._overall - a._overall)[0];
     const topSelected = categoryWinner(rows, category);
-    const winners = ['reasoning','coding','language','data','spatial'].map(cat => ({ cat, row: categoryWinner(rows, cat) })).filter(x => x.row);
+    const winners = ['reasoning','coding','agentic','mathematics','data','language','if'].map(cat => ({ cat, row: categoryWinner(rows, cat) })).filter(x => x.row);
     els.blogLead.innerHTML = `In this filtered view, <strong>${escapeHtml(topSelected.model)}</strong> leads the selected <strong>${CATEGORY_GROUPS[category].label}</strong> view with an average score of <strong>${fmt(topSelected['_' + category])}</strong>. The strongest all-around row is <strong>${escapeHtml(topOverall.model)}</strong> with a simple overall mean of <strong>${fmt(topOverall._overall)}</strong>.`;
     els.blogTakeaway.innerHTML = `Treat the best model as a context-specific choice: pick reasoning leaders for math and puzzle-heavy work, coding leaders for developer workflows, language leaders for summarization and rewriting, and data leaders for spreadsheet-like transformation tasks.`;
     els.generatedBlog.innerHTML = `
@@ -3469,6 +3839,7 @@
     else { clearSvg(els.trendChart); els.trendLegend.innerHTML = ''; }
 
     renderTable(rows);
+    renderEffortGrid();
     renderBlog(rows);
     setStatus(`Showing ${rows.length.toLocaleString()} rows for ${CATEGORY_GROUPS[category].label}.${categorySelected ? '' : ' Select a specific category to load the per-metric breakdown chart.'}`);
   }
@@ -3510,11 +3881,35 @@
     URL.revokeObjectURL(url);
   }
 
+  // Optional: load LiveBench display names + organizations from a local JSON file.
+  // Tolerates several shapes: { slug: "Name" } | { slug: {display, org} } | [{ model, display_name, organization }].
+  async function loadModelMeta() {
+    try {
+      const res = await fetch('./genailab/model-display-names.json');
+      if (!res.ok) return;
+      const data = await res.json();
+      const add = (slug, display, org) => {
+        if (!slug) return;
+        LIVEBENCH_MODEL_META[slug] = { display: display || undefined, org: org || undefined };
+      };
+      if (Array.isArray(data)) {
+        data.forEach(o => add(o.model || o.slug || o.id || o.name, o.display_name || o.display || o.displayName, o.organization || o.org));
+      } else if (data && typeof data === 'object') {
+        Object.entries(data).forEach(([slug, v]) => {
+          if (typeof v === 'string') add(slug, v);
+          else if (v && typeof v === 'object') add(slug, v.display_name || v.display || v.displayName, v.organization || v.org);
+        });
+      }
+    } catch (e) { /* fall back to prettified slugs */ }
+  }
+
   initControls();
   els.loadBtn.addEventListener('click', loadData);
   els.downloadBtn.addEventListener('click', downloadCombinedCsv);
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) refreshBtn.addEventListener('click', loadData);
   // Auto-load data on page load so the dashboard is never empty.
-  loadData();
+  loadModelMeta().finally(loadData);
       })();
       </script>
 
