@@ -309,6 +309,7 @@
     /* ── Section ─────────────────────────────────── */
     .section {
       display: none;
+      scroll-margin-top: var(--nav-h);
     }
 
     .section.active { display: block; }
@@ -2577,11 +2578,108 @@
     <!--  5. MODEL LANDSCAPE                          -->
     <!-- ════════════════════════════════════════════ -->
     <section class="section" id="section-models">
+      
+            <!-- ════════════════════════════════════════════ -->
+      <!--  LLM Benchmarks feature card → links to blog   -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="section-header">
+        <h2 class="section-title">LLM Benchmarks</h2>
+        <span class="section-count">A plain-English guide to how AI models are tested</span>
+      </div>
+
+      <style>
+        /* Self-contained styles for the LLM Benchmarks feature card (clay-hero replica) */
+        .lbh-card{
+          --lbh-surface:#EFEBE6; --lbh-text:#3A342F; --lbh-text2:#5F564E;
+          --lbh-muted:#8C7C6E; --lbh-rose:#99604F; --lbh-blush:#E5C0B6;
+          --lbh-shl:rgba(255,253,250,0.85);
+          position:relative; display:block; overflow:hidden;
+          margin:0 0 var(--gap); padding:46px 48px 44px;
+          border-radius:22px; background:var(--lbh-surface);
+          border:1px solid rgba(176,166,154,0.18);
+          box-shadow:11px 20px 44px rgba(122,78,48,0.17), -6px -6px 11px var(--lbh-shl);
+          text-decoration:none; transition:transform .25s ease, box-shadow .25s ease;
+        }
+        .lbh-card:hover{
+          transform:translateY(-3px);
+          box-shadow:14px 26px 54px rgba(122,78,48,0.21), -6px -6px 12px var(--lbh-shl);
+        }
+        .lbh-inner{ position:relative; z-index:2; display:block; max-width:640px; }
+        .lbh-eyebrow{
+          display:flex; align-items:center; gap:11px; margin-bottom:18px;
+          font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500;
+          letter-spacing:.2em; text-transform:uppercase; color:var(--lbh-muted);
+        }
+        .lbh-eyebrow::before{ content:""; width:28px; height:8px; border-radius:999px; background:var(--lbh-blush); }
+        .lbh-title{
+          display:block; font-weight:800; font-size:clamp(1.8rem,3.6vw,2.7rem);
+          line-height:1.05; letter-spacing:-.03em; color:var(--lbh-text); margin-bottom:14px;
+        }
+        .lbh-title .ac{ color:var(--lbh-rose); position:relative; }
+        .lbh-title .ac::after{
+          content:""; position:absolute; left:0; right:0; bottom:.08em; height:.32em;
+          background:var(--lbh-blush); opacity:.55; border-radius:6px; z-index:-1;
+        }
+        .lbh-sub{
+          display:block; font-size:14.5px; line-height:1.7; color:var(--lbh-text2);
+          max-width:54ch; margin-bottom:24px;
+        }
+        .lbh-meta{ display:flex; flex-wrap:wrap; gap:11px; margin-bottom:26px; }
+        .lbh-pill{
+          font-size:12px; color:var(--lbh-text2); padding:8px 15px; border-radius:999px;
+          background:var(--lbh-surface);
+          box-shadow:4px 4px 10px rgba(122,78,48,0.14), -4px -4px 10px var(--lbh-shl);
+        }
+        .lbh-pill strong{ color:var(--lbh-rose); font-weight:700; }
+        .lbh-cta{
+          display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700;
+          color:#fff; background:var(--lbh-rose); padding:10px 18px; border-radius:999px;
+          box-shadow:6px 8px 18px rgba(153,96,79,0.30); transition:background .2s;
+        }
+        .lbh-card:hover .lbh-cta{ background:#84513f; }
+        .lbh-cta svg{ width:14px; height:14px; stroke:#fff; fill:none; stroke-width:2.2; }
+        .lbh-sphere{ position:absolute; border-radius:50%; z-index:1; pointer-events:none; }
+        .lbh-s1{ width:130px; height:130px; top:-24px; right:64px;
+          background:radial-gradient(circle at 34% 30%, #F2D8D0, #E0AC9F 70%);
+          box-shadow:8px 12px 26px rgba(176,166,154,.45); }
+        .lbh-s2{ width:64px; height:64px; top:104px; right:210px;
+          background:radial-gradient(circle at 34% 30%, #DCF0EC, #B6DDD6 72%);
+          box-shadow:6px 9px 20px rgba(176,166,154,.4); }
+        .lbh-s3{ width:46px; height:46px; top:34px; right:26px;
+          background:radial-gradient(circle at 34% 30%, #F0E7DA, #D8C7B2 72%);
+          box-shadow:5px 7px 16px rgba(176,166,154,.4); }
+        @media (max-width:700px){
+          .lbh-card{ padding:34px 26px 32px; }
+          .lbh-sphere{ display:none; }
+        }
+      </style>
+
+      <a class="lbh-card" href="Blogs/AI-ML/llm-benchmarks.html">
+        <span class="lbh-sphere lbh-s1"></span>
+        <span class="lbh-sphere lbh-s2"></span>
+        <span class="lbh-sphere lbh-s3"></span>
+        <span class="lbh-inner">
+          <span class="lbh-eyebrow">Reference Guide · 2025–2026</span>
+          <span class="lbh-title">LLM <span class="ac">Benchmarks</span> Decoded</span>
+          <span class="lbh-sub">A plain-English guide to how AI models are tested — what each benchmark measures, how it's set up, what the scores mean, and where they can be gamed.</span>
+          <span class="lbh-meta">
+            <span class="lbh-pill"><strong>22</strong> Benchmarks</span>
+            <span class="lbh-pill"><strong>9</strong> Themes</span>
+            <span class="lbh-pill">Updated <strong>June 2026</strong></span>
+          </span>
+          <span class="lbh-cta">Read the guide
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </span>
+      </a>
+      <br>
+
       <div class="section-header">
         <h2 class="section-title">Model Landscape</h2>
         <span class="section-count">Live LiveBench leaderboard</span>
       </div>
 
+      
 
       <div id="livebench-explorer">
         <p class="lb-intro">
