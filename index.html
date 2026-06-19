@@ -328,7 +328,6 @@
       display: flex;
       align-items: center;
       gap: var(--space-3);
-      margin-left: auto;
     }
 
     .theme-toggle {
@@ -1496,6 +1495,10 @@
       .hamburger {
         display: flex;
       }
+
+      .nav-right {
+        margin-left: auto;
+      }
     }
 
     @media (max-width: 768px) {
@@ -1642,7 +1645,8 @@
   <nav class="nav">
     <div class="nav-inner">
       <a href="#" class="nav-logo" aria-label="Sumit Kant Home">
-        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;">
+        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60"
+          style="display:block; pointer-events:none;">
         </object>
       </a>
 
@@ -1665,7 +1669,6 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu" role="navigation">
     <a href="blog.html" onclick="closeMobileMenu()">Blog</a>
-    <!-- <a href="about.html" onclick="closeMobileMenu()">About &amp; CV</a> -->
     <a href="bookshelf.html" onclick="closeMobileMenu()">Books &amp; Reading</a>
     <a href="johnnysmusiclab.html" onclick="closeMobileMenu()">Music Lab</a>
     <a href="genai-lab.html" class="active" onclick="closeMobileMenu()">GenAI Lab</a>
@@ -1731,7 +1734,7 @@
   <div class="stats-bar" aria-label="Career highlights">
     <div class="stats-grid">
       <div class="stat-item reveal">
-        <span class="stat-number"><span class="count" data-target="7">0</span><span class="accent">+</span></span>
+        <span class="stat-number"><span class="count" data-target="9">0</span><span class="accent">+</span></span>
         <span class="stat-label">Years in Data Science & Machine Learning</span>
       </div>
       <div class="stat-item reveal">
