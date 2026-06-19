@@ -583,7 +583,8 @@
   <nav>
     <div class="nav-inner">
       <a href="https://sumitkant.github.io/" class="nav-logo">
-        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;">
+        <object type="image/svg+xml" data="./images/Main_Logo.svg" height="60"
+          style="display:block; pointer-events:none;">
         </object>
       </a>
       <ul class="nav-links">
@@ -633,15 +634,219 @@
 
     <div class="grid">
 
-        <!-- Backpropagation -->
-        <a class="item post-card" href="/Blogs/AI-ML/backpropagation.html">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+
+      <a class="item post-card" href="/Blogs/AI-ML/llm-benchmarks.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="">
             <defs>
-              <linearGradient id="bp-bg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#23253a" />
-                <stop offset="60%" stop-color="#2b2d42" />
-                <stop offset="100%" stop-color="#32354f" />
+              <linearGradient id="bm-bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#DAD3C8" />
+                <stop offset="55%" stop-color="#D1C6B8" />
+                <stop offset="100%" stop-color="#C9BDB0" />
               </linearGradient>
+              <pattern id="bm-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(90,70,50,0.07)" stroke-width="0.6" />
+              </pattern>
+              <radialGradient id="bm-glow" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0%" stop-color="rgba(168,110,92,0.18)" />
+                <stop offset="100%" stop-color="rgba(168,110,92,0)" />
+              </radialGradient>
+
+
+              <linearGradient id="bar-blush" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#E5C0B6" />
+                <stop offset="100%" stop-color="#D9A898" />
+              </linearGradient>
+              <linearGradient id="bar-mint" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#BFE4DE" />
+                <stop offset="100%" stop-color="#9ACFC8" />
+              </linearGradient>
+              <linearGradient id="bar-warm" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#D4C5A0" />
+                <stop offset="100%" stop-color="#C0AD86" />
+              </linearGradient>
+
+
+              <filter id="neu-lift" x="-10%" y="-10%" width="130%" height="130%">
+                <feDropShadow dx="-3" dy="3" stdDeviation="3" flood-color="rgba(0,0,0,0.15)" />
+                <feDropShadow dx="-1" dy="-1" stdDeviation="0.5" flood-color="rgba(255,252,247,0.9)" />
+              </filter>
+            </defs>
+
+
+            <rect width="320" height="200" fill="url(#bm-bg)"
+              style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+            <rect width="320" height="200" fill="url(#bm-grid)"
+              style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+            <circle cx="258" cy="72" r="95" fill="url(#bm-glow)"
+              style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+
+
+            <g transform="translate(192, 34)"
+              style="fill:rgb(0, 0, 0);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+
+              <rect x="0" y="0" width="112" height="130" rx="10" fill="#EFEBE6" filter="url(#neu-lift)"
+                style="fill:rgb(239, 235, 230);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+
+
+              <text x="8" y="14" font-family="'JetBrains Mono',monospace" font-size="5.5" font-weight="700"
+                letter-spacing="1.4" fill="#8C7C6E" text-transform="uppercase"
+                style="fill:rgb(140, 124, 110);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;JetBrains Mono&quot;, monospace;font-size:5.5px;font-weight:700;text-anchor:start;dominant-baseline:auto">LEADERBOARD</text>
+
+
+              <line x1="8" y1="18" x2="104" y2="18" stroke="rgba(90,70,50,0.12)" stroke-width="0.7"
+                style="fill:rgb(0, 0, 0);stroke:rgba(90, 70, 50, 0.12);color:rgb(0, 0, 0);stroke-width:0.7px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+
+
+              <text x="8" y="32" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5"
+                font-weight="700" fill="#5F564E"
+                style="fill:rgb(95, 86, 78);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:6.5px;font-weight:700;text-anchor:start;dominant-baseline:auto">MMLU</text>
+              <text x="8" y="50" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5"
+                font-weight="700" fill="#5F564E"
+                style="fill:rgb(95, 86, 78);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:6.5px;font-weight:700;text-anchor:start;dominant-baseline:auto">HumanEval</text>
+              <text x="8" y="68" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5"
+                font-weight="700" fill="#5F564E"
+                style="fill:rgb(95, 86, 78);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:6.5px;font-weight:700;text-anchor:start;dominant-baseline:auto">GSM8K</text>
+              <text x="8" y="86" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5"
+                font-weight="700" fill="#5F564E"
+                style="fill:rgb(95, 86, 78);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:6.5px;font-weight:700;text-anchor:start;dominant-baseline:auto">GPQA</text>
+              <text x="8" y="104" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5"
+                font-weight="700" fill="#5F564E"
+                style="fill:rgb(95, 86, 78);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:6.5px;font-weight:700;text-anchor:start;dominant-baseline:auto">HellaSwag</text>
+
+
+
+              <rect x="44" y="25" width="52" height="8" rx="3" fill="rgba(0,0,0,0.06)"
+                style="fill:rgba(0, 0, 0, 0.06);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <rect x="44" y="25" width="46" height="8" rx="3" fill="url(#bar-blush)"
+                style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <text x="94" y="32" font-family="'JetBrains Mono',monospace" font-size="5.5" font-weight="600"
+                fill="#A86E5C"
+                style="fill:rgb(168, 110, 92);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;JetBrains Mono&quot;, monospace;font-size:5.5px;font-weight:600;text-anchor:start;dominant-baseline:auto">88%</text>
+
+
+              <rect x="44" y="43" width="52" height="8" rx="3" fill="rgba(0,0,0,0.06)"
+                style="fill:rgba(0, 0, 0, 0.06);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <rect x="44" y="43" width="36" height="8" rx="3" fill="url(#bar-mint)"
+                style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <text x="84" y="50" font-family="'JetBrains Mono',monospace" font-size="5.5" font-weight="600"
+                fill="#4C8579"
+                style="fill:rgb(76, 133, 121);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;JetBrains Mono&quot;, monospace;font-size:5.5px;font-weight:600;text-anchor:start;dominant-baseline:auto">69%</text>
+
+
+              <rect x="44" y="61" width="52" height="8" rx="3" fill="rgba(0,0,0,0.06)"
+                style="fill:rgba(0, 0, 0, 0.06);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <rect x="44" y="61" width="48" height="8" rx="3" fill="url(#bar-blush)"
+                style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <text x="96" y="68" font-family="'JetBrains Mono',monospace" font-size="5.5" font-weight="600"
+                fill="#A86E5C"
+                style="fill:rgb(168, 110, 92);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;JetBrains Mono&quot;, monospace;font-size:5.5px;font-weight:600;text-anchor:start;dominant-baseline:auto">92%</text>
+
+
+              <rect x="44" y="79" width="52" height="8" rx="3" fill="rgba(0,0,0,0.06)"
+                style="fill:rgba(0, 0, 0, 0.06);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <rect x="44" y="79" width="29" height="8" rx="3" fill="url(#bar-warm)"
+                style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <text x="77" y="86" font-family="'JetBrains Mono',monospace" font-size="5.5" font-weight="600"
+                fill="#96702E"
+                style="fill:rgb(150, 112, 46);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;JetBrains Mono&quot;, monospace;font-size:5.5px;font-weight:600;text-anchor:start;dominant-baseline:auto">56%</text>
+
+
+              <rect x="44" y="97" width="52" height="8" rx="3" fill="rgba(0,0,0,0.06)"
+                style="fill:rgba(0, 0, 0, 0.06);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <rect x="44" y="97" width="50" height="8" rx="3" fill="url(#bar-mint)"
+                style="stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <text x="98" y="104" font-family="'JetBrains Mono',monospace" font-size="5.5" font-weight="600"
+                fill="#4C8579"
+                style="fill:rgb(76, 133, 121);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;JetBrains Mono&quot;, monospace;font-size:5.5px;font-weight:600;text-anchor:start;dominant-baseline:auto">96%</text>
+
+
+              <line x1="8" y1="112" x2="104" y2="112" stroke="rgba(90,70,50,0.12)" stroke-width="0.7"
+                style="fill:rgb(0, 0, 0);stroke:rgba(90, 70, 50, 0.12);color:rgb(0, 0, 0);stroke-width:0.7px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+
+
+              <rect x="8" y="117" width="97" height="10" rx="4" fill="rgba(168,110,92,0.12)"
+                style="fill:rgba(168, 110, 92, 0.12);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+              <text x="56" y="124.5" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="5.5"
+                font-weight="700" fill="#A86E5C" text-anchor="middle"
+                style="fill:rgb(168, 110, 92);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:5.5px;font-weight:700;text-anchor:middle;dominant-baseline:auto">⚠
+                numbers can be gamed</text>
+            </g>
+
+
+
+
+            <text x="18" y="42" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" font-weight="700"
+              letter-spacing="2" fill="rgba(168,110,92,0.75)"
+              style="fill:rgba(168, 110, 92, 0.75);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:7px;font-weight:700;text-anchor:start;dominant-baseline:auto">LLMs</text>
+
+
+            <text x="17" y="72" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="18" font-weight="800"
+              letter-spacing="-0.5" fill="#3A342F" opacity="0.98"
+              style="fill:rgb(58, 52, 47);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.98;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:18px;font-weight:800;text-anchor:start;dominant-baseline:auto">LLM
+              Benchmarks</text>
+            <text x="17" y="90" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="18" font-weight="800"
+              letter-spacing="-0.5" fill="#3A342F" opacity="0.98"
+              style="fill:rgb(58, 52, 47);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.98;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:18px;font-weight:800;text-anchor:start;dominant-baseline:auto">Decoded</text>
+
+
+            <rect x="17" y="97" width="150" height="2" rx="1" fill="#E5C0B6" opacity="0.9"
+              style="fill:rgb(229, 192, 182);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.9;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+
+
+            <text x="17" y="118" font-family="Georgia,serif" font-size="11.5" font-style="italic"
+              fill="rgba(58,52,47,0.52)"
+              style="fill:rgba(58, 52, 47, 0.52);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Georgia, serif;font-size:11.5px;font-weight:400;font-style:italic;text-anchor:start;dominant-baseline:auto">What
+              they measure,</text>
+            <text x="17" y="133" font-family="Georgia,serif" font-size="11.5" font-style="italic"
+              fill="rgba(58,52,47,0.52)"
+              style="fill:rgba(58, 52, 47, 0.52);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Georgia, serif;font-size:11.5px;font-weight:400;font-style:italic;text-anchor:start;dominant-baseline:auto">how
+              they're scored &amp;</text>
+            <text x="17" y="148" font-family="Georgia,serif" font-size="11.5" font-style="italic"
+              fill="rgba(58,52,47,0.52)"
+              style="fill:rgba(58, 52, 47, 0.52);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Georgia, serif;font-size:11.5px;font-weight:400;font-style:italic;text-anchor:start;dominant-baseline:auto">where
+              they're gamed</text>
+
+
+            <text x="17" y="166" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5"
+              letter-spacing="1.2" fill="rgba(58,52,47,0.28)"
+              style="fill:rgba(58, 52, 47, 0.28);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:6.5px;font-weight:400;text-anchor:start;dominant-baseline:auto">MMLU
+              · HUMANEVAL · GSM8K · GPQA</text>
+
+
+            <rect x="17" y="174" width="72" height="13" rx="3" fill="rgba(168,110,92,0.14)"
+              stroke="rgba(168,110,92,0.38)" stroke-width="0.8"
+              style="fill:rgba(168, 110, 92, 0.14);stroke:rgba(168, 110, 92, 0.38);color:rgb(0, 0, 0);stroke-width:0.8px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+            <text x="53" y="184" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5"
+              font-weight="600" fill="#A86E5C" text-anchor="middle"
+              style="fill:rgb(168, 110, 92);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:7.5px;font-weight:600;text-anchor:middle;dominant-baseline:auto">Benchmarks</text>
+
+            <rect x="95" y="174" width="56" height="13" rx="3" fill="rgba(76,133,121,0.12)"
+              stroke="rgba(76,133,121,0.3)" stroke-width="0.8"
+              style="fill:rgba(76, 133, 121, 0.12);stroke:rgba(76, 133, 121, 0.3);color:rgb(0, 0, 0);stroke-width:0.8px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" />
+            <text x="123" y="184" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5"
+              font-weight="600" fill="#4C8579" text-anchor="middle"
+              style="fill:rgb(76, 133, 121);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;font-size:7.5px;font-weight:600;text-anchor:middle;dominant-baseline:auto">Evaluation</text>
+          </svg>
+        </svg>
+        <div class="post-body">
+          <div class="post-tags"><span class="p">Machine Learning</span>, AI Literacy</div>
+          <span class="post-title">LLM Benchmarks Decoded — What the Numbers Really Mean</span>
+          <p class="post-desc">A plain-English guide to every major LLM benchmark — what each one actually measures, how
+            scoring works, and where the numbers can be gamed.</p>
+        </div>
+      </a>
+
+
+      <!-- Backpropagation -->
+      <a class="item post-card" href="/Blogs/AI-ML/backpropagation.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+          <defs>
+            <linearGradient id="bp-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#23253a" />
+              <stop offset="60%" stop-color="#2b2d42" />
+              <stop offset="100%" stop-color="#32354f" />
+            </linearGradient>
             <pattern id="bp-grid" width="20" height="20" patternUnits="userSpaceOnUse">
               <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(141,153,174,0.08)" stroke-width="0.6" />
             </pattern>
@@ -649,8 +854,12 @@
               <stop offset="0%" stop-color="rgba(236,72,153,0.22)" />
               <stop offset="100%" stop-color="rgba(236,72,153,0)" />
             </radialGradient>
-            <marker id="bp-fwd" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto"><path d="M0,0 L5,3 L0,6 Z" fill="#9DB3FF" /></marker>
-            <marker id="bp-bwd" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto"><path d="M0,0 L5,3 L0,6 Z" fill="#F9A8D4" /></marker>
+            <marker id="bp-fwd" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
+              <path d="M0,0 L5,3 L0,6 Z" fill="#9DB3FF" />
+            </marker>
+            <marker id="bp-bwd" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
+              <path d="M0,0 L5,3 L0,6 Z" fill="#F9A8D4" />
+            </marker>
           </defs>
 
           <!-- Background -->
@@ -680,8 +889,10 @@
               <text x="100" y="56" font-size="12" fill="#F9CFE6">L</text>
             </g>
             <!-- flow labels -->
-            <text x="56" y="12" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5" font-weight="700" letter-spacing="1.5" fill="#9DB3FF" text-anchor="middle">FORWARD</text>
-            <text x="56" y="96" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5" font-weight="700" letter-spacing="1.5" fill="#F9A8D4" text-anchor="middle">BACKWARD ∂</text>
+            <text x="56" y="12" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5" font-weight="700"
+              letter-spacing="1.5" fill="#9DB3FF" text-anchor="middle">FORWARD</text>
+            <text x="56" y="96" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="6.5" font-weight="700"
+              letter-spacing="1.5" fill="#F9A8D4" text-anchor="middle">BACKWARD ∂</text>
           </g>
 
           <!-- Eyebrow -->
@@ -711,15 +922,16 @@
           <text x="59" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
             fill="#EC8FBE" text-anchor="middle">Backpropagation</text>
 
-          <rect x="107" y="158" width="58" height="13" rx="3" fill="rgba(141,153,174,0.14)" stroke="rgba(141,153,174,0.3)"
-            stroke-width="0.8" />
+          <rect x="107" y="158" width="58" height="13" rx="3" fill="rgba(141,153,174,0.14)"
+            stroke="rgba(141,153,174,0.3)" stroke-width="0.8" />
           <text x="136" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
             fill="#aab4c5" text-anchor="middle">Chain Rule</text>
         </svg>
         <div class="post-body">
           <div class="post-tags"><span class="p">Machine Learning</span>, Deep Learning</div>
           <span class="post-title">Backpropagation — The Engine Under Every Neural Net</span>
-          <p class="post-desc">Work out gradients by hand, then build a tiny autograd engine in ~100 lines — the forward pass, the chain rule, and the backward pass that trains every neural network.</p>
+          <p class="post-desc">Work out gradients by hand, then build a tiny autograd engine in ~100 lines — the forward
+            pass, the chain rule, and the backward pass that trains every neural network.</p>
         </div>
       </a>
 
@@ -749,8 +961,8 @@
           <!-- Gradient-descent bowl — right side -->
           <g transform="translate(208,38)" opacity="0.9">
             <!-- the convex cost curve J(w) -->
-            <path d="M 4,8 C 30,118 78,118 104,8"
-              fill="none" stroke="rgba(141,153,174,0.55)" stroke-width="2.4" stroke-linecap="round" />
+            <path d="M 4,8 C 30,118 78,118 104,8" fill="none" stroke="rgba(141,153,174,0.55)" stroke-width="2.4"
+              stroke-linecap="round" />
             <!-- dashed gradient/tangent line at start point -->
             <line x1="86" y1="44" x2="112" y2="-2" stroke="rgba(255,255,255,0.18)" stroke-width="1"
               stroke-dasharray="3 3" />
@@ -795,15 +1007,16 @@
           <text x="54" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
             fill="#ef6072" text-anchor="middle">Gradient Descent</text>
 
-          <rect x="97" y="158" width="58" height="13" rx="3" fill="rgba(141,153,174,0.14)" stroke="rgba(141,153,174,0.3)"
-            stroke-width="0.8" />
+          <rect x="97" y="158" width="58" height="13" rx="3" fill="rgba(141,153,174,0.14)"
+            stroke="rgba(141,153,174,0.3)" stroke-width="0.8" />
           <text x="126" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
             fill="#aab4c5" text-anchor="middle">Vectorization</text>
         </svg>
         <div class="post-body">
           <div class="post-tags"><span class="p">Machine Learning</span>, Deep Learning</div>
           <span class="post-title">Gradient Descent — The Atom of Machine Learning</span>
-          <p class="post-desc">Build a classifier by hand from weights, biases, sigmoid, loss, and gradient descent — the four moving parts inside every larger model.</p>
+          <p class="post-desc">Build a classifier by hand from weights, biases, sigmoid, loss, and gradient descent —
+            the four moving parts inside every larger model.</p>
         </div>
       </a>
 
