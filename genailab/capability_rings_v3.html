@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LiveBench · Capability Rings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+  :root{
+    /* Autumn Hues */
+    --pale-red:#EEE2DF; --pale-orange:#EED7C5;
+    --warm-red:#C89F9C; --coral:#C97C5D; --brick:#B36A5E;
+    --bg:#f2efe9; --panel:#FBF6F1; --hub:#FBF7F2;
+    --ink:#3E302A; --muted:#9A857A; --line:#E3D4C8; --track:#E7D9CD;
+    --font:'Plus Jakarta Sans',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);
+     color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:34px 22px 60px}
+  header{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:26px;margin-bottom:6px}
+  .head-l{max-width:54ch;flex:1 1 420px}
+  .head-r{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+  .eyebrow{font-family:var(--font);font-weight:600;font-size:11px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--coral)}
+  h1{font-family:var(--font);font-weight:800;font-size:clamp(26px,4.4vw,42px);
+    line-height:1.02;margin:.18em 0 0;letter-spacing:-.02em;color:var(--ink)}
+  h1 .b{color:var(--coral)}
+  .sub{color:#6B564C;font-size:14.5px;max-width:58ch;margin-top:12px;line-height:1.62}
+  .sub strong{color:var(--brick);font-weight:700}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+  .seg button{appearance:none;border:0;background:transparent;color:var(--muted);
+    font:600 12px var(--font);padding:7px 12px;border-radius:7px;cursor:pointer;transition:.18s}
+  .seg button[aria-pressed=true]{background:var(--coral);color:#FBF6F1}
+  .seg button:focus-visible{outline:2px solid var(--brick);outline-offset:1px}
+  /* legend, top-right, 3 rows x 2 cols */
+  .legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:auto;
+    gap:9px 18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+  .legend .grp{display:flex;align-items:center;gap:8px}
+  .sw{width:14px;height:14px;border-radius:4px;flex:none}
+  .legend .name{font:600 12px var(--font);color:var(--ink);white-space:nowrap}
+  .leadnote{grid-column:1 / -1;display:flex;align-items:center;gap:8px;margin-top:2px;
+    padding-top:9px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .leadnote .star{color:var(--brick);font-size:13px;line-height:1}
+  .stage{position:relative;margin-top:6px}
+  svg{display:block;width:100%;height:auto}
+  .ring-label{font-family:var(--font);font-weight:600;font-size:10.5px;fill:var(--muted);letter-spacing:.04em;
+    paint-order:stroke;stroke:var(--bg);stroke-width:3.5px;stroke-linejoin:round}
+  .ring-label.lead{fill:var(--brick);font-weight:700}
+  .org-label{font-family:var(--font);font-weight:700;font-size:12px;fill:#5A463E;
+    paint-order:stroke;stroke:var(--bg);stroke-width:3.5px;stroke-linejoin:round}
+  .org-count{font-family:var(--font);font-size:9.5px;fill:var(--muted);
+    paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+  .hub-title{font-family:var(--font);font-weight:800;fill:var(--ink)}
+  .hub-sub{font-family:var(--font);font-weight:600;fill:var(--muted);letter-spacing:.16em}
+  .hit{cursor:pointer;fill:transparent}
+  /* tooltip */
+  .tip{position:absolute;pointer-events:none;z-index:20;min-width:212px;max-width:252px;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 13px;
+    box-shadow:0 16px 38px rgba(120,80,60,.22);opacity:0;transform:translateY(4px);transition:.12s}
+  .tip.on{opacity:1;transform:none}
+  .tip h3{font-family:var(--font);font-weight:700;font-size:14px;margin:0 0 2px;color:var(--ink)}
+  .tip .meta{font-size:11px;color:var(--muted);margin-bottom:9px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .tip .badge{font:600 9.5px var(--font);padding:2px 6px;border-radius:5px;background:var(--pale-orange);color:#8A5A45;text-transform:uppercase;letter-spacing:.05em}
+  .tip .ov{margin-left:auto;font-family:var(--font);font-weight:700;color:var(--brick);font-size:12px}
+  .tip .leads{font-size:10.5px;color:var(--brick);margin:-3px 0 8px;font-weight:600}
+  .tip .row{display:grid;grid-template-columns:64px 1fr 30px;align-items:center;gap:8px;margin:5px 0;font-size:11px}
+  .tip .row span:first-child{color:var(--muted)}
+  .tip .bar{height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+  .tip .bar i{display:block;height:100%;border-radius:3px}
+  .tip .val{font-family:var(--font);font-weight:600;text-align:right;color:#5A463E}
+  footer{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;line-height:1.6}
+  footer strong{color:#5A463E}
+  @media (max-width:620px){.head-r{align-items:flex-start;width:100%}.sub{max-width:none}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="head-l">
+      <div class="eyebrow">LiveBench · 2026-01-08 · 126 models</div>
+      <h1>Capability <span class="b">Rings</span></h1>
+      <p class="sub">A hundred and twenty-six models, fourteen labs, and the leaders separated by barely two points — the frontier has converged into a photo finish. Yet nobody sweeps. OpenAI's <strong>GPT-5.5</strong> takes math, data and language; reasoning belongs to <strong>Anthropic</strong>, instruction to <strong>Google</strong>, and — the tell of the chart — the coding crown goes to <strong>GLM 5.2</strong>, an open-weight model the closed labs still can't beat. The ceiling holds near 81, coding stalls at 76, and every ring below is its own contest with its own winner.</p>
+    </div>
+    <div class="head-r">
+      <div class="controls">
+        <div class="seg" id="scaleSeg" role="group" aria-label="Bar length scale">
+          <button data-scale="abs" aria-pressed="true">Absolute</button>
+          <button data-scale="rel" aria-pressed="false">Relative</button>
+        </div>
+        <div class="seg" id="aggSeg" role="group" aria-label="Granularity">
+          <button data-agg="model" aria-pressed="true">Per model</button>
+          <button data-agg="org" aria-pressed="false">Org average</button>
+        </div>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </header>
+
+  <div class="stage">
+    <svg id="chart" viewBox="0 0 960 960" aria-label="Radial bar chart of model capabilities by category"></svg>
+    <div class="tip" id="tip"></div>
+  </div>
+
+  <footer>
+    Rings inner→outer: Math · Reasoning · Coding · Data&nbsp;Analysis · Language · Instruction. Each bar fills from 0 at the inner edge of its band toward the outer edge; bar <strong>length</strong> is the score and color marks the category. The outer <strong>Leaders</strong> ring marks the single best model per category at its spoke.
+    <strong>Absolute</strong> sets each band's outer edge at 100; <strong>Relative</strong> sets it at the category's best model. Hover a spoke to focus it and read exact values.
+  </footer>
+</div>
+
+<script>
+const DATA = [{"name": "Trinity Large Preview", "id": "arcee-trinity-large-preview", "org": "Arcee", "family": "Trinity", "effort": "default", "open": true, "overall": 30.4, "cats": {"math": 44.932, "reasoning": 15.514, "coding": 28.259, "data": 57.213, "language": 30.0, "instruction": 17.38}}, {"name": "Claude 4.1 Opus", "id": "claude-4-1-opus-20250805-base", "org": "Anthropic", "family": "Opus", "effort": "none", "open": false, "overall": 52.0, "cats": {"math": 62.826, "reasoning": 29.431, "coding": 62.429, "data": 66.953, "language": 54.998, "instruction": 35.67}}, {"name": "Claude 4.1 Opus Thinking", "id": "claude-4-1-opus-20250805-thinking-32k", "org": "Anthropic", "family": "Opus", "effort": "default", "open": false, "overall": 61.4, "cats": {"math": 73.194, "reasoning": 56.66, "coding": 58.865, "data": 71.144, "language": 59.608, "instruction": 52.391}}, {"name": "Claude 4 Sonnet", "id": "claude-4-sonnet-20250514-base", "org": "Anthropic", "family": "Sonnet", "effort": "none", "open": false, "overall": 48.4, "cats": {"math": 60.357, "reasoning": 25.958, "coding": 55.296, "data": 64.684, "language": 50.442, "instruction": 36.414}}, {"name": "Claude 4 Sonnet Thinking", "id": "claude-4-sonnet-20250514-thinking-64k", "org": "Anthropic", "family": "Sonnet", "effort": "default", "open": false, "overall": 60.6, "cats": {"math": 70.499, "reasoning": 59.678, "coding": 54.992, "data": 69.837, "language": 61.216, "instruction": 50.513}}, {"name": "Claude Haiku 4.5", "id": "claude-haiku-4-5-20251001", "org": "Anthropic", "family": "Haiku", "effort": "default", "open": false, "overall": 43.0, "cats": {"math": 57.971, "reasoning": 22.184, "coding": 48.867, "data": 66.194, "language": 41.114, "instruction": 28.861}}, {"name": "Claude Haiku 4.5 Thinking", "id": "claude-haiku-4-5-20251001-thinking-64k", "org": "Anthropic", "family": "Haiku", "effort": "default", "open": false, "overall": 61.0, "cats": {"math": 77.532, "reasoning": 60.433, "coding": 54.124, "data": 69.328, "language": 57.476, "instruction": 51.777}}, {"name": "Claude 4.5 Opus High Effort", "id": "claude-opus-4-5-20251101-high-effort", "org": "Anthropic", "family": "Opus", "effort": "high", "open": false, "overall": 56.5, "cats": {"math": 66.445, "reasoning": 40.488, "coding": 68.121, "data": 67.443, "language": 55.878, "instruction": 39.288}}, {"name": "Claude 4.5 Opus Low Effort", "id": "claude-opus-4-5-20251101-low-effort", "org": "Anthropic", "family": "Opus", "effort": "low", "open": false, "overall": 53.6, "cats": {"math": 64.103, "reasoning": 35.75, "coding": 61.274, "data": 65.376, "language": 57.127, "instruction": 37.239}}, {"name": "Claude 4.5 Opus Medium Effort", "id": "claude-opus-4-5-20251101-medium-effort", "org": "Anthropic", "family": "Opus", "effort": "medium", "open": false, "overall": 57.0, "cats": {"math": 66.318, "reasoning": 40.31, "coding": 69.402, "data": 67.192, "language": 57.221, "instruction": 38.715}}, {"name": "Claude 4.5 Opus Thinking High Effort", "id": "claude-opus-4-5-20251101-thinking-64k-high-effort", "org": "Anthropic", "family": "Opus", "effort": "high", "open": false, "overall": 76.0, "cats": {"math": 90.389, "reasoning": 80.216, "coding": 69.862, "data": 71.981, "language": 72.88, "instruction": 69.471}}, {"name": "Claude 4.5 Opus Thinking Low Effort", "id": "claude-opus-4-5-20251101-thinking-64k-low-effort", "org": "Anthropic", "family": "Opus", "effort": "low", "open": false, "overall": 65.1, "cats": {"math": 76.653, "reasoning": 63.286, "coding": 60.992, "data": 65.962, "language": 68.157, "instruction": 53.495}}, {"name": "Claude 4.5 Opus Thinking Medium Effort", "id": "claude-opus-4-5-20251101-thinking-64k-medium-effort", "org": "Anthropic", "family": "Opus", "effort": "medium", "open": false, "overall": 73.9, "cats": {"math": 85.24, "reasoning": 83.444, "coding": 65.992, "data": 69.51, "language": 72.017, "instruction": 65.37}}, {"name": "Claude 4.6 Opus Thinking High Effort", "id": "claude-opus-4-6-thinking-auto-high-effort", "org": "Anthropic", "family": "Opus", "effort": "high", "open": false, "overall": 76.8, "cats": {"math": 89.317, "reasoning": 83.867, "coding": 68.274, "data": 73.106, "language": 74.355, "instruction": 71.325}}, {"name": "Claude Sonnet 4.5", "id": "claude-sonnet-4-5-20250929", "org": "Anthropic", "family": "Sonnet", "effort": "default", "open": false, "overall": 51.3, "cats": {"math": 62.62, "reasoning": 30.898, "coding": 59.429, "data": 67.337, "language": 53.399, "instruction": 35.669}}, {"name": "Claude Sonnet 4.5 Thinking", "id": "claude-sonnet-4-5-20250929-thinking-64k", "org": "Anthropic", "family": "Sonnet", "effort": "default", "open": false, "overall": 67.9, "cats": {"math": 79.314, "reasoning": 64.72, "coding": 64.143, "data": 71.76, "language": 66.128, "instruction": 63.654}}, {"name": "Claude 4.6 Sonnet Thinking High Effort", "id": "claude-sonnet-4-6-thinking-auto-high-effort", "org": "Anthropic", "family": "Sonnet", "effort": "high", "open": false, "overall": 75.6, "cats": {"math": 86.534, "reasoning": 88.35, "coding": 65.99, "data": 72.635, "language": 71.169, "instruction": 69.3}}, {"name": "Claude 4.6 Sonnet Thinking Medium Effort", "id": "claude-sonnet-4-6-thinking-auto-medium-effort", "org": "Anthropic", "family": "Sonnet", "effort": "medium", "open": false, "overall": 75.7, "cats": {"math": 86.994, "reasoning": 89.671, "coding": 67.709, "data": 70.578, "language": 70.128, "instruction": 67.876}}, {"name": "Claude 4.6 Sonnet Thinking Low Effort", "id": "claude-sonnet-4-6-thinking-auto-low-effort", "org": "Anthropic", "family": "Sonnet", "effort": "low", "open": false, "overall": 70.2, "cats": {"math": 80.382, "reasoning": 85.598, "coding": 67.712, "data": 67.722, "language": 60.959, "instruction": 57.223}}, {"name": "Claude 4.7 Opus Thinking High Effort", "id": "claude-opus-4-7-high-effort", "org": "Anthropic", "family": "Opus", "effort": "high", "open": false, "overall": 74.7, "cats": {"math": 89.293, "reasoning": 89.365, "coding": 70.27, "data": 71.174, "language": 64.93, "instruction": 61.364}}, {"name": "Claude 4.7 Opus Thinking xHigh Effort", "id": "claude-opus-4-7-xhigh-effort", "org": "Anthropic", "family": "Opus", "effort": "xhigh", "open": false, "overall": 77.1, "cats": {"math": 93.104, "reasoning": 89.88, "coding": 68.835, "data": 72.635, "language": 69.722, "instruction": 67.756}}, {"name": "Claude 4.7 Opus Thinking Low Effort", "id": "claude-opus-4-7-low-effort", "org": "Anthropic", "family": "Opus", "effort": "low", "open": false, "overall": 69.5, "cats": {"math": 83.09, "reasoning": 83.28, "coding": 66.582, "data": 69.587, "language": 63.127, "instruction": 48.776}}, {"name": "Claude 4.7 Opus Thinking Medium Effort", "id": "claude-opus-4-7-medium-effort", "org": "Anthropic", "family": "Opus", "effort": "medium", "open": false, "overall": 72.0, "cats": {"math": 86.379, "reasoning": 85.269, "coding": 65.99, "data": 70.462, "language": 65.208, "instruction": 57.467}}, {"name": "Claude 4.8 Opus Thinking High Effort", "id": "claude-opus-4-8-high-effort", "org": "Anthropic", "family": "Opus", "effort": "high", "open": false, "overall": 77.7, "cats": {"math": 91.0, "reasoning": 91.758, "coding": 66.557, "data": 72.549, "language": 73.233, "instruction": 70.995}}, {"name": "Claude 4.8 Opus Thinking Low Effort", "id": "claude-opus-4-8-low-effort", "org": "Anthropic", "family": "Opus", "effort": "low", "open": false, "overall": 71.9, "cats": {"math": 88.737, "reasoning": 88.091, "coding": 53.582, "data": 71.799, "language": 67.842, "instruction": 65.536}}, {"name": "Claude 4.8 Opus Thinking Medium Effort", "id": "claude-opus-4-8-medium-effort", "org": "Anthropic", "family": "Opus", "effort": "medium", "open": false, "overall": 75.6, "cats": {"math": 90.879, "reasoning": 90.547, "coding": 66.555, "data": 71.972, "language": 69.999, "instruction": 62.382}}, {"name": "Claude 4.8 Opus Thinking xHigh Effort", "id": "claude-opus-4-8-xhigh-effort", "org": "Anthropic", "family": "Opus", "effort": "xhigh", "open": false, "overall": 79.5, "cats": {"math": 95.316, "reasoning": 92.301, "coding": 67.709, "data": 72.913, "language": 74.347, "instruction": 73.715}}, {"name": "DeepSeek V3.2", "id": "deepseek-v3.2", "org": "DeepSeek", "family": "DeepSeek", "effort": "default", "open": true, "overall": 49.8, "cats": {"math": 63.954, "reasoning": 32.169, "coding": 58.276, "data": 66.712, "language": 47.457, "instruction": 32.561}}, {"name": "DeepSeek V3.2 Exp", "id": "deepseek-v3.2-exp", "org": "DeepSeek", "family": "DeepSeek", "effort": "default", "open": true, "overall": 47.9, "cats": {"math": 64.382, "reasoning": 33.651, "coding": 51.277, "data": 65.087, "language": 46.744, "instruction": 30.128}}, {"name": "DeepSeek V3.2 Exp Thinking", "id": "deepseek-v3.2-exp-thinking", "org": "DeepSeek", "family": "DeepSeek", "effort": "default", "open": true, "overall": 58.9, "cats": {"math": 82.395, "reasoning": 49.299, "coding": 47.022, "data": 72.779, "language": 57.705, "instruction": 52.994}}, {"name": "DeepSeek V3.2 Thinking", "id": "deepseek-v3.2-thinking", "org": "DeepSeek", "family": "DeepSeek", "effort": "default", "open": true, "overall": 63.1, "cats": {"math": 85.034, "reasoning": 60.038, "coding": 49.848, "data": 70.798, "language": 60.252, "instruction": 59.88}}, {"name": "DeepSeek V4 Pro", "id": "deepseek-v4-pro", "org": "DeepSeek", "family": "DeepSeek", "effort": "default", "open": true, "overall": 74.4, "cats": {"math": 90.675, "reasoning": 81.355, "coding": 61.998, "data": 74.096, "language": 69.308, "instruction": 72.673}}, {"name": "DeepSeek V4 Flash", "id": "deepseek-v4-flash", "org": "DeepSeek", "family": "DeepSeek", "effort": "default", "open": true, "overall": 67.7, "cats": {"math": 79.648, "reasoning": 67.291, "coding": 57.691, "data": 72.077, "language": 65.361, "instruction": 69.731}}, {"name": "Devstral 2", "id": "devstral-2512", "org": "Mistral", "family": "Devstral", "effort": "default", "open": true, "overall": 38.8, "cats": {"math": 52.516, "reasoning": 19.004, "coding": 52.718, "data": 56.953, "language": 32.515, "instruction": 22.298}}, {"name": "Elephant Alpha", "id": "elephant-alpha", "org": "OpenRouter", "family": "Elephant", "effort": "default", "open": false, "overall": 35.9, "cats": {"math": 57.496, "reasoning": 29.543, "coding": 23.676, "data": 55.588, "language": 27.04, "instruction": 37.596}}, {"name": "Gemini 2.5 Flash (Max Thinking)", "id": "gemini-2.5-flash-06-05-highthinking", "org": "Google", "family": "Gemini Flash", "effort": "high", "open": false, "overall": 46.9, "cats": {"math": 68.754, "reasoning": 34.704, "coding": 36.411, "data": 69.683, "language": 46.945, "instruction": 36.131}}, {"name": "Gemini 2.5 Flash Lite (Max Thinking)", "id": "gemini-2.5-flash-lite-highthinking", "org": "Google", "family": "Gemini Flash Lite", "effort": "high", "open": false, "overall": 41.5, "cats": {"math": 61.04, "reasoning": 36.343, "coding": 29.565, "data": 67.251, "language": 39.178, "instruction": 28.988}}, {"name": "Gemini 2.5 Flash Lite (Max Thinking)", "id": "gemini-2.5-flash-lite-preview-09-2025-highthinking", "org": "Google", "family": "Gemini Flash Lite", "effort": "high", "open": false, "overall": 41.5, "cats": {"math": 64.903, "reasoning": 28.149, "coding": 27.154, "data": 67.644, "language": 41.854, "instruction": 33.784}}, {"name": "Gemini 2.5 Flash (Max Thinking)", "id": "gemini-2.5-flash-preview-09-2025-highthinking", "org": "Google", "family": "Gemini Flash", "effort": "high", "open": false, "overall": 52.3, "cats": {"math": 75.351, "reasoning": 50.256, "coding": 40.999, "data": 72.712, "language": 49.489, "instruction": 33.869}}, {"name": "Gemini 2.5 Pro (Max Thinking)", "id": "gemini-2.5-pro-06-05-highthinking", "org": "Google", "family": "Gemini Pro", "effort": "high", "open": false, "overall": 57.5, "cats": {"math": 68.316, "reasoning": 56.461, "coding": 50.276, "data": 71.501, "language": 57.911, "instruction": 46.144}}, {"name": "Gemini 3 Flash Preview High", "id": "gemini-3-flash-preview-high", "org": "Google", "family": "Gemini Flash", "effort": "high", "open": false, "overall": 73.0, "cats": {"math": 84.174, "reasoning": 72.584, "coding": 53.559, "data": 74.74, "language": 79.362, "instruction": 79.675}}, {"name": "Gemini 3 Flash Preview Minimal", "id": "gemini-3-flash-preview-minimal", "org": "Google", "family": "Gemini Flash", "effort": "minimal", "open": false, "overall": 54.4, "cats": {"math": 68.099, "reasoning": 37.993, "coding": 57.427, "data": 68.847, "language": 57.148, "instruction": 38.469}}, {"name": "Gemini 3 Pro Preview High", "id": "gemini-3-pro-preview-11-2025-high", "org": "Google", "family": "Gemini Pro", "effort": "high", "open": false, "overall": 73.5, "cats": {"math": 81.837, "reasoning": 76.523, "coding": 62.841, "data": 74.913, "language": 75.269, "instruction": 72.608}}, {"name": "Gemini 3 Pro Preview Low", "id": "gemini-3-pro-preview-11-2025-low", "org": "Google", "family": "Gemini Pro", "effort": "low", "open": false, "overall": 62.9, "cats": {"math": 77.734, "reasoning": 69.285, "coding": 61.255, "data": 71.299, "language": 56.465, "instruction": 42.376}}, {"name": "Gemini 3.1 Pro Preview High", "id": "gemini-3.1-pro-preview-high", "org": "Google", "family": "Gemini Pro", "effort": "high", "open": false, "overall": 80.7, "cats": {"math": 91.045, "reasoning": 85.122, "coding": 69.582, "data": 75.192, "language": 81.409, "instruction": 82.084}}, {"name": "Gemini 3.1 Flash Lite Preview High", "id": "gemini-3.1-flash-lite-preview-high", "org": "Google", "family": "Gemini Flash Lite", "effort": "high", "open": false, "overall": 62.1, "cats": {"math": 73.559, "reasoning": 49.254, "coding": 47.41, "data": 70.462, "language": 69.473, "instruction": 70.678}}, {"name": "Gemini 3.5 Flash High", "id": "gemini-3.5-flash-high", "org": "Google", "family": "Gemini Flash", "effort": "high", "open": false, "overall": 75.8, "cats": {"math": 88.244, "reasoning": 73.811, "coding": 62.274, "data": 73.289, "language": 79.674, "instruction": 79.517}}, {"name": "Gemma 4 31B", "id": "gemma-4-31b-it", "org": "Google", "family": "Gemma", "effort": "default", "open": true, "overall": 62.4, "cats": {"math": 73.936, "reasoning": 53.912, "coding": 48.134, "data": 73.192, "language": 68.956, "instruction": 63.824}}, {"name": "GLM 4.6", "id": "glm-4.6", "org": "Z.AI", "family": "GLM", "effort": "default", "open": true, "overall": 54.7, "cats": {"math": 81.128, "reasoning": 52.653, "coding": 49.408, "data": 71.74, "language": 44.109, "instruction": 37.061}}, {"name": "GLM 4.6V", "id": "glm-4.6v", "org": "Z.AI", "family": "GLM", "effort": "default", "open": true, "overall": 38.9, "cats": {"math": 62.5, "reasoning": 30.125, "coding": 27.695, "data": 66.49, "language": 36.226, "instruction": 23.649}}, {"name": "GLM 4.7", "id": "glm-4.7", "org": "Z.AI", "family": "GLM", "effort": "default", "open": true, "overall": 57.3, "cats": {"math": 76.019, "reasoning": 45.037, "coding": 54.253, "data": 73.683, "language": 52.736, "instruction": 50.519}}, {"name": "GLM 5", "id": "glm-5", "org": "Z.AI", "family": "GLM", "effort": "default", "open": true, "overall": 68.7, "cats": {"math": 83.464, "reasoning": 63.427, "coding": 62.455, "data": 71.865, "language": 67.557, "instruction": 66.269}}, {"name": "GLM 5V Turbo", "id": "glm-5v-turbo", "org": "Z.AI", "family": "GLM", "effort": "default", "open": true, "overall": 48.8, "cats": {"math": 70.411, "reasoning": 48.341, "coding": 31.559, "data": 70.769, "language": 47.102, "instruction": 37.346}}, {"name": "GLM 5.1", "id": "glm-5.1", "org": "Z.AI", "family": "GLM", "effort": "default", "open": true, "overall": 70.6, "cats": {"math": 84.894, "reasoning": 66.279, "coding": 63.147, "data": 67.906, "language": 69.957, "instruction": 72.738}}, {"name": "GPT-5 Mini", "id": "gpt-5-mini", "org": "OpenAI", "family": "GPT Mini", "effort": "default", "open": false, "overall": 61.0, "cats": {"math": 74.378, "reasoning": 45.026, "coding": 51.429, "data": 71.856, "language": 65.164, "instruction": 66.033}}, {"name": "GPT-5 Mini High", "id": "gpt-5-mini-high", "org": "OpenAI", "family": "GPT Mini", "effort": "high", "open": false, "overall": 66.6, "cats": {"math": 82.201, "reasoning": 58.358, "coding": 55.281, "data": 71.952, "language": 69.769, "instruction": 66.779}}, {"name": "GPT-5 Mini Low", "id": "gpt-5-mini-low", "org": "OpenAI", "family": "GPT Mini", "effort": "low", "open": false, "overall": 52.4, "cats": {"math": 63.239, "reasoning": 32.438, "coding": 49.82, "data": 67.481, "language": 55.047, "instruction": 54.232}}, {"name": "GPT-5 Mini Minimal", "id": "gpt-5-mini-minimal", "org": "OpenAI", "family": "GPT Mini", "effort": "minimal", "open": false, "overall": 37.7, "cats": {"math": 47.531, "reasoning": 24.244, "coding": 41.279, "data": 62.02, "language": 34.553, "instruction": 25.847}}, {"name": "GPT-5 Nano", "id": "gpt-5-nano", "org": "OpenAI", "family": "GPT Nano", "effort": "default", "open": false, "overall": 48.0, "cats": {"math": 64.699, "reasoning": 25.25, "coding": 43.95, "data": 65.731, "language": 49.42, "instruction": 48.775}}, {"name": "GPT-5 Nano High", "id": "gpt-5-nano-high", "org": "OpenAI", "family": "GPT Nano", "effort": "high", "open": false, "overall": 48.8, "cats": {"math": 68.406, "reasoning": 30.202, "coding": 38.954, "data": 62.204, "language": 49.892, "instruction": 53.34}}, {"name": "GPT-5 Nano Low", "id": "gpt-5-nano-low", "org": "OpenAI", "family": "GPT Nano", "effort": "low", "open": false, "overall": 33.7, "cats": {"math": 48.907, "reasoning": 18.062, "coding": 27.09, "data": 54.849, "language": 31.557, "instruction": 34.421}}, {"name": "GPT-5 Pro", "id": "gpt-5-pro-2025-10-06", "org": "OpenAI", "family": "GPT", "effort": "default", "open": false, "overall": 71.3, "cats": {"math": 86.165, "reasoning": 68.069, "coding": 59.843, "data": 72.423, "language": 73.14, "instruction": 70.995}}, {"name": "GPT-5.1 High", "id": "gpt-5.1-2025-11-13-high", "org": "OpenAI", "family": "GPT", "effort": "high", "open": false, "overall": 72.6, "cats": {"math": 86.9, "reasoning": 75.733, "coding": 60.996, "data": 72.067, "language": 71.249, "instruction": 71.358}}, {"name": "GPT-5.1 Low", "id": "gpt-5.1-2025-11-13-low", "org": "OpenAI", "family": "GPT", "effort": "low", "open": false, "overall": 58.9, "cats": {"math": 68.378, "reasoning": 41.434, "coding": 56.119, "data": 68.683, "language": 64.668, "instruction": 57.931}}, {"name": "GPT-5.1 Medium", "id": "gpt-5.1-2025-11-13-medium", "org": "OpenAI", "family": "GPT", "effort": "medium", "open": false, "overall": 69.1, "cats": {"math": 79.011, "reasoning": 66.865, "coding": 62.276, "data": 70.606, "language": 70.661, "instruction": 66.936}}, {"name": "GPT-5.1 No Thinking", "id": "gpt-5.1-2025-11-13-nothinking", "org": "OpenAI", "family": "GPT", "effort": "none", "open": false, "overall": 39.7, "cats": {"math": 44.511, "reasoning": 21.544, "coding": 47.992, "data": 64.135, "language": 41.107, "instruction": 24.994}}, {"name": "GPT-5.1 Codex", "id": "gpt-5.1-codex", "org": "OpenAI", "family": "GPT Codex", "effort": "default", "open": false, "overall": 69.3, "cats": {"math": 79.581, "reasoning": 73.911, "coding": 60.714, "data": 68.799, "language": 65.951, "instruction": 69.719}}, {"name": "GPT-5.1 Codex Max", "id": "gpt-5.1-codex-max", "org": "OpenAI", "family": "GPT Codex", "effort": "default", "open": false, "overall": 72.4, "cats": {"math": 83.655, "reasoning": 68.397, "coding": 66.554, "data": 71.413, "language": 70.008, "instruction": 77.052}}, {"name": "GPT-5.1 Codex Max High", "id": "gpt-5.1-codex-max-high", "org": "OpenAI", "family": "GPT Codex", "effort": "high", "open": false, "overall": 74.4, "cats": {"math": 83.216, "reasoning": 78.78, "coding": 64.272, "data": 72.625, "language": 74.568, "instruction": 74.25}}, {"name": "GPT-5.1 Codex Mini", "id": "gpt-5.1-codex-mini", "org": "OpenAI", "family": "GPT Codex", "effort": "default", "open": false, "overall": 60.8, "cats": {"math": 76.255, "reasoning": 53.382, "coding": 51.973, "data": 70.288, "language": 58.858, "instruction": 61.56}}, {"name": "GPT-5.2 High", "id": "gpt-5.2-2025-12-11-high", "org": "OpenAI", "family": "GPT", "effort": "high", "open": false, "overall": 75.4, "cats": {"math": 93.166, "reasoning": 85.728, "coding": 61.429, "data": 72.788, "language": 71.522, "instruction": 69.249}}, {"name": "GPT-5.2 Low", "id": "gpt-5.2-2025-12-11-low", "org": "OpenAI", "family": "GPT", "effort": "low", "open": false, "overall": 65.6, "cats": {"math": 84.714, "reasoning": 56.03, "coding": 59.559, "data": 71.048, "language": 63.312, "instruction": 63.03}}, {"name": "GPT-5.2 Medium", "id": "gpt-5.2-2025-12-11-medium", "org": "OpenAI", "family": "GPT", "effort": "medium", "open": false, "overall": 72.6, "cats": {"math": 92.069, "reasoning": 80.041, "coding": 59.843, "data": 72.471, "language": 67.403, "instruction": 66.87}}, {"name": "GPT-5.2 No Thinking", "id": "gpt-5.2-2025-12-11-nothinking", "org": "OpenAI", "family": "GPT", "effort": "none", "open": false, "overall": 46.9, "cats": {"math": 58.251, "reasoning": 35.996, "coding": 54.582, "data": 68.779, "language": 39.33, "instruction": 31.581}}, {"name": "GPT-5.2 Codex", "id": "gpt-5.2-codex", "org": "OpenAI", "family": "GPT Codex", "effort": "default", "open": false, "overall": 74.3, "cats": {"math": 88.774, "reasoning": 80.254, "coding": 64.448, "data": 72.798, "language": 69.73, "instruction": 72.337}}, {"name": "GPT-5.3 Codex High", "id": "gpt-5.3-codex-high", "org": "OpenAI", "family": "GPT Codex", "effort": "high", "open": false, "overall": 73.2, "cats": {"math": 87.836, "reasoning": 68.925, "coding": 64.274, "data": 74.183, "language": 73.239, "instruction": 73.394}}, {"name": "GPT-5.3 Codex xHigh", "id": "gpt-5.3-codex-xhigh", "org": "OpenAI", "family": "GPT Codex", "effort": "xhigh", "open": false, "overall": 72.0, "cats": {"math": 85.7, "reasoning": 58.596, "coding": 70.992, "data": 71.327, "language": 74.848, "instruction": 68.786}}, {"name": "GPT-5.3 Instant", "id": "gpt-5.3-instant", "org": "OpenAI", "family": "GPT Instant", "effort": "default", "open": false, "overall": 59.8, "cats": {"math": 72.406, "reasoning": 47.748, "coding": 48.451, "data": 71.038, "language": 64.18, "instruction": 63.393}}, {"name": "GPT-5.4 Thinking High Effort", "id": "gpt-5.4-high", "org": "OpenAI", "family": "GPT", "effort": "high", "open": false, "overall": 75.6, "cats": {"math": 89.981, "reasoning": 84.839, "coding": 59.274, "data": 74.894, "language": 74.129, "instruction": 74.272}}, {"name": "GPT-5.4 Thinking xHigh Effort", "id": "gpt-5.4-xhigh", "org": "OpenAI", "family": "GPT", "effort": "xhigh", "open": false, "overall": 80.9, "cats": {"math": 94.148, "reasoning": 87.547, "coding": 73.017, "data": 75.875, "language": 76.267, "instruction": 78.632}}, {"name": "GPT-5.4 Mini", "id": "gpt-5.4-mini", "org": "OpenAI", "family": "GPT Mini", "effort": "default", "open": false, "overall": 33.9, "cats": {"math": 37.045, "reasoning": 16.766, "coding": 40.091, "data": 66.892, "language": 32.774, "instruction": 21.938}}, {"name": "GPT-5.4 Mini High", "id": "gpt-5.4-mini-high", "org": "OpenAI", "family": "GPT Mini", "effort": "high", "open": false, "overall": 63.7, "cats": {"math": 74.099, "reasoning": 69.589, "coding": 51.744, "data": 74.255, "language": 62.561, "instruction": 56.41}}, {"name": "GPT-5.4 Mini Low", "id": "gpt-5.4-mini-low", "org": "OpenAI", "family": "GPT Mini", "effort": "low", "open": false, "overall": 48.2, "cats": {"math": 64.09, "reasoning": 32.832, "coding": 43.32, "data": 69.764, "language": 46.789, "instruction": 43.488}}, {"name": "GPT-5.4 Mini Medium", "id": "gpt-5.4-mini-medium", "org": "OpenAI", "family": "GPT Mini", "effort": "medium", "open": false, "overall": 58.1, "cats": {"math": 70.403, "reasoning": 57.791, "coding": 44.792, "data": 72.255, "language": 55.622, "instruction": 59.135}}, {"name": "GPT-5.4 Mini xHigh", "id": "gpt-5.4-mini-xhigh", "org": "OpenAI", "family": "GPT Mini", "effort": "xhigh", "open": false, "overall": 67.7, "cats": {"math": 78.555, "reasoning": 69.009, "coding": 57.123, "data": 74.931, "language": 65.666, "instruction": 68.013}}, {"name": "GPT-5.4 Nano", "id": "gpt-5.4-nano", "org": "OpenAI", "family": "GPT Nano", "effort": "default", "open": false, "overall": 29.9, "cats": {"math": 36.008, "reasoning": 11.547, "coding": 41.015, "data": 57.951, "language": 24.649, "instruction": 17.917}}, {"name": "GPT-5.4 Nano High", "id": "gpt-5.4-nano-high", "org": "OpenAI", "family": "GPT Nano", "effort": "high", "open": false, "overall": 63.6, "cats": {"math": 88.594, "reasoning": 59.67, "coding": 56.824, "data": 69.039, "language": 54.053, "instruction": 59.399}}, {"name": "GPT-5.4 Nano Low", "id": "gpt-5.4-nano-low", "org": "OpenAI", "family": "GPT Nano", "effort": "low", "open": false, "overall": 47.7, "cats": {"math": 65.156, "reasoning": 28.211, "coding": 50.129, "data": 65.901, "language": 41.693, "instruction": 44.227}}, {"name": "GPT-5.4 Nano Medium", "id": "gpt-5.4-nano-medium", "org": "OpenAI", "family": "GPT Nano", "effort": "medium", "open": false, "overall": 59.0, "cats": {"math": 83.096, "reasoning": 51.055, "coding": 52.524, "data": 70.137, "language": 49.231, "instruction": 56.785}}, {"name": "GPT-5.4 Nano xHigh", "id": "gpt-5.4-nano-xhigh", "org": "OpenAI", "family": "GPT Nano", "effort": "xhigh", "open": false, "overall": 71.3, "cats": {"math": 91.27, "reasoning": 74.434, "coding": 58.328, "data": 74.314, "language": 63.361, "instruction": 73.396}}, {"name": "GPT-5.5 Thinking High Effort", "id": "gpt-5.5-high", "org": "OpenAI", "family": "GPT", "effort": "high", "open": false, "overall": 77.1, "cats": {"math": 96.069, "reasoning": 88.003, "coding": 51.013, "data": 76.212, "language": 81.31, "instruction": 74.115}}, {"name": "GPT-5.5 Thinking xHigh Effort", "id": "gpt-5.5-xhigh", "org": "OpenAI", "family": "GPT", "effort": "xhigh", "open": false, "overall": 81.3, "cats": {"math": 96.32, "reasoning": 90.185, "coding": 66.988, "data": 77.25, "language": 81.802, "instruction": 74.993}}, {"name": "GPT-5.5 Thinking Medium Effort", "id": "gpt-5.5-medium", "org": "OpenAI", "family": "GPT", "effort": "medium", "open": false, "overall": 69.0, "cats": {"math": 69.769, "reasoning": 87.12, "coding": 41.451, "data": 76.365, "language": 75.809, "instruction": 73.154}}, {"name": "GPT OSS 120b", "id": "gpt-oss-120b", "org": "OpenAI", "family": "GPT OSS", "effort": "default", "open": true, "overall": 46.4, "cats": {"math": 68.874, "reasoning": 27.905, "coding": 34.085, "data": 56.772, "language": 49.221, "instruction": 49.637}}, {"name": "Grok 4", "id": "grok-4-0709", "org": "xAI", "family": "Grok", "effort": "default", "open": false, "overall": 61.8, "cats": {"math": 83.023, "reasoning": 76.518, "coding": 47.253, "data": 69.529, "language": 54.97, "instruction": 44.051}}, {"name": "Grok 4.1 Fast (Non-Reasoning)", "id": "grok-4-1-fast-non-reasoning", "org": "xAI", "family": "Grok Fast", "effort": "none", "open": false, "overall": 31.6, "cats": {"math": 38.92, "reasoning": 14.577, "coding": 27.702, "data": 58.261, "language": 35.951, "instruction": 26.184}}, {"name": "Grok 4.1 Fast", "id": "grok-4-1-fast-reasoning", "org": "xAI", "family": "Grok Fast", "effort": "default", "open": false, "overall": 60.1, "cats": {"math": 83.72, "reasoning": 72.298, "coding": 46.844, "data": 63.386, "language": 54.503, "instruction": 41.607}}, {"name": "Grok Code Fast", "id": "grok-code-fast-1-0825", "org": "xAI", "family": "Grok Code", "effort": "default", "open": false, "overall": 43.6, "cats": {"math": 56.013, "reasoning": 34.92, "coding": 45.775, "data": 69.019, "language": 36.873, "instruction": 29.621}}, {"name": "Grok 4.20 Beta (Non-Reasoning)", "id": "grok-4.20-beta-0309-non-reasoning", "org": "xAI", "family": "Grok", "effort": "none", "open": false, "overall": 37.9, "cats": {"math": 45.522, "reasoning": 18.814, "coding": 46.417, "data": 63.471, "language": 34.735, "instruction": 26.873}}, {"name": "Grok 4.20 Beta", "id": "grok-4.20-beta-0309-reasoning", "org": "xAI", "family": "Grok", "effort": "default", "open": false, "overall": 69.0, "cats": {"math": 87.055, "reasoning": 71.638, "coding": 52.436, "data": 68.885, "language": 70.544, "instruction": 66.456}}, {"name": "Grok 4.3", "id": "grok-4.3", "org": "xAI", "family": "Grok", "effort": "default", "open": false, "overall": 67.4, "cats": {"math": 84.339, "reasoning": 62.445, "coding": 57.973, "data": 69.644, "language": 68.545, "instruction": 63.518}}, {"name": "Kimi K2 Instruct", "id": "kimi-k2-instruct", "org": "Moonshot AI", "family": "Kimi", "effort": "default", "open": true, "overall": 45.9, "cats": {"math": 58.152, "reasoning": 30.054, "coding": 48.712, "data": 63.405, "language": 46.672, "instruction": 33.358}}, {"name": "Kimi K2 Thinking", "id": "kimi-k2-thinking", "org": "Moonshot AI", "family": "Kimi", "effort": "default", "open": true, "overall": 62.3, "cats": {"math": 81.096, "reasoning": 52.992, "coding": 49.975, "data": 70.568, "language": 62.722, "instruction": 63.859}}, {"name": "Kimi K2.5 Thinking", "id": "kimi-k2.5-thinking", "org": "Moonshot AI", "family": "Kimi", "effort": "default", "open": true, "overall": 69.2, "cats": {"math": 84.868, "reasoning": 68.234, "coding": 60.145, "data": 70.944, "language": 69.48, "instruction": 62.776}}, {"name": "Kimi K2.6 Thinking", "id": "kimi-k2.6-thinking", "org": "Moonshot AI", "family": "Kimi", "effort": "default", "open": true, "overall": 72.4, "cats": {"math": 84.276, "reasoning": 73.442, "coding": 66.427, "data": 72.067, "language": 69.695, "instruction": 69.794}}, {"name": "Minimax M2.5", "id": "minimax-m2.5", "org": "Minimax", "family": "Minimax", "effort": "default", "open": true, "overall": 60.3, "cats": {"math": 77.407, "reasoning": 46.492, "coding": 59.279, "data": 68.299, "language": 56.377, "instruction": 58.604}}, {"name": "MiMo V2 Pro", "id": "mimo-v2-pro", "org": "Xiaomi", "family": "MiMo", "effort": "default", "open": false, "overall": 58.4, "cats": {"math": 76.96, "reasoning": 56.33, "coding": 45.538, "data": 66.904, "language": 58.148, "instruction": 52.219}}, {"name": "Minimax M2.7", "id": "minimax-m2.7", "org": "Minimax", "family": "Minimax", "effort": "default", "open": false, "overall": 65.0, "cats": {"math": 80.542, "reasoning": 62.703, "coding": 51.96, "data": 70.222, "language": 63.376, "instruction": 68.28}}, {"name": "Nemotron 3 Super 120B A12B", "id": "nemotron-3-super-120b-a12b", "org": "NVIDIA", "family": "Nemotron", "effort": "default", "open": true, "overall": 32.0, "cats": {"math": 36.429, "reasoning": 34.306, "coding": 38.536, "data": 31.846, "language": 26.766, "instruction": 22.3}}, {"name": "Qwen 3 235B A22B Instruct 2507", "id": "qwen3-235b-a22b-instruct-2507", "org": "Alibaba", "family": "Qwen", "effort": "default", "open": true, "overall": 48.0, "cats": {"math": 68.032, "reasoning": 48.291, "coding": 35.844, "data": 65.241, "language": 47.612, "instruction": 30.421}}, {"name": "Qwen 3 235B A22B Thinking 2507", "id": "qwen3-235b-a22b-thinking-2507", "org": "Alibaba", "family": "Qwen", "effort": "default", "open": true, "overall": 52.9, "cats": {"math": 73.395, "reasoning": 47.748, "coding": 31.587, "data": 74.654, "language": 56.861, "instruction": 46.893}}, {"name": "Qwen 3 30B A3B", "id": "qwen3-30b-a3b-thinking", "org": "Alibaba", "family": "Qwen", "effort": "default", "open": false, "overall": 38.8, "cats": {"math": 65.347, "reasoning": 27.456, "coding": 20.553, "data": 66.597, "language": 40.342, "instruction": 28.193}}, {"name": "Qwen 3 32B", "id": "qwen3-32b-thinking", "org": "Alibaba", "family": "Qwen", "effort": "default", "open": true, "overall": 42.7, "cats": {"math": 67.44, "reasoning": 35.073, "coding": 28.411, "data": 68.288, "language": 40.502, "instruction": 30.323}}, {"name": "Qwen 3 Next 80B A3B Instruct", "id": "qwen3-next-80b-a3b-instruct", "org": "Alibaba", "family": "Qwen", "effort": "default", "open": true, "overall": 47.4, "cats": {"math": 70.178, "reasoning": 46.712, "coding": 33.281, "data": 68.626, "language": 46.763, "instruction": 28.727}}, {"name": "Qwen 3 Next 80B A3B Thinking", "id": "qwen3-next-80b-a3b-thinking", "org": "Alibaba", "family": "Qwen", "effort": "default", "open": true, "overall": 51.0, "cats": {"math": 74.26, "reasoning": 50.231, "coding": 29.262, "data": 73.163, "language": 48.234, "instruction": 46.696}}, {"name": "Qwen 3.6 Plus", "id": "qwen3.6-plus", "org": "Alibaba", "family": "Qwen", "effort": "default", "open": false, "overall": 70.8, "cats": {"math": 83.725, "reasoning": 75.761, "coding": 64.274, "data": 71.347, "language": 67.43, "instruction": 62.831}}, {"name": "Qwen 3.6 27B", "id": "qwen3.6-27b", "org": "Alibaba", "family": "Qwen", "effort": "default", "open": true, "overall": 65.6, "cats": {"math": 79.868, "reasoning": 71.536, "coding": 58.714, "data": 70.442, "language": 58.016, "instruction": 59.378}}, {"name": "Qwen 3.6 Flash", "id": "qwen3.6-flash", "org": "Alibaba", "family": "Qwen Flash", "effort": "default", "open": true, "overall": 60.5, "cats": {"math": 78.877, "reasoning": 60.257, "coding": 53.977, "data": 68.617, "language": 56.07, "instruction": 49.3}}, {"name": "Qwen 3.7 Max", "id": "qwen3.7-max", "org": "Alibaba", "family": "Qwen Max", "effort": "default", "open": false, "overall": 75.2, "cats": {"math": 85.248, "reasoning": 81.575, "coding": 60.688, "data": 71.779, "language": 75.06, "instruction": 79.643}}, {"name": "Minimax M3", "id": "minimax-m3", "org": "Minimax", "family": "Minimax", "effort": "default", "open": false, "overall": 70.0, "cats": {"math": 76.948, "reasoning": 76.404, "coding": 63.281, "data": 71.942, "language": 68.611, "instruction": 64.802}}, {"name": "Nemotron 3 Ultra 550B A55B", "id": "nemotron-3-ultra-550b-a55b", "org": "NVIDIA", "family": "Nemotron", "effort": "default", "open": false, "overall": 50.7, "cats": {"math": 54.518, "reasoning": 24.659, "coding": 56.536, "data": 62.827, "language": 54.611, "instruction": 56.058}}, {"name": "Grok Build 0.1", "id": "grok-build-0.1", "org": "xAI", "family": "Grok Build", "effort": "default", "open": false, "overall": 69.6, "cats": {"math": 78.429, "reasoning": 76.495, "coding": 58.154, "data": 71.327, "language": 67.673, "instruction": 69.71}}, {"name": "Claude Fable 5 Thinking High Effort", "id": "claude-fable-5-high-effort", "org": "Anthropic", "family": "Fable", "effort": "high", "open": false, "overall": 75.7, "cats": {"math": 91.323, "reasoning": 90.693, "coding": 61.557, "data": 74.972, "language": 72.625, "instruction": 64.404}}, {"name": "Claude Fable 5 Thinking xHigh Effort", "id": "claude-fable-5-xhigh-effort", "org": "Anthropic", "family": "Fable", "effort": "xhigh", "open": false, "overall": 78.6, "cats": {"math": 93.896, "reasoning": 91.105, "coding": 67.427, "data": 74.856, "language": 74.93, "instruction": 68.522}}, {"name": "Kimi K2.7 Code", "id": "kimi-k2.7-code", "org": "Moonshot AI", "family": "Kimi", "effort": "default", "open": true, "overall": 71.9, "cats": {"math": 79.604, "reasoning": 77.569, "coding": 71.584, "data": 69.847, "language": 66.4, "instruction": 65.372}}, {"name": "GLM 5.2", "id": "glm-5.2", "org": "Z.AI", "family": "GLM", "effort": "default", "open": true, "overall": 76.2, "cats": {"math": 89.781, "reasoning": 79.694, "coding": 75.862, "data": 70.972, "language": 69.328, "instruction": 68.75}}];
+
+// ---- category config: inner -> outer, each an Autumn Hue ----
+const CATS = [
+  {key:'math',        name:'Math',          color:'#C97C5D', tasks:'AMPS · math comp · olympiad · integrals'},
+  {key:'reasoning',   name:'Reasoning',     color:'#B36A5E', tasks:'zebra · spatial · nav · events'},
+  {key:'coding',      name:'Coding',        color:'#C89F9C', tasks:'completion · generation · py/js/ts'},
+  {key:'data',        name:'Data Analysis', color:'#D9A06F', tasks:'tablejoin · tablereformat'},
+  {key:'language',    name:'Language',      color:'#A6584E', tasks:'connections · unscramble · typos · paraphrase'},
+  {key:'instruction', name:'Instruction',   color:'#D7B2A4', tasks:'story · summarize · theory-of-mind'},
+];
+const COLOR = Object.fromEntries(CATS.map(c=>[c.key,c.color]));
+
+// per-category extents for relative scaling
+const EXT = {};
+CATS.forEach(c=>{ const v=DATA.map(d=>d.cats[c.key]); EXT[c.key]=[d3.min(v),d3.max(v)]; });
+
+// bar fill fraction (0..1) for a value under the current scale
+function frac(catKey, val){
+  let t = cur.scale==='rel' ? (val-EXT[catKey][0])/((EXT[catKey][1]-EXT[catKey][0])||1) : val/100;
+  return Math.max(0,Math.min(1,t));
+}
+
+// ---- geometry ----
+const SZ=960, cx=SZ/2, cy=SZ/2;
+const HUB=88, BAND=38;                 // hub radius, category-ring thickness
+const R0=HUB, ringR=i=>R0+i*BAND;      // inner edge of category ring i
+const CAT_OUTER=R0+CATS.length*BAND;   // outer edge of the 6 category rings
+const DGAP=8, DBAND=24;                // gap + thickness of the Leaders data ring
+const RD0=CAT_OUTER+DGAP, RD1=RD0+DBAND;
+const OUTER=RD1;                       // org labels sit beyond this
+const SECTOR_GAP=0.04, TOP_GAP=0.16;   // radians: between sectors, and the label spoke at top
+const svg=d3.select('#chart');
+const root=svg.append('g').attr('transform',`translate(${cx},${cy})`);
+const gGuides=root.append('g');
+const gBar=root.append('g').attr('pointer-events','none');    // value bars (always on)
+const gData=root.append('g').attr('pointer-events','none');   // Leaders ring
+const gHit=root.append('g');                                  // transparent hover targets
+const gLabels=root.append('g');
+const gHub=root.append('g');
+
+// order orgs by model count desc, models within by overall desc.
+// single-model orgs are folded into one "Other" sector to keep labels legible
+// (each cell keeps its true org, shown in the tooltip).
+const ORG_N = {}; d3.groups(DATA,d=>d.org).forEach(([o,m])=>ORG_N[o]=m.length);
+const orgKey = d=> ORG_N[d.org]===1 ? 'Other' : d.org;
+function layout(agg){
+  const byOrg=d3.groups(DATA,orgKey)
+    .sort((a,b)=>b[1].length-a[1].length || d3.mean(b[1],x=>x.overall)-d3.mean(a[1],x=>x.overall));
+  let units=[]; // {model, org, isAgg}
+  const sectors=[];
+  byOrg.forEach(([org,models])=>{
+    models.sort((a,b)=>b.overall-a.overall);
+    const start=units.length;
+    if(agg==='org'){
+      const cats={}; CATS.forEach(c=>cats[c.key]=d3.mean(models,m=>m.cats[c.key]));
+      units.push({name:org+' · avg',org,family:'—',overall:d3.mean(models,m=>m.overall),
+                  cats,count:models.length,isAgg:true});
+    } else units.push(...models.map(m=>({...m})));
+    sectors.push({org,start,end:units.length,n:models.length});
+  });
+  return {units,sectors};
+}
+
+let cur={scale:'abs',agg:'model'};
+const tip=d3.select('#tip');
+const stage=document.querySelector('.stage');
+
+function render(){
+  const {units,sectors}=layout(cur.agg);
+  const N=units.length;
+  const innerGaps=(sectors.length-1)*SECTOR_GAP;
+  const aPer=(2*Math.PI - TOP_GAP - innerGaps)/N; // d3.arc: 0=top, clockwise
+
+  // assign angles; wider TOP_GAP centered at 12 o'clock for the label spoke
+  let ang=TOP_GAP/2; const slices=[];
+  sectors.forEach((s,si)=>{
+    s.a0=ang;
+    for(let k=s.start;k<s.end;k++){ slices.push({u:units[k],a0:ang,a1:ang+aPer,si:slices.length}); ang+=aPer; }
+    s.a1=ang;
+    if(si<sectors.length-1) ang+=SECTOR_GAP;
+  });
+
+  // cells: one per spoke × category
+  const cells=[];
+  slices.forEach(sl=>CATS.forEach((c,ci)=>cells.push({sl,c,ci,val:sl.u.cats[c.key]})));
+  const key=d=>d.sl.u.id+'|'+d.c.key+'|'+(d.sl.u.isAgg?'a':'m');
+
+  const arc=d3.arc();
+  const rIn=ci=>ringR(ci)+1, rOut=ci=>ringR(ci+1)-1;
+  const barOuter=d=>rIn(d.ci)+(rOut(d.ci)-rIn(d.ci))*frac(d.c.key,d.val);
+  const t=svg.node().__inited?260:0;
+
+  // value bars, always visible, no track behind them
+  const br=gBar.selectAll('path').data(cells,key);
+  br.exit().remove();
+  br.enter().append('path').attr('fill',d=>d.c.color)
+    .merge(br)
+    .attr('fill',d=>d.c.color)
+    .transition().duration(t)
+    .attr('d',d=>arc({innerRadius:rIn(d.ci),outerRadius:barOuter(d),startAngle:d.sl.a0,endAngle:d.sl.a1}));
+
+  // ---- Leaders ring: mark the top unit per category ----
+  slices.forEach(sl=>sl.u._leads=null);
+  const leads={};                       // unit-si -> [catKeys it leads]
+  CATS.forEach(c=>{
+    let best=slices[0];
+    slices.forEach(sl=>{ if(sl.u.cats[c.key] > best.u.cats[c.key]) best=sl; });
+    (leads[best.si]=leads[best.si]||[]).push(c.key);
+    best.u._leads=leads[best.si];
+  });
+  const leadMarks=[];
+  Object.entries(leads).forEach(([si,keys])=>{
+    const sl=slices[+si]; const m=keys.length;
+    keys.forEach((k,j)=>{
+      const r0=RD0+DBAND*(j/m), r1=RD0+DBAND*((j+1)/m);
+      leadMarks.push({sl,key:k,color:COLOR[k],r0,r1});
+    });
+  });
+  const lm=gData.selectAll('path').data(leadMarks,d=>d.sl.u.id+'|'+d.key+'|'+(d.sl.u.isAgg?'a':'m'));
+  lm.exit().remove();
+  lm.enter().append('path').attr('stroke','var(--bg)').attr('stroke-width',.6)
+    .merge(lm)
+    .attr('fill',d=>d.color)
+    .attr('d',d=>arc({innerRadius:d.r0,outerRadius:d.r1,startAngle:d.sl.a0,endAngle:d.sl.a1}));
+
+  // transparent hit area per spoke (covers the whole band, including the data ring)
+  const ht=gHit.selectAll('path').data(slices,d=>d.u.id+(d.u.isAgg?'a':'m'));
+  ht.exit().remove();
+  ht.enter().append('path').attr('class','hit')
+    .merge(ht)
+    .attr('d',d=>arc({innerRadius:R0,outerRadius:OUTER,startAngle:d.a0,endAngle:d.a1}))
+    .on('pointermove',(e,d)=>showTip(e,d.u))
+    .on('pointerenter',(e,d)=>highlight(d.si,true))
+    .on('pointerleave',(e,d)=>{highlight(null,false);tip.classed('on',false)});
+
+  // ring boundary circles (each band's outer edge = its 100 line) + leaders ring frame
+  const guideR=d3.range(CATS.length+1).map(ringR).concat([RD0,RD1]);
+  const guides=gGuides.selectAll('circle').data(guideR);
+  guides.exit().remove();
+  guides.enter().append('circle').attr('fill','none').attr('stroke','var(--line)').attr('stroke-width',1)
+    .merge(guides).attr('r',r=>r);
+
+  // ring labels along the top gap spoke (12 o'clock), incl. Leaders
+  gLabels.selectAll('text.ring-label').remove();
+  const ringLabelData=CATS.map((c,i)=>({name:c.name,r:ringR(i)+BAND/2}))
+    .concat([{name:'Leaders',r:(RD0+RD1)/2,lead:true}]);
+  gLabels.selectAll('text.ring-label').data(ringLabelData).enter().append('text')
+     .attr('class',d=>'ring-label'+(d.lead?' lead':'')).attr('text-anchor','middle')
+     .attr('x',0).attr('y',d=>-d.r+3)
+     .text(d=>d.name.toUpperCase());
+
+  // org sector labels + count
+  gLabels.selectAll('g.org').remove();
+  const og=gLabels.selectAll('g.org').data(sectors).enter().append('g').attr('class','org');
+  og.each(function(s){
+    const mid=(s.a0+s.a1)/2;                 // 0=top, clockwise
+    const r=OUTER+18;
+    const x=Math.sin(mid)*r, y=-Math.cos(mid)*r;
+    let deg=mid*180/Math.PI;
+    const flip=(deg>90 && deg<270);
+    let rot = flip ? deg+180 : deg;
+    const g=d3.select(this);
+    g.append('text').attr('class','org-label')
+      .attr('transform',`translate(${x},${y}) rotate(${rot})`)
+      .attr('text-anchor','middle').attr('dy', flip?12:-4)
+      .text(s.org);
+    g.append('text').attr('class','org-count')
+      .attr('transform',`translate(${x},${y}) rotate(${rot})`)
+      .attr('text-anchor','middle').attr('dy', flip?-2:14)
+      .text(s.n+ (s.n>1?' models':' model'));
+  });
+
+  svg.node().__inited=true;
+}
+
+function highlight(si,on){
+  gBar.selectAll('path').attr('opacity', on ? d=>(d.sl.si===si?1:0.22) : 1);
+  gData.selectAll('path').attr('opacity', on ? d=>(d.sl.si===si?1:0.35) : 1);
+}
+
+function showTip(e,u){
+  const rows=CATS.map(c=>{
+    const v=u.cats[c.key];
+    return `<div class="row"><span>${c.name}</span>
+      <span class="bar"><i style="width:${Math.max(4,frac(c.key,v)*100)}%;background:${c.color}"></i></span>
+      <span class="val">${v.toFixed(0)}</span></div>`;
+  }).join('');
+  const leadLine = u._leads && u._leads.length
+    ? `<div class="leads">★ Best in ${u._leads.map(k=>CATS.find(c=>c.key===k).name).join(', ')}</div>` : '';
+  tip.html(`<h3>${u.name}</h3>
+    <div class="meta"><span>${u.org}</span>
+      ${u.isAgg?`<span class="badge">${u.count} models</span>`:`<span class="badge">${u.effort}</span>${u.open?'<span class="badge">open</span>':''}`}
+      <span class="ov">${u.overall.toFixed(1)} avg</span></div>${leadLine}${rows}`);
+  const r=stage.getBoundingClientRect();
+  let x=e.clientX-r.left+16, y=e.clientY-r.top+12;
+  if(x>r.width-260) x=e.clientX-r.left-226;
+  if(y>r.height-180) y=e.clientY-r.top-180;
+  tip.style('left',x+'px').style('top',y+'px').classed('on',true);
+}
+
+// hub
+gHub.append('circle').attr('r',HUB-6).attr('fill','var(--hub)').attr('stroke','var(--line)');
+gHub.append('text').attr('class','hub-title').attr('text-anchor','middle').attr('y',-6)
+   .attr('font-size','17px').text('LiveBench');
+gHub.append('text').attr('class','hub-sub').attr('text-anchor','middle').attr('y',13)
+   .attr('font-size','9px').text('6 CATEGORIES');
+gHub.append('text').attr('class','hub-sub').attr('text-anchor','middle').attr('y',27)
+   .attr('font-size','9px').text('126 MODELS');
+
+// legend (3 rows x 2 cols)
+const lg=d3.select('#legend');
+CATS.forEach(c=>{
+  const g=lg.append('div').attr('class','grp');
+  g.append('div').attr('class','sw').style('background',c.color);
+  g.append('div').attr('class','name').text(c.name);
+});
+lg.append('div').attr('class','leadnote')
+  .html('<span class="star">★</span> outer ring = best model in each category');
+
+// controls
+d3.selectAll('#scaleSeg button').on('click',function(){
+  cur.scale=this.dataset.scale;
+  d3.selectAll('#scaleSeg button').attr('aria-pressed',function(){return this.dataset.scale===cur.scale});
+  render();
+});
+d3.selectAll('#aggSeg button').on('click',function(){
+  cur.agg=this.dataset.agg;
+  d3.selectAll('#aggSeg button').attr('aria-pressed',function(){return this.dataset.agg===cur.agg});
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

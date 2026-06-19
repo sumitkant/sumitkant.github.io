@@ -1387,6 +1387,20 @@
     #livebench-explorer .effort-empty { font-size:12px; color:var(--text-tertiary); }
     @media (max-width:700px){ #livebench-explorer .effort-grid { grid-template-columns:1fr; } }
 
+    /* ── Radial family leaderboards ──────────────────── */
+    #livebench-explorer .radial-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    #livebench-explorer .radial-card { background:var(--lb-card); border:1px solid var(--border); border-radius:14px; padding:14px 16px 16px; display:flex; flex-direction:column; align-items:center; }
+    #livebench-explorer .radial-title { align-self:flex-start; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:6px; }
+    #livebench-explorer .radial-svg { width:100%; max-width:220px; height:auto; display:block; }
+    #livebench-explorer .radial-legend { width:100%; margin-top:10px; display:flex; flex-direction:column; gap:5px; }
+    #livebench-explorer .rl-item { display:flex; align-items:center; gap:7px; font-size:11.5px; }
+    #livebench-explorer .rl-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    #livebench-explorer .rl-name { color:var(--text-secondary); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+    #livebench-explorer .rl-score { color:var(--text-primary); font-weight:800; flex-shrink:0; }
+    #livebench-explorer .radial-empty { font-size:12px; color:var(--text-tertiary); padding:24px 0; }
+    @media (max-width:980px) and (min-width:701px){ #livebench-explorer .radial-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:700px){ #livebench-explorer .radial-grid { grid-template-columns:1fr; } }
+
     #livebench-explorer .viz-card { background:var(--lb-card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin:16px 0; overflow:hidden; }
     #livebench-explorer .viz-card.is-hidden { display:none; }
     #livebench-explorer .viz-card.is-disabled .svg-wrap,
@@ -2682,6 +2696,14 @@
           .lbh-card{ padding:34px 26px 32px; }
           .lbh-sphere{ display:none; }
         }
+        .caprings-wrap{
+          border:1px solid rgba(176,166,154,0.18); border-radius:22px; overflow:hidden;
+          background:var(--bg); margin:6px 0 calc(var(--gap) + 14px);
+          box-shadow:11px 20px 44px rgba(122,78,48,0.17), -6px -6px 11px rgba(255,253,250,0.85);
+        }
+        .caprings-wrap iframe{
+          width:100%; border:0; display:block; min-height:640px;
+        }
       </style>
 
       <a class="lbh-card" href="Blogs/AI-ML/llm-benchmarks.html">
@@ -2702,6 +2724,31 @@
           </span>
         </span>
       </a>
+      <br>
+
+      <div class="section-header">
+        <h2 class="section-title">Data Visualization</h2>
+        <span class="section-count">Capability rings — every model across every category</span>
+      </div>
+
+      <!-- Capability Rings (embedded as-is via isolated iframe) -->
+      <div class="caprings-wrap">
+        <iframe id="capRingsFrame" src="genailab/capability_rings_v3.html" title="LiveBench Capability Rings" scrolling="no" loading="lazy"></iframe>
+      </div>
+      <script>
+        (function () {
+          var f = document.getElementById('capRingsFrame');
+          if (!f) return;
+          function fit() {
+            try {
+              var d = f.contentDocument || (f.contentWindow && f.contentWindow.document);
+              if (d && d.documentElement) f.style.height = d.documentElement.scrollHeight + 'px';
+            } catch (e) { /* cross-origin guard */ }
+          }
+          f.addEventListener('load', function () { fit(); setTimeout(fit, 300); setTimeout(fit, 900); });
+          window.addEventListener('resize', fit);
+        })();
+      </script>
       <br>
 
       <div class="section-header">
@@ -2843,6 +2890,13 @@
           <div class="viz-title" style="margin-bottom:4px;">Latest models by thinking effort</div>
           <div class="viz-sub" style="margin-bottom:14px;">Each family's strongest current model, compared by overall score at the same reasoning-effort setting.</div>
           <div class="effort-grid" id="effortGrid"></div>
+        </div>
+
+        <!-- Family leaderboards as radial charts -->
+        <div class="effort-section">
+          <div class="viz-title" style="margin-bottom:4px;">Family leaderboards</div>
+          <div class="viz-sub" style="margin-bottom:14px;">Latest model versions in each family, ranked by overall score. Inner ring = weaker, outer ring = stronger; darker shades mark the more capable models.</div>
+          <div class="radial-grid" id="radialGrid"></div>
         </div>
 
         <!-- Filtered leaderboard table -->
@@ -3718,7 +3772,7 @@
         const cmp = compareVersion(versionTuple(r.model), versionTuple(cur.model));
         if (cmp > 0 || (cmp === 0 && r._overall > cur._overall)) best[lineKey] = r;
       });
-      const items = Object.values(best).sort((a, b) => b._overall - a._overall);
+      const items = Object.values(best).sort((a, b) => b._overall - a._overall).slice(0, 5);
       const body = items.length
         ? items.map(r => {
             const color = familyOf(r.model).color;
@@ -3730,6 +3784,85 @@
           }).join('')
         : '<div class="effort-empty">No models at this effort.</div>';
       return `<div class="effort-card"><div class="effort-card-title">${eff.label}</div>${body}</div>`;
+    }).join('');
+  }
+
+  // ── Radial family leaderboards ───────────────────────────────────────
+  const RADIAL_FAMILIES = [
+    { key: 'gpt',      label: 'GPT',      base: '#1a1a18', test: m => /gpt|o3|o4/.test(m) },
+    { key: 'gemini',   label: 'Gemini',   base: '#2563eb', test: m => /gemini|gemma/.test(m) },
+    { key: 'claude',   label: 'Claude',   base: '#c85c2a', test: m => /claude/.test(m) },
+    { key: 'qwen',     label: 'Qwen',     base: '#7c3aed', test: m => /qwen/.test(m) },
+    { key: 'deepseek', label: 'DeepSeek', base: '#0d9488', test: m => /deepseek/.test(m) },
+    { key: 'other',    label: 'Others',   base: '#6b7280', test: () => true }
+  ];
+  function radialFamilyOf(model) {
+    const m = String(model || '').toLowerCase();
+    return RADIAL_FAMILIES.find(f => f.test(m));
+  }
+  // Colour shade: t=0 → lightest (weak model), t=1 → darkest (strong model).
+  function hexToRgb(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+  function rgbToHex(c) { return '#' + c.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join(''); }
+  function mixRgb(a, b, t) { return a.map((v, i) => v + (b[i] - v) * t); }
+  function shadeOf(hex, t) {
+    const base = hexToRgb(hex), white = [255, 255, 255], black = [0, 0, 0];
+    if (t <= 0.5) return rgbToHex(mixRgb(mixRgb(base, white, 0.6), base, t / 0.5));   // light → base
+    return rgbToHex(mixRgb(base, mixRgb(base, black, 0.32), (t - 0.5) / 0.5));        // base → dark
+  }
+  // Arc geometry: angle measured clockwise from the top (12 o'clock).
+  function ringPoint(cx, cy, r, deg) { const a = deg * Math.PI / 180; return [cx + r * Math.sin(a), cy - r * Math.cos(a)]; }
+  function ringArc(cx, cy, r, startDeg, endDeg) {
+    const [x1, y1] = ringPoint(cx, cy, r, startDeg);
+    const [x2, y2] = ringPoint(cx, cy, r, endDeg);
+    const large = (endDeg - startDeg) > 180 ? 1 : 0;
+    return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+  }
+
+  function renderRadialGrid() {
+    const el = document.getElementById('radialGrid');
+    if (!el) return;
+    if (!allRows.length) { el.innerHTML = ''; return; }
+    const latest = allRows.map(r => r._date).sort().at(-1);
+    const pool = allRows.filter(r => r._date === latest && Number.isFinite(r._overall));
+
+    // One representative per model line: newest version, best effort.
+    const lineBest = {};
+    pool.forEach(r => {
+      const lk = modelLineKey(r.model);
+      const cur = lineBest[lk];
+      if (!cur) { lineBest[lk] = r; return; }
+      const cmp = compareVersion(versionTuple(r.model), versionTuple(cur.model));
+      if (cmp > 0 || (cmp === 0 && r._overall > cur._overall)) lineBest[lk] = r;
+    });
+    const reps = Object.values(lineBest);
+
+    const SIZE = 300, cx = 150, cy = 150, rInner = 54, step = 16, sw = 12, SWEEP = 270;
+    el.innerHTML = RADIAL_FAMILIES.map(fam => {
+      const items = reps.filter(r => radialFamilyOf(r.model).key === fam.key)
+        .sort((a, b) => b._overall - a._overall).slice(0, 6);
+      if (!items.length) {
+        return `<div class="radial-card"><div class="radial-title">${fam.label}</div><div class="radial-empty">No models.</div></div>`;
+      }
+      const asc = items.slice().sort((a, b) => a._overall - b._overall); // inner→outer = weak→strong
+      const n = asc.length;
+      const shadeFor = idx => shadeOf(fam.base, n === 1 ? 1 : idx / (n - 1));
+
+      let arcs = '';
+      asc.forEach((r, i) => {
+        const radius = rInner + i * step;
+        const frac = Math.max(0, Math.min(1, r._overall / 100));
+        arcs += `<path d="${ringArc(cx, cy, radius, 0, SWEEP)}" fill="none" stroke="#ececea" stroke-width="${sw}" stroke-linecap="round"/>`;
+        if (frac > 0.01) arcs += `<path d="${ringArc(cx, cy, radius, 0, SWEEP * frac)}" fill="none" stroke="${shadeFor(i)}" stroke-width="${sw}" stroke-linecap="round"/>`;
+      });
+
+      const legend = items.map(r => {
+        const color = shadeFor(asc.indexOf(r));
+        return `<div class="rl-item"><span class="rl-dot" style="background:${color}"></span><span class="rl-name">${escapeHtml(displayName(r.model))}</span><span class="rl-score">${fmt(r._overall)}</span></div>`;
+      }).join('');
+
+      return `<div class="radial-card"><div class="radial-title">${fam.label}</div>` +
+        `<svg viewBox="0 0 ${SIZE} ${SIZE}" class="radial-svg" xmlns="http://www.w3.org/2000/svg">${arcs}</svg>` +
+        `<div class="radial-legend">${legend}</div></div>`;
     }).join('');
   }
 
@@ -3840,6 +3973,7 @@
 
     renderTable(rows);
     renderEffortGrid();
+    renderRadialGrid();
     renderBlog(rows);
     setStatus(`Showing ${rows.length.toLocaleString()} rows for ${CATEGORY_GROUPS[category].label}.${categorySelected ? '' : ' Select a specific category to load the per-metric breakdown chart.'}`);
   }
