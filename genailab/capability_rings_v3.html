@@ -20,7 +20,7 @@
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);
      color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1120px;margin:0 auto;padding:34px 22px 60px}
+  .wrap{max-width:1180px;margin:0 auto;padding:18px 34px 26px}
   header{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:26px;margin-bottom:6px}
   .head-l{max-width:54ch;flex:1 1 420px}
   .head-r{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
@@ -75,7 +75,7 @@
   .tip .val{font-family:var(--font);font-weight:600;text-align:right;color:#5A463E}
   footer{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;line-height:1.6}
   footer strong{color:#5A463E}
-  @media (max-width:620px){.head-r{align-items:flex-start;width:100%}.sub{max-width:none}}
+  @media (max-width:620px){.wrap{padding:26px 16px 14px}header{justify-content:center;text-align:center}.head-l{text-align:center;max-width:none}.sub{max-width:none;margin-left:auto;margin-right:auto}.head-r{align-items:center;width:100%}.controls{justify-content:center}.legend{justify-content:center}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -103,7 +103,7 @@
   </header>
 
   <div class="stage">
-    <svg id="chart" viewBox="0 0 960 960" aria-label="Radial bar chart of model capabilities by category"></svg>
+    <svg id="chart" viewBox="70 70 820 820" aria-label="Radial bar chart of model capabilities by category"></svg>
     <div class="tip" id="tip"></div>
   </div>
 
