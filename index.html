@@ -1088,6 +1088,104 @@
       gap: var(--space-2);
     }
 
+    /* ─── Journey Infographic ──────────────────────── */
+    .journey-section {
+      background: var(--color-surface);
+      padding: clamp(var(--space-16), 8vw, var(--space-24)) var(--space-6);
+      overflow: hidden;
+    }
+
+    .journey-header {
+      max-width: var(--content-wide);
+      margin-inline: auto;
+      margin-bottom: var(--space-16);
+    }
+
+    .journey-list {
+      max-width: var(--content-wide);
+      margin-inline: auto;
+    }
+
+    .journey-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--space-10);
+      padding: var(--space-8) 0;
+      border-bottom: 1px solid var(--color-divider);
+    }
+
+    .journey-item:first-child {
+      padding-top: 0;
+    }
+
+    .journey-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .journey-num-block.align-right {
+      text-align: right;
+    }
+
+    .journey-num {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 7vw, 6rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      color: var(--color-text);
+    }
+
+    .journey-item:nth-child(even) .journey-num {
+      color: var(--color-accent);
+    }
+
+    .journey-headline {
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text);
+      margin-top: var(--space-2);
+    }
+
+    .journey-desc {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      line-height: 1.7;
+      max-width: 42ch;
+    }
+
+    .journey-item:nth-child(even) .journey-desc {
+      margin-left: auto;
+    }
+
+    @media (max-width: 768px) {
+      .journey-item {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+        padding: var(--space-6) 0;
+      }
+
+      .journey-num-block.align-right {
+        text-align: left;
+      }
+
+      .journey-item:nth-child(even) .journey-desc {
+        margin-left: 0;
+      }
+
+      .journey-desc {
+        max-width: 100%;
+      }
+
+      .journey-num {
+        font-size: clamp(2.75rem, 14vw, 3.5rem);
+      }
+    }
+
     /* ─── Skills Bento ─────────────────────────────── */
     .skills-section {
       padding: clamp(var(--space-16), 8vw, var(--space-24)) var(--space-6);
@@ -2027,6 +2125,119 @@
           </span>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Journey -->
+  <section class="journey-section" id="journey">
+    <div class="journey-header">
+      <div class="section-label reveal">'17 → '26</div>
+      <h2 class="section-title reveal">Nine Years, One Page</h2>
+      <p class="section-subtitle reveal">A year-by-year look at the milestones along the way.</p>
+    </div>
+
+    <div class="journey-list">
+
+      <div class="journey-item reveal">
+        <div class="journey-num-block">
+          <div class="journey-num">'17</div>
+          <div class="journey-headline">Management Trainee</div>
+        </div>
+        <div class="journey-text-block">
+          <p class="journey-desc">Joined Indus Towers as a Management Trainee in Corporate Energy. Analysed billing data across 100K+ telecom sites, uncovering ₹84M in revenue opportunities and presenting findings directly to the CEO.</p>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-text-block">
+          <p class="journey-desc">Promoted to Assistant Manager at Indus Towers, piloting a Power BI dashboard for energy consumption monitoring. Joined American Express in December as a Data Science Analyst.</p>
+        </div>
+        <div class="journey-num-block align-right">
+          <div class="journey-num">'18</div>
+          <div class="journey-headline">Joined American Express</div>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-num-block">
+          <div class="journey-num">'19</div>
+          <div class="journey-headline">Size‑of‑Wallet Models</div>
+        </div>
+        <div class="journey-text-block">
+          <p class="journey-desc">Single‑handedly delivered 7 of 14 kNN and XGBoost models estimating size‑of‑wallet for 2.8M US small businesses — an early, defining win.</p>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-text-block">
+          <p class="journey-desc">Presented auto‑retraining model research at a conference in Hyderabad and deployed an AutoML pipeline into production. When COVID hit, built and shipped an XGBoost model in 5 weeks to power the Financial Relief Program.</p>
+        </div>
+        <div class="journey-num-block align-right">
+          <div class="journey-num">'20</div>
+          <div class="journey-headline">AutoML &amp; the FRP Model</div>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-num-block">
+          <div class="journey-num">'21</div>
+          <div class="journey-headline">End‑to‑End Modeling Pipeline</div>
+        </div>
+        <div class="journey-text-block">
+          <p class="journey-desc">Built a variable‑selection pipeline and an end‑to‑end modeling pipeline — laying the technical foundation the team would build on for years.</p>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-text-block">
+          <p class="journey-desc">Promoted to Manager, Commercial Decision Science. Led spend and ADB modeling for the Kabbage Business Checking Account and Kabbage Line of Credit products.</p>
+        </div>
+        <div class="journey-num-block align-right">
+          <div class="journey-num">'22</div>
+          <div class="journey-headline">Promoted to Manager</div>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-num-block">
+          <div class="journey-num">'23</div>
+          <div class="journey-headline">Led a Team of 7</div>
+        </div>
+        <div class="journey-text-block">
+          <p class="journey-desc">Led a team of 7 analysts delivering 8 modeling solutions, while overseeing RNN research to improve spend estimates.</p>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-text-block">
+          <p class="journey-desc">Built an S‑learner framework for predicting spend and ADB, fundamentally revamping a decade‑old framework — recognised among the top 1% across the business unit. Promoted to Senior Manager in November.</p>
+        </div>
+        <div class="journey-num-block align-right">
+          <div class="journey-num">'24</div>
+          <div class="journey-headline">Revamped a Decade‑Old Framework</div>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-num-block">
+          <div class="journey-num">'25</div>
+          <div class="journey-headline">Moved into Gen AI Research</div>
+        </div>
+        <div class="journey-text-block">
+          <p class="journey-desc">Transitioned into the Gen AI Research team at AI Labs and deployed Finsights — a Gen AI risk‑signal system — into production.</p>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-text-block">
+          <p class="journey-desc">Ran enterprise ChatGPT workshops training colleagues at scale, while researching Agentic AI frameworks and building the next generation of solutions.</p>
+        </div>
+        <div class="journey-num-block align-right">
+          <div class="journey-num">'26</div>
+          <div class="journey-headline">Scaling Agentic AI</div>
+        </div>
+      </div>
+
     </div>
   </section>
 
