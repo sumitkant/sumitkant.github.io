@@ -85,7 +85,10 @@
       gap: 10px;
       font-size: 14px;
       font-weight: 500;
+      
     }
+
+    /* .nav-logo object{filter:invert(1) hue-rotate(180deg);pointer-events:none} */
 
     .nav-monogram {
       width: 30px;
@@ -635,6 +638,104 @@
     <div class="grid">
 
 
+      <!-- Vectors & Matrices -->
+      <a class="item post-card" href="/Blogs/AI-ML/vectors-and-matrices.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+          <defs>
+            <linearGradient id="vm-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0B2239" />
+              <stop offset="60%" stop-color="#102E4C" />
+              <stop offset="100%" stop-color="#16395C" />
+            </linearGradient>
+            <pattern id="vm-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(157,182,204,0.10)" stroke-width="0.6" />
+            </pattern>
+            <radialGradient id="vm-glow" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0%" stop-color="rgba(242,166,90,0.20)" />
+              <stop offset="100%" stop-color="rgba(242,166,90,0)" />
+            </radialGradient>
+            <marker id="vm-vec" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
+              <path d="M0,0 L5,3 L0,6 Z" fill="#F2A65A" />
+            </marker>
+            <marker id="vm-res" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
+              <path d="M0,0 L5,3 L0,6 Z" fill="#5FD1B1" />
+            </marker>
+          </defs>
+
+          <!-- Background -->
+          <rect width="320" height="200" fill="url(#vm-bg)" />
+          <rect width="320" height="200" fill="url(#vm-grid)" />
+          <circle cx="255" cy="70" r="90" fill="url(#vm-glow)" />
+
+          <!-- A matrix acting on a vector — right side -->
+          <g transform="translate(196,40)">
+            <!-- axes -->
+            <g stroke="#3A6B96" stroke-width="1.2">
+              <path d="M 8,104 L 108,104" />
+              <path d="M 8,104 L 8,14" />
+            </g>
+            <!-- input vector x (amber) -->
+            <path d="M 8,104 L 52,78" stroke="#F2A65A" stroke-width="1.8" marker-end="url(#vm-vec)" />
+            <!-- output vector Mx (mint) -->
+            <path d="M 8,104 L 92,44" stroke="#5FD1B1" stroke-width="1.8" marker-end="url(#vm-res)" />
+            <!-- matrix bracket -->
+            <g transform="translate(50,2)">
+              <path d="M 10,0 L 3,0 L 3,26 L 10,26" fill="none" stroke="#9DB6CC" stroke-width="1.2" />
+              <path d="M 46,0 L 53,0 L 53,26 L 46,26" fill="none" stroke="#9DB6CC" stroke-width="1.2" />
+              <g font-family="'JetBrains Mono',ui-monospace,monospace" font-size="9" fill="#E8F1F8">
+                <text x="12" y="11">a</text>
+                <text x="34" y="11">b</text>
+                <text x="12" y="24">c</text>
+                <text x="34" y="24">d</text>
+              </g>
+            </g>
+            <!-- labels -->
+            <text x="52" y="90" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="8"
+              fill="#F2A65A">x</text>
+            <text x="95" y="53" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="8"
+              fill="#5FD1B1">Mx</text>
+          </g>
+
+          <!-- Eyebrow -->
+          <text x="18" y="42" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" font-weight="700"
+            letter-spacing="2" fill="rgba(242,166,90,0.75)">DEEP LEARNING FUNDAMENTALS</text>
+
+          <!-- Title -->
+          <text x="17" y="78" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="17" font-weight="800"
+            letter-spacing="-0.5" fill="#ffffff" opacity="0.98">Vectors &amp; Matrices</text>
+
+          <!-- Amber rule -->
+          <rect x="17" y="86" width="150" height="2" rx="1" fill="#F2A65A" opacity="0.85" />
+
+          <!-- Subtitle -->
+          <text x="17" y="108" font-family="Georgia,serif" font-size="12" font-style="italic"
+            fill="rgba(232,241,248,0.5)">for Deep Learning</text>
+          <!-- <text x="17" y="124" font-family="Georgia,serif" font-size="12" font-style="italic"
+            fill="rgba(232,241,248,0.5)">operation that matters</text> -->
+
+          <!-- Sub label -->
+          <text x="17" y="148" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" letter-spacing="1.2"
+            fill="rgba(232,241,248,0.25)">DOT · OUTER · TRANSFORM · RANK</text>
+
+          <!-- Concept pills -->
+          <rect x="17" y="158" width="52" height="13" rx="3" fill="rgba(242,166,90,0.16)" stroke="rgba(242,166,90,0.4)"
+            stroke-width="0.8" />
+          <text x="43" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#F2B87A" text-anchor="middle">PyTorch</text>
+
+          <!-- <rect x="75" y="158" width="66" height="13" rx="3" fill="rgba(95,209,177,0.14)" stroke="rgba(95,209,177,0.35)"
+            stroke-width="0.8" /> -->
+          <!-- <text x="108" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#7FDCC1" text-anchor="middle">Dot Product</text> -->
+        </svg>
+        <div class="post-body">
+          <div class="post-tags"><span class="p">Machine Learning</span>, Linear Algebra, Deep Learning</div>
+          <span class="post-title">Deep Learning Fundamentals: An introduction to linear algebra for neural networks in PyTorch</span>
+          <p class="post-desc">Build the geometry behind every layer from one small dataset — vectors, dot products,
+            outer products, and matrices as transformations — then run all of it in PyTorch.</p>
+        </div>
+      </a>  
+
       <a class="item post-card" href="/Blogs/AI-ML/Eight-Steps-to-a-Picture-Z-Image-Turbo.html">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
           <defs>
@@ -1028,8 +1129,8 @@
             fill="#aab4c5" text-anchor="middle">Chain Rule</text>
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Machine Learning</span>, Deep Learning</div>
-          <span class="post-title">Backpropagation — The Engine Under Every Neural Net</span>
+          <div class="post-tags"><span class="p">Deep Learning</span>, Machine Learning</div>
+          <span class="post-title">Deep Learning Fundamentals: Backpropagation — The Engine Under Every Neural Net</span>
           <p class="post-desc">Work out gradients by hand, then build a tiny autograd engine in ~100 lines — the forward
             pass, the chain rule, and the backward pass that trains every neural network.</p>
         </div>
@@ -1113,8 +1214,8 @@
             fill="#aab4c5" text-anchor="middle">Vectorization</text>
         </svg>
         <div class="post-body">
-          <div class="post-tags"><span class="p">Machine Learning</span>, Deep Learning</div>
-          <span class="post-title">Gradient Descent — The Atom of Machine Learning</span>
+          <div class="post-tags"><span class="p">Deep Learning</span>, Machine Learning</div>
+          <span class="post-title">Deep Learning Fundamentals: Gradient Descent — The Atom of Machine Learning</span>
           <p class="post-desc">Build a classifier by hand from weights, biases, sigmoid, loss, and gradient descent —
             the four moving parts inside every larger model.</p>
         </div>

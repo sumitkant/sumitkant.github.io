@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vectors and Matrices, Explained with One Dataset</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+    integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+    crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+    crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --ink: #0B2239;
+      --ink-2: #102E4C;
+      --plot: #08203A;
+      --grid: #1B4067;
+      --axis: #3A6B96;
+      --chalk: #E8F1F8;
+      --chalk-dim: #9DB6CC;
+      --amber: #F2A65A;
+      --mint: #5FD1B1;
+      --rose: #E36588;
+      --rule: #1B3E62;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--chalk);
+      font-family: "Google Sans Flex", system-ui, sans-serif;
+      font-weight: 350;
+      font-optical-sizing: auto;
+      font-style: normal;
+      font-variation-settings: "slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 0;
+      font-size: 17.5px;
+      line-height: 1.7;
+      letter-spacing: -.003em;
+    }
+
+    a {
+      color: var(--amber)
+    }
+
+    .eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin: 0 0 18px
+    }
+
+    h1 {
+      font-family: "Google Sans Flex", sans-serif;
+      font-weight: 700;
+      font-size: clamp(34px, 6vw, 56px);
+      line-height: 1.1;
+      letter-spacing: -.025em;
+      margin: 0 0 22px
+    }
+
+    .standfirst {
+      font-size: 20px;
+      color: var(--chalk-dim);
+      max-width: 60ch;
+      margin: 0
+    }
+
+    section {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--rule)
+    }
+
+    .sec-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--chalk-dim);
+      margin: 0 0 10px
+    }
+
+    h2 {
+      font-family: "Google Sans Flex", sans-serif;
+      font-weight: 600;
+      font-size: clamp(25px, 3.8vw, 34px);
+      letter-spacing: -.02em;
+      line-height: 1.18;
+      margin: 0 0 18px
+    }
+
+    h3 {
+      font-family: "Google Sans Flex", sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: -.005em;
+      margin: 30px 0 8px;
+      color: var(--amber)
+    }
+
+    h4 {
+      font-family: "Google Sans Flex", sans-serif
+    }
+
+    p {
+      margin: 0 0 18px
+    }
+
+    .lede {
+      font-size: 19px;
+      color: var(--chalk-dim)
+    }
+
+    code {
+      font-family: "JetBrains Mono", monospace;
+      font-size: .85em;
+      color: var(--mint)
+    }
+
+    .formula {
+      background: var(--ink-2);
+      border-left: 3px solid var(--amber);
+      padding: 18px 22px;
+      margin: 22px 0;
+      overflow-x: auto;
+      color: var(--chalk);
+      border-radius: 0 6px 6px 0;
+    }
+
+    .formula .katex {
+      color: var(--chalk);
+      font-size: 1.06em
+    }
+
+    .formula .katex-display>.katex {
+      font-size: 1.45em
+    }
+
+    .formula .katex-display {
+      margin: .7em 0
+    }
+
+    .formula .katex .mord.mtight {
+      font-size: inherit
+    }
+
+    .formula .note {
+      display: block;
+      color: var(--chalk-dim);
+      font-size: 13.5px;
+      font-family: "Google Sans Flex", sans-serif;
+      margin-top: 6px;
+      line-height: 1.5
+    }
+
+    .formula .note:first-child {
+      margin-top: 0;
+      margin-bottom: 8px
+    }
+
+    .formula hr {
+      border: 0;
+      border-top: 1px dashed var(--rule);
+      margin: 16px 0
+    }
+
+    p .katex {
+      color: var(--mint);
+      font-size: 1em
+    }
+
+    .win {
+      margin: 24px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #1B3E62;
+      background: #0A1A2B;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .34)
+    }
+
+    .win-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: linear-gradient(#1B3350, #152A43);
+      border-bottom: 1px solid #0A1A2B
+    }
+
+    .win-bar i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: block
+    }
+
+    .win-bar i:nth-child(1) {
+      background: #FF5F57
+    }
+
+    .win-bar i:nth-child(2) {
+      background: #FEBC2E
+    }
+
+    .win-bar i:nth-child(3) {
+      background: #28C840
+    }
+
+    .win-bar span {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11.5px;
+      color: #8AA6BF;
+      margin-left: 8px;
+      letter-spacing: .03em
+    }
+
+    .win pre {
+      margin: 0;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13.5px;
+      line-height: 1.75;
+      padding: 16px 18px;
+      overflow-x: auto;
+      color: #D3E2EF
+    }
+
+    pre .c {
+      color: #5F87A8;
+      font-style: italic
+    }
+
+    pre .k {
+      color: var(--amber)
+    }
+
+    .panel {
+      background: var(--ink-2);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 18px;
+      margin: 26px 0
+    }
+
+    .panel canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: var(--plot);
+      border-radius: 5px;
+      touch-action: none;
+      cursor: crosshair
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 14px
+    }
+
+    .ctl {
+      flex: 1 1 180px;
+      min-width: 155px
+    }
+
+    .ctl label {
+      display: flex;
+      justify-content: space-between;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11.5px;
+      letter-spacing: .06em;
+      color: var(--chalk-dim);
+      margin-bottom: 6px
+    }
+
+    .ctl label b {
+      color: var(--amber);
+      font-weight: 500
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--amber);
+      height: 20px
+    }
+
+    .readout {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12.5px;
+      line-height: 1.85;
+      color: var(--chalk-dim);
+      margin-top: 13px;
+      padding-top: 13px;
+      border-top: 1px dashed var(--rule);
+      white-space: pre-wrap
+    }
+
+    .readout b {
+      color: var(--mint);
+      font-weight: 500
+    }
+
+    .hint {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: var(--chalk-dim);
+      letter-spacing: .04em;
+      margin: 10px 0 0
+    }
+
+    button.preset {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .06em;
+      background: transparent;
+      border: 1px solid var(--grid);
+      color: var(--chalk-dim);
+      padding: 6px 11px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px 6px 0 0
+    }
+
+    button.preset:hover,
+    button.preset:focus {
+      border-color: var(--amber);
+      color: var(--amber);
+      outline: none
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      margin: 22px 0
+    }
+
+    th {
+      text-align: left;
+      font-weight: 500;
+      color: var(--amber);
+      border-bottom: 1px solid var(--rule);
+      padding: 8px 10px;
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #14314F;
+      color: var(--chalk-dim)
+    }
+
+    td:first-child {
+      color: var(--chalk)
+    }
+
+    .tiers {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 24px 0
+    }
+
+    .tier {
+      background: var(--ink-2);
+      border: 1px solid var(--rule);
+      padding: 13px;
+      cursor: pointer;
+      border-radius: 7px;
+      transition: border-color .15s, transform .15s
+    }
+
+    .tier:hover,
+    .tier:focus,
+    .tier.on {
+      border-color: var(--amber);
+      transform: translateY(-2px);
+      outline: none
+    }
+
+    .tier h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 3px;
+      color: var(--chalk)
+    }
+
+    .tier span {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10.5px;
+      color: var(--chalk-dim)
+    }
+
+    #tierBody {
+      font-size: 16px;
+      color: var(--chalk-dim);
+      min-height: 72px;
+      border-left: 3px solid var(--amber);
+      padding-left: 16px
+    }
+
+    .takeaway {
+      background: var(--ink-2);
+      border: 1px solid #6E4E2C;
+      border-radius: 7px;
+      padding: 15px 18px;
+      margin: 24px 0;
+      font-size: 16.5px
+    }
+
+    .takeaway strong {
+      font-family: "Google Sans Flex", sans-serif;
+      font-weight: 600;
+      color: var(--amber);
+      display: block;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 5px
+    }
+
+    footer {
+      padding: 52px 0;
+      color: var(--chalk-dim);
+      font-size: 15.5px
+    }
+
+    footer h2 {
+      color: var(--chalk)
+    }
+
+    ul {
+      padding-left: 20px
+    }
+
+    li {
+      margin-bottom: 8px
+    }
+
+    @media (max-width:600px) {
+      body {
+        font-size: 17px
+      }
+
+      .tiers {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        transition: none !important
+      }
+    }
+
+    /* ─── Layout tokens (matched to backpropagation.html) ─ */
+    :root {
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --prose-w: 720px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    /* ─── Progress bar ────────────────────────────────── */
+    #progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--amber), var(--mint));
+      z-index: 200;
+      transition: width .08s linear
+    }
+
+    /* ─── Nav (layout & sizes from backpropagation.html) ─ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--rule);
+      background: rgba(11, 34, 57, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px)
+    }
+
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      font-family: "Google Sans Flex", system-ui, sans-serif;
+      color: var(--chalk)
+    }
+
+    .nav-monogram {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--amber), var(--mint));
+      color: var(--ink);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      flex-shrink: 0
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    .nav-links li {
+      margin: 0
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--chalk-dim);
+      text-decoration: none;
+      transition: color 0.15s
+    }
+
+    .nav-links a:hover {
+      color: var(--amber)
+    }
+
+    /* ─── Page shell (width matched to backpropagation.html) ─ */
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 5rem
+    }
+
+    /* ─── Hero banner ─────────────────────────────────── */
+    .post-banner {
+      margin: 3rem 0 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: var(--ink-2);
+      color: var(--chalk);
+      border: 1px solid var(--rule);
+      padding: 64px 48px 58px
+    }
+
+    .post-banner::after {
+      content: "";
+      position: absolute;
+      right: -110px;
+      top: -110px;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(242, 166, 90, .22), transparent 66%);
+      pointer-events: none
+    }
+
+    .post-banner::before {
+      content: "";
+      position: absolute;
+      left: -120px;
+      bottom: -140px;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(95, 209, 177, .18), transparent 66%);
+      pointer-events: none
+    }
+
+    .banner-grid {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      justify-content: space-between
+    }
+
+    .banner-inner {
+      position: relative;
+      max-width: none
+    }
+
+    .banner-eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: .78rem;
+      letter-spacing: .20em;
+      text-transform: uppercase;
+      color: var(--chalk-dim);
+      margin: 0 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .banner-eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--amber);
+      display: inline-block
+    }
+
+    .banner-title {
+      font-family: "Google Sans Flex", sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.1rem, 5vw, 3.2rem);
+      line-height: 1.06;
+      letter-spacing: -.02em;
+      margin: 0 0 20px;
+      color: var(--chalk)
+    }
+
+    .banner-title .accent {
+      color: var(--amber)
+    }
+
+    .banner-sub {
+      font-size: 1.06rem;
+      line-height: 1.6;
+      color: var(--chalk-dim);
+      max-width: 62ch;
+      margin: 0
+    }
+
+    .banner-art {
+      flex: 0 0 auto;
+      width: 300px;
+      max-width: 40%
+    }
+
+    .banner-art svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      overflow: visible
+    }
+
+    @media (max-width:820px) {
+      .banner-art {
+        display: none
+      }
+    }
+
+    /* ─── Meta row ────────────────────────────────────── */
+    .post-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--rule)
+    }
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--rule);
+      font-size: 12px;
+      color: var(--chalk-dim);
+      font-family: "JetBrains Mono", monospace;
+      letter-spacing: 0.03em;
+      background: var(--ink-2)
+    }
+
+    .meta-tag.accent-tag {
+      background: var(--amber);
+      color: var(--ink);
+      border-color: transparent;
+      font-weight: 600
+    }
+
+    .meta-tag.mint-tag {
+      background: var(--mint);
+      color: var(--ink);
+      border-color: transparent;
+      font-weight: 600
+    }
+
+    /* ─── Two-column layout with sticky TOC ───────────── */
+    .post-layout {
+      display: grid;
+      grid-template-columns: var(--prose-w) 1fr;
+      gap: 0 3rem;
+      align-items: start;
+      padding-top: 1rem
+    }
+
+    .post-prose {
+      min-width: 0
+    }
+
+    .post-toc {
+      position: sticky;
+      top: calc(var(--nav-h) + 1.5rem);
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--rule);
+      margin-top: 60px
+    }
+
+    .toc-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--chalk-dim);
+      font-family: "JetBrains Mono", monospace;
+      margin-bottom: 12px
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 0;
+      padding: 0
+    }
+
+    .toc-list li {
+      margin: 0
+    }
+
+    .toc-list a {
+      font-size: 12.5px;
+      color: var(--chalk-dim);
+      text-decoration: none;
+      transition: color 0.15s;
+      display: block;
+      line-height: 1.4
+    }
+
+    .toc-list a:hover,
+    .toc-list a.active {
+      color: var(--amber)
+    }
+
+    .toc-list a.active {
+      font-weight: 600
+    }
+
+    section,
+    footer {
+      scroll-margin-top: calc(var(--nav-h) + 1rem)
+    }
+
+
+    /* ─── PyTorch input / output split ────────────────── */
+    .torch-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 24px 0
+    }
+
+    .torch-pair .win {
+      margin: 0
+    }
+
+    .torch-pair .win-bar span.out-tag {
+      color: var(--mint)
+    }
+
+    .torch-pair pre .o {
+      color: var(--chalk-dim)
+    }
+
+    @media (max-width:900px) {
+      .torch-pair {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media (max-width:900px) {
+      .post-layout {
+        grid-template-columns: 1fr
+      }
+
+      .post-toc {
+        display: none
+      }
+    }
+
+    @media (max-width:720px) {
+      .nav-links {
+        display: none
+      }
+
+      .page {
+        padding: 0 1rem 4rem
+      }
+
+      .nav-inner {
+        padding: 0 1rem
+      }
+
+      .post-banner {
+        padding: 44px 26px 40px
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="progress"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block;  filter:brightness(0) invert(1);"></object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../../blog.html" class="active">Blog</a></li>
+        <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page" id="top">
+
+    <!-- ─── Hero ──────────────────────────────────────── -->
+    <div class="post-banner">
+      <div class="banner-grid">
+        <div class="banner-inner">
+          <p class="banner-eyebrow">Vectors &amp; Matrices · Foundations</p>
+          <h1 class="banner-title">An introduction to <span class="accent">linear algebra</span><br>for neural networks
+            in PyTorch</h1>
+          <p class="banner-sub">This article covers the basic vector and matrix operations used in neural
+            networks — built up from one small dataset, then run for real in PyTorch.</p>
+        </div>
+        <div class="banner-art" aria-hidden="true">
+          <svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" role="img"
+            aria-label="A matrix transforming a vector into a new vector">
+            <defs>
+              <marker id="h-vec" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#F2A65A" />
+              </marker>
+              <marker id="h-res" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#5FD1B1" />
+              </marker>
+            </defs>
+            <!-- grid -->
+            <g stroke="#1B4067" stroke-width="1">
+              <path d="M20,160 H320" />
+              <path d="M20,120 H320" />
+              <path d="M20,80 H320" />
+              <path d="M20,40 H320" />
+              <path d="M60,20 V170" />
+              <path d="M120,20 V170" />
+              <path d="M180,20 V170" />
+              <path d="M240,20 V170" />
+              <path d="M300,20 V170" />
+            </g>
+            <g stroke="#3A6B96" stroke-width="1.6">
+              <path d="M20,160 H320" />
+              <path d="M60,20 V170" />
+            </g>
+            <!-- matrix bracket -->
+            <g font-family="'JetBrains Mono',monospace" font-size="15" fill="#E8F1F8">
+              <text x="118" y="66">a&#160;&#160;b</text>
+              <text x="118" y="90">c&#160;&#160;d</text>
+            </g>
+            <path d="M110,48 h-8 v50 h8" fill="none" stroke="#9DB6CC" stroke-width="2" />
+            <path d="M164,48 h8 v50 h-8" fill="none" stroke="#9DB6CC" stroke-width="2" />
+            <!-- input vector -->
+            <path d="M60,160 L136,118" stroke="#F2A65A" stroke-width="2.6" marker-end="url(#h-vec)" />
+            <text x="128" y="140" font-family="'JetBrains Mono',monospace" font-size="12" fill="#F2A65A">x</text>
+            <!-- output vector -->
+            <path d="M60,160 L268,58" stroke="#5FD1B1" stroke-width="2.6" marker-end="url(#h-res)" />
+            <text x="262" y="82" font-family="'JetBrains Mono',monospace" font-size="12" fill="#5FD1B1">Mx</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Meta ──────────────────────────────────────── -->
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">Linear Algebra</span>
+      <span class="meta-tag mint-tag">PyTorch</span>
+      <span class="meta-tag">Vectors</span>
+      <span class="meta-tag">Matrices</span>
+      <span class="meta-tag"
+        style="background:transparent;border-color:transparent;color:var(--chalk-dim);padding-left:0;">15 min
+        read</span>
+    </div>
+
+    <div class="post-layout">
+
+      <!-- ─── Prose ───────────────────────────────────── -->
+      <article class="post-prose">
+
+        <section id="setup">
+          <p class="sec-label">Why this matters</p>
+          <!-- <h2>Why neural networks are built from vectors and matrices</h2> -->
+          <p>A neural network is made up of weights, biases and activation functions.
+            All of which can be represented in the form of vectors.
+            Vectorization helps solve complex computation faster to train neural networks.
+            Let's look at step by step how they do so. </p>
+
+          <p class="sec-label" style="margin-top:44px">The dataset</p>
+          <h2>House rent prediction</h2>
+          <p>Let's consider this dummy dataset for house rent prediction. For each apartment we record two numbers: the
+            floor area in hundreds of square feet, and the
+            walking distance to the nearest metro station in kilometres. We also record the monthly rent.</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Flat</th>
+                <th>Area (100 ft²)</th>
+                <th>Metro (km)</th>
+                <th>Rent (₹k)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A</td>
+                <td>4.5</td>
+                <td>1.2</td>
+                <td>22</td>
+              </tr>
+              <tr>
+                <td>B</td>
+                <td>6.0</td>
+                <td>2.0</td>
+                <td>27</td>
+              </tr>
+              <tr>
+                <td>C</td>
+                <td>3.0</td>
+                <td>0.5</td>
+                <td>17</td>
+              </tr>
+              <tr>
+                <td>D</td>
+                <td>8.0</td>
+                <td>4.0</td>
+                <td>31</td>
+              </tr>
+              <tr>
+                <td>E</td>
+                <td>5.5</td>
+                <td>3.2</td>
+                <td>22</td>
+              </tr>
+              <tr>
+                <td>F</td>
+                <td>7.0</td>
+                <td>1.0</td>
+                <td>34</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>One row of this table is a vector. The full table is a matrix. Predicting rent from a row uses
+            the dot product. Changing the axes the data sits on uses a matrix transformation. We will take
+            these one at a time.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>setup.py</span></div>
+            <pre><span class="k">import</span> torch
+
+<span class="c"># Each row is one flat: [area (100 sqft), metro distance (km)]</span>
+X = torch.tensor([[4.5, 1.2],
+                  [6.0, 2.0],
+                  [3.0, 0.5],
+                  [8.0, 4.0],
+                  [5.5, 3.2],
+                  [7.0, 1.0]])      <span class="c"># torch.Size([6, 2])</span>
+
+y = torch.tensor([22., 27., 17., 31., 22., 34.])
+
+w = torch.tensor([5.0, -2.0])
+b = 2.0</pre>
+          </div>
+        </section>
+
+        <section id="hierarchy">
+          <p class="sec-label">Section 1</p>
+          <h2>Scalars, vectors, matrices, and tensors</h2>
+          <p class="lede">These four terms describe the same kind of object at different sizes.</p>
+
+          <p>The difference between them is how many indices you need to point at a single number inside.
+            Click each one to see it in our dataset.</p>
+
+          <div class="tiers" id="tiers">
+            <div class="tier on" tabindex="0">
+              <h4>Scalar</h4><span>0 indices</span>
+            </div>
+            <div class="tier" tabindex="0">
+              <h4>Vector</h4><span>1 index</span>
+            </div>
+            <div class="tier" tabindex="0">
+              <h4>Matrix</h4><span>2 indices</span>
+            </div>
+            <div class="tier" tabindex="0">
+              <h4>Tensor</h4><span>n indices</span>
+            </div>
+          </div>
+          <div id="tierBody"></div>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span id="tierFile">scalar.py</span></div>
+            <pre id="tierCode"></pre>
+          </div>
+
+          <div class="takeaway"><strong>Note</strong>
+            A matrix is not simply a longer vector. It has a second axis, and that second axis is what allows
+            a matrix to act on vectors rather than just sit alongside them. We use this in Section 6.</div>
+        </section>
+
+        <section id="vector">
+          <p class="sec-label">Section 2</p>
+          <h2>What a vector is</h2>
+          <p>A vector is an ordered list of numbers. Flat A is the vector <code>[4.5, 1.2]</code>. If we put
+            area on the horizontal axis and metro distance on the vertical axis, that pair of numbers becomes
+            a point, which we draw as an arrow starting at the origin.</p>
+
+          <p>Every vector has two properties: a length and a direction.</p>
+
+          <div class="formula">
+            $$\mathbf{x} = \def\arraystretch{1.45}\begin{bmatrix} x_1 \\ x_2 \end{bmatrix} \in \mathbb{R}^2$$
+            $$\|\mathbf{x}\| = \sqrt{x_1^2 + x_2^2}$$
+            <span class="note">The length, straight from Pythagoras.</span>
+            $$\hat{\mathbf{x}} = \frac{\mathbf{x}}{\|\mathbf{x}\|}$$
+            <span class="note">The direction: the same vector shrunk to length 1.</span>
+          </div>
+
+          <p>Direction is worth understanding separately from length. Flat A and a hypothetical flat
+            <code>[9.0, 2.4]</code> point in exactly the same direction, because the second is just twice the
+            first. They have the same ratio of area to distance. Think of it as two apartments with the same
+            character, one simply larger than the other.
+          </p>
+
+          <p>Drag the arrowhead in the chart below to see the length and direction update.</p>
+
+          <div class="panel">
+            <canvas id="cvVec" width="768" height="432"></canvas>
+            <p class="hint">Drag the amber arrowhead. The dashed circle marks length 1.</p>
+            <div class="readout" id="roVec"></div>
+          </div>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>vector.py</span></div>
+            <pre>a = X[0]                          <span class="c"># tensor([4.5000, 1.2000])</span>
+torch.linalg.norm(a)              <span class="c"># tensor(4.6573)</span>
+a / torch.linalg.norm(a)          <span class="c"># tensor([0.9662, 0.2577])</span>
+torch.rad2deg(torch.atan2(a[1], a[0]))   <span class="c"># tensor(14.9314)</span></pre>
+          </div>
+
+          <div class="takeaway"><strong>Note</strong>
+            In two dimensions we can draw the arrow. In a 784-dimensional image vector we cannot, but length,
+            direction, and the angle between two vectors are all defined by the same formulas.</div>
+        </section>
+
+        <section id="add">
+          <p class="sec-label">Section 3</p>
+          <h2>Adding and subtracting vectors</h2>
+          <p>To add two vectors, add the matching components.</p>
+
+          <div class="formula">
+            $$\mathbf{u} + \mathbf{v} = \def\arraystretch{1.45}\begin{bmatrix} u_1 + v_1 \\ u_2 + v_2 \end{bmatrix}$$
+            <hr>
+            <span class="note">Flats A and C:</span>
+            $$\def\arraystretch{1.45}\begin{bmatrix} 4.5 \\ 1.2 \end{bmatrix} + \def\arraystretch{1.45}\begin{bmatrix}
+            3.0 \\ 0.5 \end{bmatrix}
+            = \def\arraystretch{1.45}\begin{bmatrix} 7.5 \\ 1.7 \end{bmatrix}$$
+          </div>
+
+          <p>On a chart this is the tip-to-tail rule. Walk along the first arrow, then start the second
+            arrow from where you stopped. The point you end at is the sum.</p>
+
+          <p>Subtraction is the more useful operation in practice. <code>D − C = [5.0, 3.5]</code> tells us
+            that flat D has 5 more units of area than flat C, and is 3.5 km further from the metro. That one
+            vector describes the trade-off between the two listings.</p>
+
+          <p>Subtraction is also how we centre a dataset. Subtracting the average flat from every row moves
+            the whole group of points so that its centre sits at the origin, which many algorithms expect.</p>
+
+          <div class="panel">
+            <canvas id="cvAdd" width="768" height="432"></canvas>
+            <p class="hint">Drag either arrowhead. Mint is the sum, rose is the difference.</p>
+            <div class="readout" id="roAdd"></div>
+          </div>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>addition.py</span></div>
+            <pre>X[0] + X[2]        <span class="c"># tensor([7.5000, 1.7000])</span>
+X[3] - X[2]        <span class="c"># tensor([5.0000, 3.5000])  — D compared to C</span>
+
+<span class="c"># Centring: dim=0 averages down the rows, broadcasting does the rest</span>
+Xc = X - X.mean(dim=0)</pre>
+          </div>
+        </section>
+
+        <section id="scalar">
+          <p class="sec-label">Section 4</p>
+          <h2>Multiplying a vector by a number</h2>
+          <p>Multiplying a vector by a single number, called a scalar, multiplies every component by that
+            number.</p>
+
+          <div class="formula">
+            $$c\,\mathbf{x} = \def\arraystretch{1.45}\begin{bmatrix} c\,x_1 \\ c\,x_2 \end{bmatrix}
+            \qquad \|c\,\mathbf{x}\| = |c| \cdot \|\mathbf{x}\|$$
+            <hr>
+            $$c > 1 \;\text{longer} \qquad 0 < c < 1 \;\text{shorter} \qquad c < 0 \;\text{reversed}$$ </div>
+
+              <p>The vector stays on the same line through the origin. Only its length changes. A negative
+                scalar flips it to the opposite side of the origin. Think of it as a volume dial: the sound stays
+                the same, only louder or softer, and a negative value inverts it.</p>
+
+              <p>This operation appears in two common places. The learning rate in gradient descent scales the
+                update step: <code>w ← w − η∇L</code>, where the gradient supplies the direction and η supplies
+                the size. Feature scaling divides each column by its standard deviation so that no feature
+                dominates simply because of the units it was measured in.</p>
+
+              <div class="panel">
+                <canvas id="cvScl" width="768" height="432"></canvas>
+                <div class="controls">
+                  <div class="ctl"><label>scalar c <b id="lblC">1.00</b></label>
+                    <input type="range" id="sldC" min="-1.5" max="2" step="0.05" value="1">
+                  </div>
+                </div>
+                <div class="readout" id="roScl"></div>
+              </div>
+
+              <div class="win">
+                <div class="win-bar"><i></i><i></i><i></i><span>scaling.py</span></div>
+                <pre>2.0 * X[0]         <span class="c"># tensor([9.0000, 2.4000]) — twice as long</span>
+-1.0 * X[0]        <span class="c"># tensor([-4.5000, -1.2000]) — opposite</span>
+
+<span class="c"># correction=0 divides by n; torch divides by n-1 by default</span>
+Xs = (X - X.mean(0)) / X.std(0, correction=0)</pre>
+              </div>
+        </section>
+
+        <section id="dot">
+          <p class="sec-label">Section 5</p>
+          <h2>The dot product</h2>
+          <p>The dot product takes two vectors and returns a single number. Multiply the matching components
+            and add the results.</p>
+
+          <p>Suppose we believe rent rises by about ₹5,000 for each extra 100 square feet, and falls by about
+            ₹2,000 for each kilometre from the metro, starting from a base of ₹2,000. Those beliefs form their
+            own vector, <code>w = [5, −2]</code>, called the weight vector. The dot product of the weights and
+            a flat gives the predicted rent.</p>
+
+          <div class="formula">
+            $$\mathbf{w} \cdot \mathbf{x} = \sum_{i=1}^{n} w_i x_i = w_1 x_1 + w_2 x_2$$
+            <hr>
+            <span class="note">Flat A, with the base rent added:</span>
+            $$5(4.5) + (-2)(1.2) + 2 = 22.1 \quad \text{(actual rent: 22)}$$
+            <hr>
+            <span class="note">The same quantity, written using the angle between the two vectors:</span>
+            $$\mathbf{w} \cdot \mathbf{x} = \|\mathbf{w}\|\,\|\mathbf{x}\|\cos\theta$$
+          </div>
+
+          <p>The second form explains what the number means. Because it contains the cosine of the angle
+            between the two vectors, the dot product measures how much they point the same way. A positive
+            result means they broadly agree, zero means they are at right angles and unrelated, and a negative
+            result means they point in opposing directions. If you divide out both lengths, you are left with
+            just the cosine, which is called cosine similarity and is used to compare users or documents.</p>
+
+          <p>The dot product also gives us projection: the shadow one vector casts on another when light
+            shines perpendicular to it. Projection is the operation behind least-squares regression and
+            principal component analysis.</p>
+
+          <p>Use the sliders below to rotate and lengthen <code>x</code>, and watch where the dot product
+            changes sign.</p>
+
+          <div class="panel">
+            <canvas id="cvDot" width="768" height="432"></canvas>
+            <div class="controls">
+              <div class="ctl"><label>angle of x <b id="lblTh">15°</b></label>
+                <input type="range" id="sldTh" min="0" max="360" step="1" value="15">
+              </div>
+              <div class="ctl"><label>length of x <b id="lblLen">4.66</b></label>
+                <input type="range" id="sldLen" min="0.5" max="7" step="0.05" value="4.66">
+              </div>
+            </div>
+            <p class="hint">The mint arrow is the projection of x onto w. It turns rose when the sign flips.</p>
+            <div class="readout" id="roDot"></div>
+          </div>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>dot.py</span></div>
+            <pre>w @ X[0] + b                  <span class="c"># tensor(22.1000)</span>
+preds = X @ w + b             <span class="c"># all six at once</span>
+<span class="c"># tensor([22.1000, 28.0000, 16.0000, 34.0000, 23.1000, 35.0000])</span>
+
+resid = preds - y
+loss  = 0.5 * torch.mean(resid**2)       <span class="c"># tensor(1.1017)</span>
+
+<span class="c"># Cosine similarity has a built-in in PyTorch</span>
+cos = torch.nn.functional.cosine_similarity(X[0], X[5], dim=0)   <span class="c"># 0.993</span>
+
+proj = (w @ X[0]) / (w @ w) * w          <span class="c"># projection of x onto w</span></pre>
+          </div>
+
+          <div class="takeaway"><strong>Note</strong>
+            <code>X @ w</code> computes six dot products at once, one per row. Matrix-vector multiplication is
+            defined as exactly that: a stack of dot products.
+          </div>
+        </section>
+
+        <section id="matrix">
+          <p class="sec-label">Section 6</p>
+          <h2>Matrices as transformations</h2>
+          <p>So far the matrix <code>X</code> has only stored data. A matrix can also do something. Given a
+            2×2 matrix <code>M</code> and any vector <code>x</code>, the product <code>Mx</code> is a new
+            vector. Applying it to all six flats moves the entire dataset at once.</p>
+
+          <div class="formula">
+            $$M = \def\arraystretch{1.45}\begin{bmatrix} a & b \\ c & d \end{bmatrix}
+            \qquad
+            M\mathbf{x} = \def\arraystretch{1.45}\begin{bmatrix} a x_1 + b x_2 \\ c x_1 + d x_2 \end{bmatrix}$$
+            <hr>
+            <span class="note">The two rules that make the transformation linear:</span>
+            $$M(\mathbf{u} + \mathbf{v}) = M\mathbf{u} + M\mathbf{v}
+            \qquad M(k\,\mathbf{u}) = k\,(M\mathbf{u})$$
+          </div>
+
+          <p>Those two properties are what make the transformation <em>linear</em>. In practice they mean
+            three things you can see on the chart: straight lines stay straight, parallel lines stay parallel,
+            and the origin does not move. A useful way to picture it is a sheet of graph paper that can be
+            stretched, rotated, or slanted, but never crumpled or torn.</p>
+
+          <h3>Reading a matrix from its columns</h3>
+          <p>The first column of <code>M</code> is where the vector <code>[1, 0]</code> ends up. The second
+            column is where <code>[0, 1]</code> ends up. Every other vector follows automatically, because
+            every vector is a combination of those two. This is why matrix multiplication is defined the way
+            it is. The two coloured arrows in the chart show these landing spots.</p>
+
+          <h3>The determinant</h3>
+          <p>The value <code>ad − bc</code> is the determinant. It tells you how much areas grow or shrink
+            under the transformation. A determinant of 1 preserves area. A determinant of 0 means the
+            transformation has flattened the plane onto a single line, and the original data cannot be
+            recovered. A negative determinant means the plane has been flipped over.</p>
+
+          <p>Try the preset buttons below to see the four standard transformations.</p>
+
+          <div class="panel">
+            <canvas id="cvMat" width="768" height="432"></canvas>
+            <div class="controls">
+              <div class="ctl"><label>a <b id="lbA">1.00</b></label><input type="range" id="sA" min="-2" max="2"
+                  step="0.05" value="1"></div>
+              <div class="ctl"><label>b <b id="lbB">0.00</b></label><input type="range" id="sB" min="-2" max="2"
+                  step="0.05" value="0"></div>
+              <div class="ctl"><label>c <b id="lbC2">0.00</b></label><input type="range" id="sC" min="-2" max="2"
+                  step="0.05" value="0"></div>
+              <div class="ctl"><label>d <b id="lbD">1.00</b></label><input type="range" id="sD" min="-2" max="2"
+                  step="0.05" value="1"></div>
+            </div>
+            <div>
+              <button class="preset" data-m="1,0,0,1">identity</button>
+              <button class="preset" data-m="1.6,0,0,0.6">scaling</button>
+              <button class="preset" data-m="0.71,-0.71,0.71,0.71">rotation</button>
+              <button class="preset" data-m="-1,0,0,1">reflection</button>
+              <button class="preset" data-m="1,0.8,0,1">shear</button>
+              <button class="preset" data-m="1,2,0.5,1">determinant 0</button>
+            </div>
+            <p class="hint">Dim dots are the original flats. Mint dots are where they land.</p>
+            <div class="readout" id="roMat"></div>
+          </div>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>transform.py</span></div>
+            <pre>t = torch.tensor(0.7854)
+R = torch.tensor([[torch.cos(t), -torch.sin(t)],   <span class="c"># rotation</span>
+                  [torch.sin(t),  torch.cos(t)]])
+S = torch.diag(torch.tensor([1.6, 0.6]))           <span class="c"># scaling</span>
+H = torch.tensor([[1.0, 0.8], [0.0, 1.0]])         <span class="c"># shear</span>
+
+Xr = X @ R.T          <span class="c"># .T works the same on a 2-D tensor</span>
+torch.linalg.det(R)   <span class="c"># tensor(1.) — rotation preserves area</span>
+
+<span class="c"># One transformation after another = multiplying the matrices</span>
+C = H @ R
+torch.allclose(X @ C.T, (X @ R.T) @ H.T)   <span class="c"># True</span></pre>
+          </div>
+
+          <h3>Why this is useful here</h3>
+          <p>In our dataset, area and metro distance are related: the larger flats tend to be further out.
+            Principal component analysis finds the rotation matrix that lines the data up with the directions
+            in which it actually spreads. After rotating, the first axis roughly measures overall size and
+            quality, and the second measures the trade-off between them. Same six flats, more informative
+            axes.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>pca.py</span></div>
+            <pre>Xc = X - X.mean(0)
+C  = Xc.T @ Xc / (len(X) - 1)        <span class="c"># 2x2 covariance matrix</span>
+vals, vecs = torch.linalg.eigh(C)    <span class="c"># tensor([0.7766, 4.2557])</span>
+Xpca = Xc @ vecs.flip(1)             <span class="c"># flip(1) reverses the columns</span></pre>
+          </div>
+        </section>
+
+
+        <section id="pytorch-ops">
+          <p class="sec-label">Section 7</p>
+          <h2>Matrix operations in PyTorch</h2>
+          <p class="lede">The sections above introduced each operation alongside the code that performs it.
+            This section collects the core ones in one place, so you can see exactly what each returns.</p>
+
+          <p>Every block below shows the input on the left and the actual output of the notebook cell on the
+            right. Run them in order — <code>a</code>, <code>b</code>, and <code>x</code> carry over between
+            blocks.</p>
+
+          <h3>Element-wise addition</h3>
+          <p>Section 3, in code: the two vectors are combined component by component.</p>
+          <div class="torch-pair">
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span>elementwise_add.py</span></div>
+              <pre><span class="k">import</span> torch
+
+a = torch.tensor([1, 2, 3])
+b = torch.tensor([4, 5, 6])
+
+<span class="c"># Element-wise addition</span>
+element_add = a + b
+
+print(element_add)</pre>
+            </div>
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span class="out-tag">output</span></div>
+              <pre><span class="o">tensor([5, 7, 9])</span></pre>
+            </div>
+          </div>
+
+          <h3>Element-wise multiplication</h3>
+          <p>The <code>*</code> operator is <em>not</em> matrix multiplication. It multiplies matching
+            components, the same way <code>+</code> adds them.</p>
+          <div class="torch-pair">
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span>elementwise_mul.py</span></div>
+              <pre><span class="c"># Element-wise multiplication</span>
+element_mul = a * b
+
+print(element_mul)</pre>
+            </div>
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span class="out-tag">output</span></div>
+              <pre><span class="o">tensor([ 4, 10, 18])</span></pre>
+            </div>
+          </div>
+
+          <h3>Dot product</h3>
+          <p>Section 5, in code. <code>torch.matmul()</code> handles the dot product of two vectors, and the
+            same function computes matrix–vector and matrix–matrix products — so <code>X @ w</code> from the
+            rent model translates directly to <code>torch.matmul(X, w)</code>. Check the result by hand:
+            1·4&nbsp;+&nbsp;2·5&nbsp;+&nbsp;3·6&nbsp;=&nbsp;32.</p>
+          <div class="torch-pair">
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span>matmul.py</span></div>
+              <pre><span class="c"># Dot product</span>
+dot_product = torch.matmul(a, b)
+
+print(dot_product)</pre>
+            </div>
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span class="out-tag">output</span></div>
+              <pre><span class="o">tensor(32)</span></pre>
+            </div>
+          </div>
+
+          <h3>Broadcasting</h3>
+          <p>When shapes differ but are compatible, PyTorch stretches the smaller tensor automatically. A
+            row of shape <code>[3]</code> plus a column of shape <code>[3, 1]</code> produces the full
+            <code>[3, 3]</code> table of pairwise sums — the same expansion the outer product performs with
+            multiplication in the next section.
+          </p>
+          <div class="torch-pair">
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span>broadcasting.py</span></div>
+              <pre>a = torch.tensor([1, 2, 3])
+b = torch.tensor([[1],
+                  [2],
+                  [3]])
+
+<span class="c"># Shapes [3] and [3,1] expand to [3,3]</span>
+c = a + b
+
+print(c)
+print(c.shape)</pre>
+            </div>
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span class="out-tag">output</span></div>
+              <pre><span class="o">tensor([[2, 3, 4],
+        [3, 4, 5],
+        [4, 5, 6]])
+torch.Size([3, 3])</span></pre>
+            </div>
+          </div>
+
+          <h3>Transpose</h3>
+          <p>Rows become columns. This is the <code>R.T</code> from the transformation code in Section 6:
+            our data stores vectors as rows, so we transpose the matrix before applying it.</p>
+          <div class="torch-pair">
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span>transpose.py</span></div>
+              <pre>x = torch.tensor([[1, 2, 3],
+                  [4, 5, 6]])
+
+<span class="c"># Swap dimensions 0 and 1</span>
+transposed = x.transpose(0, 1)
+
+print(transposed)
+print(transposed.shape)</pre>
+            </div>
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span class="out-tag">output</span></div>
+              <pre><span class="o">tensor([[1, 4],
+        [2, 5],
+        [3, 6]])
+torch.Size([3, 2])</span></pre>
+            </div>
+          </div>
+
+          <h3>Reshape</h3>
+          <p>The six numbers stay in order; only the shape changes. Shape mismatches are the most common
+            error in PyTorch, and <code>reshape()</code> together with <code>.shape</code> is how you fix
+            them.</p>
+          <div class="torch-pair">
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span>reshape.py</span></div>
+              <pre><span class="c"># Same six numbers, new shape</span>
+reshaped = x.reshape(3, 2)
+
+print(reshaped)
+print(reshaped.shape)</pre>
+            </div>
+            <div class="win">
+              <div class="win-bar"><i></i><i></i><i></i><span class="out-tag">output</span></div>
+              <pre><span class="o">tensor([[1, 2],
+        [3, 4],
+        [5, 6]])
+torch.Size([3, 2])</span></pre>
+            </div>
+          </div>
+
+          <div class="takeaway"><strong>Note</strong>
+            <code>transpose(0, 1)</code> and <code>reshape(3, 2)</code> both return a 3×2 tensor here, but
+            they are different operations: transpose flips the tensor across its diagonal, while reshape just
+            refills the new shape in reading order. Compare the two outputs above.
+          </div>
+        </section>
+
+        <section id="outer">
+          <p class="sec-label">Section 8</p>
+          <h2>The outer product</h2>
+          <p>The dot product turns two vectors into one number. The outer product turns two vectors into a
+            matrix. Each entry is one component of the first vector multiplied by one component of the
+            second, so the result is a table of every possible pairing.</p>
+
+          <div class="formula">
+            $$\mathbf{u} \otimes \mathbf{v} = \mathbf{u}\mathbf{v}^{\mathsf{T}}
+            \qquad (\mathbf{u} \otimes \mathbf{v})_{ij} = u_i\,v_j$$
+            <hr>
+            <span class="note">Flat A against itself:</span>
+            $$\def\arraystretch{1.45}\begin{bmatrix} 4.5 \\ 1.2 \end{bmatrix}
+            \def\arraystretch{1.45}\begin{bmatrix} 4.5 & 1.2 \end{bmatrix}
+            = \def\arraystretch{1.45}\begin{bmatrix} 20.25 & 5.40 \\ 5.40 & 1.44 \end{bmatrix}$$
+          </div>
+
+          <p>It works like a multiplication table from school: the row headings run down one side, the
+            column headings run across the top, and each cell holds the product of the two.</p>
+
+          <h3>Building a covariance matrix</h3>
+          <p>Take the outer product of each centred flat with itself, add all six results together, and
+            divide by five. That gives the covariance matrix. The diagonal entries measure how much each
+            feature varies on its own. The off-diagonal entry measures whether area and distance move
+            together. In our data it is positive, which is why the two weights cannot be interpreted
+            independently.</p>
+
+          <h3>Updating a weight matrix</h3>
+          <p>In a neural network layer, the gradient of the loss with respect to the weight matrix is the
+            outer product of the output error with the input values. It says: adjust the connection from
+            input <em>i</em> to output <em>j</em> in proportion to how active <em>i</em> was and how wrong
+            <em>j</em> was.
+          </p>
+
+          <p>Move the sliders and notice that the determinant stays at zero. Every row of an outer product
+            is a multiple of the same vector, so the matrix always has rank 1.</p>
+
+          <div class="panel">
+            <canvas id="cvOut" width="768" height="304"></canvas>
+            <div class="controls">
+              <div class="ctl"><label>u₁ <b id="lbU1">4.5</b></label><input type="range" id="sU1" min="-5" max="5"
+                  step="0.1" value="4.5"></div>
+              <div class="ctl"><label>u₂ <b id="lbU2">1.2</b></label><input type="range" id="sU2" min="-5" max="5"
+                  step="0.1" value="1.2"></div>
+              <div class="ctl"><label>v₁ <b id="lbV1">4.5</b></label><input type="range" id="sV1" min="-5" max="5"
+                  step="0.1" value="4.5"></div>
+              <div class="ctl"><label>v₂ <b id="lbV2">1.2</b></label><input type="range" id="sV2" min="-5" max="5"
+                  step="0.1" value="1.2"></div>
+            </div>
+            <p class="hint">Mint cells are positive, rose cells are negative.</p>
+            <div class="readout" id="roOut"></div>
+          </div>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>outer.py</span></div>
+            <pre>torch.outer(X[0], X[0])
+<span class="c"># tensor([[20.2500,  5.4000],</span>
+<span class="c">#         [ 5.4000,  1.4400]])</span>
+
+<span class="c"># Covariance built as a sum of outer products</span>
+Xc = X - X.mean(0)
+C = sum(torch.outer(r, r) for r in Xc) / (len(X) - 1)
+torch.allclose(C, torch.cov(X.T))        <span class="c"># True</span>
+
+delta = torch.tensor([0.1, -0.3])        <span class="c"># output error</span>
+grad_W = torch.outer(delta, X[0])        <span class="c"># torch.Size([2, 2])</span>
+torch.linalg.matrix_rank(grad_W)         <span class="c"># tensor(1)</span></pre>
+          </div>
+        </section>
+
+        <section id="dual">
+          <p class="sec-label">Section 9</p>
+          <h2>Dual vectors</h2>
+          <p>Look at the weight vector <code>w = [5, −2]</code> again. It has two components and lives in
+            the same plane as the flats, but it plays a different role. A flat is a thing we measure.
+            <code>w</code> is the rule we measure it with: give it any flat, and it returns a rent.
+          </p>
+
+          <p>A vector that works this way is called a dual vector. You may also see it called a covector, a
+            linear functional, or a one-form. All four names mean the same thing.</p>
+
+          <div class="formula">
+            <span class="note">A dual vector is a linear map from vectors to numbers:</span>
+            $$f : \mathbb{R}^n \to \mathbb{R}$$
+            $$f(\mathbf{u} + \mathbf{v}) = f(\mathbf{u}) + f(\mathbf{v})
+            \qquad f(c\,\mathbf{u}) = c\,f(\mathbf{u})$$
+            <hr>
+            <span class="note">Every such map can be written with exactly one vector <span
+                class="tex">\(\mathbf{w}\)</span>:</span>
+            $$f(\mathbf{x}) = \mathbf{w}^{\mathsf{T}}\mathbf{x}
+            = \def\arraystretch{1.45}\begin{bmatrix} w_1 & w_2 \end{bmatrix}
+            \def\arraystretch{1.45}\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}$$
+          </div>
+
+          <p>A price list is a good analogy. A shopping basket is a vector of quantities. A price list is a
+            dual vector: it takes a basket and returns a total. The two are written the same way, but you
+            would never add a price list to a basket.</p>
+
+          <h3>Drawing a dual vector</h3>
+          <p>A dual vector is best drawn not as an arrow but as a set of evenly spaced parallel lines. Each
+            line joins all the flats that receive the same rent. A flat sitting on the ₹25k line rents for
+            ₹25k regardless of how that splits between area and distance. The value assigned to a vector is
+            how many lines it crosses. Closely spaced lines mean a stronger rule, since a small step changes
+            the answer a lot.</p>
+
+          <p>This is also the correct way to think about a gradient. The gradient answers the question "if I
+            move the weights slightly in this direction, how much does the loss change?" It takes a direction
+            and returns a number, which makes it a dual vector rather than an ordinary one.</p>
+
+          <div class="panel">
+            <canvas id="cvDual" width="768" height="432"></canvas>
+            <div class="controls">
+              <div class="ctl"><label>w₁ — ₹k per 100 ft² <b id="lbW1">5.0</b></label>
+                <input type="range" id="sW1" min="-8" max="8" step="0.1" value="5">
+              </div>
+              <div class="ctl"><label>w₂ — ₹k per km <b id="lbW2">-2.0</b></label>
+                <input type="range" id="sW2" min="-8" max="8" step="0.1" value="-2">
+              </div>
+            </div>
+            <p class="hint">Each flat shows the rent this rule assigns, above the actual rent.</p>
+            <div class="readout" id="roDual"></div>
+          </div>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>dual.py</span></div>
+            <pre><span class="c"># The dual vector written as a function</span>
+rent = <span class="k">lambda</span> x: w @ x + b
+
+rent(X[0])                          <span class="c"># tensor(22.1000)</span>
+
+<span class="c"># The gradient is a dual vector on the space of weights</span>
+resid = X @ w + b - y
+grad_w = X.T @ resid / len(X)       <span class="c"># tensor([6.7500, 3.0233])</span>
+grad_b = resid.mean()               <span class="c"># tensor(0.8667)</span>
+
+w_new = w - 0.01 * grad_w           <span class="c"># scalar multiplication again</span></pre>
+          </div>
+        </section>
+
+        <section id="pipeline">
+          <p class="sec-label">Section 10</p>
+          <h2>Putting it all together</h2>
+          <p>The code below fits the rent model. Every operation from the previous sections appears in it.
+            Centring the data is vector subtraction. Standardising is scalar multiplication. Each prediction
+            is a dot product. The gradient is a stack of dot products. The update step is scalar
+            multiplication.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>fit.py</span></div>
+            <pre><span class="k">import</span> torch
+
+X = torch.tensor([[4.5,1.2],[6.0,2.0],[3.0,0.5],
+                  [8.0,4.0],[5.5,3.2],[7.0,1.0]])
+y = torch.tensor([22.,27.,17.,31.,22.,34.])
+
+mu, sd = X.mean(0), X.std(0, correction=0)
+Xs = (X - mu) / sd
+
+w, b, eta = torch.zeros(2), torch.zeros(1), 0.1
+
+<span class="k">for</span> step <span class="k">in</span> range(600):
+    pred  = Xs @ w + b              <span class="c"># six dot products</span>
+    resid = pred - y
+    loss  = 0.5 * torch.mean(resid**2)
+
+    gw = Xs.T @ resid / len(Xs)     <span class="c"># the gradient</span>
+    gb = resid.mean()
+
+    w -= eta * gw                   <span class="c"># scalar multiplication</span>
+    b -= eta * gb
+
+print(w, b, loss)
+<span class="c"># tensor([ 7.3401, -3.0207]) tensor([25.5000]) tensor(0.0077)</span>
+
+<span class="c"># The same answer without a loop, using a projection</span>
+A = torch.cat([Xs, torch.ones(len(Xs), 1)], dim=1)
+theta = torch.linalg.pinv(A) @ y    <span class="c"># tensor([7.3401, -3.0207, 25.5000])</span>
+
+<span class="c"># The shape of the problem, from the covariance matrix</span>
+C = torch.cov(Xs.T)
+torch.linalg.eigvalsh(C)            <span class="c"># tensor([0.4035, 1.9965])</span>
+
+<span class="c"># PyTorch can also do the calculus for you</span>
+w = torch.zeros(2, requires_grad=True)
+loss = 0.5 * torch.mean((Xs @ w - y)**2)
+loss.backward()
+w.grad                              <span class="c"># the same gw, computed automatically</span></pre>
+          </div>
+
+          <p>The last two lines connect back to Section 6. The eigenvalues of the covariance matrix tell you
+            how easy this problem is for gradient descent. If one eigenvalue is much larger than the other,
+            the loss surface is a long narrow valley, and the optimiser bounces between the walls on its way
+            down. Rotating the data into the eigenvector directions turns that valley into a round bowl, and
+            the optimiser walks straight to the bottom. That rotation is a matrix transformation, which is why
+            the geometry and the training loop are two views of the same thing.</p>
+        </section>
+
+        <footer id="summary">
+          <h2>Summary</h2>
+          <ul>
+            <li><b>Scalar</b> — a single number. <b>Vector</b> — an ordered list, drawn as an arrow with a length and a
+              direction. <b>Matrix</b> — a two-dimensional array. <b>Tensor</b> — the same idea with more than two
+              dimensions.</li>
+            <li><b>Addition</b> combines two vectors component by component. <b>Subtraction</b> gives the difference
+              between them.</li>
+            <li><b>Scalar multiplication</b> changes a vector's length without changing the line it sits on. A negative
+              scalar reverses its direction.</li>
+            <li><b>Dot product</b> returns a number. It measures how much two vectors point the same way, and it
+              computes a linear prediction.</li>
+            <li><b>Outer product</b> returns a matrix of every pairwise product. It builds covariance matrices and
+              weight gradients.</li>
+            <li><b>A matrix as a transformation</b> maps vectors to vectors while keeping lines straight and the origin
+              fixed. Scaling, rotation, reflection, and shear are the standard cases.</li>
+            <li><b>Dual vectors</b> take a vector and return a number. Weight vectors and gradients are dual vectors,
+              and are drawn as contour lines rather than arrows.</li>
+          </ul>
+        </footer>
+
+      </article>
+
+      <!-- ─── TOC ─────────────────────────────────────── -->
+      <aside class="post-toc">
+        <div class="toc-label">On this page</div>
+        <ul class="toc-list">
+          <li><a href="#setup">House rent prediction</a></li>
+          <li><a href="#hierarchy">01 · Scalars to tensors</a></li>
+          <li><a href="#vector">02 · What a vector is</a></li>
+          <li><a href="#add">03 · Adding &amp; subtracting</a></li>
+          <li><a href="#scalar">04 · Scalar multiplication</a></li>
+          <li><a href="#dot">05 · The dot product</a></li>
+          <li><a href="#matrix">06 · Matrices as transformations</a></li>
+          <li><a href="#pytorch-ops">07 · Matrix ops in PyTorch</a></li>
+          <li><a href="#outer">08 · The outer product</a></li>
+          <li><a href="#dual">09 · Dual vectors</a></li>
+          <li><a href="#pipeline">10 · Putting it all together</a></li>
+          <li><a href="#summary">Summary</a></li>
+        </ul>
+      </aside>
+
+    </div>
+
+  </main>
+
+  <script>
+    window.addEventListener("load", function () {
+      if (typeof renderMathInElement !== "function") return;   // offline: raw TeX stays visible
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\(", right: "\\)", display: false }
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "canvas"],
+        throwOnError: false
+      });
+    });
+  </script>
+  <script>
+    (function () {
+      "use strict";
+      const DATA = [[4.5, 1.2], [6.0, 2.0], [3.0, 0.5], [8.0, 4.0], [5.5, 3.2], [7.0, 1.0]];
+      const NAMES = ["A", "B", "C", "D", "E", "F"];
+      const RENT = [22, 27, 17, 31, 22, 34];
+      const C = {
+        ink: "#08203A", grid: "#1B4067", axis: "#3A6B96", chalk: "#E8F1F8", dim: "#9DB6CC",
+        amber: "#F2A65A", mint: "#5FD1B1", rose: "#E36588"
+      };
+      const f = (n, d) => Number(n).toFixed(d === undefined ? 2 : d);
+      const AR = 768 / 432;
+      const CELLS = 16;
+
+      function mk(id, xc, yc, span, step) {
+        const cv = document.getElementById(id); if (!cv) return null;
+        const ctx = cv.getContext("2d");
+        const o = { step: step || 1 };
+        o.xmin = xc - span / 2; o.xmax = xc + span / 2;
+        const yspan = span / AR;
+        o.ymin = yc - yspan / 2; o.ymax = yc + yspan / 2;
+        function fit() {
+          const w = cv.clientWidth || 768, dpr = window.devicePixelRatio || 1;
+          cv.width = w * dpr; cv.height = w / AR * dpr; cv.style.height = (w / AR) + "px";
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0); o.W = w; o.H = w / AR;
+        }
+        fit(); window.addEventListener("resize", () => { fit(); o.draw && o.draw(); });
+        o.px = x => (x - o.xmin) / (o.xmax - o.xmin) * o.W;
+        o.py = y => o.H - (y - o.ymin) / (o.ymax - o.ymin) * o.H;
+        o.ux = p => o.xmin + p / o.W * (o.xmax - o.xmin);
+        o.uy = p => o.ymin + (o.H - p) / o.H * (o.ymax - o.ymin);
+        o.ctx = ctx; o.cv = cv;
+        return o;
+      }
+      function grid(o) {
+        const c = o.ctx, s = o.step;
+        c.clearRect(0, 0, o.W, o.H); c.fillStyle = C.ink; c.fillRect(0, 0, o.W, o.H);
+        c.strokeStyle = C.grid; c.lineWidth = 1; c.beginPath();
+        for (let x = Math.ceil(o.xmin / s) * s; x <= o.xmax; x += s) { c.moveTo(o.px(x), 0); c.lineTo(o.px(x), o.H); }
+        for (let y = Math.ceil(o.ymin / s) * s; y <= o.ymax; y += s) { c.moveTo(0, o.py(y)); c.lineTo(o.W, o.py(y)); }
+        c.stroke();
+        c.strokeStyle = C.axis; c.lineWidth = 1.5; c.beginPath();
+        c.moveTo(0, o.py(0)); c.lineTo(o.W, o.py(0));
+        c.moveTo(o.px(0), 0); c.lineTo(o.px(0), o.H); c.stroke();
+      }
+      function arrow(o, x, y, col, lw, x0, y0) {
+        const c = o.ctx; x0 = x0 || 0; y0 = y0 || 0;
+        const a = [o.px(x0), o.py(y0)], b = [o.px(x), o.py(y)];
+        const dx = b[0] - a[0], dy = b[1] - a[1];
+        if (Math.hypot(dx, dy) < 1) return;
+        c.strokeStyle = col; c.lineWidth = lw || 2.5; c.lineCap = "round";
+        c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke();
+        const ang = Math.atan2(dy, dx), h = 9;
+        c.fillStyle = col; c.beginPath(); c.moveTo(b[0], b[1]);
+        c.lineTo(b[0] - h * Math.cos(ang - 0.4), b[1] - h * Math.sin(ang - 0.4));
+        c.lineTo(b[0] - h * Math.cos(ang + 0.4), b[1] - h * Math.sin(ang + 0.4));
+        c.closePath(); c.fill();
+      }
+      function dot(o, x, y, col, r) {
+        const c = o.ctx; c.fillStyle = col; c.beginPath();
+        c.arc(o.px(x), o.py(y), r || 4, 0, 7); c.fill();
+      }
+      function label(o, x, y, t, col, dx, dy) {
+        const c = o.ctx; c.fillStyle = col;
+        c.font = "500 12px 'JetBrains Mono',monospace"; c.textAlign = "left"; c.textBaseline = "alphabetic";
+        c.fillText(t, o.px(x) + (dx === undefined ? 8 : dx), o.py(y) + (dy === undefined ? -8 : dy));
+      }
+      function drag(o, get, set, redraw) {
+        let on = false;
+        const pt = e => {
+          const r = o.cv.getBoundingClientRect(), t = e.touches ? e.touches[0] : e;
+          return [o.ux(t.clientX - r.left), o.uy(t.clientY - r.top)];
+        };
+        const near = p => {
+          const g = get();
+          return Math.hypot(o.px(g[0]) - o.px(p[0]), o.py(g[1]) - o.py(p[1])) < 30;
+        };
+        const down = e => { const p = pt(e); if (near(p)) { on = true; set(p); redraw(); e.preventDefault(); } };
+        const move = e => { if (!on) return; set(pt(e)); redraw(); e.preventDefault(); };
+        o.cv.addEventListener("mousedown", down); o.cv.addEventListener("touchstart", down, { passive: false });
+        window.addEventListener("mousemove", move); window.addEventListener("touchmove", move, { passive: false });
+        window.addEventListener("mouseup", () => on = false); window.addEventListener("touchend", () => on = false);
+      }
+
+      /* Section 1 */
+      const TIERS = [
+        "<b>Scalar.</b> The base rent, <code>b = 2.0</code>. A single number with nothing to index into. Learning rates and loss values are scalars.",
+        "<b>Vector.</b> One flat, <code>[4.5, 1.2]</code>. One index picks out a component. Feature rows, weights, and gradients are vectors.",
+        "<b>Matrix.</b> All six flats stacked together: <code>X</code>, shape <code>(6, 2)</code>. Two indices, so <code>X[3,1] = 4.0</code>.",
+        "<b>Tensor.</b> Twelve monthly copies of the table: shape <code>(12, 6, 2)</code>. Three indices. A batch of colour images uses four."
+      ];
+      const TIER_FILES = ["scalar.py", "vector.py", "matrix.py", "tensor.py"];
+      const TIER_CODE = [
+        `b = torch.tensor(2.0)      <span class="c"># the base rent, in thousands</span>
+
+b.ndim                     <span class="c"># 0   — no axes at all</span>
+b.shape                    <span class="c"># torch.Size([]) — nothing to index</span>
+
+<span class="c"># There is no b[0]. A scalar has no inside to look into.</span>
+b.item()                   <span class="c"># 2.0 — back to a Python float</span>`,
+
+        `a = torch.tensor([4.5, 1.2])   <span class="c"># flat A: area, metro distance</span>
+
+a.ndim                     <span class="c"># 1                — one axis</span>
+a.shape                    <span class="c"># torch.Size([2])  — two entries</span>
+
+a[0]                       <span class="c"># tensor(4.5000)</span>
+a[1].item()                <span class="c"># 1.2</span>`,
+
+        `X = torch.tensor([[4.5, 1.2],   <span class="c"># flat A</span>
+                  [6.0, 2.0],   <span class="c"># flat B</span>
+                  [3.0, 0.5],   <span class="c"># flat C</span>
+                  [8.0, 4.0],   <span class="c"># flat D</span>
+                  [5.5, 3.2],   <span class="c"># flat E</span>
+                  [7.0, 1.0]])  <span class="c"># flat F</span>
+
+X.ndim                     <span class="c"># 2                   — rows and columns</span>
+X.shape                    <span class="c"># torch.Size([6, 2])  — 6 flats, 2 features</span>
+
+X[3, 1]                    <span class="c"># tensor(4.) — two indices needed</span>
+X[3]                       <span class="c"># tensor([8., 4.]) — a row is a vector</span>
+X[:, 0]                    <span class="c"># all six areas — a column is too</span>`,
+
+        `<span class="c"># The same table, recorded once a month for a year</span>
+T = torch.rand(12, 6, 2)
+
+T.ndim                     <span class="c"># 3   — month, flat, feature</span>
+T.shape                    <span class="c"># torch.Size([12, 6, 2])</span>
+
+T[0, 3, 1]                 <span class="c"># three indices needed</span>
+T[0]                       <span class="c"># January's table — a matrix</span>
+T[0, 3]                    <span class="c"># flat D in January — a vector</span>
+
+<span class="c"># A batch of colour images uses four axes:</span>
+<span class="c">#   (images, height, width, channels)</span>`
+      ];
+      (function () {
+        const tb = document.getElementById("tierBody"); if (!tb) return;
+        const tc = document.getElementById("tierCode"), tf = document.getElementById("tierFile");
+        const tiles = [...document.querySelectorAll("#tiers .tier")];
+        const pick = i => {
+          tiles.forEach(t => t.classList.remove("on")); tiles[i].classList.add("on");
+          tb.innerHTML = TIERS[i];
+          if (tc) { tc.innerHTML = TIER_CODE[i]; tf.textContent = TIER_FILES[i]; }
+        };
+        tiles.forEach((t, i) => {
+          t.addEventListener("click", () => pick(i));
+          t.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(i); } });
+        });
+        pick(0);
+      })();
+
+      /* Section 2 */
+      (function () {
+        const o = mk("cvVec", 4.5, 1.5, CELLS, 1); if (!o) return;
+        let v = [4.5, 1.2];
+        const ro = document.getElementById("roVec");
+        o.draw = function () {
+          grid(o);
+          DATA.forEach((d, i) => { dot(o, d[0], d[1], "#3A6B96", 3.5); label(o, d[0], d[1], NAMES[i], "#6E93B4", 6, -6); });
+          const n = Math.hypot(v[0], v[1]), c = o.ctx;
+          c.setLineDash([4, 5]); c.strokeStyle = "#3A6B96"; c.lineWidth = 1; c.beginPath();
+          c.ellipse(o.px(0), o.py(0), o.px(1) - o.px(0), o.py(0) - o.py(1), 0, 0, 7); c.stroke();
+          c.setLineDash([]);
+          if (n > 0.01) arrow(o, v[0] / n, v[1] / n, C.mint, 2);
+          arrow(o, v[0], v[1], C.amber, 3); dot(o, v[0], v[1], C.amber, 6);
+          label(o, v[0], v[1], "[" + f(v[0]) + ", " + f(v[1]) + "]", C.amber);
+          ro.innerHTML = "length ‖x‖ = <b>" + f(n) + "</b>   direction = <b>[" + f(n ? v[0] / n : 0) + ", " + f(n ? v[1] / n : 0) +
+            "]</b>   angle = <b>" + f(Math.atan2(v[1], v[0]) * 180 / Math.PI, 1) + "°</b>";
+        };
+        drag(o, () => v, p => { v = p; }, o.draw); o.draw();
+      })();
+
+      /* Section 3 */
+      (function () {
+        const o = mk("cvAdd", 4, 2, CELLS, 1); if (!o) return;
+        let u = [4.5, 1.2], v = [3.0, 0.5], act = "u";
+        const ro = document.getElementById("roAdd");
+        const choose = (px, py) => {
+          const du = Math.hypot(o.px(u[0]) - px, o.py(u[1]) - py), dv = Math.hypot(o.px(v[0]) - px, o.py(v[1]) - py);
+          act = dv < du ? "v" : "u";
+        };
+        o.cv.addEventListener("mousedown", e => {
+          const r = o.cv.getBoundingClientRect();
+          choose(e.clientX - r.left, e.clientY - r.top);
+        }, true);
+        o.cv.addEventListener("touchstart", e => {
+          const t = e.touches[0], r = o.cv.getBoundingClientRect();
+          choose(t.clientX - r.left, t.clientY - r.top);
+        }, true);
+        o.draw = function () {
+          grid(o);
+          const s = [u[0] + v[0], u[1] + v[1]], d = [u[0] - v[0], u[1] - v[1]], c = o.ctx;
+          c.setLineDash([3, 4]); c.strokeStyle = "#3A6B96"; c.lineWidth = 1; c.beginPath();
+          c.moveTo(o.px(u[0]), o.py(u[1])); c.lineTo(o.px(s[0]), o.py(s[1]));
+          c.moveTo(o.px(v[0]), o.py(v[1])); c.lineTo(o.px(s[0]), o.py(s[1])); c.stroke();
+          c.setLineDash([]);
+          arrow(o, s[0], s[1], C.mint, 3); arrow(o, d[0], d[1], C.rose, 2);
+          arrow(o, u[0], u[1], C.amber, 2.5); arrow(o, v[0], v[1], "#C9D9E6", 2.5);
+          dot(o, u[0], u[1], C.amber, 6); dot(o, v[0], v[1], "#C9D9E6", 6);
+          label(o, u[0], u[1], "u", C.amber); label(o, v[0], v[1], "v", "#C9D9E6");
+          label(o, s[0], s[1], "u+v", C.mint); label(o, d[0], d[1], "u−v", C.rose);
+          ro.innerHTML = "u = [" + f(u[0]) + ", " + f(u[1]) + "]   v = [" + f(v[0]) + ", " + f(v[1]) + "]\n" +
+            "u + v = <b>[" + f(s[0]) + ", " + f(s[1]) + "]</b>    u − v = <b>[" + f(d[0]) + ", " + f(d[1]) +
+            "]</b>    distance between them = <b>" + f(Math.hypot(d[0], d[1])) + "</b>";
+        };
+        drag(o, () => act === "v" ? v : u, p => { const t = act === "v" ? v : u; t[0] = p[0]; t[1] = p[1]; }, o.draw);
+        o.draw();
+      })();
+
+      /* Section 4 */
+      (function () {
+        const o = mk("cvScl", 1, 0, CELLS, 1); if (!o) return;
+        const sl = document.getElementById("sldC"), lb = document.getElementById("lblC"),
+          ro = document.getElementById("roScl");
+        if (!sl) return;
+        const base = [4.5, 1.2];
+        o.draw = function () {
+          const k = parseFloat(sl.value); lb.textContent = f(k);
+          grid(o);
+          const c = o.ctx, big = 20;
+          c.setLineDash([2, 6]); c.strokeStyle = "#2E5E86"; c.lineWidth = 1; c.beginPath();
+          c.moveTo(o.px(-big * base[0] / 4.5), o.py(-big * base[1] / 4.5));
+          c.lineTo(o.px(big * base[0] / 4.5), o.py(big * base[1] / 4.5)); c.stroke(); c.setLineDash([]);
+          arrow(o, base[0], base[1], "#5A82A6", 2);
+          const t = [k * base[0], k * base[1]];
+          arrow(o, t[0], t[1], k < 0 ? C.rose : C.amber, 3.2); dot(o, t[0], t[1], k < 0 ? C.rose : C.amber, 6);
+          label(o, t[0], t[1], "c·x = [" + f(t[0]) + ", " + f(t[1]) + "]", k < 0 ? C.rose : C.amber);
+          ro.innerHTML = "x = [4.50, 1.20], length 4.66\nc·x = <b>[" + f(t[0]) + ", " + f(t[1]) +
+            "]</b>    new length = |c| × 4.66 = <b>" + f(Math.abs(k) * 4.657) + "</b>    direction " +
+            (k > 0 ? "<b>unchanged</b>" : (k < 0 ? "<b>reversed</b>" : "<b>collapsed to the origin</b>"));
+        };
+        sl.addEventListener("input", o.draw); o.draw();
+      })();
+
+      /* Section 5 */
+      (function () {
+        const o = mk("cvDot", 0, 0, CELLS, 1); if (!o) return;
+        const st = document.getElementById("sldTh"), sn = document.getElementById("sldLen"),
+          lt = document.getElementById("lblTh"), ll = document.getElementById("lblLen"),
+          ro = document.getElementById("roDot");
+        if (!st) return;
+        const w = [5, -2], wn = Math.hypot(5, -2);
+        o.draw = function () {
+          const th = parseFloat(st.value) * Math.PI / 180, L = parseFloat(sn.value);
+          lt.textContent = st.value + "°"; ll.textContent = f(L);
+          const x = [L * Math.cos(th), L * Math.sin(th)];
+          grid(o);
+          const wn2 = wn * wn, d = w[0] * x[0] + w[1] * x[1], p = [d / wn2 * w[0], d / wn2 * w[1]], c = o.ctx;
+          c.setLineDash([2, 6]); c.strokeStyle = "#2E5E86"; c.lineWidth = 1; c.beginPath();
+          c.moveTo(o.px(-10 * w[0] / wn), o.py(-10 * w[1] / wn));
+          c.lineTo(o.px(10 * w[0] / wn), o.py(10 * w[1] / wn)); c.stroke();
+          c.strokeStyle = C.dim; c.beginPath();
+          c.moveTo(o.px(x[0]), o.py(x[1])); c.lineTo(o.px(p[0]), o.py(p[1])); c.stroke();
+          c.setLineDash([]);
+          arrow(o, w[0], w[1], "#8FB4D0", 2.5); label(o, w[0], w[1], "w = [5, −2]", "#8FB4D0");
+          arrow(o, p[0], p[1], d >= 0 ? C.mint : C.rose, 4);
+          arrow(o, x[0], x[1], C.amber, 3); dot(o, x[0], x[1], C.amber, 6);
+          label(o, x[0], x[1], "x", C.amber);
+          const cs = d / (L * wn), ang = Math.acos(Math.max(-1, Math.min(1, cs))) * 180 / Math.PI;
+          ro.innerHTML = "w · x = <b>" + f(d) + "</b>   = ‖w‖‖x‖cos θ = " + f(wn) + " × " + f(L) + " × " + f(cs) +
+            "\nangle θ = <b>" + f(ang, 1) + "°</b>   cosine similarity = <b>" + f(cs) + "</b>   " +
+            (Math.abs(d) < 0.15 ? "<b>at right angles — unrelated</b>" : (d > 0 ? "pointing the same way" : "pointing opposite ways")) +
+            "\npredicted rent  w·x + b = <b>₹" + f(d + 2, 1) + "k</b>";
+        };
+        st.addEventListener("input", o.draw); sn.addEventListener("input", o.draw); o.draw();
+      })();
+
+      /* Section 6 */
+      (function () {
+        const o = mk("cvMat", 1, 1, CELLS * 2, 2); if (!o) return;
+        const S = ["sA", "sB", "sC", "sD"].map(i => document.getElementById(i));
+        if (S.some(s => !s)) return;
+        const L = ["lbA", "lbB", "lbC2", "lbD"].map(i => document.getElementById(i));
+        const ro = document.getElementById("roMat");
+        o.draw = function () {
+          const m = S.map(s => parseFloat(s.value)); m.forEach((v, i) => L[i].textContent = f(v));
+          const T = p => [m[0] * p[0] + m[1] * p[1], m[2] * p[0] + m[3] * p[1]];
+          grid(o);
+          const c = o.ctx;
+          c.strokeStyle = "rgba(95,209,177,.30)"; c.lineWidth = 1;
+          for (let k = -16; k <= 18; k += 2) {
+            c.beginPath();
+            let a = T([k, -12]), b = T([k, 14]);
+            c.moveTo(o.px(a[0]), o.py(a[1])); c.lineTo(o.px(b[0]), o.py(b[1]));
+            a = T([-16, k]); b = T([18, k]);
+            c.moveTo(o.px(a[0]), o.py(a[1])); c.lineTo(o.px(b[0]), o.py(b[1]));
+            c.stroke();
+          }
+          DATA.forEach(d => dot(o, d[0], d[1], "#3A6B96", 3.5));
+          DATA.forEach((d, i) => {
+            const t = T(d); dot(o, t[0], t[1], C.mint, 5.5);
+            label(o, t[0], t[1], NAMES[i], C.mint, 6, -6);
+          });
+          arrow(o, m[0], m[2], C.amber, 3); label(o, m[0], m[2], "[1,0] lands here", C.amber);
+          arrow(o, m[1], m[3], C.rose, 3); label(o, m[1], m[3], "[0,1] lands here", C.rose);
+          const det = m[0] * m[3] - m[1] * m[2];
+          ro.innerHTML = "M = [[" + f(m[0]) + ", " + f(m[1]) + "], [" + f(m[2]) + ", " + f(m[3]) + "]]\n" +
+            "determinant = <b>" + f(det) + "</b>  → areas multiplied by " + f(Math.abs(det)) +
+            (det < 0 ? ", plane <b>flipped over</b>" :
+              (Math.abs(det) < 0.02 ? ", plane <b>flattened onto a line</b>" : "")) +
+            "\nflat A [4.50, 1.20] moves to <b>[" + f(m[0] * 4.5 + m[1] * 1.2) + ", " + f(m[2] * 4.5 + m[3] * 1.2) + "]</b>";
+        };
+        S.forEach(s => s.addEventListener("input", o.draw));
+        document.querySelectorAll(".preset").forEach(b => b.addEventListener("click", () => {
+          b.dataset.m.split(",").forEach((v, i) => S[i].value = v); o.draw();
+        }));
+        o.draw();
+      })();
+
+      /* Section 7 */
+      (function () {
+        const cv = document.getElementById("cvOut"); if (!cv) return;
+        const ctx = cv.getContext("2d");
+        const S = ["sU1", "sU2", "sV1", "sV2"].map(i => document.getElementById(i));
+        if (S.some(s => !s)) return;
+        const L = ["lbU1", "lbU2", "lbV1", "lbV2"].map(i => document.getElementById(i));
+        const ro = document.getElementById("roOut");
+        let W, H; const R = 304 / 768;
+        function fit() {
+          const w = cv.clientWidth || 768, dpr = window.devicePixelRatio || 1;
+          cv.width = w * dpr; cv.height = w * R * dpr; cv.style.height = (w * R) + "px";
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0); W = w; H = w * R;
+        }
+        function draw() {
+          const v = S.map(s => parseFloat(s.value)); v.forEach((x, i) => L[i].textContent = f(x, 1));
+          const M = [[v[0] * v[2], v[0] * v[3]], [v[1] * v[2], v[1] * v[3]]];
+          ctx.clearRect(0, 0, W, H); ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, H);
+          const cell = Math.min(H * 0.34, 108), ox = W / 2 - cell, oy = H / 2 - cell;
+          const mx = Math.max(0.001, Math.max(...M.flat().map(Math.abs)));
+          for (let i = 0; i < 2; i++)for (let j = 0; j < 2; j++) {
+            const val = M[i][j], a = 0.12 + 0.74 * Math.abs(val) / mx;
+            ctx.fillStyle = (val >= 0 ? "rgba(95,209,177," : "rgba(227,101,136,") + a.toFixed(3) + ")";
+            ctx.fillRect(ox + j * cell, oy + i * cell, cell - 4, cell - 4);
+            ctx.fillStyle = C.chalk; ctx.font = "500 15px 'JetBrains Mono',monospace";
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(f(val), ox + j * cell + (cell - 4) / 2, oy + i * cell + (cell - 4) / 2 - 6);
+            ctx.fillStyle = "rgba(232,241,248,.6)"; ctx.font = "10px 'JetBrains Mono',monospace";
+            ctx.fillText("u" + (i + 1) + " × v" + (j + 1), ox + j * cell + (cell - 4) / 2, oy + i * cell + (cell - 4) / 2 + 14);
+          }
+          ctx.textAlign = "right"; ctx.fillStyle = C.amber; ctx.font = "500 13px 'JetBrains Mono',monospace";
+          ctx.fillText("u₁ " + f(v[0], 1), ox - 14, oy + cell / 2);
+          ctx.fillText("u₂ " + f(v[1], 1), ox - 14, oy + cell * 1.5);
+          ctx.textAlign = "center"; ctx.fillStyle = C.mint;
+          ctx.fillText("v₁ " + f(v[2], 1), ox + cell / 2, oy - 16);
+          ctx.fillText("v₂ " + f(v[3], 1), ox + cell * 1.5, oy - 16);
+          ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+          ro.innerHTML = "u ⊗ v = [[" + f(M[0][0]) + ", " + f(M[0][1]) + "], [" + f(M[1][0]) + ", " + f(M[1][1]) + "]]\n" +
+            "determinant = <b>" + f(M[0][0] * M[1][1] - M[0][1] * M[1][0], 4) + "</b>, so the rank is <b>1</b>. " +
+            "Each row is a multiple of v and each column a multiple of u.\n" +
+            "trace = u · v = <b>" + f(M[0][0] + M[1][1]) + "</b>  (the dot product appears on the diagonal)";
+        }
+        fit(); window.addEventListener("resize", () => { fit(); draw(); });
+        S.forEach(s => s.addEventListener("input", draw)); draw();
+      })();
+
+      /* Section 8 */
+      (function () {
+        const o = mk("cvDual", 4.5, 1.5, CELLS, 1); if (!o) return;
+        const s1 = document.getElementById("sW1"), s2 = document.getElementById("sW2");
+        if (!s1 || !s2) return;
+        const l1 = document.getElementById("lbW1"), l2 = document.getElementById("lbW2"),
+          ro = document.getElementById("roDual");
+        o.draw = function () {
+          const w = [parseFloat(s1.value), parseFloat(s2.value)];
+          l1.textContent = f(w[0], 1); l2.textContent = f(w[1], 1);
+          grid(o);
+          const n = Math.hypot(w[0], w[1]), c = o.ctx;
+          if (n > 0.05) {
+            c.strokeStyle = "rgba(232,241,248,.28)"; c.lineWidth = 1;
+            for (let k = -120; k <= 160; k += 5) {
+              let p0, p1;
+              if (Math.abs(w[1]) > 1e-6) {
+                p0 = [o.xmin, (k - w[0] * o.xmin) / w[1]]; p1 = [o.xmax, (k - w[0] * o.xmax) / w[1]];
+              } else { p0 = [k / w[0], o.ymin]; p1 = [k / w[0], o.ymax]; }
+              c.beginPath(); c.moveTo(o.px(p0[0]), o.py(p0[1]));
+              c.lineTo(o.px(p1[0]), o.py(p1[1])); c.stroke();
+            }
+            arrow(o, w[0] / n * 2.2, w[1] / n * 2.2, C.amber, 3);
+            label(o, w[0] / n * 2.2, w[1] / n * 2.2, "direction of fastest increase", C.amber);
+          }
+          DATA.forEach((d, i) => {
+            dot(o, d[0], d[1], C.mint, 5.5);
+            label(o, d[0], d[1], NAMES[i] + "  ₹" + f(w[0] * d[0] + w[1] * d[1] + 2, 1) + "k", C.chalk, 7, -7);
+            label(o, d[0], d[1], "actual " + RENT[i], "#7C9CB8", 7, 10);
+          });
+          const err = DATA.map((d, i) => w[0] * d[0] + w[1] * d[1] + 2 - RENT[i]);
+          const mse = err.reduce((a, e) => a + e * e, 0) / err.length;
+          ro.innerHTML = "w = [" + f(w[0], 1) + ", " + f(w[1], 1) + "] used as the rule f(x) = wᵀx + 2\n" +
+            "spacing between lines = 5 / ‖w‖ = <b>" + f(5 / Math.max(n, 1e-6)) + "</b> units — " +
+            (n > 4 ? "closely spaced, a <b>strong</b> rule" : "widely spaced, a <b>weak</b> rule") + "\n" +
+            "mean squared error across the six flats: <b>" + f(mse) + "</b>";
+        };
+        s1.addEventListener("input", o.draw); s2.addEventListener("input", o.draw); o.draw();
+      })();
+    })();
+  </script>
+  <script>
+    // scroll progress bar
+    const prog = document.getElementById('progress');
+    addEventListener('scroll', () => {
+      const h = document.documentElement;
+      prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+    }, { passive: true });
+
+    // active TOC highlight via scroll-spy
+    const tocLinks = [...document.querySelectorAll('.toc-list a')];
+    const targets = tocLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    targets.forEach(t => spy.observe(t));
+  </script>
+</body>
+
+</html>
