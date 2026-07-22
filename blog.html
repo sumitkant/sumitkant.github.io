@@ -636,7 +636,84 @@
     </header>
 
     <div class="grid">
+      <!-- Your First Neural Network in PyTorch -->
+      <a class="item post-card" href="/Blogs/AI-ML/first-pytorch-neural-network.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+          <defs>
+            <linearGradient id="nn-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#141821" />
+              <stop offset="60%" stop-color="#1D2330" />
+              <stop offset="100%" stop-color="#232B3C" />
+            </linearGradient>
+            <pattern id="nn-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(141,151,171,0.10)" stroke-width="0.6" />
+            </pattern>
+            <radialGradient id="nn-glow" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0%" stop-color="rgba(255,107,74,0.20)" />
+              <stop offset="100%" stop-color="rgba(255,107,74,0)" />
+            </radialGradient>
+          </defs>
 
+          <!-- Background -->
+          <rect width="320" height="200" fill="url(#nn-bg)" />
+          <rect width="320" height="200" fill="url(#nn-grid)" />
+          <circle cx="255" cy="70" r="90" fill="url(#nn-glow)" />
+
+          <!-- 1-3-1 network with ReLU — right side -->
+          <g transform="translate(196,44)">
+            <!-- edges (thickness ∝ |weight|, coral +, cyan −) -->
+            <g fill="none">
+              <path d="M 12,52 L 60,10"  stroke="#FF6B4A" stroke-width="3.2" opacity="0.9" />
+              <path d="M 12,52 L 60,52"  stroke="#4DD0E1" stroke-width="2.0" opacity="0.85" />
+              <path d="M 12,52 L 60,94"  stroke="#4DD0E1" stroke-width="2.6" opacity="0.85" />
+              <path d="M 60,10 L 108,52" stroke="#FF6B4A" stroke-width="1.6" opacity="0.9" />
+              <path d="M 60,52 L 108,52" stroke="#4DD0E1" stroke-width="2.4" opacity="0.85" />
+              <path d="M 60,94 L 108,52" stroke="#4DD0E1" stroke-width="2.0" opacity="0.85" />
+            </g>
+            <!-- nodes -->
+            <circle cx="12"  cy="52" r="9" fill="#1D2330" stroke="#E6EAF2" stroke-width="1.3" />
+            <circle cx="60"  cy="10" r="9" fill="#1D2330" stroke="#FF6B4A" stroke-width="1.3" />
+            <circle cx="60"  cy="52" r="9" fill="#1D2330" stroke="#E6EAF2" stroke-width="1.3" />
+            <circle cx="60"  cy="94" r="9" fill="#1D2330" stroke="#4DD0E1" stroke-width="1.3" />
+            <circle cx="108" cy="52" r="9" fill="#1D2330" stroke="#C3E88D" stroke-width="1.3" />
+            <g font-family="'Fira Code',ui-monospace,monospace" font-size="8" fill="#8D97AB">
+              <text x="4"   y="70">x</text>
+              <text x="102" y="70">ŷ</text>
+              <text x="44"  y="8" fill="#FF6B4A">ReLU</text>
+            </g>
+          </g>
+
+          <!-- Eyebrow -->
+          <text x="18" y="42" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" font-weight="700"
+            letter-spacing="2" fill="rgba(255,107,74,0.75)">DEEP LEARNING FUNDAMENTALS</text>
+
+          <!-- Title -->
+          <text x="17" y="78" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="17" font-weight="800"
+            letter-spacing="-0.5" fill="#ffffff" opacity="0.98">Neural Networks</text>
+
+          <!-- Coral rule -->
+          <rect x="17" y="86" width="150" height="2" rx="1" fill="#FF6B4A" opacity="0.85" />
+
+          <!-- Subtitle -->
+          <text x="17" y="108" font-family="Georgia,serif" font-size="12" font-style="italic"
+            fill="rgba(230,234,242,0.5)">from scratch in PyTorch</text>
+
+          <!-- Sub label -->
+          <text x="17" y="148" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" letter-spacing="1.2"
+            fill="rgba(230,234,242,0.25)">NEURON · MSE · RELU · NORMALIZE</text>
+
+          <!-- Concept pill -->
+          <rect x="17" y="158" width="52" height="13" rx="3" fill="rgba(255,107,74,0.16)" stroke="rgba(255,107,74,0.4)"
+            stroke-width="0.8" />
+          <text x="43" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#FF8A6E" text-anchor="middle">PyTorch</text>
+        </svg>
+        <div class="post-body">
+          <div class="post-tags"><span class="p">Deep Learning</span>, Neural Networks, Machine Learning</div>
+          <span class="post-title">Deep Learning Fundamentals: Your First Neural Network in PyTorch.</span>
+          <p class="post-desc">Six lines of code to train your first neural network in PyTorch. Learn how to implement a multi-layer perceptron from scratch, define the model, track and optimize it.</p>
+        </div>
+      </a>
 
       <!-- Vectors & Matrices -->
       <a class="item post-card" href="/Blogs/AI-ML/vectors-and-matrices.html">
