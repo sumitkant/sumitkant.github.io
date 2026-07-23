@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographic Essentials — Course Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,300..900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --content-w:1100px;
+    --ink:#16192B;
+    --paper:#F2F4F9;
+    --blue:#2650E0;
+    --violet:#7A4EE6;
+    --coral:#FF5A47;
+    --amber:#F5A50B;
+    --teal:#0FA98E;
+    --slate:#39415E;
+    --muted:#5B6178;
+    --body:#3A3F55;
+    --sh-lg:0 18px 40px rgba(22,25,43,.10),0 4px 10px rgba(22,25,43,.05);
+    --sh-sm:0 8px 22px rgba(22,25,43,.07),0 2px 5px rgba(22,25,43,.04);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Google Sans Flex',system-ui,sans-serif;
+    color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased;
+    background:var(--paper);
+    background-image:radial-gradient(circle at 1px 1px, rgba(22,25,43,.055) 1px, transparent 0);
+    background-size:22px 22px;
+  }
+
+  /* ---- Nav (structure from blog, styled to match infographic) ---- */
+  nav{
+    position:sticky;top:0;z-index:100;height:72px;
+    border-bottom:1px solid rgba(22,25,43,.09);
+    background:rgba(242,244,249,.92);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  .nav-inner{
+    max-width:var(--content-w);margin:0 auto;padding:0 2rem;height:100%;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .nav-logo{display:flex;align-items:center;gap:10px;white-space:nowrap;flex-shrink:0;margin-right:28px;font-size:14px;font-weight:700;letter-spacing:.01em;color:var(--ink);text-decoration:none}
+  .nav-monogram{
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(135deg,var(--ink),var(--slate));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;font-weight:800;letter-spacing:-.02em;flex-shrink:0;
+  }
+  .nav-links{display:flex;align-items:center;gap:34px;list-style:none;margin:0;padding:0;flex-wrap:nowrap}
+  .nav-links li{display:block;margin:0;padding:0;font-size:inherit;color:inherit}
+  .nav-links a{font-size:13.5px;font-weight:550;color:var(--muted);text-decoration:none;letter-spacing:.01em;transition:color .15s;white-space:nowrap}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-links a.active{color:var(--ink);font-weight:700;border-bottom:2px solid var(--amber);padding-bottom:3px}
+
+  .poster{max-width:var(--content-w);margin:0 auto;padding:44px 2rem 80px}
+
+  /* ================= COVER ================= */
+  .cover{
+    background:var(--ink);color:#fff;border-radius:28px;overflow:hidden;
+    display:grid;grid-template-columns:1fr 120px;box-shadow:var(--sh-lg);
+    margin-bottom:28px;position:relative;
+  }
+  .cover-main{padding:56px 20px 48px 52px}
+  .eyebrow{
+    display:inline-block;font-size:11px;font-weight:750;letter-spacing:.22em;text-transform:uppercase;
+    color:#9AA4C6;border-bottom:2px solid var(--amber);padding-bottom:8px;margin-bottom:26px;
+  }
+  h1{font-size:clamp(36px,5.8vw,60px);font-weight:850;line-height:1.02;letter-spacing:-.028em;max-width:15ch}
+  h1 .hl{color:var(--amber)}
+  .cover-sub{margin-top:16px;max-width:50ch;color:#AEB6D2;font-size:15.5px;font-weight:430}
+  .index{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:11px 28px;max-width:680px}
+  .ix{display:flex;align-items:center;gap:12px;font-size:13.5px;font-weight:650;white-space:nowrap}
+  .ix .no{font-size:11px;font-weight:800;color:#7C86AA;width:20px}
+  .ix .sw{width:11px;height:11px;border-radius:3.5px;flex:none}
+  .bars{display:flex;height:100%}
+  .bars div{flex:1}
+
+  /* ================= RING STATS ================= */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:64px;align-items:stretch}
+  .stat{
+    background:#fff;border-radius:20px;padding:22px 18px 20px;box-shadow:var(--sh-sm);
+    display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;height:100%;
+  }
+  .ring{position:relative;width:84px;height:84px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .n{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:26px;font-weight:850;letter-spacing:-.03em;
+  }
+  .stat .l{font-size:12px;font-weight:640;color:var(--muted);line-height:1.35;margin-top:auto}
+  .array{display:flex;gap:4px;justify-content:center}
+  .array svg{display:block}
+
+  /* ================= SECTIONS ================= */
+  section{
+    position:relative;background:#fff;border-radius:26px;box-shadow:var(--sh-lg);
+    overflow:hidden;margin-bottom:40px;
+    --acc:var(--blue);--tint:rgba(38,80,224,.045);
+  }
+  section.s2{--acc:var(--violet);--tint:rgba(122,78,230,.05)}
+  section.s3{--acc:var(--coral);--tint:rgba(255,90,71,.05)}
+  section.s4{--acc:var(--slate);--tint:rgba(57,65,94,.05)}
+  section.s5{--acc:var(--teal);--tint:rgba(15,169,142,.05)}
+  section.s6{--acc:var(--amber);--tint:rgba(245,165,11,.06)}
+  .ghost{
+    position:absolute;left:-26px;top:-46px;font-size:230px;font-weight:850;letter-spacing:-.05em;
+    color:var(--acc);opacity:.065;line-height:1;user-select:none;pointer-events:none;
+  }
+  .shead{padding:44px 40px 6px 40px;position:relative;display:flex;gap:18px;align-items:center}
+  .shead > div:last-child{flex:1}
+  .semblem{
+    flex:none;width:76px;height:76px;border-radius:22px;background:var(--tint);
+    display:flex;align-items:center;justify-content:center;color:var(--acc);
+    order:2;margin-left:auto;
+  }
+  .semblem svg{width:48px;height:48px}
+  .stag{
+    display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:780;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--acc);margin-bottom:8px;
+  }
+  .stag::before{content:"";width:26px;height:3px;border-radius:2px;background:var(--acc)}
+  section h2{font-size:27px;font-weight:820;letter-spacing:-.02em}
+  .sbody{padding:24px 40px 36px;position:relative}
+
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
+  .card{background:var(--tint);border-radius:18px;padding:20px 22px}
+  .card.full{grid-column:1/-1}
+  .card h3{font-size:14px;font-weight:790;margin-bottom:14px;display:flex;align-items:center;gap:11px;color:var(--ink)}
+  .hicon{flex:none;width:44px;height:44px;color:var(--acc);order:2;margin-left:auto}
+  .hicon svg{width:44px;height:44px}
+
+  /* line icon style */
+  .ln{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .ln-thin{fill:none;stroke:currentColor;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
+  .ln-dash{fill:none;stroke:currentColor;stroke-width:1.2;stroke-linecap:round;stroke-dasharray:2.6 2.6}
+  .ln-fill{fill:currentColor;stroke:none}
+
+  /* hanging icon gutter */
+  .card ul{list-style:none}
+  .card li{
+    display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;
+    font-size:13.5px;color:var(--body);font-weight:430;margin-bottom:8px;
+  }
+  .card li .gi,.card li .chip{margin-top:1px;color:var(--acc)}
+  .card li b{color:var(--ink);font-weight:730}
+  .gi{width:15px;height:15px;display:block}
+
+  .chip{
+    width:20px;height:20px;border-radius:50%;background:#fff;
+    border:1.6px solid var(--acc);color:var(--body);
+    font-size:11px;font-weight:800;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* hero statement banner */
+  .statement{
+    grid-column:1/-1;background:var(--ink);color:#fff;border-radius:20px;
+    padding:30px 34px;display:flex;gap:24px;align-items:center;
+  }
+  .statement .sicon{flex:none;width:74px;height:74px;color:var(--amber)}
+  .statement .sicon svg{width:74px;height:74px}
+  .statement .q{font-size:22px;font-weight:820;letter-spacing:-.02em;line-height:1.22}
+  .statement .q .mark{color:var(--amber)}
+  .statement .cap{font-size:12.5px;font-weight:500;color:#9AA4C6;margin-top:8px}
+
+  /* infographic type cards */
+  .typegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:stretch}
+  .tcard{background:#fff;border-radius:16px;padding:18px;box-shadow:var(--sh-sm);display:flex;flex-direction:column;gap:9px;height:100%}
+  .tcard .mini{
+    width:100%;border-radius:11px;background:var(--paper);
+    padding:9px 10px;line-height:0;
+  }
+  .tcard .mini svg{width:100%;height:auto;display:block}
+  .tcard .tt{font-size:15px;font-weight:800;letter-spacing:-.01em}
+  .tcard .td{font-size:12.3px;color:var(--body);font-weight:430;line-height:1.42}
+  .tcard .tbest{font-size:11px;font-weight:700;color:var(--muted);line-height:1.4;padding-top:10px;margin-top:auto;border-top:1px dashed rgba(22,25,43,.14)}
+  .tcard .tbest span{text-transform:uppercase;letter-spacing:.1em;font-size:9.5px;display:block;margin-bottom:3px}
+
+  .pull{
+    margin:26px -40px 0;padding:26px 40px;background:var(--tint);
+    border-left:6px solid var(--acc);
+    font-size:20px;font-weight:780;letter-spacing:-.018em;line-height:1.25;
+  }
+  .pull em{display:block;font-style:normal;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:8px;letter-spacing:0}
+  .pull .qm{color:var(--acc)}
+
+  .elgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}
+  .el{background:#fff;border-radius:14px;padding:16px 12px;text-align:center;box-shadow:var(--sh-sm);height:100%;display:flex;flex-direction:column;align-items:center}
+  .el svg{margin-bottom:8px}
+  .el .t{font-size:12.5px;font-weight:760}
+  .el .d{font-size:10.8px;color:var(--muted);font-weight:430;line-height:1.35;margin-top:4px}
+
+  .dd{display:flex;flex-direction:column;gap:14px}
+  .dd-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
+  .dont,.do{border-radius:12px;padding:14px 16px;font-size:12.8px;font-weight:450;line-height:1.45;display:flex;flex-direction:column}
+  .dont{background:rgba(255,90,71,.09);color:#8A2318}
+  .do{background:rgba(15,169,142,.10);color:#0B5F50}
+  .dont b,.do b{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+  .dont b{color:var(--coral)}.do b{color:var(--teal)}
+  .ddnum{
+    flex:none;width:21px;height:21px;border-radius:50%;background:#fff;
+    border:1.6px solid var(--coral);color:var(--body);
+    font-size:11px;font-weight:800;letter-spacing:0;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ddicon{flex:none;width:26px;height:26px;color:var(--coral)}
+  .ddicon svg{width:26px;height:26px}
+  .doicon{flex:none;width:22px;height:22px;color:var(--teal)}
+  .doicon svg{width:22px;height:22px}
+
+  .card:has(.typechart){display:flex;flex-direction:column}
+  .typechart{
+    display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr auto;
+    grid-auto-flow:column;gap:10px 14px;padding-top:6px;
+    flex:1;min-height:190px;
+  }
+  .tc{display:contents}
+  .tc .bar{
+    grid-row:1;align-self:end;width:100%;border-radius:10px 10px 4px 4px;background:var(--slate);
+    display:flex;align-items:flex-end;justify-content:center;color:#fff;font-weight:850;padding-bottom:8px;
+  }
+  .tc:nth-child(2) .bar{opacity:.72}
+  .tc:nth-child(3) .bar{opacity:.45}
+  .tc .cap{grid-row:2;font-size:11px;font-weight:700;color:var(--muted);text-align:center;line-height:1.3}
+
+  .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:stretch}
+  .rev{background:#fff;border-radius:14px;padding:18px 14px;text-align:center;box-shadow:var(--sh-sm);height:100%;display:flex;flex-direction:column;align-items:center}
+  .rev .avatar{width:56px;height:56px;border-radius:50%;margin:0 auto 10px;background:rgba(15,169,142,.12);display:flex;align-items:center;justify-content:center;color:var(--teal)}
+  .rev .avatar svg{width:32px;height:32px}
+  .rev .t{font-size:12.8px;font-weight:770;margin-bottom:4px}
+  .rev .d{font-size:11.3px;color:var(--muted);font-weight:430;line-height:1.4;margin-top:auto}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-size:10.5px;font-weight:780;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:2px solid rgba(22,25,43,.1)}
+  td{padding:8px;border-bottom:1px solid rgba(22,25,43,.07);color:var(--body);font-weight:430}
+  td:first-child{font-weight:720;color:var(--ink);display:flex;align-items:center;gap:8px}
+  tr:last-child td{border-bottom:none}
+
+  .footer{
+    margin-top:6px;padding:22px 28px;border-radius:20px;background:var(--ink);color:#AEB6D2;
+    font-size:13px;display:flex;gap:14px;align-items:center;font-weight:430;box-shadow:var(--sh-lg);
+  }
+  .footer b{color:#fff}
+
+  @media(max-width:980px){ .nav-links{gap:22px} .nav-links a{font-size:12.5px} }
+  @media(max-width:760px){
+    .nav-links{display:none}
+    .nav-inner{padding:0 1rem}
+    .cover{grid-template-columns:1fr}
+    .bars{height:14px}
+    .cover-main{padding:36px 26px}
+    .index{grid-template-columns:1fr;max-width:100%}
+    .ix{white-space:normal}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .cards,.trio,.dd-row{grid-template-columns:1fr}
+    .typegrid{grid-template-columns:1fr}
+    .statement{flex-direction:column;text-align:center;padding:24px}
+    .statement .q{font-size:18px}
+    .elgrid{grid-template-columns:repeat(2,1fr)}
+    .shead{padding:34px 24px 4px}.sbody{padding:18px 24px 28px}
+    .semblem{width:56px;height:56px;border-radius:16px}
+    .semblem svg{width:34px;height:34px}
+    .hicon,.hicon svg{width:34px;height:34px}
+    .pull{margin:22px -24px 0;padding:22px 24px;font-size:17px}
+    .ghost{font-size:150px}
+  }
+  @media print{ body{background:#fff} section,.card{break-inside:avoid} }
+</style>
+</head>
+<body>
+<!-- ─── Nav (same structure as blog) ─────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" 
+        style="display:block;  pointer-events:none; "></object>
+      </a>
+    <ul class="nav-links">
+      <li><a href="../../blog.html">Blog</a></li>
+      <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+      <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+      <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+      <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+<!-- ======= detailed line-icon sprite (Noun-Project style, 32×32 grid) ======= -->
+<svg width="0" height="0" style="position:absolute">
+
+  <!-- compass with ticks & needle : "start here" -->
+  <symbol id="d-compass" viewBox="0 0 32 32">
+    <circle class="ln" cx="16" cy="16" r="12"/>
+    <path class="ln-thin" d="M16 4v2.5M16 25.5V28M4 16h2.5M25.5 16H28"/>
+    <path class="ln" d="M20.8 11.2l-2.6 6.9-6.9 2.6 2.6-6.9z"/>
+    <circle class="ln-fill" cx="16" cy="16" r="1.4"/>
+  </symbol>
+
+  <!-- rosette medal with star & ribbons : "quality bar" -->
+  <symbol id="d-medal" viewBox="0 0 32 32">
+    <path class="ln" d="M11.5 3.5h9M11.5 3.5l3 7.5M20.5 3.5l-3 7.5"/>
+    <circle class="ln" cx="16" cy="18.5" r="7.5"/>
+    <circle class="ln-thin" cx="16" cy="18.5" r="4.8"/>
+    <path class="ln" d="M13.8 18.7l1.6 1.6 3-3.2"/>
+    <path class="ln-thin" d="M5 14l2 1M27 14l-2 1M6.5 24.5l2-1.2M25.5 24.5l-2-1.2"/>
+  </symbol>
+
+  <!-- balance scales : "limitations" -->
+  <symbol id="d-balance" viewBox="0 0 32 32">
+    <path class="ln" d="M16 6.5v19M8 9.5h16"/>
+    <circle class="ln" cx="16" cy="5" r="1.6"/>
+    <path class="ln-thin" d="M8 9.5l-4 8h8zM24 9.5l-4 8h8z"/>
+    <path class="ln" d="M4 17.5a4 4 0 0 0 8 0M20 17.5a4 4 0 0 0 8 0"/>
+    <path class="ln" d="M11 25.5h10M13 28.5h6"/>
+  </symbol>
+
+  <!-- overlapping shapes + pencil : "7 elements" -->
+  <symbol id="d-shapes" viewBox="0 0 32 32">
+    <rect class="ln" x="4" y="12" width="12" height="12" rx="1.5"/>
+    <circle class="ln" cx="19.5" cy="18" r="7"/>
+    <path class="ln" d="M17 3.5l5.5 8.5h-11z"/>
+    <path class="ln-thin" d="M26 25l3.5 3.5M27.8 23.2l1.7 1.7"/>
+  </symbol>
+
+  <!-- tiered pyramid with flow arrow : "visual hierarchy" -->
+  <symbol id="d-pyramid" viewBox="0 0 32 32">
+    <path class="ln" d="M14 4.5l3.8 5.5h-7.6zM8.5 13h11l2.6 5H5.9zM4.2 21.5h19.6l2.4 5H1.8z"/>
+    <path class="ln" d="M29.5 7v16.5M29.5 23.5l-2.3-2.3M29.5 23.5l2.3-2.3"/>
+  </symbol>
+
+  <!-- browser wireframe with grid : "clear layout" -->
+  <symbol id="d-wireframe" viewBox="0 0 32 32">
+    <rect class="ln" x="3" y="5" width="26" height="22" rx="2.5"/>
+    <path class="ln" d="M3 10.5h26"/>
+    <circle class="ln-fill" cx="6.5" cy="7.8" r=".9"/><circle class="ln-fill" cx="9.5" cy="7.8" r=".9"/><circle class="ln-fill" cx="12.5" cy="7.8" r=".9"/>
+    <rect class="ln-thin" x="6" y="13.5" width="6.5" height="6.5" rx="1"/>
+    <path class="ln-thin" d="M6.8 18.2l1.8-1.8 1.5 1.2 1.7-2"/>
+    <path class="ln-thin" d="M16 14.5h10M16 17.5h10M16 20.5h6.5"/>
+    <path class="ln-dash" d="M6 23.5h20"/>
+  </symbol>
+
+  <!-- color wheel + dropper : "choosing colors" -->
+  <symbol id="d-dropper" viewBox="0 0 32 32">
+    <circle class="ln" cx="12.5" cy="19.5" r="9"/>
+    <path class="ln-thin" d="M12.5 10.5v18M3.5 19.5h18M6.1 13.1l12.8 12.8M18.9 13.1L6.1 25.9"/>
+    <circle class="ln-fill" cx="12.5" cy="19.5" r="1.5"/>
+    <path class="ln" d="M25.5 3.5l3 3-2.2 2.2-3-3z"/>
+    <path class="ln" d="M23.3 5.7l-7 7-1.2 3.4 3.4-1.2 7-7"/>
+  </symbol>
+
+  <!-- paint roller with drip : "applying colors" -->
+  <symbol id="d-roller" viewBox="0 0 32 32">
+    <rect class="ln" x="3.5" y="4.5" width="19" height="7" rx="2"/>
+    <path class="ln" d="M22.5 8h4.5a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5H16a1.5 1.5 0 0 0-1.5 1.5v2"/>
+    <rect class="ln" x="12.8" y="20" width="3.4" height="7.5" rx="1.2"/>
+    <path class="ln-thin" d="M7 8h6"/>
+  </symbol>
+
+  <!-- fanned swatch cards : "palette" -->
+  <symbol id="d-swatchfan" viewBox="0 0 32 32">
+    <path class="ln" d="M12.5 25.5L7 8.5l6.5-2.1 5.5 17z"/>
+    <path class="ln" d="M15.5 25.5l1.5-17.8 6.8.6-1.5 17.6z"/>
+    <path class="ln" d="M18 26.5l8.2-8.7 3.3 3.1-6.4 6.8z"/>
+    <circle class="ln-fill" cx="11" cy="10.5" r="1.1"/>
+    <circle class="ln-fill" cx="19.8" cy="11.5" r="1.1"/>
+    <path class="ln" d="M4.5 28.5h23"/>
+  </symbol>
+
+  <!-- letter A with baseline guides : "type rules" -->
+  <symbol id="d-typeA" viewBox="0 0 32 32">
+    <path class="ln-dash" d="M2.5 5.5h27M2.5 25.5h27"/>
+    <path class="ln" d="M8 25.5L14.8 5.5h2.4L24 25.5M10.6 18.5h10.8"/>
+    <path class="ln-thin" d="M28.5 8.5v14M28.5 8.5l-1.6 1.6M28.5 8.5l1.6 1.6M28.5 22.5l-1.6-1.6M28.5 22.5l1.6-1.6"/>
+  </symbol>
+
+  <!-- shrinking text + magnifier : "type scale" -->
+  <symbol id="d-typescale" viewBox="0 0 32 32">
+    <path class="ln" d="M3.5 6.5h14" style="stroke-width:2.6"/>
+    <path class="ln" d="M3.5 12.5h10.5" style="stroke-width:2"/>
+    <path class="ln-thin" d="M3.5 17.5h8M3.5 21.5h6"/>
+    <circle class="ln" cx="21.5" cy="18.5" r="6.5"/>
+    <path class="ln" d="M26.3 23.3l4.2 4.2"/>
+    <path class="ln-thin" d="M18.8 18.5h5.4M21.5 15.8v5.4"/>
+  </symbol>
+
+  <!-- two people + speech bubble : "reviewers" -->
+  <symbol id="d-review" viewBox="0 0 32 32">
+    <circle class="ln" cx="10" cy="11" r="4.2"/>
+    <path class="ln" d="M2.8 26.5c0-4.8 3.2-7.6 7.2-7.6s7.2 2.8 7.2 7.6"/>
+    <path class="ln" d="M19.5 4.5h8a2 2 0 0 1 2 2v4.5a2 2 0 0 1-2 2h-3l-3 3v-3h-2a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2z"/>
+    <circle class="ln-fill" cx="22" cy="8.8" r=".9"/><circle class="ln-fill" cx="25" cy="8.8" r=".9"/>
+  </symbol>
+
+  <!-- clipboard with checkboxes & ? : "specific questions" -->
+  <symbol id="d-clipboard" viewBox="0 0 32 32">
+    <rect class="ln" x="6.5" y="5" width="19" height="24" rx="2.5"/>
+    <path class="ln" d="M12.5 5V3.5a1.5 1.5 0 0 1 1.5-1.5h4a1.5 1.5 0 0 1 1.5 1.5V5"/>
+    <path class="ln" d="M13.6 11.6a2.6 2.6 0 1 1 3.6 2.4c-.7.3-1 .8-1 1.5v.4"/>
+    <circle class="ln-fill" cx="16.2" cy="18.6" r="1"/>
+    <rect class="ln-thin" x="10" y="21.5" width="3" height="3" rx=".8"/>
+    <path class="ln-thin" d="M15.5 23h7M10.6 22.9l.9.9 1.4-1.6"/>
+  </symbol>
+
+  <!-- magnifier over chart + refresh : "evaluate & act" -->
+  <symbol id="d-magloop" viewBox="0 0 32 32">
+    <circle class="ln" cx="13.5" cy="14" r="9"/>
+    <path class="ln" d="M20.2 20.7l6.3 6.3"/>
+    <path class="ln-thin" d="M9.5 17.5v-3.5M13.5 17.5v-6.5M17.5 17.5v-4.8"/>
+    <path class="ln" d="M25 4.5a6 6 0 0 1 3.5 5.5"/>
+    <path class="ln" d="M28.5 6.5v3.5H25"/>
+  </symbol>
+
+  <!-- lightbulb with rays & filament : "core habits" -->
+  <symbol id="d-bulb" viewBox="0 0 32 32">
+    <path class="ln" d="M16 5a8 8 0 0 1 4.6 14.5c-.9.7-1.4 1.5-1.4 2.5h-6.4c0-1-.5-1.8-1.4-2.5A8 8 0 0 1 16 5z"/>
+    <path class="ln" d="M12.8 25h6.4M13.8 28h4.4"/>
+    <path class="ln-thin" d="M13.3 12.5l2.7 3 2.7-3M16 15.5V22"/>
+    <path class="ln-thin" d="M16 1v1.8M6.5 4.9l1.3 1.3M25.5 4.9l-1.3 1.3M3.5 13h1.8M26.7 13h1.8"/>
+  </symbol>
+
+  <!-- chip with sparkle & pins : "working with AI" -->
+  <symbol id="d-chip" viewBox="0 0 32 32">
+    <rect class="ln" x="8" y="8" width="16" height="16" rx="3"/>
+    <path class="ln-thin" d="M12 8V4.5M16 8V4.5M20 8V4.5M12 27.5V24M16 27.5V24M20 27.5V24M8 12H4.5M8 16H4.5M8 20H4.5M27.5 12H24M27.5 16H24M27.5 20H24"/>
+    <path class="ln-fill" d="M16 11.2l1.3 2.9 2.9 1.3-2.9 1.3-1.3 2.9-1.3-2.9-2.9-1.3 2.9-1.3z"/>
+  </symbol>
+
+  <!-- overlapping artboards with chart : "6 types" -->
+  <symbol id="d-boards" viewBox="0 0 32 32">
+    <rect class="ln" x="3.5" y="5.5" width="16" height="13" rx="1.8"/>
+    <path class="ln-thin" d="M6.5 14.5l3-3.2 2.4 1.8 3.6-4"/>
+    <rect class="ln" x="12.5" y="13.5" width="16" height="13" rx="1.8"/>
+    <path class="ln-thin" d="M15.5 22.5h4.5M15.5 19.5h7M23 24.5h3"/>
+  </symbol>
+
+  <!-- funnel with particles : section 01 emblem -->
+  <symbol id="d-funnel" viewBox="0 0 32 32">
+    <path class="ln" d="M4 6h24l-9.5 10.5v8L13.5 28v-11.5z"/>
+    <path class="ln-thin" d="M8.5 9.5h15"/>
+    <circle class="ln-fill" cx="10" cy="2.8" r="1"/><circle class="ln-fill" cx="16" cy="1.8" r="1"/><circle class="ln-fill" cx="22" cy="2.8" r="1"/>
+  </symbol>
+
+  <!-- open book / library : hero statement -->
+  <symbol id="d-library" viewBox="0 0 32 32">
+    <path class="ln" d="M16 8.5C13.5 6 9.8 5 4.5 5.2v18C9.8 23 13.5 24 16 26.5c2.5-2.5 6.2-3.5 11.5-3.3v-18C22.2 5 18.5 6 16 8.5z"/>
+    <path class="ln" d="M16 8.5v18"/>
+    <path class="ln-thin" d="M8 10.5h4.5M8 14h4.5M8 17.5h3M19.5 10.5H24M19.5 14H24M21 17.5h3"/>
+    <path class="ln-thin" d="M16 2.5v3M11 3.5l.8 1.6M21 3.5l-.8 1.6"/>
+  </symbol>
+
+  <!-- statistical : bar + pie + trend -->
+  <symbol id="t-stat" viewBox="0 0 32 32">
+    <path class="ln" d="M3.5 27.5h25"/>
+    <rect class="ln" x="5" y="17" width="5" height="10.5"/>
+    <rect class="ln" x="12.5" y="11" width="5" height="16.5"/>
+    <rect class="ln" x="20" y="20" width="5" height="7.5"/>
+    <path class="ln-thin" d="M6 13l5-5 5 3 6-7"/>
+    <circle class="ln" cx="25.5" cy="6.5" r="4"/>
+    <path class="ln-thin" d="M25.5 2.5v4h4"/>
+  </symbol>
+
+  <!-- informational : document with headings + icons -->
+  <symbol id="t-info" viewBox="0 0 32 32">
+    <path class="ln" d="M6 3.5h13l7 7v18a1.5 1.5 0 0 1-1.5 1.5h-18A1.5 1.5 0 0 1 5 28.5V5a1.5 1.5 0 0 1 1-1.5z"/>
+    <path class="ln" d="M19 3.5v7h7"/>
+    <circle class="ln" cx="11" cy="16" r="2.6"/>
+    <path class="ln-thin" d="M15.5 14.8h7M15.5 17.6h5"/>
+    <path class="ln-thin" d="M9 22h14M9 25h9"/>
+  </symbol>
+
+  <!-- timeline : milestone track with flags -->
+  <symbol id="t-time" viewBox="0 0 32 32">
+    <path class="ln" d="M2.5 20h27"/>
+    <circle class="ln" cx="8" cy="20" r="3"/>
+    <circle class="ln" cx="16" cy="20" r="3"/>
+    <circle class="ln" cx="24" cy="20" r="3"/>
+    <path class="ln-thin" d="M8 17V9.5h6l-1.6 2.2L14 14H8"/>
+    <path class="ln-thin" d="M24 17v-5"/>
+    <path class="ln-thin" d="M16 23v3.5M8 23v2M24 23v2"/>
+  </symbol>
+
+  <!-- process : connected flow nodes with arrows -->
+  <symbol id="t-process" viewBox="0 0 32 32">
+    <rect class="ln" x="2.5" y="4" width="9" height="7" rx="1.5"/>
+    <rect class="ln" x="20.5" y="4" width="9" height="7" rx="1.5"/>
+    <rect class="ln" x="11.5" y="21" width="9" height="7" rx="1.5"/>
+    <path class="ln" d="M11.5 7.5h7.2M17.2 6l1.8 1.5-1.8 1.5"/>
+    <path class="ln" d="M25 11v9.5h-2.9M23.6 19l-1.8 1.5 1.8 1.5"/>
+    <path class="ln" d="M7 11v9.5h2.9M8.4 19l1.8 1.5-1.8 1.5"/>
+  </symbol>
+
+  <!-- comparison : two panels with vs divider -->
+  <symbol id="t-compare" viewBox="0 0 32 32">
+    <rect class="ln" x="2.5" y="5" width="11" height="22" rx="2"/>
+    <rect class="ln" x="18.5" y="5" width="11" height="22" rx="2"/>
+    <path class="ln-thin" d="M5.5 10.5h5M5.5 14h5M5.5 17.5h3"/>
+    <path class="ln-thin" d="M21.5 10.5h5M21.5 14h5M21.5 17.5h3"/>
+    <path class="ln" d="M6 22.5l1.6 1.6 3-3.2"/>
+    <path class="ln" d="M22.5 21.5l3.5 3.5M26 21.5l-3.5 3.5"/>
+    <path class="ln" d="M16 12.5v7"/>
+  </symbol>
+
+  <!-- geographic : pin over folded map -->
+  <symbol id="t-geo" viewBox="0 0 32 32">
+    <path class="ln" d="M11 9.5L3.5 12v16.5L11 26l10 2.5 7.5-2.5V9.5L21 12"/>
+    <path class="ln-thin" d="M11 9.5V26M21 12v16.5"/>
+    <path class="ln" d="M16 2.5a5.2 5.2 0 0 1 5.2 5.2c0 3.9-5.2 9-5.2 9s-5.2-5.1-5.2-9A5.2 5.2 0 0 1 16 2.5z"/>
+    <circle class="ln" cx="16" cy="7.7" r="1.9"/>
+  </symbol>
+
+  <!-- limitation icons -->
+  <symbol id="x-overload" viewBox="0 0 32 32">
+    <path class="ln" d="M6 13.5v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-12"/>
+    <path class="ln" d="M3.5 13.5h25"/>
+    <path class="ln-thin" d="M11 18.5h10M11 22.5h7"/>
+    <path class="ln" d="M12 9.5L16 5l4 4.5M16 5.5v6"/>
+    <path class="ln-thin" d="M6.5 8.5L5 6M25.5 8.5L27 6"/>
+  </symbol>
+  <symbol id="x-oversimple" viewBox="0 0 32 32">
+    <path class="ln" d="M4.5 5.5h13v9.5h-13z"/>
+    <path class="ln-dash" d="M17.5 5.5h10v9.5h-10z"/>
+    <path class="ln" d="M4.5 19.5h9v7h-9z"/>
+    <path class="ln-dash" d="M13.5 19.5h14v7h-14z"/>
+    <path class="ln-thin" d="M21 8.8h3M20 24h3"/>
+  </symbol>
+  <symbol id="x-misrep" viewBox="0 0 32 32">
+    <circle class="ln" cx="14" cy="16" r="10"/>
+    <path class="ln" d="M14 6v10l8 5"/>
+    <path class="ln-thin" d="M14 16l9.5-3.2"/>
+    <path class="ln" d="M23.5 22.5l6 6M29.5 22.5l-6 6"/>
+  </symbol>
+  <symbol id="x-static" viewBox="0 0 32 32">
+    <circle class="ln" cx="7" cy="8" r="3"/>
+    <circle class="ln" cx="24" cy="7" r="3"/>
+    <circle class="ln" cx="16" cy="17" r="3"/>
+    <circle class="ln" cx="6" cy="24" r="3"/>
+    <circle class="ln" cx="25" cy="23" r="3"/>
+    <path class="ln-thin" d="M9.4 9.9l4.3 5M21.3 8.7l-3.1 6M13.6 18.7l-5 4.1M18.5 18.5l4 3.3M9 8h12M8 22.5l14-13"/>
+  </symbol>
+  <symbol id="d-check" viewBox="0 0 32 32">
+    <circle class="ln" cx="16" cy="16" r="12"/>
+    <path class="ln" d="M10.5 16.5l4 4 7-8"/>
+  </symbol>
+
+  <!-- simple glyphs for bullets -->
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z" fill="currentColor"/></symbol>
+  <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="currentColor"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="currentColor" opacity=".5"/></symbol>
+  <symbol id="i-sq" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="currentColor"/></symbol>
+</svg>
+
+<div class="poster">
+
+  <!-- ============ COVER ============ -->
+  <header class="cover">
+    <div class="cover-main">
+      <span class="eyebrow">Infographics 101</span>
+      <h1>The Anatomy of an Effective <span class="hl">Infographic</span></h1>
+      <p class="cover-sub">Six sections. Everything the course wants you to master — condensed into one page you can keep beside you while you work.</p>
+      <div class="index">
+        <div class="ix"><span class="no">01</span><span class="sw" style="background:var(--blue)"></span>Filtering the essentials</div>
+        <div class="ix"><span class="no">02</span><span class="sw" style="background:var(--violet)"></span>Design principles</div>
+        <div class="ix"><span class="no">03</span><span class="sw" style="background:var(--coral)"></span>Color theory</div>
+        <div class="ix"><span class="no">04</span><span class="sw" style="background:var(--slate)"></span>Typography</div>
+        <div class="ix"><span class="no">05</span><span class="sw" style="background:var(--teal)"></span>Taking feedback</div>
+        <div class="ix"><span class="no">06</span><span class="sw" style="background:var(--amber)"></span>What makes infographics great</div>
+      </div>
+    </div>
+    <div class="bars">
+      <div style="background:var(--blue)"></div>
+      <div style="background:var(--violet)"></div>
+      <div style="background:var(--coral)"></div>
+      <div style="background:var(--slate)"></div>
+      <div style="background:var(--teal)"></div>
+      <div style="background:var(--amber)"></div>
+    </div>
+  </header>
+
+  <!-- ============ RING STATS ============ -->
+  <div class="stats">
+    <div class="stat">
+      <div class="ring">
+        <svg width="84" height="84" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="rgba(122,78,230,.15)" stroke-width="6"/><circle cx="30" cy="30" r="26" fill="none" stroke="var(--violet)" stroke-width="6" stroke-dasharray="19.3 4.03"/></svg>
+        <span class="n" style="color:var(--violet)">7</span>
+      </div>
+      <div class="array">
+        <svg class="gi" style="color:var(--violet);width:9px;height:9px" viewBox="0 0 24 24"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--violet);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--violet);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--violet);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--violet);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--violet);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--violet);width:9px;height:9px"><use href="#i-sq"/></svg>
+      </div>
+      <span class="l">Elements of design — space, line, shape, size, color, value, typography</span>
+    </div>
+    <div class="stat">
+      <div class="ring">
+        <svg width="84" height="84" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,90,71,.15)" stroke-width="6"/><circle cx="30" cy="30" r="26" fill="none" stroke="var(--coral)" stroke-width="6" stroke-dasharray="23.2 4.03"/></svg>
+        <span class="n" style="color:var(--coral)">5–6</span>
+      </div>
+      <div class="array">
+        <svg class="gi" style="color:var(--ink);width:9px;height:9px" viewBox="0 0 24 24"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--blue);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--violet);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--coral);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--teal);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--amber);width:9px;height:9px"><use href="#i-sq"/></svg>
+      </div>
+      <span class="l">Colors in a well-built palette, saved for reuse</span>
+    </div>
+    <div class="stat">
+      <div class="ring">
+        <svg width="84" height="84" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="rgba(15,169,142,.15)" stroke-width="6"/><circle cx="30" cy="30" r="26" fill="none" stroke="var(--teal)" stroke-width="6" stroke-dasharray="50.4 4.03"/></svg>
+        <span class="n" style="color:var(--teal)">3</span>
+      </div>
+      <div class="array">
+        <svg class="gi" style="color:var(--teal);width:13px;height:13px" viewBox="0 0 24 24"><use href="#i-person"/></svg><svg class="gi" style="color:var(--teal);width:13px;height:13px"><use href="#i-person"/></svg><svg class="gi" style="color:var(--teal);width:13px;height:13px"><use href="#i-person"/></svg>
+      </div>
+      <span class="l">Kinds of reviewers before you publish anything</span>
+    </div>
+    <div class="stat">
+      <div class="ring">
+        <svg width="84" height="84" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="rgba(245,165,11,.18)" stroke-width="6"/><circle cx="30" cy="30" r="26" fill="none" stroke="var(--amber)" stroke-width="6" stroke-dasharray="23.2 4.03"/></svg>
+        <span class="n" style="color:#B37A00">6</span>
+      </div>
+      <div class="array">
+        <svg class="gi" style="color:var(--amber);width:9px;height:9px" viewBox="0 0 24 24"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--amber);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--amber);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--amber);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--amber);width:9px;height:9px"><use href="#i-sq"/></svg><svg class="gi" style="color:var(--amber);width:9px;height:9px"><use href="#i-sq"/></svg>
+      </div>
+      <span class="l">Infographic types — pick the right one for the job</span>
+    </div>
+  </div>
+
+  <!-- ============ 01 SELECT INFORMATION ============ -->
+  <section class="s1">
+    <span class="ghost">01</span>
+    <div class="shead">
+      <div class="semblem"><svg><use href="#d-funnel"/></svg></div>
+      <div>
+        <span class="stag">Section 01 · Focus on essentials</span>
+        <h2>Filtering the Essentials</h2>
+      </div>
+    </div>
+    <div class="sbody">
+      <div class="cards">
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-compass"/></svg></span>Start here — in order</h3>
+          <ul>
+            <li><span class="chip">1</span><span><b>Identify the main process</b> — what should the audience take away?</span></li>
+            <li><span class="chip">2</span><span>Break it into a <b>logical sequence</b> of limited, clear steps.</span></li>
+            <li><span class="chip">3</span><span>Ask <b>who's involved</b> — stakeholders clarify the flow of actions.</span></li>
+            <li><span class="chip">4</span><span>Know your audience: <b>replace jargon</b> with plain language.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-medal"/></svg></span>Quality bar</h3>
+          <ul>
+            <li><svg class="gi"><use href="#i-check"/></svg><span><b>Keep it simple, keep it clear</b> — essentials only.</span></li>
+            <li><svg class="gi"><use href="#i-check"/></svg><span><b>Accuracy is crucial</b>: verify with a reputable source, get expert sign-off.</span></li>
+            <li><svg class="gi"><use href="#i-check"/></svg><span>Tell a story — guide the audience through a narrative.</span></li>
+            <li><svg class="gi"><use href="#i-check"/></svg><span>Contextualize data so its significance is understood.</span></li>
+          </ul>
+        </div>
+        <div class="card full">
+          <h3><span class="hicon"><svg><use href="#d-balance"/></svg></span>4 limitations — and what to do instead</h3>
+          <div class="dd">
+            <div class="dd-row">
+              <div class="dont"><b><span class="ddnum">1</span><span class="ddicon"><svg><use href="#x-overload"/></svg></span>Information overload</b>Too much detail leaves viewers overwhelmed and unsure of the key takeaways.</div>
+              <div class="do"><b><span class="doicon"><svg><use href="#d-check"/></svg></span>Instead</b>Focus on the essentials needed to understand the overall process.</div>
+            </div>
+            <div class="dd-row">
+              <div class="dont"><b><span class="ddnum">2</span><span class="ddicon"><svg><use href="#x-oversimple"/></svg></span>Oversimplification</b>Being too concise leaves viewers with an incomplete understanding.</div>
+              <div class="do"><b><span class="doicon"><svg><use href="#d-check"/></svg></span>Instead</b>Focus on a specific aspect of the larger issue.</div>
+            </div>
+            <div class="dd-row">
+              <div class="dont"><b><span class="ddnum">3</span><span class="ddicon"><svg><use href="#x-misrep"/></svg></span>Misrepresentation</b>A misleading chart or icon distorts the message — e.g. pie slices that don't total 100%.</div>
+              <div class="do"><b><span class="doicon"><svg><use href="#d-check"/></svg></span>Instead</b>Ensure every visual is clear and accurate.</div>
+            </div>
+            <div class="dd-row">
+              <div class="dont"><b><span class="ddnum">4</span><span class="ddicon"><svg><use href="#x-static"/></svg></span>Complex, static data</b>Infographics can't dynamically explore intricate relationships.</div>
+              <div class="do"><b><span class="doicon"><svg><use href="#d-check"/></svg></span>Instead</b>Pair them with videos or interactive presentations.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 DESIGN PRINCIPLES ============ -->
+  <section class="s2">
+    <span class="ghost">02</span>
+    <div class="shead">
+      <div class="semblem"><svg><use href="#d-shapes"/></svg></div>
+      <div>
+        <span class="stag">Section 02 · 7 elements · hierarchy · layout</span>
+        <h2>Design Principles</h2>
+      </div>
+    </div>
+    <div class="sbody">
+      <div class="cards">
+        <div class="card full">
+          <h3><span class="hicon"><svg><use href="#d-shapes"/></svg></span>The 7 elements — your building blocks</h3>
+          <div class="elgrid">
+            <div class="el">
+              <svg width="30" height="30" viewBox="0 0 32 32" style="color:var(--violet)"><rect class="ln" x="5" y="5" width="22" height="22" rx="3"/><rect class="ln-dash" x="11" y="11" width="10" height="10" rx="1.5"/></svg>
+              <div class="t">Space</div><div class="d">Balance &amp; breathing room — negative space is your friend</div>
+            </div>
+            <div class="el">
+              <svg width="30" height="30" viewBox="0 0 32 32" style="color:var(--violet)"><path class="ln" d="M3 24C10 8 21 26 29 8"/><circle class="ln-fill" cx="3" cy="24" r="1.6"/><circle class="ln-fill" cx="29" cy="8" r="1.6"/></svg>
+              <div class="t">Line</div><div class="d">Guides the eye, creates borders, adds emphasis</div>
+            </div>
+            <div class="el">
+              <svg width="30" height="30" viewBox="0 0 32 32" style="color:var(--violet)"><path class="ln" d="M10.5 4.5l7 11h-14z"/><circle class="ln" cx="21" cy="21.5" r="6.5"/></svg>
+              <div class="t">Shape</div><div class="d">Triangle = direction &amp; action · Circle = community &amp; unity</div>
+            </div>
+            <div class="el">
+              <svg width="30" height="30" viewBox="0 0 32 32" style="color:var(--violet)"><rect class="ln" x="3.5" y="17" width="7" height="11"/><rect class="ln" x="13" y="10" width="7" height="18"/><rect class="ln" x="22.5" y="4" width="7" height="24"/></svg>
+              <div class="t">Size</div><div class="d">Bigger = more important — builds the hierarchy of attention</div>
+            </div>
+            <div class="el">
+              <svg width="30" height="30" viewBox="0 0 32 32" style="color:var(--violet)"><circle class="ln" cx="16" cy="16" r="11"/><path class="ln-thin" d="M16 5v22M5 16h22M8.2 8.2l15.6 15.6M23.8 8.2L8.2 23.8"/></svg>
+              <div class="t">Color</div><div class="d">Evokes emotion, mood &amp; brand identity</div>
+            </div>
+            <div class="el">
+              <svg width="30" height="30" viewBox="0 0 32 32" style="color:var(--violet)"><rect class="ln-fill" x="3.5" y="10" width="6" height="12"/><rect class="ln-fill" x="11" y="10" width="6" height="12" opacity=".6"/><rect class="ln-fill" x="18.5" y="10" width="6" height="12" opacity=".3"/><rect class="ln" x="26" y="10" width="2.5" height="12"/></svg>
+              <div class="t">Value</div><div class="d">Light ↔ dark creates depth and contrast</div>
+            </div>
+            <div class="el">
+              <svg width="30" height="30" viewBox="0 0 32 32" style="color:var(--violet)"><use href="#d-typeA"/></svg>
+              <div class="t">Typography</div><div class="d">Style &amp; size drive readability and appeal</div>
+            </div>
+            <div class="el" style="background:var(--violet)">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z" fill="#fff"/></svg>
+              <div class="t" style="color:#fff">All 7 together</div><div class="d" style="color:#E4DCFB">= balance, contrast &amp; harmony</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-pyramid"/></svg></span>Visual hierarchy — what the eye meets first</h3>
+          <ul>
+            <li><span class="chip">1</span><span>Bold heading first — say exactly what this is.</span></li>
+            <li><span class="chip">2</span><span>Subtitle smaller; key steps get <b>larger icons &amp; text</b>.</span></li>
+            <li><span class="chip">3</span><span><b>Placement is crucial</b>: first key point top-left, where reading starts.</span></li>
+            <li><span class="chip">4</span><span>Contrasting colors highlight the key steps.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-wireframe"/></svg></span>Clear layout</h3>
+          <ul>
+            <li><svg class="gi"><use href="#i-arrow"/></svg><span>Align everything on an <b>invisible grid</b>.</span></li>
+            <li><svg class="gi"><use href="#i-arrow"/></svg><span>Don't clutter — leave room for each step to breathe.</span></li>
+            <li><svg class="gi"><use href="#i-arrow"/></svg><span><b>Arrows / numbered icons</b> guide the reader top-to-bottom, the way we read.</span></li>
+            <li><svg class="gi"><use href="#i-arrow"/></svg><span>Keep secondary shapes small — never the main focus.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pull"><span class="qm">"</span>A well designed infographic is a bridge, not a maze.<span class="qm">"</span><em>Design connects your content to a captivated, well-prepared audience.</em></div>
+    </div>
+  </section>
+
+  <!-- ============ 03 COLOR THEORY ============ -->
+  <section class="s3">
+    <span class="ghost">03</span>
+    <div class="shead">
+      <div class="semblem"><svg><use href="#d-dropper"/></svg></div>
+      <div>
+        <span class="stag">Section 03 · Emotion · contrast · consistency</span>
+        <h2>Color Theory</h2>
+      </div>
+    </div>
+    <div class="sbody">
+      <div class="cards">
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-dropper"/></svg></span>Choosing colors</h3>
+          <ul>
+            <li><svg class="gi"><use href="#i-dot"/></svg><span><b>Colors evoke emotion</b> — use them strategically to guide the viewer.</span></li>
+            <li><svg class="gi"><use href="#i-dot"/></svg><span>Build a palette of <b>5–6 colors</b>; a scheme generator helps when in a hurry. Save it for reuse.</span></li>
+            <li><svg class="gi"><use href="#i-dot"/></svg><span>Use universally recognized meanings — <b>red = warning</b> — for key steps.</span></li>
+            <li><svg class="gi"><use href="#i-dot"/></svg><span><b>Value</b> (light ↔ dark) adds depth and contrast.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-roller"/></svg></span>Applying colors</h3>
+          <ul>
+            <li><svg class="gi"><use href="#i-dot"/></svg><span>Balance bold accents with a <b>calming neutral background</b>.</span></li>
+            <li><svg class="gi"><use href="#i-dot"/></svg><span><b>Contrast text vs. background</b> for readability in any lighting.</span></li>
+            <li><svg class="gi"><use href="#i-dot"/></svg><span>Brightest color on the heading (seen first); secondary shapes stay subtle.</span></li>
+            <li><svg class="gi"><use href="#i-dot"/></svg><span><b>Stick to your palette</b> throughout — it ties the design together.</span></li>
+          </ul>
+        </div>
+        <div class="card full">
+          <h3><span class="hicon"><svg><use href="#d-swatchfan"/></svg></span>This page's palette — 6 colors, one job each</h3>
+          <div style="display:flex;gap:8px">
+            <div style="flex:1;height:46px;border-radius:10px;background:var(--ink);position:relative"><span style="position:absolute;bottom:6px;left:9px;font-size:9.5px;font-weight:780;color:#fff;letter-spacing:.06em">INK</span></div>
+            <div style="flex:1;height:46px;border-radius:10px;background:var(--blue);position:relative"><span style="position:absolute;bottom:6px;left:9px;font-size:9.5px;font-weight:780;color:#fff;letter-spacing:.06em">PRIMARY</span></div>
+            <div style="flex:1;height:46px;border-radius:10px;background:var(--violet);position:relative"><span style="position:absolute;bottom:6px;left:9px;font-size:9.5px;font-weight:780;color:#fff;letter-spacing:.06em">SECONDARY</span></div>
+            <div style="flex:1;height:46px;border-radius:10px;background:var(--coral);position:relative"><span style="position:absolute;bottom:6px;left:9px;font-size:9.5px;font-weight:780;color:#fff;letter-spacing:.06em">WARNING</span></div>
+            <div style="flex:1;height:46px;border-radius:10px;background:var(--teal);position:relative"><span style="position:absolute;bottom:6px;left:9px;font-size:9.5px;font-weight:780;color:#fff;letter-spacing:.06em">POSITIVE</span></div>
+            <div style="flex:1;height:46px;border-radius:10px;background:var(--amber);position:relative"><span style="position:absolute;bottom:6px;left:9px;font-size:9.5px;font-weight:780;color:var(--ink);letter-spacing:.06em">HIGHLIGHT</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 TYPOGRAPHY ============ -->
+  <section class="s4">
+    <span class="ghost">04</span>
+    <div class="shead">
+      <div class="semblem"><svg><use href="#d-typeA"/></svg></div>
+      <div>
+        <span class="stag">Section 04 · Readability first · one family</span>
+        <h2>Typography</h2>
+      </div>
+    </div>
+    <div class="sbody">
+      <div class="cards">
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-typeA"/></svg></span>Rules</h3>
+          <ul>
+            <li><svg class="gi"><use href="#i-check"/></svg><span><b>Readability is the #1 consideration</b> — the right font can make or break the infographic.</span></li>
+            <li><svg class="gi"><use href="#i-check"/></svg><span>Clear, bold fonts legible on screen, in print, and <b>from a distance</b>.</span></li>
+            <li><svg class="gi"><use href="#i-check"/></svg><span><b>Sans serif</b> = clean, legible, modern — great on screens.</span></li>
+            <li><svg class="gi"><use href="#i-check"/></svg><span>A display face may headline; body fonts must not clash with it.</span></li>
+            <li><svg class="gi"><use href="#i-check"/></svg><span>Reuse the heading font at smaller sizes for <b>design consistency</b>.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-typescale"/></svg></span>The 3-level scale — height = type size</h3>
+          <div class="typechart">
+            <div class="tc"><div class="bar" style="height:110px;font-size:24px">Aa</div><div class="cap">1 · Heading<br>biggest &amp; boldest</div></div>
+            <div class="tc"><div class="bar" style="height:74px;font-size:17px">Aa</div><div class="cap">2 · Subheading<br>slightly smaller</div></div>
+            <div class="tc"><div class="bar" style="height:44px;font-size:12px">Aa</div><div class="cap">3 · Body copy<br>smallest, easy to read</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 FEEDBACK ============ -->
+  <section class="s5">
+    <span class="ghost">05</span>
+    <div class="shead">
+      <div class="semblem"><svg><use href="#d-review"/></svg></div>
+      <div>
+        <span class="stag">Section 05 · The crucial step before publishing</span>
+        <h2>Taking Feedback</h2>
+      </div>
+    </div>
+    <div class="sbody">
+      <div class="cards">
+        <div class="card full">
+          <h3><span class="hicon"><svg><use href="#d-review"/></svg></span>Ask 3 kinds of reviewers</h3>
+          <div class="trio">
+            <div class="rev">
+              <div class="avatar">
+                <svg viewBox="0 0 32 32"><path class="ln" d="M16 3.5l10 3.8v6.2c0 6.6-4.3 11.2-10 13.5-5.7-2.3-10-6.9-10-13.5V7.3z"/><path class="ln" d="M11.8 15.5l3 3 5.4-5.8"/></svg>
+              </div>
+              <div class="t">Subject-matter experts</div>
+              <div class="d">Confirm accuracy &amp; alignment with existing protocols</div>
+            </div>
+            <div class="rev">
+              <div class="avatar">
+                <svg viewBox="0 0 32 32"><circle class="ln" cx="10.5" cy="10.5" r="4"/><path class="ln" d="M3.5 25.5c0-4.4 3-7 7-7s7 2.6 7 7"/><circle class="ln" cx="22.5" cy="12" r="3.2"/><path class="ln" d="M19.5 25.5c.4-3.6 2.5-5.6 5.5-5.6 2.2 0 3.5 1.1 4 3.1"/></svg>
+              </div>
+              <div class="t">Colleagues across departments</div>
+              <div class="d">Diverse perspectives surface confusion</div>
+            </div>
+            <div class="rev">
+              <div class="avatar">
+                <svg viewBox="0 0 32 32"><circle class="ln" cx="14" cy="11" r="4.5"/><path class="ln" d="M5.5 26.5c0-4.8 3.7-7.5 8.5-7.5s8.5 2.7 8.5 7.5"/><path class="ln" d="M23.5 5.5a3 3 0 1 1 4.1 3.6c-.8.4-1.1.9-1.1 1.7v.4"/><circle class="ln-fill" cx="26.5" cy="13.7" r="1"/></svg>
+              </div>
+              <div class="t">Someone unfamiliar</div>
+              <div class="d">The true first-time test of your content</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-clipboard"/></svg></span>Ask specific questions — not "what do you think?"</h3>
+          <ul>
+            <li><svg class="gi"><use href="#i-arrow"/></svg><span><b>Clarity</b> — are steps easy to follow, even under stress?</span></li>
+            <li><svg class="gi"><use href="#i-arrow"/></svg><span><b>Visual flow</b> — does it guide you logically? Are images clear?</span></li>
+            <li><svg class="gi"><use href="#i-arrow"/></svg><span><b>Prioritization</b> — essentials only, no overwhelming detail?</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="hicon"><svg><use href="#d-magloop"/></svg></span>Evaluate &amp; act — in order</h3>
+          <ul>
+            <li><span class="chip">1</span><span><b>Recurring themes</b> flagged by multiple reviewers are the most crucial to fix.</span></li>
+            <li><span class="chip">2</span><span><b>Content revisions</b> — add missing prerequisites, clarify distinctions.</span></li>
+            <li><span class="chip">3</span><span><b>Visual tweaks</b> — bigger arrows for flow, brighter background for visibility.</span></li>
+            <li><span class="chip">4</span><span><b>Clarity boost</b> — simplify jargon, swap text for universal symbols. Then polish, get approval, share.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pull"><span class="qm">"</span>Feedback is your friend.<span class="qm">"</span><em>Test whether your content is not only accurate, but understandable.</em></div>
+    </div>
+  </section>
+
+  <!-- ============ 06 GENERAL PRINCIPLES ============ -->
+  <section class="s6">
+    <span class="ghost">06</span>
+    <div class="shead">
+      <div class="semblem" style="color:#B37A00"><svg><use href="#d-bulb"/></svg></div>
+      <div>
+        <span class="stag" style="color:#B37A00">Section 06 · Habits · working with AI · 6 types</span>
+        <h2>What Makes Infographics Great</h2>
+      </div>
+    </div>
+    <div class="sbody">
+      <div class="cards">
+        <div class="statement">
+          <span class="sicon"><svg><use href="#d-library"/></svg></span>
+          <div>
+            <div class="q"><span class="mark">"</span>If a picture is worth 1,000 words, then an infographic is like a whole library condensed into a single image.<span class="mark">"</span></div>
+            <div class="cap">The reason every principle on this page matters — density with clarity.</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3><span class="hicon" style="color:#B37A00"><svg><use href="#d-bulb"/></svg></span>Core habits</h3>
+          <ul>
+            <li><svg class="gi" style="color:var(--amber)"><use href="#i-star"/></svg><span>Break information into <b>digestible chunks</b> — brains respond to visuals and remember them.</span></li>
+            <li><svg class="gi" style="color:var(--amber)"><use href="#i-star"/></svg><span>Step-by-step, <b>like a recipe</b> — pictures, not merely words.</span></li>
+            <li><svg class="gi" style="color:var(--amber)"><use href="#i-star"/></svg><span>Aim for a <b>picture dictionary</b>: understandable in any language, easy to share, a quick reference that empowers the viewer.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="hicon" style="color:#B37A00"><svg><use href="#d-chip"/></svg></span>Working with AI</h3>
+          <ul>
+            <li><svg class="gi" style="color:var(--amber)"><use href="#i-star"/></svg><span><b>Human judgment ensures accuracy</b>, avoids bias, and tailors the result to context and audience.</span></li>
+            <li><svg class="gi" style="color:var(--amber)"><use href="#i-star"/></svg><span>Give <b>as much context as possible</b> — the clearer the prompt, the better the content.</span></li>
+            <li><svg class="gi" style="color:var(--amber)"><use href="#i-star"/></svg><span>Not satisfied? <b>Rewrite the prompt</b> until you are. The more you use AI, the better you get.</span></li>
+          </ul>
+        </div>
+        <div class="card full">
+          <h3><span class="hicon" style="color:#B37A00"><svg><use href="#d-boards"/></svg></span>Pick the right type — match the format to the shape of your information</h3>
+          <div class="typegrid">
+
+            <div class="tcard">
+              <div class="mini"><svg viewBox="0 0 200 92" xmlns="http://www.w3.org/2000/svg">
+<rect x="4" y="4" width="70" height="7" rx="3.5" fill="#16192B"/>
+<rect x="4" y="16" width="44" height="4" rx="2" fill="#B9C0D6"/>
+<text x="4" y="50" font-family="'Google Sans Flex',sans-serif" font-size="26" font-weight="850" fill="#2650E0">64%</text>
+<rect x="4" y="58" width="52" height="4" rx="2" fill="#B9C0D6"/>
+<rect x="4" y="66" width="40" height="4" rx="2" fill="#DCE1EC"/>
+<path d="M92 84h74" stroke="#B9C0D6" stroke-width="1.5"/>
+<rect x="96" y="56" width="12" height="28" rx="2" fill="#2650E0" opacity=".45"/>
+<rect x="114" y="40" width="12" height="44" rx="2" fill="#2650E0" opacity=".7"/>
+<rect x="132" y="28" width="12" height="56" rx="2" fill="#2650E0"/>
+<rect x="150" y="48" width="12" height="36" rx="2" fill="#2650E0" opacity=".55"/>
+<path d="M96 50l18-14 18-8 18 12" stroke="#16192B" stroke-width="2" fill="none" stroke-linecap="round"/>
+<circle cx="178" cy="22" r="13" fill="none" stroke="#DCE1EC" stroke-width="7"/>
+<circle cx="178" cy="22" r="13" fill="none" stroke="#2650E0" stroke-width="7" stroke-dasharray="53 82" transform="rotate(-90 178 22)"/>
+<rect x="92" y="8" width="34" height="5" rx="2.5" fill="#16192B"/>
+<rect x="92" y="17" width="24" height="4" rx="2" fill="#B9C0D6"/>
+</svg></div>
+              <div class="tt">Statistical</div>
+              <div class="td">Charts and graphs showcasing data and trends. Numbers lead — bar, pie and line charts carry the message, with oversized figures for the headline metric.</div>
+              <div class="tbest"><span>Best for</span>Survey results, performance figures, anything where the numbers are the point.</div>
+            </div>
+
+            <div class="tcard">
+              <div class="mini"><svg viewBox="0 0 200 92" xmlns="http://www.w3.org/2000/svg">
+<rect x="4" y="4" width="192" height="16" rx="5" fill="#7A4EE6"/>
+<rect x="12" y="9" width="58" height="6" rx="3" fill="#fff" opacity=".9"/>
+<circle cx="17" cy="37" r="9" fill="#7A4EE6" opacity=".22"/>
+<circle cx="17" cy="37" r="4" fill="#7A4EE6"/>
+<rect x="33" y="30" width="70" height="5" rx="2.5" fill="#16192B"/>
+<rect x="33" y="39" width="52" height="4" rx="2" fill="#B9C0D6"/>
+<circle cx="17" cy="62" r="9" fill="#7A4EE6" opacity=".22"/>
+<rect x="13.5" y="58.5" width="7" height="7" rx="1.5" fill="#7A4EE6"/>
+<rect x="33" y="55" width="62" height="5" rx="2.5" fill="#16192B"/>
+<rect x="33" y="64" width="46" height="4" rx="2" fill="#B9C0D6"/>
+<circle cx="122" cy="37" r="9" fill="#7A4EE6" opacity=".22"/>
+<path d="M118.5 40l3.5-6 3.5 6z" fill="#7A4EE6"/>
+<rect x="138" y="30" width="56" height="5" rx="2.5" fill="#16192B"/>
+<rect x="138" y="39" width="42" height="4" rx="2" fill="#B9C0D6"/>
+<circle cx="122" cy="62" r="9" fill="#7A4EE6" opacity=".22"/>
+<circle cx="122" cy="62" r="4" fill="none" stroke="#7A4EE6" stroke-width="2"/>
+<rect x="138" y="55" width="50" height="5" rx="2.5" fill="#16192B"/>
+<rect x="138" y="64" width="38" height="4" rx="2" fill="#B9C0D6"/>
+<rect x="4" y="82" width="120" height="4" rx="2" fill="#DCE1EC"/>
+</svg></div>
+              <div class="tt">Informational</div>
+              <div class="td">Visuals and text explaining concepts or processes. Text-heavy but visually structured — descriptive headings break a topic into ordered, readable sections.</div>
+              <div class="tbest"><span>Best for</span>Introducing a new topic, theme or product where there's little data to plot.</div>
+            </div>
+
+            <div class="tcard">
+              <div class="mini"><svg viewBox="0 0 200 92" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 52h180" stroke="#B9C0D6" stroke-width="2.5"/>
+<circle cx="30" cy="52" r="6" fill="#FF5A47"/>
+<circle cx="30" cy="52" r="9.5" fill="none" stroke="#FF5A47" stroke-width="1.5" opacity=".4"/>
+<path d="M30 46V24" stroke="#FF5A47" stroke-width="1.5"/>
+<rect x="16" y="10" width="34" height="6" rx="3" fill="#16192B"/>
+<rect x="20" y="20" width="26" height="4" rx="2" fill="#B9C0D6"/>
+<circle cx="80" cy="52" r="6" fill="#FF5A47" opacity=".75"/>
+<path d="M80 58v14" stroke="#FF5A47" stroke-width="1.5" opacity=".75"/>
+<rect x="64" y="74" width="34" height="6" rx="3" fill="#16192B"/>
+<rect x="68" y="84" width="26" height="4" rx="2" fill="#B9C0D6"/>
+<circle cx="130" cy="52" r="6" fill="#FF5A47" opacity=".55"/>
+<path d="M130 46V24" stroke="#FF5A47" stroke-width="1.5" opacity=".55"/>
+<rect x="116" y="10" width="34" height="6" rx="3" fill="#16192B"/>
+<rect x="120" y="20" width="26" height="4" rx="2" fill="#B9C0D6"/>
+<circle cx="176" cy="52" r="6" fill="#FF5A47" opacity=".4"/>
+<path d="M176 58v14" stroke="#FF5A47" stroke-width="1.5" opacity=".4"/>
+<rect x="162" y="74" width="30" height="6" rx="3" fill="#16192B"/>
+<path d="M186 49l6 3-6 3z" fill="#B9C0D6"/>
+</svg></div>
+              <div class="tt">Timeline</div>
+              <div class="td">Important events in chronological order. A single track with milestone markers emphasizes a timeframe and shows how something developed.</div>
+              <div class="tbest"><span>Best for</span>Company history, project roadmaps, the evolution of an idea or product.</div>
+            </div>
+
+            <div class="tcard">
+              <div class="mini"><svg viewBox="0 0 200 92" xmlns="http://www.w3.org/2000/svg">
+<rect x="6" y="8" width="50" height="26" rx="7" fill="#0FA98E"/>
+<text x="18" y="26" font-family="'Google Sans Flex',sans-serif" font-size="13" font-weight="800" fill="#fff">1</text>
+<rect x="28" y="17" width="20" height="4" rx="2" fill="#fff" opacity=".8"/>
+<rect x="28" y="24" width="14" height="3" rx="1.5" fill="#fff" opacity=".5"/>
+<path d="M56 21h16M68 16.5l5.5 4.5-5.5 4.5" stroke="#0FA98E" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="76" y="8" width="50" height="26" rx="7" fill="#0FA98E" opacity=".8"/>
+<text x="88" y="26" font-family="'Google Sans Flex',sans-serif" font-size="13" font-weight="800" fill="#fff">2</text>
+<rect x="98" y="17" width="20" height="4" rx="2" fill="#fff" opacity=".8"/>
+<rect x="98" y="24" width="14" height="3" rx="1.5" fill="#fff" opacity=".5"/>
+<path d="M126 21h16M138 16.5l5.5 4.5-5.5 4.5" stroke="#0FA98E" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="146" y="8" width="50" height="26" rx="7" fill="#0FA98E" opacity=".62"/>
+<text x="158" y="26" font-family="'Google Sans Flex',sans-serif" font-size="13" font-weight="800" fill="#fff">3</text>
+<rect x="168" y="17" width="20" height="4" rx="2" fill="#fff" opacity=".8"/>
+<rect x="168" y="24" width="14" height="3" rx="1.5" fill="#fff" opacity=".5"/>
+<path d="M171 34v35h-107M70 64.5L64 69l6 4.5" stroke="#0FA98E" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="6" y="56" width="50" height="26" rx="7" fill="#0FA98E" opacity=".45"/>
+<text x="18" y="74" font-family="'Google Sans Flex',sans-serif" font-size="13" font-weight="800" fill="#fff">4</text>
+<rect x="28" y="65" width="20" height="4" rx="2" fill="#fff" opacity=".85"/>
+<rect x="28" y="72" width="14" height="3" rx="1.5" fill="#fff" opacity=".55"/>
+</svg></div>
+              <div class="tt">Process</div>
+              <div class="td">Step-by-step instructions. Connected stages with arrows break a complex workflow into simpler chunks and make the order impossible to misread.</div>
+              <div class="tbest"><span>Best for</span>How-to guides, onboarding, procedures people follow while working.</div>
+            </div>
+
+            <div class="tcard">
+              <div class="mini"><svg viewBox="0 0 200 92" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 26l24-14 26 6 14-8 22 10-4 22-18 14-24-4-20 10-18-16z" fill="#39415E" opacity=".85"/>
+<path d="M98 10l22 10 24-6 18 12-6 20-26 8-20-10 4-22z" fill="#39415E" opacity=".45"/>
+<path d="M110 54l26 6 22-8 18 10-10 18-30 6-22-12z" fill="#39415E" opacity=".65"/>
+<path d="M26 62l22-6 18 10-6 16-26 4-12-12z" fill="#39415E" opacity=".28"/>
+<path d="M62 34a9 9 0 0 1 9-9 9 9 0 0 1 9 9c0 6.5-9 15-9 15s-9-8.5-9-15z" fill="#FF5A47"/>
+<circle cx="71" cy="34" r="3.4" fill="#fff"/>
+<rect x="132" y="76" width="9" height="9" rx="2" fill="#39415E" opacity=".28"/>
+<rect x="146" y="76" width="9" height="9" rx="2" fill="#39415E" opacity=".55"/>
+<rect x="160" y="76" width="9" height="9" rx="2" fill="#39415E" opacity=".85"/>
+<rect x="174" y="78" width="20" height="5" rx="2.5" fill="#B9C0D6"/>
+<rect x="8" y="78" width="40" height="5" rx="2.5" fill="#16192B"/>
+</svg></div>
+              <div class="tt">Geographic</div>
+              <div class="td">Maps to represent data. The map is the main visual — heat maps show density, map series compare regions or show change over time.</div>
+              <div class="tbest"><span>Best for</span>Location-specific data, demographics, regional comparisons.</div>
+            </div>
+
+            <div class="tcard">
+              <div class="mini"><svg viewBox="0 0 200 92" xmlns="http://www.w3.org/2000/svg">
+<rect x="6" y="6" width="86" height="80" rx="8" fill="#F5A50B" opacity=".14"/>
+<rect x="108" y="6" width="86" height="80" rx="8" fill="#16192B" opacity=".06"/>
+<rect x="14" y="13" width="70" height="13" rx="5" fill="#F5A50B"/>
+<rect x="116" y="13" width="70" height="13" rx="5" fill="#39415E"/>
+<rect x="24" y="18" width="40" height="4" rx="2" fill="#fff" opacity=".9"/>
+<rect x="126" y="18" width="40" height="4" rx="2" fill="#fff" opacity=".9"/>
+<circle cx="100" cy="46" r="11" fill="#16192B"/>
+<text x="93.5" y="50" font-family="'Google Sans Flex',sans-serif" font-size="9" font-weight="850" fill="#fff">VS</text>
+<path d="M17 38l3 3 5-5.5" stroke="#0FA98E" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="31" y="36" width="46" height="4.5" rx="2.25" fill="#5B6178"/>
+<path d="M17 52l3 3 5-5.5" stroke="#0FA98E" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="31" y="50" width="38" height="4.5" rx="2.25" fill="#5B6178"/>
+<path d="M17.5 65l7 7M24.5 65l-7 7" stroke="#FF5A47" stroke-width="2.4" stroke-linecap="round"/>
+<rect x="31" y="66" width="42" height="4.5" rx="2.25" fill="#B9C0D6"/>
+<path d="M119 38l3 3 5-5.5" stroke="#0FA98E" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="133" y="36" width="46" height="4.5" rx="2.25" fill="#5B6178"/>
+<path d="M119.5 51l7 7M126.5 51l-7 7" stroke="#FF5A47" stroke-width="2.4" stroke-linecap="round"/>
+<rect x="133" y="52" width="38" height="4.5" rx="2.25" fill="#B9C0D6"/>
+<path d="M119 66l3 3 5-5.5" stroke="#0FA98E" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="133" y="64" width="42" height="4.5" rx="2.25" fill="#5B6178"/>
+</svg></div>
+              <div class="tt">Comparison</div>
+              <div class="td">Pros and cons, or features side by side. Two mirrored panels highlight similarities and differences so the audience can decide for themselves.</div>
+              <div class="tbest"><span>Best for</span>Product or plan comparisons, before-and-after, trade-off decisions.</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 3l-8 11h5l-1 7 8-11h-5l1-7z" fill="var(--amber)"/></svg>
+    <div>Inspired from <a href="https://www.coursera.org/learn/creating-infographics-with-genai-for-marketing" target="_blank" rel="noopener" style="color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--amber)">Creating Infographics with GenAI for Marketing</a> Course on Coursera</div>
+  </div>
+
+</div>
+</body>
+</html>
