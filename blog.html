@@ -635,8 +635,148 @@
       <div class="filters" id="filters"></div>
     </header>
 
+
+
     <div class="grid">
-<!-- The Anatomy of an Effective Infographic -->
+
+      <!-- Building an MNIST Classifier in PyTorch -->
+      <a class="item post-card" href="/Blogs/AI-ML/the-pytorch-workflow.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" style="display:block;">
+          <defs>
+            <linearGradient id="mn-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#101017" />
+              <stop offset="60%" stop-color="#171724" />
+              <stop offset="100%" stop-color="#1E1E2E" />
+            </linearGradient>
+            <pattern id="mn-dots" width="12" height="12" patternUnits="userSpaceOnUse">
+              <circle cx="1.2" cy="1.2" r="0.9" fill="rgba(167,139,250,0.16)" />
+            </pattern>
+            <radialGradient id="mn-glow" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0%" stop-color="rgba(167,139,250,0.22)" />
+              <stop offset="100%" stop-color="rgba(167,139,250,0)" />
+            </radialGradient>
+          </defs>
+
+          <!-- Background: dot paper, matching the post -->
+          <rect width="320" height="200" fill="url(#mn-bg)" />
+          <rect width="320" height="200" fill="url(#mn-dots)" />
+          <circle cx="255" cy="70" r="90" fill="url(#mn-glow)" />
+
+          <!-- 28x28 digit -> 10 class scores — right side -->
+          <g transform="translate(213,34)">
+            <!-- pixel grid holding a 3 -->
+            <g>
+              <rect x="0.0" y="0.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="8.6" y="0.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="17.2" y="0.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="25.8" y="0.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.72"/>
+              <rect x="34.4" y="0.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="43.0" y="0.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="51.6" y="0.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="0.0" y="8.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="8.6" y="8.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="17.2" y="8.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="25.8" y="8.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="34.4" y="8.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="43.0" y="8.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.72"/>
+              <rect x="51.6" y="8.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="0.0" y="17.2" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="8.6" y="17.2" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="17.2" y="17.2" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="25.8" y="17.2" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="34.4" y="17.2" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="43.0" y="17.2" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="51.6" y="17.2" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="0.0" y="25.8" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="8.6" y="25.8" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="17.2" y="25.8" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="25.8" y="25.8" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.72"/>
+              <rect x="34.4" y="25.8" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="43.0" y="25.8" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="51.6" y="25.8" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="0.0" y="34.4" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="8.6" y="34.4" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="17.2" y="34.4" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="25.8" y="34.4" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="34.4" y="34.4" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="43.0" y="34.4" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.72"/>
+              <rect x="51.6" y="34.4" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="0.0" y="43.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="8.6" y="43.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="17.2" y="43.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="25.8" y="43.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="34.4" y="43.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="43.0" y="43.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="51.6" y="43.0" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="0.0" y="51.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="8.6" y="51.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="17.2" y="51.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="25.8" y="51.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.72"/>
+              <rect x="34.4" y="51.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.92"/>
+              <rect x="43.0" y="51.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+              <rect x="51.6" y="51.6" width="7.6" height="7.6" rx="1" fill="#ECEAF6" opacity="0.05"/>
+            </g>
+            <!-- flow arrow -->
+            <g stroke="#948FAE" stroke-width="1.1" fill="none" opacity="0.7">
+              <path d="M 29.6,64 L 29.6,74" />
+              <path d="M 26.4,70.6 L 29.6,74.4 L 32.8,70.6" />
+            </g>
+            <!-- class scores, 0-9, argmax in iris -->
+            <g transform="translate(0.7,-2)">
+              <rect x="0.0" y="97" width="3.6" height="3" rx="1" fill="#3E3E55"/>
+              <rect x="6.0" y="98" width="3.6" height="2" rx="1" fill="#3E3E55"/>
+              <rect x="12.0" y="96" width="3.6" height="4" rx="1" fill="#3E3E55"/>
+              <rect x="18.1" y="73" width="3.6" height="27" rx="1" fill="#A78BFA"/>
+              <rect x="24.1" y="98" width="3.6" height="2" rx="1" fill="#3E3E55"/>
+              <rect x="30.1" y="96" width="3.6" height="4" rx="1" fill="#3E3E55"/>
+              <rect x="36.1" y="98" width="3.6" height="2" rx="1" fill="#3E3E55"/>
+              <rect x="42.1" y="97" width="3.6" height="3" rx="1" fill="#3E3E55"/>
+              <rect x="48.2" y="98" width="3.6" height="2" rx="1" fill="#3E3E55"/>
+              <rect x="54.2" y="98" width="3.6" height="2" rx="1" fill="#3E3E55"/>
+            </g>
+            <g font-family="'Fira Code',ui-monospace,monospace" font-size="6.5" fill="#948FAE">
+              <text x="0" y="108">0</text>
+              <text x="53" y="108">9</text>
+            </g>
+          </g>
+
+          <!-- Eyebrow -->
+          <text x="18" y="42" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" font-weight="700"
+            letter-spacing="2" fill="rgba(167,139,250,0.75)">DEEP LEARNING FUNDAMENTALS</text>
+
+          <!-- Title -->
+          <text x="17" y="78" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="17" font-weight="800"
+            letter-spacing="-0.5" fill="#ffffff" opacity="0.98">MNIST Classifier</text>
+
+          <!-- Iris rule -->
+          <rect x="17" y="86" width="150" height="2" rx="1" fill="#A78BFA" opacity="0.85" />
+
+          <!-- Subtitle -->
+          <text x="17" y="108" font-family="Georgia,serif" font-size="12" font-style="italic"
+            fill="rgba(236,234,246,0.5)">end to end in PyTorch</text>
+
+          <!-- Sub label -->
+          <text x="17" y="148" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7" letter-spacing="1.2"
+            fill="rgba(236,234,246,0.25)">BATCH · LOSS · GRADIENT · DEVICE</text>
+
+          <!-- Concept pills -->
+          <rect x="17" y="158" width="52" height="13" rx="3" fill="rgba(167,139,250,0.16)" stroke="rgba(167,139,250,0.4)"
+            stroke-width="0.8" />
+          <text x="43" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#BFA9FC" text-anchor="middle">PyTorch</text>
+
+          <rect x="75" y="158" width="46" height="13" rx="3" fill="rgba(184,240,141,0.14)" stroke="rgba(184,240,141,0.35)"
+            stroke-width="0.8" />
+          <text x="98" y="168" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="7.5" font-weight="600"
+            fill="#CBF3AA" text-anchor="middle">MNIST</text>
+        </svg>
+        <div class="post-body">
+          <div class="post-tags"><span class="p">PyTorch</span>, Deep Learning</div>
+          <span class="post-title">Deep Learning Fundamentals: Building an MNIST Classifier in PyTorch.</span>
+          <p class="post-desc">Building a digit classifier step by step using PyTorch that reads handwritten digits at ~98% accuracy.</p>
+        </div>
+      </a>
+
       <!-- The Anatomy of an Effective Infographic -->
       <a class="item post-card" href="/Blogs/Design/infographic-essentials.html">
 
