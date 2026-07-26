@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>If you were to train from scratch, Karpathy style (v2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Fira+Code:wght@300..700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ── Graphite & Bronze palette ── */
+    :root {
+      --ink: #13110F;
+      --ink-2: #1B1815;
+      --ink-3: #241F1B;
+      --plot: #0D0B0A;
+      --rule: #332B25;
+      --axis: #574C44;
+      --chalk: #F1EBE3;
+      --chalk-dim: #A3958A;
+      --bronze: #CD7F32;
+      --bronze-hi: #DFA063;
+      --moss: #A8CE7B;
+      --sky: #79B8D1;
+      --coral: #EE7B72;
+
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --prose-w: 720px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * { box-sizing: border-box }
+    html { scroll-behavior: smooth }
+
+    body {
+      margin: 0;
+      color: var(--chalk);
+      font-family: "Google Sans Flex", system-ui, sans-serif;
+      font-weight: 350;
+      font-optical-sizing: auto;
+      font-variation-settings: "slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 0;
+      font-size: 16px;
+      line-height: 1.72;
+      letter-spacing: -.003em;
+      /* ── static dot paper ── */
+      background-color: var(--ink);
+      background-image: radial-gradient(circle, rgba(205, 127, 50, .17) 1px, transparent 1.2px);
+      background-size: 24px 24px;
+      background-position: 0 0;
+      background-attachment: fixed;
+      background-repeat: repeat;
+    }
+
+    a { color: var(--bronze) }
+
+    h1, h2, h3, .banner-title, .nav-logo {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: clamp(23px, 3.4vw, 30px);
+      letter-spacing: -.022em;
+      line-height: 1.2;
+      margin: 0 0 6px
+    }
+
+    h3 {
+      font-weight: 700;
+      font-size: 15.5px;
+      letter-spacing: -.005em;
+      margin: 32px 0 8px;
+      color: var(--bronze)
+    }
+
+    p { margin: 0 0 18px }
+    ul { padding-left: 20px }
+    li { margin-bottom: 8px }
+
+    code {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .85em;
+      color: var(--moss)
+    }
+
+    /* ── nav (copied from the reference post) ── */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--bronze), var(--moss));
+      z-index: 200; transition: width .08s linear
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--rule);
+      background: rgba(19, 17, 15, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px)
+    }
+
+    .nav-inner {
+      max-width: var(--content-w); margin: 0 auto; padding: 0 2rem;
+      height: 100%; display: flex; align-items: center; justify-content: space-between
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 700; letter-spacing: 0.01em; color: var(--chalk)
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 26px;
+      list-style: none; margin: 0; padding: 0
+    }
+
+    .nav-links li { margin: 0 }
+
+    .nav-links a {
+      font-size: 13.5px; color: var(--chalk-dim);
+      text-decoration: none; transition: color 0.15s
+    }
+
+    .nav-links a:hover { color: var(--bronze) }
+
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem }
+
+    /* ── banner: photo hero ── */
+    .post-banner {
+      margin: 3rem 0 0;
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--rule);
+      padding: 96px 46px 88px;
+      /* Remote hero. Swap for a local copy (e.g. ../../images/hero.jpg) if you
+         would rather not depend on the Unsplash CDN. */
+      background-color: var(--ink-2);
+      background-image: url("https://images.unsplash.com/photo-1769356814886-abdadde25ea7?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+      background-size: cover;
+      /* --hero-x is the framing knob. LOWER slides the photo right, higher
+         slides it left. 50% is dead centre. */
+      --hero-x: 32%;
+      background-position: var(--hero-x) center;
+      background-repeat: no-repeat;
+    }
+
+    /* Scrim. These alphas are the only knob you need if the photo fights the type. */
+    .post-banner::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background:
+        linear-gradient(100deg, rgba(13, 11, 10, .92) 0%, rgba(13, 11, 10, .74) 46%, rgba(13, 11, 10, .24) 100%),
+        linear-gradient(0deg, rgba(13, 11, 10, .55), rgba(13, 11, 10, 0) 62%);
+    }
+
+    /* Thin bronze catch-light along the top edge. */
+    .post-banner::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      border-radius: var(--radius-lg);
+      box-shadow: inset 0 1px 0 rgba(205, 127, 50, .34);
+    }
+
+    .banner-inner { position: relative; z-index: 1; max-width: 44rem }
+
+    .banner-eyebrow {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem;
+      letter-spacing: .20em; text-transform: uppercase; color: var(--chalk-dim);
+      margin: 0 0 20px; display: flex; align-items: center; gap: 12px
+    }
+
+    .banner-eyebrow::before {
+      content: ""; width: 34px; height: 2px; background: var(--bronze); display: inline-block
+    }
+
+    .banner-title {
+      font-weight: 800; font-size: clamp(2.1rem, 5vw, 3.1rem);
+      line-height: 1.06; letter-spacing: -.028em; margin: 0 0 20px; color: var(--chalk);
+      text-shadow: 0 2px 18px rgba(13, 11, 10, .6)
+    }
+
+    .banner-title .accent { color: var(--bronze-hi) }
+
+    .banner-sub {
+      font-size: 1.05rem; line-height: 1.6; color: #C6B9AE;
+      max-width: 58ch; margin: 0;
+      text-shadow: 0 1px 12px rgba(13, 11, 10, .6)
+    }
+
+    .post-meta {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 1.25rem 0
+    }
+
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 999px; border: 1px solid var(--rule);
+      font-size: 12px; color: var(--chalk-dim);
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.03em; background: var(--ink-2)
+    }
+
+    .meta-tag.accent-tag { background: var(--bronze); color: var(--ink); border-color: transparent; font-weight: 600 }
+
+    /* ── layout + TOC ── */
+    .post-layout {
+      display: grid; grid-template-columns: var(--prose-w) 1fr;
+      gap: 0 3rem; align-items: start; padding-top: .5rem
+    }
+
+    .post-prose { min-width: 0 }
+
+    .post-toc {
+      position: sticky; top: calc(var(--nav-h) + 1.5rem);
+      background: var(--ink-2); border: 1px solid var(--rule);
+      border-radius: var(--radius-md); padding: 20px 22px; margin-top: 26px
+    }
+
+    .toc-label {
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--chalk-dim); font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; margin-bottom: 12px
+    }
+
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin: 0; padding: 0 }
+    .toc-list li { margin: 0 }
+
+    .toc-list a {
+      font-size: 12.5px; color: var(--chalk-dim); text-decoration: none;
+      transition: color 0.15s; display: block; line-height: 1.4
+    }
+
+    .toc-list a:hover, .toc-list a.active { color: var(--bronze) }
+    .toc-list a.active { font-weight: 600 }
+
+    /* ── each section is a rounded rectangle ── */
+    section.card {
+      position: relative;
+      background: var(--ink-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px 30px;
+      margin: 26px 0;
+      scroll-margin-top: calc(var(--nav-h) + 1rem);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .30)
+    }
+
+
+    /* ── section numerals, top right ── */
+    section.card::before {
+      content: attr(data-n);
+      position: absolute;
+      right: 28px;
+      top: 10px;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 800;
+      font-size: clamp(64px, 8vw, 100px);
+      line-height: 1;
+      letter-spacing: -.06em;
+      color: var(--bronze);
+      opacity: .18;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none; -webkit-user-select: none;
+    }
+
+    section.card > * { position: relative; z-index: 1 }
+
+    section.card > .sec-label, section.card > h2 { padding-right: 90px }
+
+    .sec-label {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10.5px;
+      letter-spacing: .16em; text-transform: uppercase;
+      color: var(--chalk-dim); margin: 0 0 10px
+    }
+
+    .lede { font-size: 18px; color: var(--chalk-dim); margin-bottom: 22px }
+
+    /* ── code windows ── */
+    .win {
+      margin: 22px 0; border-radius: var(--radius-md); overflow: hidden;
+      border: 1px solid var(--rule); background: var(--plot);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .36)
+    }
+
+    .win-bar {
+      display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+      background: var(--ink-3); border-bottom: 1px solid #090808
+    }
+
+    .win-bar i { width: 11px; height: 11px; border-radius: 50%; display: block }
+    .win-bar i:nth-child(1) { background: #EE7B72 }
+    .win-bar i:nth-child(2) { background: #CD7F32 }
+    .win-bar i:nth-child(3) { background: #A8CE7B }
+
+    .win-bar span {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px;
+      color: var(--chalk-dim); margin-left: 8px; letter-spacing: .03em
+    }
+
+    .win pre {
+      margin: 0; background: transparent; border: 0;
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; line-height: 1.75;
+      padding: 16px 18px; overflow-x: auto; color: #DED6CC
+    }
+
+    pre .c { color: #6B6058; font-style: italic }
+    pre .k { color: var(--bronze-hi) }
+    pre .s { color: var(--moss) }
+    pre .n { color: var(--sky) }
+
+    /* ── tables ── */
+    table {
+      width: 100%; border-collapse: collapse;
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; margin: 22px 0
+    }
+
+    th {
+      text-align: left; font-weight: 500; color: var(--bronze-hi);
+      border-bottom: 1px solid var(--rule); padding: 8px 10px;
+      font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase
+    }
+
+    td { padding: 8px 10px; border-bottom: 1px solid #262019; color: var(--chalk-dim); vertical-align: top }
+    td:first-child { color: var(--chalk) }
+
+    /* ── callouts ── */
+    .takeaway {
+      background: var(--ink-3); border: 1px solid #55391C;
+      border-radius: var(--radius-md); padding: 15px 18px; margin: 24px 0; font-size: 16px
+    }
+
+    .takeaway strong {
+      font-family: "Plus Jakarta Sans", sans-serif; font-weight: 700; color: var(--bronze-hi);
+      display: block; font-size: 10.5px; letter-spacing: .14em;
+      text-transform: uppercase; margin-bottom: 5px
+    }
+
+    .warn { border-color: #55302C }
+    .warn strong { color: var(--coral) }
+
+    .deflist { list-style: none; padding-left: 0 }
+
+    .deflist>li {
+      margin-bottom: 16px; padding-left: 16px; border-left: 2px solid var(--rule)
+    }
+
+    .deflist>li>code:first-child { color: var(--bronze-hi); font-size: .9em }
+
+    /* ── figures ── */
+    .figure {
+      border-radius: var(--radius-md); overflow: hidden;
+      background: var(--plot); border: 1px solid var(--rule); margin: 22px 0 0;
+      padding: 18px 16px
+    }
+
+    .figure svg { width: 100%; height: auto; display: block; overflow: visible }
+
+    .caption { font-size: 13.5px; color: var(--chalk-dim); line-height: 1.55; margin: 12px 2px 26px }
+    .caption b { color: var(--chalk); font-weight: 600 }
+
+    /* ── footer ── */
+    footer.card {
+      background: var(--ink-2); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 34px 38px;
+      margin: 26px 0 0; color: var(--chalk-dim); font-size: 15px
+    }
+
+    footer.card h2 { color: var(--chalk); font-size: 20px; margin-bottom: 12px }
+    .credit { margin: 0; font-size: 14px }
+
+    @media (max-width:900px) {
+      .post-layout { grid-template-columns: 1fr }
+      .post-toc { display: none }
+    }
+
+    @media (max-width:720px) {
+      .nav-links { display: none }
+      .page { padding: 0 1rem 4rem }
+      .nav-inner { padding: 0 1rem }
+      .post-banner { padding: 56px 24px 50px }
+      section.card, footer.card { padding: 26px 22px }
+      section.card::before { font-size: 54px; right: 18px; top: 8px; opacity: .16 }
+    }
+
+    @media (prefers-reduced-motion:reduce) { * { transition: none !important } }
+  </style>
+</head>
+
+<body>
+
+  <div id="progress"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" 
+        style="display:block;  pointer-events:none; filter:brightness(0) invert(1);"></object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../../blog.html" class="active">Blog</a></li>
+        <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page" id="top">
+
+    <div class="post-banner">
+      <div class="banner-inner">
+          <p class="banner-eyebrow">Training loops · From scratch</p>
+          <h1 class="banner-title">Training ML from scratch. <span class="accent">Karpathy style</span></h1>
+          <p class="banner-sub">Training a model by hand by writing your own gradient computation and
+            training loop. It was simpler than it looked.</p>
+      </div>
+    </div>
+
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">Machine Learning </span>
+      <span class="meta-tag ">Gradient Descent</span>
+    </div>
+
+    <div class="post-layout">
+      <div class="post-prose">
+
+        <section class="card" id="intro" data-n="1">
+          <p class="sec-label">Introduction</p>
+          <h2>The shower in an unfamiliar bathroom</h2>
+          <p class="lede">Two taps  . One thing you can feel.</p>
+
+          <p>You step in. The water is cold.</p>
+
+          <p>Nobody gives you a schematic of the valve behind the tiles. Nobody tells you how far a turn
+            goes. You have one instrument, your skin, and one move: nudge a tap, feel the water, keep the
+            change if it helped.</p>
+
+          <p>A minute later you are comfortable. You never learned anything about the valve.</p>
+
+          <p>That minute is gradient descent converging. The taps are the parameters. The gap between the water and
+            what you wanted is the loss. The nudge is the gradient.</p>
+
+          <p>The taps are not equally powerful. And
+            overcorrecting gets you scalded, then frozen, then worse.</p>
+
+          <h3>What this post builds</h3>
+
+          <p>You won't probably have to write this. But understanding it will make you a better ML practitioner.</p>
+
+          <p>We will build the following in the code:</p>
+
+          <ul>
+            <li><a href="#guess">The guess.</a> Input in, number out.</li>
+            <li><a href="#score">The score.</a> Many mistakes, one number.</li>
+            <li><a href="#direction">Which way to turn.</a> Nudge a tap, watch the score.</li>
+            <li><a href="#step">How far to turn.</a> The setting that decides whether learning works.</li>
+            <li><a href="#loop">Doing it again.</a> Why it all sits in a loop.</li>
+          </ul>
+
+          <div class="takeaway">
+            <strong>Assumed knowledge</strong>
+            Basic python knowledge would do!
+          </div>
+        </section>
+
+        <section class="card" id="setup" data-n="2">
+          <p class="sec-label">The setup</p>
+          <h2>What we are predicting?</h2>
+          <p class="lede">Assume the weights <code>w</code> and bias <code>b</code> are the taps.</p>
+          <h3>The data</h3>
+ 
+          <p>y is the water temperature and x is the input water temperature and we have the following data points:</p>
+<!--  
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>the objective</span></div>
+            <pre><span class="c"># the model: a line, with slope w and offset b</span>
+y_hat = w * x + b
+ 
+<span class="c"># the loss: mean squared error</span>
+L(w, b) = mean((y - y_hat) ** <span class="n">2</span>)
+ 
+<span class="c"># the same thing, written out</span>
+L(w, b) = (<span class="n">1</span>/n) * sum((y_i - (w * x_i + b)) ** <span class="n">2</span>)</pre>
+          </div>
+  -->
+          <!-- <p>Read the last line closely. <code>x</code> and <code>y</code> are data. They never move. Only
+            <code>w</code> and <code>b</code> move.</p>
+  -->
+          <!-- <p>So the loss is a function of exactly two numbers. That is the surface we walk down.</p> -->
+ 
+ 
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>eight points</span></div>
+            <pre>x = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">8</span>]
+y = [<span class="n">8</span>, <span class="n">11</span>, <span class="n">14</span>, <span class="n">17</span>, <span class="n">20</span>, <span class="n">23</span>, <span class="n">26</span>, <span class="n">29</span>]</pre>
+          </div>
+ 
+          <p>The rule behind those numbers is <code>y = 3x + 5</code>. So you need to guess 3 and 5 correctly. How would you do it?</p>
+ 
+          <div class="figure">
+            <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+              <line x1="70" y1="272" x2="668" y2="272" stroke="#574C44" stroke-width="1.2"/>
+              <line x1="70" y1="30" x2="70" y2="272" stroke="#574C44" stroke-width="1.2"/>
+              <text x="664" y="294" fill="#6B6058" font-family="Fira Code, monospace" font-size="12" text-anchor="end">x</text>
+              <text x="80" y="42" fill="#6B6058" font-family="Fira Code, monospace" font-size="12">y</text>
+              <line x1="90" y1="250" x2="640" y2="50" stroke="#CD7F32" stroke-width="2.2"/>
+              <g fill="#A8CE7B" stroke="#0D0B0A" stroke-width="1.4">
+                <circle cx="90" cy="250" r="6"/><circle cx="169" cy="221" r="6"/>
+                <circle cx="247" cy="193" r="6"/><circle cx="326" cy="164" r="6"/>
+                <circle cx="404" cy="136" r="6"/><circle cx="483" cy="107" r="6"/>
+                <circle cx="561" cy="79" r="6"/><circle cx="640" cy="50" r="6"/>
+              </g>
+              <text x="452" y="120" fill="#DFA063" font-family="Fira Code, monospace" font-size="13">y = 3x + 5</text>
+              <g fill="#6B6058" font-family="Fira Code, monospace" font-size="11">
+                <text x="90" y="290" text-anchor="middle">1</text>
+                <text x="640" y="290" text-anchor="middle">8</text>
+                <text x="62" y="254" text-anchor="end">8</text>
+                <text x="62" y="54" text-anchor="end">29</text>
+              </g>
+            </svg>
+          </div>
+          <p class="caption"><b>Eight points, one line.</b> Every point sits exactly on
+            <code>y = 3x + 5</code>. The model can fit this perfectly, which is the point.</p>
+ 
+        </section>
+
+        <section class="card" id="guess" data-n="3">
+          <p class="sec-label">The guess</p>
+          <h2>The forward pass</h2>
+          <p class="lede">Input in. Number out.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>forward_pass</span></div>
+            <pre><span class="k">def</span> forward_pass(x, w, b):
+    <span class="k">return</span> w * x + b</pre>
+          </div>
+
+          <p>That is the model. Two numbers it can change, <code>w</code> and <code>b</code></p>
+
+          <div class="takeaway">
+            <strong>The pattern</strong>
+            A model is a function with adjustable numbers inside. Training is searching for good ones.
+          </div>
+        </section>
+
+        <section class="card" id="score" data-n="4">
+          <p class="sec-label">The score</p>
+          <h2>Many mistakes, one number</h2>
+          <p class="lede">You start with a guess and then compare. The difference between them is the error.</p>
+
+          <p>Loss is the summation of all training errors as determined by the average of the <b>mean squared error</b></p>
+
+          <ul class="deflist">
+            <li><code>y - y_hat</code>
+              One error per example. Some positive, some negative.</li>
+            <li><code>(...) ** 2</code>
+              Squaring kills the signs, so errors cannot cancel. It also punishes big mistakes harder. An
+              error of 4 is four times worse than an error of 2, not twice.</li>
+            <li><code>np.mean(...)</code>
+              The score means the same thing for 8 examples or 8000.</li>
+          </ul>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>compute_loss</span></div>
+            <pre><span class="k">def</span> compute_loss(y, y_hat):
+    <span class="k">return</span> np.mean((y - y_hat) ** <span class="n">2</span>)</pre>
+          </div>
+
+        </section>
+
+        <section class="card" id="direction" data-n="5">
+          <p class="sec-label">Which way to turn</p>
+          <h2>Nudge it and see</h2>
+          <p class="lede">Which way to turn?</p>
+
+          <p>Turn <code>w</code> by a tiny amount, <code>eps</code>. Read the loss again and measure the change in loss relative to <code>eps</code></p>
+
+          <p>That is the <b>gradient</b>. Its sign is the direction. Its
+            size is the steepness. It tap has its own gradient i.e. each tap has a different impact on the final water temperature. </p>
+
+          <div class="figure">
+            <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+              <!-- axes -->
+              <line x1="70" y1="250" x2="660" y2="250" stroke="#574C44" stroke-width="1.2"/>
+              <line x1="70" y1="30" x2="70" y2="250" stroke="#574C44" stroke-width="1.2"/>
+              <text x="650" y="272" fill="#6B6058" font-family="Fira Code, monospace" font-size="12" text-anchor="end">how far the w tap is open</text>
+              <text x="78" y="42" fill="#6B6058" font-family="Fira Code, monospace" font-size="12">loss</text>
+              <!-- bowl -->
+              <path d="M100 50 Q 260 330 420 230 Q 540 155 640 60" fill="none" stroke="#CD7F32" stroke-width="2.4"/>
+              <!-- current point -->
+              <circle cx="180" cy="153" r="6" fill="#EE7B72"/>
+              <text x="150" y="140" fill="#EE7B72" font-family="Fira Code, monospace" font-size="12">you are here</text>
+              <!-- nudged point -->
+              <circle cx="245" cy="196" r="5" fill="#79B8D1"/>
+              <!-- eps bracket -->
+              <line x1="180" y1="153" x2="245" y2="153" stroke="#79B8D1" stroke-width="1.4" stroke-dasharray="4 4"/>
+              <line x1="245" y1="153" x2="245" y2="196" stroke="#79B8D1" stroke-width="1.4" stroke-dasharray="4 4"/>
+              <text x="196" y="146" fill="#79B8D1" font-family="Fira Code, monospace" font-size="12">eps</text>
+              <text x="253" y="180" fill="#79B8D1" font-family="Fira Code, monospace" font-size="12">change in loss</text>
+              <!-- slope line -->
+              <line x1="140" y1="126" x2="290" y2="226" stroke="#A8CE7B" stroke-width="2" stroke-dasharray="7 5"/>
+              <text x="296" y="230" fill="#A8CE7B" font-family="Fira Code, monospace" font-size="12">slope = change / eps</text>
+              <!-- bottom marker -->
+              <line x1="418" y1="232" x2="418" y2="250" stroke="#574C44" stroke-width="1.2" stroke-dasharray="3 3"/>
+              <text x="418" y="270" fill="#6B6058" font-family="Fira Code, monospace" font-size="11" text-anchor="middle">best w</text>
+            </svg>
+          </div>
+          <p class="caption"><b>The nudge, drawn.</b> Hold every tap still but one and the loss is a curve.
+            Step sideways by <code>eps</code>, measure the drop, divide. Positive slope means opening that
+            tap makes things worse.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>backward_pass</span></div>
+            <pre><span class="k">def</span> backward_pass(x, y, w, b, eps=<span class="n">1e-3</span>):
+    loss   = compute_loss(y, forward_pass(x, w, b))
+    loss_w = compute_loss(y, forward_pass(x, w + eps, b))
+    loss_b = compute_loss(y, forward_pass(x, w, b + eps))
+
+    g_w = (loss_w - loss) / eps
+    g_b = (loss_b - loss) / eps
+    <span class="k">return</span> g_w, g_b</pre>
+          </div>
+
+          <p>You already do this in a shower. Move both taps at once and you learn nothing about which one
+            mattered.</p>
+
+        </section>
+
+        <section class="card" id="step" data-n="6">
+          <p class="sec-label">How far to turn</p>
+          <h2>The update, and the one number you tune forever</h2>
+          <p class="lede">Direction is useless without step size.</p>
+
+          <!-- <p>The gradient points uphill. Subtract it to go down.</p> -->
+
+          <p>At the start the gradient for <code>w</code> is <b>-198</b>. Turning a tap by 198 of
+            anything takes you straight past comfortable. So scale it down first. That
+            factor is the <b>learning rate</b>.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>update_weights</span></div>
+            <pre><span class="k">def</span> update_weights(w, b, g_w, g_b, lr=<span class="n">0.01</span>):
+    <span class="k">return</span> w - lr * g_w, b - lr * g_b</pre>
+          </div>
+
+          <p>The minus sign is the whole idea. Positive gradient, subtract, the parameter falls. Negative
+            gradient, subtract a negative, the parameter rises</p>
+
+          <p>The learning rate is the most consequential number in the file</p>
+
+          <table>
+            <thead>
+              <tr><th>learning rate</th><th>final loss</th><th>what happened</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>0.001</td><td>0.78</td><td>still crawling when time ran out</td></tr>
+              <tr><td>0.01</td><td>4.3e-07</td><td>comfortable</td></tr>
+              <tr><td>0.02</td><td>4.6e-14</td><td>faster, still stable</td></tr>
+              <tr><td>0.03</td><td>4.5e-21</td><td>close to the edge</td></tr>
+              <tr><td>0.05</td><td>inf</td><td>overshoots, then overshoots harder, then overflows</td></tr>
+            </tbody>
+          </table>
+
+          <div class="takeaway warn">
+            <strong>If your loss becomes nan</strong>
+            Divide the learning rate by ten before suspecting your data or your architecture.
+          </div>
+        </section>
+
+        <section class="card" id="loop" data-n="7">
+          <p class="sec-label">Doing it again</p>
+          <h2>The training loop</h2>
+          <p class="lede">Descent is the same small step many times</p>
+
+          <p>The gradient is only true where you stand. Take a step and it has changed. So measure again.
+            Each pass is an <b>epoch</b>.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>train</span></div>
+            <pre><span class="k">def</span> train(x, y, w=<span class="n">0.0</span>, b=<span class="n">0.0</span>, epochs=<span class="n">2000</span>):
+    history = []
+    <span class="k">for</span> _ <span class="k">in</span> range(epochs):
+        g_w, g_b = backward_pass(x, y, w, b)
+        w, b     = update_weights(w, b, g_w, g_b)
+        history.append(compute_loss(y, forward_pass(x, w, b)))
+    <span class="k">return</span> w, b, history</pre>
+          </div>
+
+          <p>Order matters. Gradients come <i>before</i> the update. Update first and you have measured a
+            place you already left. It runs without error and learns badly.</p>
+
+        </section>
+
+        <section class="card" id="build" data-n="8">
+          <p class="sec-label">The build</p>
+          <h2>End to End Code</h2>
+          <p class="lede">Combining all steps together</p>
+
+          <p>The data is <code>y = 3x + 5</code> over eight points. We already know the answer, which is
+            why it is a good test. If <code>w</code> does not land near 3, the bug is in the loop.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>train_from_scratch.py</span></div>
+            <pre><span class="k">import</span> numpy <span class="k">as</span> np
+
+
+<span class="c"># 1. Guess: turn inputs into predictions</span>
+<span class="k">def</span> forward_pass(x, w, b):
+    <span class="k">return</span> w * x + b
+
+
+<span class="c"># 2. Score: one number for how wrong the guesses are</span>
+<span class="k">def</span> compute_loss(y, y_hat):
+    <span class="k">return</span> np.mean((y - y_hat) ** <span class="n">2</span>)
+
+
+<span class="c"># 3. Direction: nudge each parameter, watch the loss move</span>
+<span class="k">def</span> backward_pass(x, y, w, b, eps=<span class="n">1e-3</span>):
+    loss   = compute_loss(y, forward_pass(x, w, b))
+    loss_w = compute_loss(y, forward_pass(x, w + eps, b))
+    loss_b = compute_loss(y, forward_pass(x, w, b + eps))
+    <span class="k">return</span> (loss_w - loss) / eps, (loss_b - loss) / eps
+
+
+<span class="c"># 4. Step: move each parameter a little way downhill</span>
+<span class="k">def</span> update_weights(w, b, g_w, g_b, lr=<span class="n">0.01</span>):
+    <span class="k">return</span> w - lr * g_w, b - lr * g_b
+
+
+<span class="c"># 5. Repeat</span>
+<span class="k">def</span> train(x, y, w=<span class="n">0.0</span>, b=<span class="n">0.0</span>, epochs=<span class="n">2000</span>):
+    history = []
+    <span class="k">for</span> _ <span class="k">in</span> range(epochs):
+        g_w, g_b = backward_pass(x, y, w, b)
+        w, b     = update_weights(w, b, g_w, g_b)
+        history.append(compute_loss(y, forward_pass(x, w, b)))
+    <span class="k">return</span> w, b, history
+
+
+<span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
+    x = np.array([<span class="n">1.</span>, <span class="n">2.</span>, <span class="n">3.</span>, <span class="n">4.</span>, <span class="n">5.</span>, <span class="n">6.</span>, <span class="n">7.</span>, <span class="n">8.</span>])
+    y = <span class="n">3</span> * x + <span class="n">5</span>                 <span class="c"># the rule the model has to rediscover</span>
+
+    w, b, history = train(x, y)
+    print(w, b)                    <span class="c"># 2.998259 5.007046</span>
+    print(history[<span class="n">-1</span>])            <span class="c"># 1.65e-05</span>
+
+    <span class="k">assert</span> abs(w - <span class="n">3</span>) &lt; <span class="n">0.05</span> <span class="k">and</span> abs(b - <span class="n">5</span>) &lt; <span class="n">0.05</span>
+    <span class="k">assert</span> history[<span class="n">-1</span>] &lt; history[<span class="n">0</span>]</pre>
+          </div>
+
+        </section>
+
+        <section class="card" id="results" data-n="9">
+          <p class="sec-label">The run</p>
+          <h2>What actually happened</h2>
+          <p class="lede">Fast, then slow. And the two taps move at different speeds.</p>
+
+          <table>
+            <thead>
+              <tr><th>epoch</th><th>loss</th><th>w</th><th>b</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>0</td><td>389.5</td><td>0.00</td><td>0.00</td></tr>
+              <tr><td>1</td><td>90.494</td><td>1.98</td><td>0.37</td></tr>
+              <tr><td>2</td><td>23.281062</td><td>2.91</td><td>0.55</td></tr>
+              <tr><td>3</td><td>8.150809</td><td>3.35</td><td>0.65</td></tr>
+              <tr><td>10</td><td>3.562827</td><td>3.73</td><td>0.84</td></tr>
+              <tr><td>50</td><td>2.585092</td><td>3.62</td><td>1.45</td></tr>
+              <tr><td>100</td><td>1.730926</td><td>3.51</td><td>2.10</td></tr>
+              <tr><td>500</td><td>0.068902</td><td>3.10</td><td>4.42</td></tr>
+              <tr><td>1000</td><td>0.001040</td><td>3.01</td><td>4.92</td></tr>
+              <tr><td>2000</td><td>0.000017</td><td>2.99</td><td>5.00</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Most of the progress is immediate</h3>
+
+          <p>389 to 8 in three epochs. Then 1997 more epochs to reach zero.</p>
+
+          <p>That shape comes straight from the geometry. Steep slope, big gradient, big step. Near the
+            bottom the slope flattens, the gradient shrinks, the steps shrink with it. The method slows
+            down as it arrives, for free.</p>
+
+          <h3>The two taps do not have equal authority</h3>
+
+          <p>Watch <code>w</code>. It hits 3.74 by epoch 10, overshooting its target of 3, then drifts back
+            down for two thousand epochs. <code>b</code> is still at 0.84 at epoch 10 and does not reach 5
+            until the end.</p>
+
+          <p>The starting gradients say why: <b>-198</b> for <code>w</code>, <b>-37</b> for <code>b</code>.
+            <code>w</code> gets multiplied by <code>x</code>, which runs from 1 to 8. A tap wired to large
+            inputs has large influence and therefore a large gradient. A tap added at the end does not.</p>
+
+          <p>This is the first thing the shower warned about. One tap is coarse, one is fine, and a quarter
+            turn does not mean the same on both.</p>
+
+          <p>They share one learning rate. The step that suits <code>w</code> starves <code>b</code>, and
+            the run is bottlenecked by the slower tap.</p>
+
+        </section>
+
+        <section class="card" id="matrices" data-n="10  ">
+          <p class="sec-label">Scaling up</p>
+          <h2>From two taps to a wall of them</h2>
+          <p class="lede">Swap the bathroom for a boiler room. A wall of taps, still one gauge</p>
+
+          <p>Every input feature connects to every output, so <code>W</code> becomes a grid. The five
+            functions survive untouched. Multiplication becomes matrix multiplication.</p>
+
+          <div class="figure">
+            <svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg">
+              <!-- X -->
+              <rect x="40" y="45" width="120" height="110" rx="6" fill="#1B1815" stroke="#79B8D1" stroke-width="1.8"/>
+              <text x="100" y="105" fill="#79B8D1" font-family="Fira Code, monospace" font-size="15" text-anchor="middle">X</text>
+              <text x="100" y="176" fill="#6B6058" font-family="Fira Code, monospace" font-size="12" text-anchor="middle">(n, d_in)</text>
+              <text x="196" y="107" fill="#A3958A" font-family="Fira Code, monospace" font-size="17" text-anchor="middle">@</text>
+              <!-- W -->
+              <rect x="232" y="60" width="90" height="80" rx="6" fill="#1B1815" stroke="#CD7F32" stroke-width="1.8"/>
+              <text x="277" y="105" fill="#CD7F32" font-family="Fira Code, monospace" font-size="15" text-anchor="middle">W</text>
+              <text x="277" y="176" fill="#6B6058" font-family="Fira Code, monospace" font-size="12" text-anchor="middle">(d_in, d_out)</text>
+              <text x="358" y="107" fill="#A3958A" font-family="Fira Code, monospace" font-size="17" text-anchor="middle">+</text>
+              <!-- b -->
+              <rect x="394" y="88" width="90" height="24" rx="6" fill="#1B1815" stroke="#A8CE7B" stroke-width="1.8"/>
+              <text x="439" y="105" fill="#A8CE7B" font-family="Fira Code, monospace" font-size="14" text-anchor="middle">b</text>
+              <text x="439" y="176" fill="#6B6058" font-family="Fira Code, monospace" font-size="12" text-anchor="middle">(1, d_out)</text>
+              <text x="518" y="107" fill="#A3958A" font-family="Fira Code, monospace" font-size="17" text-anchor="middle">=</text>
+              <!-- out -->
+              <rect x="554" y="45" width="90" height="110" rx="6" fill="#1B1815" stroke="#F1EBE3" stroke-width="1.8"/>
+              <text x="599" y="105" fill="#F1EBE3" font-family="Fira Code, monospace" font-size="14" text-anchor="middle">guesses</text>
+              <text x="599" y="176" fill="#6B6058" font-family="Fira Code, monospace" font-size="12" text-anchor="middle">(n, d_out)</text>
+              <!-- inner dim link -->
+              <path d="M160 30 Q 196 12 232 30" fill="none" stroke="#EE7B72" stroke-width="1.4" stroke-dasharray="4 4"/>
+              <text x="196" y="12" fill="#EE7B72" font-family="Fira Code, monospace" font-size="11" text-anchor="middle">these must match</text>
+            </svg>
+          </div>
+          <p class="caption"><b>Shapes are the contract.</b> <code>n</code> examples, <code>d_in</code>
+            features each, <code>d_out</code> numbers back. Inner dimensions cancel, outer ones survive.
+            That is the only rule.</p>
+
+          <p><code>b</code> is added to every row. NumPy handles that by broadcasting, so one row of biases
+            serves a thousand examples.</p>
+
+          <h3>One Change and this works for matrices as well</h3>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>vectorised.py</span></div>
+            <pre><span class="c"># shapes: X (n, d_in) | W (d_in, d_out) | b (1, d_out) | Y (n, d_out)</span>
+
+<span class="k">def</span> forward_pass(X, W, b):
+    <span class="k">return</span> X @ W + b                       <span class="c"># b broadcasts down the rows</span>
+          </div>
+
+        </section>
+
+      </div>
+
+      <aside class="post-toc">
+        <div class="toc-label">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#intro">1 · The shower with two taps</a></li>
+          <li><a href="#guess">2 · What are we predicting?</a></li>
+          <li><a href="#guess">3 · The forward pass</a></li>
+          <li><a href="#score">4 · Turning mistakes into one number</a></li>
+          <li><a href="#direction">5 · Nudge it and see</a></li>
+          <li><a href="#step">6 · The update and learning rate</a></li>
+          <li><a href="#loop">7 · The training loop</a></li>
+          <li><a href="#build">8 · Putting it together</a></li>
+          <li><a href="#results">9 · What actually happened</a></li>
+          <li><a href="#matrices">10 · A wall of taps</a></li>
+        </ul>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // scroll progress + active TOC link
+    const prog = document.getElementById('progress');
+    const secs = [...document.querySelectorAll('section.card')];
+    const links = [...document.querySelectorAll('.toc-list a')];
+    function onScroll() {
+      const h = document.documentElement;
+      prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+      let cur = secs[0];
+      for (const s of secs) { if (s.getBoundingClientRect().top < 140) cur = s; }
+      links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur.id));
+    }
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  </script>
+
+</body>
+
+</html>

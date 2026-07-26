@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tensor Fundamentals — Shapes, Types &amp; Broadcasting in PyTorch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Fira+Code:wght@300..700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ── Prism Light palette — accents lifted from the hero image ── */
+    :root {
+      --paper: #FAF9FC;
+      --card: #FFFFFF;
+      --card-2: #F3F0FA;
+      --ink: #211A35;
+      --ink-dim: #6B6482;
+      --iris: #6C3FC5;
+      --iris-soft: #EDE6FA;
+      --ember: #E1552F;
+      --ember-soft: #FBE4DC;
+      --amber: #D99114;
+      --rule: #E5E1EF;
+      --code-bg: #241C3B;
+      --code-bar: #1A1430;
+      --code-text: #EFEAFB;
+      --code-dim: #9C92BD;
+
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --prose-w: 720px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * { box-sizing: border-box }
+    html { scroll-behavior: smooth }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Google Sans Flex", system-ui, sans-serif;
+      font-weight: 380;
+      font-optical-sizing: auto;
+      font-variation-settings: "slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 0;
+      font-size: 16px;
+      line-height: 1.72;
+      letter-spacing: -.003em;
+      /* ── static dot paper — content floats over it ── */
+      background-color: var(--paper);
+      background-image: radial-gradient(circle, rgba(108, 63, 197, .28) 1px, transparent 1.2px);
+      background-size: 24px 24px;
+      background-position: 0 0;
+      background-attachment: fixed;
+      background-repeat: repeat;
+    }
+
+    a { color: var(--ember) }
+
+    h1, h2, h3, .banner-title, .nav-logo {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: clamp(23px, 3.4vw, 30px);
+      letter-spacing: -.022em;
+      line-height: 1.2;
+      margin: 0 0 6px
+    }
+
+    h3 {
+      font-weight: 700;
+      font-size: 15.5px;
+      letter-spacing: -.005em;
+      margin: 32px 0 8px;
+      color: var(--ember)
+    }
+
+    p { margin: 0 0 18px }
+    ul, ol { padding-left: 20px }
+    li { margin-bottom: 8px }
+    b { font-weight: 640 }
+
+    code {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .85em;
+      color: #52309C;
+      background: var(--iris-soft);
+      padding: 1px 5px;
+      border-radius: 5px;
+    }
+
+    /* ── nav (copied from the reference post) ── */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--iris), var(--ember));
+      z-index: 200; transition: width .08s linear
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--rule);
+      background: rgba(250, 249, 252, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px)
+    }
+
+    .nav-inner {
+      max-width: var(--content-w); margin: 0 auto; padding: 0 2rem;
+      height: 100%; display: flex; align-items: center; justify-content: space-between
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 700; letter-spacing: 0.01em; color: var(--ink)
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 26px;
+      list-style: none; margin: 0; padding: 0
+    }
+
+    .nav-links li { margin: 0 }
+
+    .nav-links a {
+      font-size: 13.5px; color: var(--ink-dim);
+      text-decoration: none; transition: color 0.15s
+    }
+
+    .nav-links a:hover { color: var(--ember) }
+
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem }
+
+    /* ── banner ── */
+    .post-banner {
+      margin: 3rem 0 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden; position: relative;
+      background: var(--card-2);
+      border: 1px solid var(--rule);
+      padding: 58px 46px 54px;
+      min-height: 320px;
+      display: flex; align-items: center;
+      box-shadow: 0 18px 44px rgba(46, 26, 92, .12)
+    }
+
+    .banner-bg {
+      position: absolute; inset: 0; z-index: 0;
+      width: 100%; height: 100%;
+      object-position: 70% 45%;
+      object-fit: cover;
+    }
+
+    .banner-scrim {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(100deg,
+        rgba(255, 255, 255, .96) 0%,
+        rgba(255, 255, 255, .90) 36%,
+        rgba(255, 255, 255, .55) 60%,
+        rgba(255, 255, 255, .12) 84%,
+        rgba(255, 255, 255, 0) 97%)
+    }
+
+    .banner-grid { position: relative; z-index: 2; width: 100% }
+
+    .banner-inner { position: relative; max-width: 62% }
+
+    .banner-eyebrow {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem;
+      letter-spacing: .20em; text-transform: uppercase; color: var(--ink-dim);
+      margin: 0 0 20px; display: flex; align-items: center; gap: 12px
+    }
+
+    .banner-eyebrow::before {
+      content: ""; width: 34px; height: 2px; background: var(--ember); display: inline-block
+    }
+
+    .banner-title {
+      font-weight: 800; font-size: clamp(2.1rem, 5vw, 3.1rem);
+      line-height: 1.06; letter-spacing: -.028em; margin: 0 0 20px; color: var(--ink)
+    }
+
+    .banner-title .accent { color: var(--iris) }
+
+    .banner-sub {
+      font-size: 1.05rem; line-height: 1.6; color: var(--ink-dim);
+      max-width: 60ch; margin: 0
+    }
+
+    .post-meta {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 1.25rem 0
+    }
+
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 999px; border: 1px solid var(--rule);
+      font-size: 12px; color: var(--ink-dim);
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.03em; background: var(--card)
+    }
+
+    .meta-tag.accent-tag { background: var(--iris); color: #fff; border-color: transparent; font-weight: 600 }
+
+    /* ── layout + TOC ── */
+    .post-layout {
+      display: grid; grid-template-columns: var(--prose-w) 1fr;
+      gap: 0 3rem; align-items: start; padding-top: .5rem
+    }
+
+    .post-prose { min-width: 0 }
+
+    .post-toc {
+      position: sticky; top: calc(var(--nav-h) + 1.5rem);
+      background: var(--card); border: 1px solid var(--rule);
+      border-radius: var(--radius-md); padding: 20px 22px; margin-top: 26px;
+      box-shadow: 0 10px 26px rgba(46, 26, 92, .08)
+    }
+
+    .toc-label {
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ink-dim); font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; margin-bottom: 12px
+    }
+
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin: 0; padding: 0 }
+    .toc-list li { margin: 0 }
+
+    .toc-list a {
+      font-size: 12.5px; color: var(--ink-dim); text-decoration: none;
+      transition: color 0.15s; display: block; line-height: 1.4
+    }
+
+    .toc-list a:hover, .toc-list a.active { color: var(--ember) }
+    .toc-list a.active { font-weight: 600 }
+
+    /* ── each section is a rounded rectangle floating over the dots ── */
+    section.card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px 30px;
+      margin: 26px 0;
+      scroll-margin-top: calc(var(--nav-h) + 1rem);
+      box-shadow: 0 18px 40px rgba(46, 26, 92, .09)
+    }
+
+    .sec-icon {
+      position: absolute; top: 30px; right: 32px;
+      width: 34px; height: 34px; color: var(--iris); opacity: .55; pointer-events: none
+    }
+
+    .sec-icon svg {
+      width: 100%; height: 100%; display: block;
+      fill: none; stroke: currentColor; stroke-width: 1.5;
+      stroke-linecap: round; stroke-linejoin: round
+    }
+
+    section.card > .sec-label, section.card > h2 { padding-right: 62px }
+
+    .sec-label {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10.5px;
+      letter-spacing: .16em; text-transform: uppercase;
+      color: var(--ink-dim); margin: 0 0 10px
+    }
+
+    .lede { font-size: 18px; color: var(--ink-dim); margin-bottom: 22px }
+
+    /* ── code windows ── */
+    .win {
+      margin: 22px 0; border-radius: var(--radius-md); overflow: hidden;
+      border: 1px solid #37294F; background: var(--code-bg);
+      box-shadow: 0 14px 30px rgba(26, 15, 55, .30)
+    }
+
+    .win-bar {
+      display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+      background: var(--code-bar); border-bottom: 1px solid #120D24
+    }
+
+    .win-bar i { width: 11px; height: 11px; border-radius: 50%; display: block }
+    .win-bar i:nth-child(1) { background: #E8735A }
+    .win-bar i:nth-child(2) { background: #E5B34C }
+    .win-bar i:nth-child(3) { background: #9B7FE0 }
+
+    .win-bar span {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px;
+      color: var(--code-dim); margin-left: 8px; letter-spacing: .03em
+    }
+
+    .win pre {
+      margin: 0; background: transparent; border: 0;
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.75;
+      padding: 16px 18px; overflow-x: auto; color: var(--code-text)
+    }
+
+    pre .c { color: #8D82AF; font-style: italic }
+    pre .k { color: #F2A48B }
+    pre .s { color: #C9B6F5 }
+
+    .win.out { background: var(--card-2); border-color: var(--rule); box-shadow: none }
+    .win.out .win-bar { background: #EAE4F6; border-bottom: 1px solid var(--rule) }
+    .win.out .win-bar span { color: var(--ink-dim) }
+    .win.out pre.output { color: var(--ink); font-size: 12.5px }
+    .win.out pre.output .err { color: #C23A17; font-weight: 500 }
+
+    /* ── tables ── */
+    table {
+      width: 100%; border-collapse: collapse;
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; margin: 22px 0
+    }
+
+    th {
+      text-align: left; font-weight: 500; color: var(--iris);
+      border-bottom: 1px solid var(--rule); padding: 8px 10px;
+      font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase
+    }
+
+    td { padding: 8px 10px; border-bottom: 1px solid #EEEAF6; color: var(--ink-dim); vertical-align: top }
+    td:first-child { color: var(--ink) }
+
+    /* ── callouts ── */
+    .takeaway {
+      background: var(--iris-soft); border: 1px solid #D8C9F2;
+      border-radius: var(--radius-md); padding: 15px 18px; margin: 24px 0; font-size: 16px
+    }
+
+    .takeaway strong {
+      font-family: "Plus Jakarta Sans", sans-serif; font-weight: 700; color: var(--iris);
+      display: block; font-size: 10.5px; letter-spacing: .14em;
+      text-transform: uppercase; margin-bottom: 5px
+    }
+
+    .warn { background: var(--ember-soft); border-color: #F2C6B4 }
+    .warn strong { color: var(--ember) }
+
+    .deflist { list-style: none; padding-left: 0 }
+
+    .deflist>li {
+      margin-bottom: 16px; padding-left: 16px; border-left: 2px solid var(--rule)
+    }
+
+    .deflist>li>code:first-child { color: var(--ember); background: var(--ember-soft); font-size: .9em }
+
+    /* ── figures ── */
+    .figwrap {
+      border-radius: var(--radius-md); overflow: hidden;
+      background: var(--card-2); border: 1px solid var(--rule); margin: 22px 0 0; padding: 10px
+    }
+
+    .figwrap svg { width: 100%; height: auto; display: block }
+
+    .caption { font-size: 13.5px; color: var(--ink-dim); line-height: 1.55; margin: 12px 2px 26px }
+    .caption b { color: var(--ink); font-weight: 600 }
+
+    /* ── footer ── */
+    footer.card {
+      background: var(--card); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 34px 38px;
+      margin: 26px 0 0; color: var(--ink-dim); font-size: 15px;
+      box-shadow: 0 18px 40px rgba(46, 26, 92, .09)
+    }
+
+    footer.card h2 { color: var(--ink); font-size: 20px; margin-bottom: 12px }
+    .credit { margin: 0; font-size: 14px }
+
+    @media (max-width:900px) {
+      .post-layout { grid-template-columns: 1fr }
+      .post-toc { display: none }
+    }
+
+    @media (max-width:720px) {
+      .nav-links { display: none }
+      .page { padding: 0 1rem 4rem }
+      .nav-inner { padding: 0 1rem }
+      .post-banner { padding: 34px 22px; min-height: 260px }
+      .banner-scrim { background: rgba(255, 255, 255, .90) }
+      .banner-inner { max-width: 100% }
+      .sec-icon { top: 22px; right: 18px; width: 26px; height: 26px }
+      section.card, footer.card { padding: 26px 22px }
+    }
+
+    @media (prefers-reduced-motion:reduce) { * { transition: none !important } }
+  </style>
+</head>
+
+<body>
+  <div id="progress"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60"
+        style="display:block;  pointer-events:none; filter:brightness(0) saturate(0);"></object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../../blog.html" class="active">Blog</a></li>
+        <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page" id="top">
+
+    <div class="post-banner">
+      <img class="banner-bg"
+        src="https://images.unsplash.com/photo-1667984510023-160473b6728e?q=80&amp;w=2064&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        alt="" aria-hidden="true">
+      <div class="banner-scrim"></div>
+      <div class="banner-grid">
+        <div class="banner-inner">
+          <p class="banner-eyebrow">PyTorch · Fundamentals</p>
+          <h1 class="banner-title">Tensors, <span class="accent">without</span><br>the errors</h1>
+          <p class="banner-sub">Most PyTorch errors are tensor errors — a wrong shape, a wrong dtype,
+            a missing batch dimension. Learn to read shapes, control types, reshape on demand, and
+            let broadcasting do the repetition for you.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">PyTorch</span>
+      <span class="meta-tag">Tensors</span>
+      <span class="meta-tag">Broadcasting</span>
+    </div>
+
+    <div class="post-layout">
+      <div class="post-prose">
+
+        <!-- ═══════════════ 01 SHAPES ═══════════════ -->
+        <section class="card" id="shapes">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg></span>
+          <p class="sec-label">01 — Tensor Shapes</p>
+          <h2>Read the shape first</h2>
+          <p class="lede">The most important tool in your tensor toolkit: checking shapes.</p>
+
+          <p>You've been using tensors all along — maybe without thinking about them. That's fine
+            until it isn't. Shape mismatches sit alongside device and dtype issues as the most common
+            PyTorch errors. One print statement prevents most of them.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>shapes.py</span></div><pre><span class="c"># Your delivery data</span>
+distances = torch.tensor([[3.0], [7.0], [12.0], [18.0], [22.0], [28.0]])
+print(distances.shape)</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">torch.Size([6, 1])</pre></div>
+
+          <p>Two numbers, two meanings. <b>6</b> is the batch size — six samples. <b>1</b> is the
+            features per sample — one distance each.</p>
+
+          <div class="figwrap">
+            <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" font-family="Fira Code, monospace">
+              <text x="320" y="34" text-anchor="middle" font-size="30" fill="#211A35" font-weight="500">torch.Size([<tspan fill="#6C3FC5" font-weight="700">6</tspan>, <tspan fill="#E1552F" font-weight="700">1</tspan>])</text>
+              <path d="M283 48 v22" stroke="#6C3FC5" stroke-width="2" fill="none"/>
+              <path d="M352 48 v52" stroke="#E1552F" stroke-width="2" fill="none"/>
+              <rect x="163" y="76" width="240" height="44" rx="9" fill="#EDE6FA" stroke="#6C3FC5"/>
+              <text x="283" y="98" text-anchor="middle" font-size="14" fill="#52309C" font-weight="600">batch size</text>
+              <text x="283" y="113" text-anchor="middle" font-size="11" fill="#6B6482">how many samples</text>
+              <rect x="232" y="130" width="240" height="44" rx="9" fill="#FBE4DC" stroke="#E1552F"/>
+              <text x="352" y="152" text-anchor="middle" font-size="14" fill="#C23A17" font-weight="600">features per sample</text>
+              <text x="352" y="167" text-anchor="middle" font-size="11" fill="#6B6482">what each sample looks like</text>
+            </svg>
+          </div>
+          <p class="caption"><b>Anatomy of a shape.</b> The first dimension is <b>how many</b>; the
+            rest describe <b>what each sample looks like</b>.</p>
+
+          <p>Think of a stack of papers. The model reads each page the same way — whether there are
+            six pages or 600 in the stack. That's why the batch size never causes a mismatch. The
+            feature count does.</p>
+
+          <h3>A shape that works, a shape that fails</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>shape_mismatch.py</span></div><pre>simple_model = nn.Linear(1, 1)      <span class="c"># expects 1 feature per sample</span>
+
+output = simple_model(distances)    <span class="c"># shape [6, 1] — works!</span>
+
+<span class="c"># Now with 3 features: distance, hour, weather</span>
+features = torch.tensor([[3.0, 7.0, 1.0],
+                         [18.0, 22.0, 2.0]])   <span class="c"># shape [2, 3]</span>
+output = simple_model(features)</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output"><span class="err">RuntimeError: mat1 and mat2 shapes cannot be multiplied (2x3 and 1x1)</span></pre></div>
+
+          <p>The model was built for one input feature. It got three.</p>
+
+          <div class="takeaway">
+            <strong>The debugging pattern</strong>
+            PyTorch tells you what went wrong, not how to fix it. Print both shapes. Once you see
+            them side by side, the fix is usually obvious.
+          </div>
+        </section>
+
+        <!-- ═══════════════ 02 DTYPES ═══════════════ -->
+        <section class="card" id="dtypes">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 7c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3z"/><path d="M5 7v10c0 1.7 3.1 3 7 3s7-1.3 7-3V7"/><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
+          <p class="sec-label">02 — Data Types</p>
+          <h2>Defaults, promotion, and float32</h2>
+          <p class="lede">PyTorch picks a dtype from what you type. Know the rule, and you control it.</p>
+
+          <p>Integers give <code>int64</code>. A decimal point gives <code>float32</code>. That's the
+            whole default.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>dtypes.py</span></div><pre>int_tensor = torch.tensor([1, 2, 3])
+print(int_tensor.dtype)
+
+float_tensor = torch.tensor([1.0, 2.0, 3.0])
+print(float_tensor.dtype)</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">torch.int64
+torch.float32</pre></div>
+
+          <p>To be explicit, use either route. Both guarantee <code>float32</code> even if you forget
+            the decimal point:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>explicit.py</span></div><pre>float_tensor = torch.tensor([1, 2, 3], dtype=torch.float32)
+float_tensor = int_tensor.float()   <span class="c"># convert any tensor to float32</span></pre></div>
+
+          <h3>Mixing types no longer errors</h3>
+
+          <p>PyTorch used to throw an error on mixed dtypes. Now it handles them through
+            <b>type promotion</b> — int meets float, int becomes float, just like regular Python.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>promotion.py</span></div><pre>mixed_tensor = float_tensor + int_tensor
+print(f<span class="s">"mixed type: {mixed_tensor.dtype}"</span>)</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">mixed type: torch.float32</pre></div>
+
+          <table>
+            <tr><th>dtype</th><th>Buys you</th></tr>
+            <tr><td><code>float64</code></td><td>Extra precision</td></tr>
+            <tr><td><code>int8</code></td><td>Memory savings</td></tr>
+            <tr><td><code>float32</code></td><td>The sweet spot — fast, accurate, standard on modern hardware</td></tr>
+          </table>
+
+          <div class="takeaway">
+            <strong>For neural networks</strong>
+            Use <code>float32</code>. Everything else is a special case.
+          </div>
+        </section>
+
+        <!-- ═══════════════ 03 CREATING ═══════════════ -->
+        <section class="card" id="creating">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg></span>
+          <p class="sec-label">03 — Creating Tensors</p>
+          <h2>Four ways in</h2>
+          <p class="lede">Lists, NumPy, DataFrames, and built-in patterns. Each has one thing to watch.</p>
+
+          <h3>From Python lists</h3>
+          <p>The simplest way.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>from_list.py</span></div><pre>x = torch.tensor([1, 2, 3], dtype=torch.float32)
+x, x.shape</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(tensor([1., 2., 3.]), torch.Size([3]))</pre></div>
+
+          <h3>From NumPy</h3>
+          <p>PyTorch tensors behave almost exactly like NumPy arrays. Conversion is one call.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>from_numpy.py</span></div><pre>numpy_array = np.array([[1, 2, 3], [4, 5, 6]])
+x = torch.from_numpy(numpy_array)
+x, x.shape</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(tensor([[1, 2, 3],
+         [4, 5, 6]]),
+ torch.Size([2, 3]))</pre></div>
+
+          <div class="takeaway warn">
+            <strong>Shared memory</strong>
+            <code>from_numpy</code> shares memory with the source array. Change one, the other
+            changes too.
+          </div>
+
+          <h3>From a pandas DataFrame</h3>
+          <p>No direct function exists. Extract <code>.values</code>, then convert.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>from_dataframe.py</span></div><pre>df = pd.DataFrame({
+    <span class="s">'distance_miles'</span>: [1.6, 13.09, 6.97],
+    <span class="s">'delivery_times'</span>: [7.22, 32.41, 17.47]
+})
+torch.tensor(df.values)</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[ 1.6000,  7.2200],
+        [13.0900, 32.4100],
+        [ 6.9700, 17.4700]], dtype=torch.float64)</pre></div>
+
+          <p>Note the <code>dtype=torch.float64</code> in that output — NumPy's default leaked
+            through. One <code>.float()</code> fixes it.</p>
+
+          <h3>Built-in patterns</h3>
+          <p>Quick test data on demand.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>patterns.py</span></div><pre>torch.zeros(3, 2)
+torch.ones(3, 2)
+torch.rand(3, 2)          <span class="c"># uniform between 0 and 1</span>
+torch.arange(0, 10, 1)</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[0., 0.],
+        [0., 0.],
+        [0., 0.]])
+tensor([[1., 1.],
+        [1., 1.],
+        [1., 1.]])
+tensor([[0.3003, 0.1609],
+        [0.0812, 0.9012],
+        [0.7915, 0.3273]])
+tensor([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])</pre></div>
+        </section>
+
+        <!-- ═══════════════ 04 RESHAPING ═══════════════ -->
+        <section class="card" id="reshaping">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg></span>
+          <p class="sec-label">04 — Reshaping</p>
+          <h2>unsqueeze in, squeeze out</h2>
+          <p class="lede">Models expect a batch dimension. Forgetting it is the most common shape error.</p>
+
+          <p>Say you want one prediction — a delivery of 25 miles. That's a scalar. Your model
+            expects <code>[batch_size, features]</code>, at minimum <code>[1, 1]</code>.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>scalar_problem.py</span></div><pre>single_distance = torch.tensor(25.0)
+print(single_distance.shape)</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">torch.Size([])</pre></div>
+
+          <p>No dimensions at all. <code>unsqueeze()</code> adds them, one index at a time:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>unsqueeze.py</span></div><pre>with_batch      = single_distance.unsqueeze(0)   <span class="c"># torch.Size([1])</span>
+ready_for_model = with_batch.unsqueeze(1)        <span class="c"># torch.Size([1, 1]) — ready!</span></pre></div>
+
+          <p>Watch the brackets grow. Each <code>unsqueeze</code> wraps the tensor in one more pair:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>unsqueeze_chain.py</span></div><pre>x = torch.tensor([[1, 2, 3],
+                  [4, 5, 6]])          <span class="c"># [2, 3]</span>
+
+expanded = x.unsqueeze(0)
+expanded.shape, expanded</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(torch.Size([1, 2, 3]),
+ tensor([[[1, 2, 3],
+          [4, 5, 6]]]))</pre></div>
+
+          <p>Going the other way, <code>squeeze()</code> removes all dimensions of size one — great
+            for cleaning up after batching:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>squeeze.py</span></div><pre>expanded2 = expanded.unsqueeze(0)     <span class="c"># [1, 1, 2, 3]</span>
+sq = expanded2.squeeze()
+sq.shape, sq</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(torch.Size([2, 3]),
+ tensor([[1, 2, 3],
+         [4, 5, 6]]))</pre></div>
+
+          <p><code>squeeze(1)</code> removes only the size-1 dimension at index 1;
+            bare <code>squeeze()</code> removes them all.</p>
+
+          <div class="takeaway">
+            <strong>First defense</strong>
+            Check the shape before you <code>unsqueeze</code>. Print <code>tensor.shape</code>
+            whenever you debug.
+          </div>
+        </section>
+
+        <!-- ═══════════════ 05 INDEXING ═══════════════ -->
+        <section class="card" id="indexing">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+          <p class="sec-label">05 — Indexing &amp; Slicing</p>
+          <h2>Pull out what you need</h2>
+          <p class="lede">Checking predictions, grabbing samples — indexing works just like Python lists.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>indexing.py</span></div><pre>x = torch.tensor([
+    [1,  2,  3,  4],
+    [5,  6,  7,  8],
+    [9, 10, 11, 12]
+])                                    <span class="c"># [3, 4]</span>
+
+x[0]        <span class="c"># first row</span>
+x[:2]       <span class="c"># first two rows</span>
+x[:, 0]     <span class="c"># first column of all rows</span>
+x[:, ::2]   <span class="c"># every other column</span></pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([1, 2, 3, 4])
+tensor([[1, 2, 3, 4],
+        [5, 6, 7, 8]])
+tensor([1, 5, 9])
+tensor([[ 1,  3],
+        [ 5,  7],
+        [ 9, 11]])</pre></div>
+
+          <p>The pattern is <code>[start:end:step]</code>. The end index is not included.</p>
+
+          <h3>.item() — tensor to Python value</h3>
+
+          <p>A single indexed value is still a tensor. <code>.item()</code> converts it — but only
+            for tensors with exactly one element. Call it on anything bigger and it fails:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>item.py</span></div><pre>x.item()          <span class="c"># 12 elements — no</span>
+x[0, -1].item()   <span class="c"># 1 element — yes</span></pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output"><span class="err">RuntimeError: a Tensor with 12 elements cannot be converted to Scalar</span>
+4</pre></div>
+
+          <h3>Multiple features per sample</h3>
+
+          <p>With more features, index across both dimensions. Column 0 pulls every distance:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>features.py</span></div><pre>data = torch.tensor([[ 3.0,  8.0, 1.0],   <span class="c"># distance, hour, weather</span>
+                     [ 7.0, 17.0, 2.0],
+                     [12.0, 12.0, 1.0]])
+
+distances = data[:, 0]</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([ 3.,  7., 12.])</pre></div>
+        </section>
+
+        <!-- ═══════════════ 06 MATH ═══════════════ -->
+        <section class="card" id="math">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 7h6M8 4v6M13 17h6M5 17l5-5M5 12l5 5M16 6v0M16 20v0"/><circle cx="16" cy="7" r=".5"/></svg></span>
+          <p class="sec-label">06 — Tensor Math</p>
+          <h2>Element-wise, all at once</h2>
+          <p class="lede">The single neuron computes <code>weight * distance + bias</code>. Tensors do it for every sample simultaneously.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>neuron.py</span></div><pre>distances = torch.tensor([[3.0], [7.0], [12.0]])
+weight, bias = 2.3, 8.0
+
+weight * distances + bias
+<span class="c"># [[2.3*3.0  + 8.0],
+#  [2.3*7.0  + 8.0],
+#  [2.3*12.0 + 8.0]]</span></pre></div>
+
+          <p>PyTorch's tensor math works <b>element-wise</b> — each element is operated on
+            independently. The same weight applies to every distance; the same bias adds to every
+            result. It reads like regular Python but runs on all elements at once.</p>
+
+          <p>This works for scalars, and for tensors of the same shape:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>elementwise.py</span></div><pre>a = torch.tensor([1, 2, 3])
+b = torch.tensor([4, 5, 6])
+
+a + b
+a * b
+a / b</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([5, 7, 9])
+tensor([ 4, 10, 18])
+tensor([0.2500, 0.4000, 0.5000])</pre></div>
+        </section>
+
+        <!-- ═══════════════ 07 BROADCASTING ═══════════════ -->
+        <section class="card" id="broadcasting">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="12" r="2.5"/><path d="M11 8.5a6 6 0 0 1 0 7M14.5 6a10 10 0 0 1 0 12M18 3.5a14 14 0 0 1 0 17"/></svg></span>
+          <p class="sec-label">07 — Broadcasting</p>
+          <h2>Specify once, apply everywhere</h2>
+          <p class="lede">When one dimension is 1 and the other is larger, PyTorch expands the smaller one by repeating values.</p>
+
+          <p>Three deliveries, three features each. You want adjustment factors: 1.1&times; for
+            distance, no change for time, a 5&times; penalty for bad weather. Repeating the row works
+            — but it's redundant:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>redundant.py</span></div><pre>data * torch.tensor([[1.1, 1.0, 5.0],
+                     [1.1, 1.0, 5.0],
+                     [1.1, 1.0, 5.0]])   <span class="c"># same shape, three copies</span></pre></div>
+
+          <p>Broadcasting lets you specify the values once:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>broadcast.py</span></div><pre>data * torch.tensor([[1.1, 1.0, 5.0]])  <span class="c"># one row does it all</span></pre></div>
+
+          <p>No loops. No manual repetition. You've already seen this — it's how a scalar weight
+            and bias applied to every distance at once. A scalar is just the smallest broadcast.</p>
+
+          <h3>The rule, dimension by dimension</h3>
+
+          <p>Normally PyTorch requires exact dimension matches. The exception: a dimension of 1
+            expands to match. Combine a <code>(1, 3)</code> tensor with a <code>(3, 1)</code>
+            tensor and PyTorch checks each dimension in turn — <b>1 vs 3, the 1 expands; 3 vs 1,
+            the 1 expands. Both become (3, 3).</b></p>
+
+          <div class="figwrap">
+            <svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg" font-family="Fira Code, monospace" font-size="15">
+              <!-- a: (1,3) row -->
+              <g>
+                <rect x="30" y="66" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5"/>
+                <rect x="78" y="66" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5"/>
+                <rect x="126" y="66" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5"/>
+                <text x="52" y="93" text-anchor="middle" fill="#211A35">1</text>
+                <text x="100" y="93" text-anchor="middle" fill="#211A35">2</text>
+                <text x="148" y="93" text-anchor="middle" fill="#211A35">3</text>
+                <!-- ghost copies -->
+                <g opacity=".35">
+                  <rect x="30" y="114" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5" stroke-dasharray="4 3"/>
+                  <rect x="78" y="114" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5" stroke-dasharray="4 3"/>
+                  <rect x="126" y="114" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5" stroke-dasharray="4 3"/>
+                  <rect x="30" y="162" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5" stroke-dasharray="4 3"/>
+                  <rect x="78" y="162" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5" stroke-dasharray="4 3"/>
+                  <rect x="126" y="162" width="44" height="44" rx="7" fill="#EDE6FA" stroke="#6C3FC5" stroke-dasharray="4 3"/>
+                </g>
+                <text x="100" y="236" text-anchor="middle" font-size="12.5" fill="#6B6482">shape (1, 3)</text>
+                <text x="100" y="42" text-anchor="middle" font-size="12.5" fill="#52309C">row repeats ↓</text>
+              </g>
+              <text x="212" y="142" text-anchor="middle" font-size="24" fill="#211A35">+</text>
+              <!-- b: (3,1) column -->
+              <g>
+                <rect x="252" y="66" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F"/>
+                <rect x="252" y="114" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F"/>
+                <rect x="252" y="162" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F"/>
+                <text x="274" y="93" text-anchor="middle" fill="#211A35">1</text>
+                <text x="274" y="141" text-anchor="middle" fill="#211A35">2</text>
+                <text x="274" y="189" text-anchor="middle" fill="#211A35">3</text>
+                <g opacity=".35">
+                  <rect x="300" y="66" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F" stroke-dasharray="4 3"/>
+                  <rect x="348" y="66" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F" stroke-dasharray="4 3"/>
+                  <rect x="300" y="114" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F" stroke-dasharray="4 3"/>
+                  <rect x="348" y="114" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F" stroke-dasharray="4 3"/>
+                  <rect x="300" y="162" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F" stroke-dasharray="4 3"/>
+                  <rect x="348" y="162" width="44" height="44" rx="7" fill="#FBE4DC" stroke="#E1552F" stroke-dasharray="4 3"/>
+                </g>
+                <text x="322" y="236" text-anchor="middle" font-size="12.5" fill="#6B6482">shape (3, 1)</text>
+                <text x="322" y="42" text-anchor="middle" font-size="12.5" fill="#C23A17">column repeats →</text>
+              </g>
+              <text x="434" y="142" text-anchor="middle" font-size="24" fill="#211A35">=</text>
+              <!-- result 3x3 -->
+              <g>
+                <rect x="474" y="66" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <rect x="522" y="66" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <rect x="570" y="66" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <rect x="474" y="114" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <rect x="522" y="114" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <rect x="570" y="114" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <rect x="474" y="162" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <rect x="522" y="162" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <rect x="570" y="162" width="44" height="44" rx="7" fill="#fff" stroke="#211A35"/>
+                <text x="496" y="93" text-anchor="middle" fill="#211A35">2</text><text x="544" y="93" text-anchor="middle" fill="#211A35">3</text><text x="592" y="93" text-anchor="middle" fill="#211A35">4</text>
+                <text x="496" y="141" text-anchor="middle" fill="#211A35">3</text><text x="544" y="141" text-anchor="middle" fill="#211A35">4</text><text x="592" y="141" text-anchor="middle" fill="#211A35">5</text>
+                <text x="496" y="189" text-anchor="middle" fill="#211A35">4</text><text x="544" y="189" text-anchor="middle" fill="#211A35">5</text><text x="592" y="189" text-anchor="middle" fill="#211A35">6</text>
+                <text x="544" y="236" text-anchor="middle" font-size="12.5" fill="#6B6482">shape (3, 3)</text>
+              </g>
+            </svg>
+          </div>
+          <p class="caption"><b>(1, 3) + (3, 1) → (3, 3).</b> Dashed cells are the copies PyTorch
+            makes for you. Each dimension of size 1 stretches to match the other tensor.</p>
+
+          <p>The real thing, straight from the notebook:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>cross_broadcast.py</span></div><pre>a = torch.tensor([1, 2, 3])       <span class="c"># shape [3]</span>
+b = torch.tensor([[1],
+                  [2],
+                  [3]])           <span class="c"># shape [3, 1]</span>
+
+a + b</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[2, 3, 4],
+        [3, 4, 5],
+        [4, 5, 6]])</pre></div>
+
+          <div class="takeaway">
+            <strong>Where you'll see it</strong>
+            Adjusting features across batches. Combining different dimensions of data. Applying
+            transformations efficiently. Once you know to look for it, broadcasting opportunities
+            appear everywhere in deep learning.
+          </div>
+        </section>
+
+        <!-- ═══════════════ 08 CHECKLIST ═══════════════ -->
+        <section class="card" id="checklist">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 6h11M9 12h11M9 18h11M4 6l1.2 1.2L7.5 5M4 12l1.2 1.2L7.5 11M4 18l1.2 1.2L7.5 17"/></svg></span>
+          <p class="sec-label">08 — Debugging Checklist</p>
+          <h2>When a tensor error hits</h2>
+          <p class="lede">Five checks, in order. Most errors fall to the first two.</p>
+
+          <ol>
+            <li><b>Print <code>tensor.shape</code>.</b> Understanding the current dimensions is the
+              first step to any fix.</li>
+            <li><b>Read the error.</b> It names both shapes. Seen side by side, the fix is usually
+              obvious.</li>
+            <li><b>Check the batch dimension exists.</b> A single sample needs at minimum
+              <code>[1, 1]</code>.</li>
+            <li><b>Check the dtype.</b> <code>float32</code> for neural networks — cast with
+              <code>.float()</code> or <code>dtype=</code>.</li>
+            <li><b>Check the feature count</b> matches what the model was built for.</li>
+          </ol>
+
+          <div class="takeaway">
+            <strong>Permission to forget</strong>
+            You don't need to memorize everything. These patterns become second nature with
+            practice — and even the pros check the docs.
+          </div>
+        </section>
+
+        <!-- ═══════════════ 09 BEYOND ═══════════════ -->
+        <section class="card" id="beyond">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V5a1 1 0 0 1 1-1h13l2 2v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg></span>
+          <p class="sec-label">09 — Beyond the Videos</p>
+          <h2>Extras from the lab</h2>
+          <p class="lede">The lab notebooks go further than the lectures. The highlights, with real outputs.</p>
+
+          <h3>reshape and transpose</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>restructure.py</span></div><pre>x = torch.tensor([[1, 2, 3],
+                  [4, 5, 6]])         <span class="c"># [2, 3]</span>
+
+x.reshape(3, 2)
+x.transpose(0, 1)</pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[1, 2],
+        [3, 4],
+        [5, 6]])
+tensor([[1, 4],
+        [2, 5],
+        [3, 6]])</pre></div>
+
+          <p>Same shape, different tensors — <code>reshape</code> refills row by row;
+            <code>transpose</code> swaps dimensions. Two lab findings: <code>transpose(0, 1)</code>
+            equals <code>transpose(1, 0)</code>, and <code>transpose(0, 0)</code> or
+            <code>transpose(1, 1)</code> do nothing.</p>
+
+          <h3>Combining with torch.cat</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>cat.py</span></div><pre>x1 = 20 * x
+
+torch.cat((x, x1), dim=0)   <span class="c"># stack rows</span>
+torch.cat((x, x1), dim=1)   <span class="c"># stack columns</span></pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[  1,   2,   3],
+        [  4,   5,   6],
+        [ 20,  40,  60],
+        [ 80, 100, 120]])          <span class="c"># [4, 3]</span>
+tensor([[  1,   2,   3,  20,  40,  60],
+        [  4,   5,   6,  80, 100, 120]])   <span class="c"># [2, 6]</span></pre></div>
+
+          <p>All tensors must match in every dimension except the one being concatenated.</p>
+
+          <h3>Boolean masks and dot products</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>mask_matmul.py</span></div><pre>x = torch.tensor([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+x[x > 3]                    <span class="c"># boolean masking</span>
+
+a = torch.tensor([1, 2, 3])
+b = torch.tensor([4, 5, 6])
+torch.matmul(a, b)          <span class="c"># also: a @ b</span></pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([ 4,  5,  6,  7,  8,  9, 10, 11, 12])
+tensor(32)</pre></div>
+
+          <h3>The moves, combined</h3>
+
+          <p>The lab exercises chain everything — slice, compare, combine, reshape — into feature
+            engineering:</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>feature_engineering.py</span></div><pre><span class="c"># trip_data columns: [distance_km, hour_of_day]</span>
+distances = trip_data[:, 0]
+hours     = trip_data[:, 1]
+
+is_long_trip    = distances &gt; 10.0
+is_morning_rush = (hours &gt;= 8.0) &amp; (hours &lt; 10.0)
+is_evening_rush = (hours &gt;= 17.0) &amp; (hours &lt; 19.0)
+
+mask = (is_morning_rush | is_evening_rush) &amp; is_long_trip
+
+new_feature_col = mask.float().unsqueeze(1)      <span class="c"># 1D bool → [N, 1] float</span>
+enhanced = torch.cat((trip_data, new_feature_col), dim=1)</pre></div>
+
+          <p>Slice out columns. Build masks with <code>&gt;</code>, <code>&amp;</code>,
+            <code>|</code>. Cast, unsqueeze, concatenate. Four sections of this post in eight
+            lines — that's the point.</p>
+        </section>
+
+        <!-- ═══════════════ FOOTER ═══════════════ -->
+        <footer class="card" id="colophon">
+          <p class="credit">This blog is inspired by the <b>PyTorch Fundamentals</b> course on
+            <a href="https://www.deeplearning.ai/">DeepLearning.AI</a>, offered by <b>Laurence
+            Moroney</b>. The explanations follow the course material; the code and outputs are from
+            my own notebooks.</p>
+        </footer>
+
+      </div>
+
+      <aside class="post-toc">
+        <div class="toc-label">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#shapes">1 · Read the shape first</a></li>
+          <li><a href="#dtypes">2 · Defaults, promotion, float32</a></li>
+          <li><a href="#creating">3 · Four ways in</a></li>
+          <li><a href="#reshaping">4 · unsqueeze in, squeeze out</a></li>
+          <li><a href="#indexing">5 · Pull out what you need</a></li>
+          <li><a href="#math">6 · Element-wise, all at once</a></li>
+          <li><a href="#broadcasting">7 · Specify once, apply everywhere</a></li>
+          <li><a href="#checklist">8 · Debugging checklist</a></li>
+          <li><a href="#beyond">9 · Extras from the lab</a></li>
+        </ul>
+      </aside>
+    </div>
+
+  </main>
+
+  <script>
+    // scroll progress
+    const bar = document.getElementById('progress');
+    const onScroll = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // TOC scrollspy
+    const links = [...document.querySelectorAll('.toc-list a')];
+    const secs = links.map(a => document.querySelector(a.getAttribute('href')));
+    const spy = () => {
+      const y = window.scrollY + 140;
+      let active = 0;
+      secs.forEach((s, i) => { if (s && s.offsetTop <= y) active = i });
+      links.forEach((a, i) => a.classList.toggle('active', i === active));
+    };
+    document.addEventListener('scroll', spy, { passive: true });
+    spy();
+  </script>
+</body>
+
+</html>
