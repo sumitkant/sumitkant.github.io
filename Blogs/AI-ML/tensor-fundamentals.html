@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tensor Fundamentals — Shapes, Types &amp; Broadcasting in PyTorch</title>
+  <title>Tensor Shapes, Types and Broadcasting in PyTorch</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -152,8 +152,8 @@
 
     .banner-bg {
       position: absolute; inset: 0; z-index: 0;
-      width: 100%; height: 100%;
-      object-position: 70% 45%;
+      width: 120%; height: 120%;
+      object-position: 60% 45%;
       object-fit: cover;
     }
 
@@ -416,11 +416,11 @@
       <div class="banner-scrim"></div>
       <div class="banner-grid">
         <div class="banner-inner">
-          <p class="banner-eyebrow">PyTorch · Fundamentals</p>
-          <h1 class="banner-title">Tensors, <span class="accent">without</span><br>the errors</h1>
-          <p class="banner-sub">Most PyTorch errors are tensor errors — a wrong shape, a wrong dtype,
-            a missing batch dimension. Learn to read shapes, control types, reshape on demand, and
-            let broadcasting do the repetition for you.</p>
+          <p class="banner-eyebrow">PyTorch · Tutorial</p>
+          <h1 class="banner-title">Tensor Shapes, Types and <span class="accent">Broadcasting</span><br>in PyTorch</h1>
+          <p class="banner-sub">Tensor errors are the most common problem you will hit when you start
+            using PyTorch. In this tutorial, you will discover how to read shapes, control data types,
+            reshape tensors on demand, and let broadcasting do the repetition for you.</p>
         </div>
       </div>
     </div>
@@ -434,24 +434,119 @@
     <div class="post-layout">
       <div class="post-prose">
 
-        <!-- ═══════════════ 01 SHAPES ═══════════════ -->
+        <!-- ═══════════════ OVERVIEW ═══════════════ -->
+        <section class="card" id="overview">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg></span>
+          <p class="sec-label">Overview</p>
+          <h2>What you will learn</h2>
+          <p class="lede">A tour of the tensor operations that cause the most errors, and how to stop them.</p>
+
+          <p>Tensors are the data structure PyTorch uses for everything. The data you load is a
+            tensor. The input to a model is a tensor. The output is a tensor. The weights inside the
+            model are tensors.</p>
+
+          <p>This means that when something breaks in PyTorch, it usually breaks at a tensor. A wrong
+            shape. A wrong data type. A missing batch dimension.</p>
+
+          <p>In this tutorial, you will discover how to work with tensor shapes, data types and
+            broadcasting in PyTorch.</p>
+
+          <p>After completing this tutorial, you will know:</p>
+
+          <ul>
+            <li>How to read a tensor shape, and why the first number behaves differently from the rest.</li>
+            <li>How PyTorch chooses a data type for you, and how to take control of it.</li>
+            <li>How to add and remove dimensions so that a model will accept your data.</li>
+            <li>How broadcasting removes loops from your code, and the two rules that govern it.</li>
+            <li>Five behaviors that fail quietly and will cost you debugging time.</li>
+          </ul>
+
+          <p><b>Let's get started.</b></p>
+
+          <h3>Tutorial Overview</h3>
+
+          <p>This tutorial is divided into eleven parts; they are:</p>
+
+          <ol>
+            <li>Setup and Prerequisites</li>
+            <li>How to Read a Tensor Shape</li>
+            <li>How to Control Tensor Data Types</li>
+            <li>Four Ways to Create a Tensor</li>
+            <li>How to Add and Remove Dimensions</li>
+            <li>How to Index and Slice a Tensor</li>
+            <li>How to Do Element-Wise Math</li>
+            <li>How Broadcasting Works</li>
+            <li>More Tensor Operations</li>
+            <li>Five Surprising Behaviors</li>
+            <li>A Checklist for Debugging Tensor Errors</li>
+          </ol>
+        </section>
+
+        <!-- ═══════════════ 1 SETUP ═══════════════ -->
+        <section class="card" id="setup">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span>
+          <p class="sec-label">1 — Setup and Prerequisites</p>
+          <h2>Setup and Prerequisites</h2>
+          <p class="lede">What you need before you start, and where the material comes from.</p>
+
+          <p>This tutorial assumes you are comfortable with Python lists and slicing, and that you
+            have seen NumPy arrays before — enough to know what a shape is. You do not need to have
+            trained a model.</p>
+
+          <p>Three terms are used throughout without being explained again:</p>
+
+          <ul>
+            <li>A <b>layer</b> is one step of a model. <code>nn.Linear(in, out)</code> is the simplest
+              one. It multiplies its input by a matrix of <b>weights</b> and adds a <b>bias</b>.</li>
+            <li>A <b>sample</b> is one row of your data.</li>
+            <li>A <b>batch</b> is a stack of samples handed to the model together.</li>
+          </ul>
+
+          <p>All of the examples below assume the following four imports.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+import torch.nn as nn
+import numpy as np
+import pandas as pd</pre></div>
+
+          <div class="takeaway">
+            <strong>Note</strong>
+            The examples in this tutorial were run with <b>PyTorch 2.13</b>. Where behavior has
+            changed between versions, it is called out in the text. All output below was copied from
+            the notebook rather than typed by hand, so if an example does not match on your machine,
+            check your version first.
+          </div>
+
+          <p>Each section is self-contained. Where an example depends on a variable created earlier,
+            that variable is created again so you can run any section on its own.</p>
+        </section>
+
+        <!-- ═══════════════ 2 SHAPES ═══════════════ -->
         <section class="card" id="shapes">
           <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg></span>
-          <p class="sec-label">01 — Tensor Shapes</p>
-          <h2>Read the shape first</h2>
-          <p class="lede">The most important tool in your tensor toolkit: checking shapes.</p>
+          <p class="sec-label">2 — Tensor Shapes</p>
+          <h2>How to Read a Tensor Shape</h2>
+          <p class="lede">The shape is the first thing to check when something goes wrong.</p>
 
-          <p>You've been using tensors all along — maybe without thinking about them. That's fine
-            until it isn't. Shape mismatches sit alongside device and dtype issues as the most common
-            PyTorch errors. One print statement prevents most of them.</p>
+          <p>You have probably been using tensors already without thinking about them. That works
+            until it doesn't.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>shapes.py</span></div><pre><span class="c"># Your delivery data</span>
+          <p>The example below creates a tensor holding six delivery distances and prints its shape.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+<span class="c"># Your delivery data</span>
 distances = torch.tensor([[3.0], [7.0], [12.0], [18.0], [22.0], [28.0]])
 print(distances.shape)</pre></div>
+
+          <p>Running the example prints the shape of the tensor.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">torch.Size([6, 1])</pre></div>
 
-          <p>Two numbers, two meanings. <b>6</b> is the batch size — six samples. <b>1</b> is the
-            features per sample — one distance each.</p>
+          <p>You can see that the shape has two numbers, and they mean different things.</p>
+
+          <p>The first number, <b>6</b>, is the batch size. There are six samples. The second number,
+            <b>1</b>, is the number of features per sample. Each sample holds one distance.</p>
 
           <div class="figwrap">
             <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" font-family="Fira Code, monospace">
@@ -469,129 +564,209 @@ print(distances.shape)</pre></div>
           <p class="caption"><b>Anatomy of a shape.</b> The first dimension is <b>how many</b>; the
             rest describe <b>what each sample looks like</b>.</p>
 
-          <p>Think of a stack of papers. The model reads each page the same way — whether there are
-            six pages or 600 in the stack. That's why the batch size never causes a mismatch. The
-            feature count does.</p>
+          <p>A useful way to think about this is a stack of papers. The model reads each page the same
+            way, whether there are six pages in the stack or 600.</p>
 
-          <h3>A shape that works, a shape that fails</h3>
+          <p>This is why the batch size rarely causes trouble <i>inside</i> a layer.
+            <code>nn.Linear</code> checks the number of features and does not care how many rows you
+            handed it. Within a layer, the feature count is the thing that has to match.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>shape_mismatch.py</span></div><pre>simple_model = nn.Linear(1, 1)      <span class="c"># expects 1 feature per sample</span>
+          <div class="takeaway warn">
+            <strong>Important</strong>
+            This only holds inside a layer. The moment you <b>compare</b> two tensors — predictions
+            against targets, for example — the batch dimension has to line up as well. A loss function
+            given a <code>[4, 1]</code> prediction and a <code>[3, 1]</code> target fails with
+            <code>The size of tensor a (4) must match the size of tensor b (3)</code>. "Batch size
+            never matters" is true inside a layer and nowhere else.
+          </div>
 
-output = simple_model(distances)    <span class="c"># shape [6, 1] — works!</span>
+          <h3>A Shape That Works and a Shape That Fails</h3>
+
+          <p>The example below builds a model that expects one feature per sample, passes it data
+            with one feature, then passes it data with three.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+import torch.nn as nn
+
+distances = torch.tensor([[3.0], [7.0], [12.0], [18.0], [22.0], [28.0]])
+
+simple_model = nn.Linear(1, 1)      <span class="c"># expects 1 feature per sample</span>
+output = simple_model(distances)    <span class="c"># shape [6, 1] — works</span>
 
 <span class="c"># Now with 3 features: distance, hour, weather</span>
 features = torch.tensor([[3.0, 7.0, 1.0],
                          [18.0, 22.0, 2.0]])   <span class="c"># shape [2, 3]</span>
 output = simple_model(features)</pre></div>
+
+          <p>Running the example results in an error, as follows.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output"><span class="err">RuntimeError: mat1 and mat2 shapes cannot be multiplied (2x3 and 1x1)</span></pre></div>
 
           <p>The model was built for one input feature. It got three.</p>
 
           <div class="takeaway">
-            <strong>The debugging pattern</strong>
-            PyTorch tells you what went wrong, not how to fix it. Print both shapes. Once you see
-            them side by side, the fix is usually obvious.
+            <strong>Tip</strong>
+            PyTorch tells you what went wrong, not how to fix it. Print both shapes. Once you see them
+            side by side, the fix is usually obvious.
           </div>
         </section>
 
-        <!-- ═══════════════ 02 DTYPES ═══════════════ -->
+        <!-- ═══════════════ 3 DTYPES ═══════════════ -->
         <section class="card" id="dtypes">
           <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 7c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3z"/><path d="M5 7v10c0 1.7 3.1 3 7 3s7-1.3 7-3V7"/><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
-          <p class="sec-label">02 — Data Types</p>
-          <h2>Defaults, promotion, and float32</h2>
-          <p class="lede">PyTorch picks a dtype from what you type. Know the rule, and you control it.</p>
+          <p class="sec-label">3 — Data Types</p>
+          <h2>How to Control Tensor Data Types</h2>
+          <p class="lede">PyTorch picks a data type from what you type. Learn the rule and you control it.</p>
 
-          <p>Integers give <code>int64</code>. A decimal point gives <code>float32</code>. That's the
-            whole default.</p>
+          <p>There are two cases that cover almost everything you will write:</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>dtypes.py</span></div><pre>int_tensor = torch.tensor([1, 2, 3])
+          <ul>
+            <li>Whole numbers give <code>int64</code>.</li>
+            <li>Numbers with a decimal point give <code>float32</code>.</li>
+          </ul>
+
+          <p>For completeness, booleans give <code>torch.bool</code> and complex literals give
+            <code>complex64</code>, but neither comes up often when you are starting out.</p>
+
+          <p>The example below creates one tensor of each kind and prints the data type.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+int_tensor = torch.tensor([1, 2, 3])
 print(int_tensor.dtype)
 
 float_tensor = torch.tensor([1.0, 2.0, 3.0])
 print(float_tensor.dtype)</pre></div>
+
+          <p>Running the example prints the two data types.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">torch.int64
 torch.float32</pre></div>
 
-          <p>To be explicit, use either route. Both guarantee <code>float32</code> even if you forget
-            the decimal point:</p>
+          <p>Relying on a decimal point is fragile. You can be explicit instead, using either of the
+            two routes below. Both guarantee <code>float32</code> even if you forget the decimal
+            point.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>explicit.py</span></div><pre>float_tensor = torch.tensor([1, 2, 3], dtype=torch.float32)
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>float_tensor = torch.tensor([1, 2, 3], dtype=torch.float32)
 float_tensor = int_tensor.float()   <span class="c"># convert any tensor to float32</span></pre></div>
 
-          <h3>Mixing types no longer errors</h3>
+          <h3>Mixing Data Types No Longer Fails</h3>
 
-          <p>PyTorch used to throw an error on mixed dtypes. Now it handles them through
-            <b>type promotion</b> — int meets float, int becomes float, just like regular Python.</p>
+          <p>PyTorch used to raise an error when you combined tensors of different data types. Since
+            version 1.5 it resolves them through <b>type promotion</b>: int meets float, int becomes
+            float.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>promotion.py</span></div><pre>mixed_tensor = float_tensor + int_tensor
+          <p>The rules are close to Python's but not identical. Part 10 covers the case where they
+            come apart.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>float_tensor = torch.tensor([1.0, 2.0, 3.0])
+int_tensor   = torch.tensor([1, 2, 3])
+
+mixed_tensor = float_tensor + int_tensor
 print(f<span class="s">"mixed type: {mixed_tensor.dtype}"</span>)</pre></div>
+
+          <p>Running the example prints the promoted data type.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">mixed type: torch.float32</pre></div>
+
+          <h3>Which Data Type Should You Use?</h3>
 
           <table>
             <tr><th>dtype</th><th>Buys you</th></tr>
             <tr><td><code>float64</code></td><td>Extra precision</td></tr>
             <tr><td><code>int8</code></td><td>Memory savings</td></tr>
-            <tr><td><code>float32</code></td><td>The sweet spot — fast, accurate, standard on modern hardware</td></tr>
+            <tr><td><code>float32</code></td><td>The default, and the right place to start</td></tr>
           </table>
 
           <div class="takeaway">
-            <strong>For neural networks</strong>
-            Use <code>float32</code>. Everything else is a special case.
+            <strong>Note</strong>
+            Start with <code>float32</code> for neural networks. Serious training runs usually move to
+            <i>mixed precision</i> — <code>bfloat16</code> or <code>float16</code> for the bulk of the
+            arithmetic and <code>float32</code> for the parts that need the range — because it is
+            faster on modern accelerators. That is a deliberate optimization, not the default you
+            reach for while learning.
           </div>
         </section>
 
-        <!-- ═══════════════ 03 CREATING ═══════════════ -->
+        <!-- ═══════════════ 4 CREATING ═══════════════ -->
         <section class="card" id="creating">
           <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg></span>
-          <p class="sec-label">03 — Creating Tensors</p>
-          <h2>Four ways in</h2>
-          <p class="lede">Lists, NumPy, DataFrames, and built-in patterns. Each has one thing to watch.</p>
+          <p class="sec-label">4 — Creating Tensors</p>
+          <h2>Four Ways to Create a Tensor</h2>
+          <p class="lede">Lists, NumPy, DataFrames and built-in patterns. Each one has a catch.</p>
 
-          <h3>From Python lists</h3>
-          <p>The simplest way.</p>
+          <p>Let's take a closer look at each in turn.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>from_list.py</span></div><pre>x = torch.tensor([1, 2, 3], dtype=torch.float32)
+          <h3>1. From a Python List</h3>
+
+          <p>This is the simplest way, and the one you will use for small examples.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+x = torch.tensor([1, 2, 3], dtype=torch.float32)
 x, x.shape</pre></div>
+
+          <p>Running the example prints the tensor and its shape.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(tensor([1., 2., 3.]), torch.Size([3]))</pre></div>
 
-          <h3>From NumPy</h3>
-          <p>PyTorch tensors behave almost exactly like NumPy arrays. Conversion is one call.</p>
+          <h3>2. From a NumPy Array</h3>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>from_numpy.py</span></div><pre>numpy_array = np.array([[1, 2, 3], [4, 5, 6]])
+          <p>PyTorch tensors behave almost exactly like NumPy arrays, and conversion is a single call.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+import numpy as np
+
+numpy_array = np.array([[1, 2, 3], [4, 5, 6]])
 x = torch.from_numpy(numpy_array)
 x, x.shape</pre></div>
+
+          <p>Running the example prints the converted tensor.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(tensor([[1, 2, 3],
          [4, 5, 6]]),
  torch.Size([2, 3]))</pre></div>
 
           <div class="takeaway warn">
-            <strong>Shared memory</strong>
-            <code>from_numpy</code> shares memory with the source array. Change one, the other
-            changes too.
+            <strong>Important</strong>
+            <code>from_numpy</code> shares memory with the source array. Change one and the other
+            changes too. This is fast, and it will surprise you at least once.
           </div>
 
-          <h3>From a pandas DataFrame</h3>
-          <p>No direct function exists. Extract <code>.values</code>, then convert.</p>
+          <h3>3. From a pandas DataFrame</h3>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>from_dataframe.py</span></div><pre>df = pd.DataFrame({
+          <p>There is no direct function for this. You extract <code>.values</code> and convert that.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+import pandas as pd
+
+df = pd.DataFrame({
     <span class="s">'distance_miles'</span>: [1.6, 13.09, 6.97],
     <span class="s">'delivery_times'</span>: [7.22, 32.41, 17.47]
 })
 torch.tensor(df.values)</pre></div>
+
+          <p>Running the example prints the tensor.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[ 1.6000,  7.2200],
         [13.0900, 32.4100],
         [ 6.9700, 17.4700]], dtype=torch.float64)</pre></div>
 
-          <p>Note the <code>dtype=torch.float64</code> in that output — NumPy's default leaked
-            through. One <code>.float()</code> fixes it.</p>
+          <p>Note the <code>dtype=torch.float64</code> at the end of that output. NumPy's default
+            data type has leaked through the DataFrame. A single call to <code>.float()</code>
+            fixes it.</p>
 
-          <h3>Built-in patterns</h3>
-          <p>Quick test data on demand.</p>
+          <h3>4. From a Built-In Pattern</h3>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>patterns.py</span></div><pre>torch.zeros(3, 2)
+          <p>These give you test data on demand without typing numbers.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>torch.zeros(3, 2)
 torch.ones(3, 2)
 torch.rand(3, 2)          <span class="c"># uniform between 0 and 1</span>
 torch.arange(0, 10, 1)</pre></div>
+
+          <p>Running the example prints the four tensors.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[0., 0.],
         [0., 0.],
         [0., 0.]])
@@ -602,66 +777,94 @@ tensor([[0.3003, 0.1609],
         [0.0812, 0.9012],
         [0.7915, 0.3273]])
 tensor([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])</pre></div>
+
+          <div class="takeaway">
+            <strong>Note</strong>
+            Your results will vary for <code>torch.rand</code>, given the stochastic nature of the
+            values it produces. Call <code>torch.manual_seed(42)</code> first if you need the same
+            numbers every run.
+          </div>
         </section>
 
-        <!-- ═══════════════ 04 RESHAPING ═══════════════ -->
+        <!-- ═══════════════ 5 RESHAPING ═══════════════ -->
         <section class="card" id="reshaping">
           <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg></span>
-          <p class="sec-label">04 — Reshaping</p>
-          <h2>unsqueeze in, squeeze out</h2>
-          <p class="lede">Models expect a batch dimension. Forgetting it is the most common shape error.</p>
+          <p class="sec-label">5 — Reshaping</p>
+          <h2>How to Add and Remove Dimensions</h2>
+          <p class="lede">Models expect a batch dimension. Forgetting it is the shape error I hit most.</p>
 
-          <p>Say you want one prediction — a delivery of 25 miles. That's a scalar. Your model
-            expects <code>[batch_size, features]</code>, at minimum <code>[1, 1]</code>.</p>
+          <p>Say you want a single prediction for a delivery of 25 miles. That is one number, a
+            scalar. Your model expects <code>[batch_size, features]</code>, which for one sample with
+            one feature means <code>[1, 1]</code>.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>scalar_problem.py</span></div><pre>single_distance = torch.tensor(25.0)
+          <p>The example below shows what you actually have.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+single_distance = torch.tensor(25.0)
 print(single_distance.shape)</pre></div>
+
+          <p>Running the example prints an empty shape.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">torch.Size([])</pre></div>
 
-          <p>No dimensions at all. <code>unsqueeze()</code> adds them, one index at a time:</p>
+          <p>No dimensions at all. The <code>unsqueeze()</code> function adds them, one index at a
+            time.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>unsqueeze.py</span></div><pre>with_batch      = single_distance.unsqueeze(0)   <span class="c"># torch.Size([1])</span>
-ready_for_model = with_batch.unsqueeze(1)        <span class="c"># torch.Size([1, 1]) — ready!</span></pre></div>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>with_batch      = single_distance.unsqueeze(0)   <span class="c"># torch.Size([1])</span>
+ready_for_model = with_batch.unsqueeze(1)        <span class="c"># torch.Size([1, 1]) — ready</span></pre></div>
 
-          <p>Watch the brackets grow. Each <code>unsqueeze</code> wraps the tensor in one more pair:</p>
+          <p>Watch the brackets grow. Each call to <code>unsqueeze</code> wraps the tensor in one more
+            pair.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>unsqueeze_chain.py</span></div><pre>x = torch.tensor([[1, 2, 3],
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>x = torch.tensor([[1, 2, 3],
                   [4, 5, 6]])          <span class="c"># [2, 3]</span>
 
 expanded = x.unsqueeze(0)
 expanded.shape, expanded</pre></div>
+
+          <p>Running the example prints the new shape and the extra bracket.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(torch.Size([1, 2, 3]),
  tensor([[[1, 2, 3],
           [4, 5, 6]]]))</pre></div>
 
-          <p>Going the other way, <code>squeeze()</code> removes all dimensions of size one — great
-            for cleaning up after batching:</p>
+          <p>Going the other way, <code>squeeze()</code> removes dimensions of size one. This is
+            useful for cleaning up after a batch has been through a model.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>squeeze.py</span></div><pre>expanded2 = expanded.unsqueeze(0)     <span class="c"># [1, 1, 2, 3]</span>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>expanded2 = expanded.unsqueeze(0)     <span class="c"># [1, 1, 2, 3]</span>
 sq = expanded2.squeeze()
 sq.shape, sq</pre></div>
+
+          <p>Running the example prints the squeezed tensor.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(torch.Size([2, 3]),
  tensor([[1, 2, 3],
          [4, 5, 6]]))</pre></div>
 
-          <p><code>squeeze(1)</code> removes only the size-1 dimension at index 1;
-            bare <code>squeeze()</code> removes them all.</p>
+          <p>Note the difference between the two forms. Calling <code>squeeze(1)</code> removes only
+            the size-1 dimension at index 1, while a bare <code>squeeze()</code> removes all of
+            them.</p>
 
           <div class="takeaway">
-            <strong>First defense</strong>
-            Check the shape before you <code>unsqueeze</code>. Print <code>tensor.shape</code>
-            whenever you debug.
+            <strong>Tip</strong>
+            Check the shape before you <code>unsqueeze</code>, not after you get an error. Printing
+            <code>tensor.shape</code> is the cheapest debugging step available to you.
           </div>
         </section>
 
-        <!-- ═══════════════ 05 INDEXING ═══════════════ -->
+        <!-- ═══════════════ 6 INDEXING ═══════════════ -->
         <section class="card" id="indexing">
           <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
-          <p class="sec-label">05 — Indexing &amp; Slicing</p>
-          <h2>Pull out what you need</h2>
-          <p class="lede">Checking predictions, grabbing samples — indexing works just like Python lists.</p>
+          <p class="sec-label">6 — Indexing &amp; Slicing</p>
+          <h2>How to Index and Slice a Tensor</h2>
+          <p class="lede">Checking predictions and grabbing samples works just like Python lists.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>indexing.py</span></div><pre>x = torch.tensor([
+          <p>The example below creates a small tensor and pulls four different pieces out of it.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+x = torch.tensor([
     [1,  2,  3,  4],
     [5,  6,  7,  8],
     [9, 10, 11, 12]
@@ -671,6 +874,9 @@ x[0]        <span class="c"># first row</span>
 x[:2]       <span class="c"># first two rows</span>
 x[:, 0]     <span class="c"># first column of all rows</span>
 x[:, ::2]   <span class="c"># every other column</span></pre></div>
+
+          <p>Running the example prints the four selections.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([1, 2, 3, 4])
 tensor([[1, 2, 3, 4],
         [5, 6, 7, 8]])
@@ -679,38 +885,54 @@ tensor([[ 1,  3],
         [ 5,  7],
         [ 9, 11]])</pre></div>
 
-          <p>The pattern is <code>[start:end:step]</code>. The end index is not included.</p>
+          <p>The pattern is <code>[start:end:step]</code>, and the end index is not included.</p>
 
-          <h3>.item() — tensor to Python value</h3>
+          <h3>Converting a Tensor to a Python Value</h3>
 
-          <p>A single indexed value is still a tensor. <code>.item()</code> converts it — but only
-            for tensors with exactly one element. Call it on anything bigger and it fails:</p>
+          <p>A single indexed value is still a tensor. The <code>.item()</code> function converts it
+            to a plain Python number, but only for tensors holding exactly one element. Call it on
+            anything larger and it fails.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>item.py</span></div><pre>x.item()          <span class="c"># 12 elements — no</span>
-x[0, -1].item()   <span class="c"># 1 element — yes</span></pre></div>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>x.item()          <span class="c"># 12 elements — fails</span>
+x[0, -1].item()   <span class="c"># 1 element — works</span></pre></div>
+
+          <p>Running the example raises an error on the first line and prints a number on the second.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output"><span class="err">RuntimeError: a Tensor with 12 elements cannot be converted to Scalar</span>
 4</pre></div>
 
-          <h3>Multiple features per sample</h3>
+          <h3>Selecting a Feature Across Every Sample</h3>
 
-          <p>With more features, index across both dimensions. Column 0 pulls every distance:</p>
+          <p>With more than one feature, you index across both dimensions. Column 0 pulls every
+            distance.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>features.py</span></div><pre>data = torch.tensor([[ 3.0,  8.0, 1.0],   <span class="c"># distance, hour, weather</span>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>data = torch.tensor([[ 3.0,  8.0, 1.0],   <span class="c"># distance, hour, weather</span>
                      [ 7.0, 17.0, 2.0],
                      [12.0, 12.0, 1.0]])
 
 distances = data[:, 0]</pre></div>
+
+          <p>Running the example prints one value per sample.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([ 3.,  7., 12.])</pre></div>
         </section>
 
-        <!-- ═══════════════ 06 MATH ═══════════════ -->
+        <!-- ═══════════════ 7 MATH ═══════════════ -->
         <section class="card" id="math">
           <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 7h6M8 4v6M13 17h6M5 17l5-5M5 12l5 5M16 6v0M16 20v0"/><circle cx="16" cy="7" r=".5"/></svg></span>
-          <p class="sec-label">06 — Tensor Math</p>
-          <h2>Element-wise, all at once</h2>
-          <p class="lede">The single neuron computes <code>weight * distance + bias</code>. Tensors do it for every sample simultaneously.</p>
+          <p class="sec-label">7 — Tensor Math</p>
+          <h2>How to Do Element-Wise Math</h2>
+          <p class="lede">One expression covers every sample at once, with no loop.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>neuron.py</span></div><pre>distances = torch.tensor([[3.0], [7.0], [12.0]])
+          <p>The smallest thing a neural network does is take a number, scale it by a <b>weight</b>,
+            and add a <b>bias</b>.</p>
+
+          <p>Predicting delivery time from distance might use 2.3 minutes per mile plus 8 minutes of
+            fixed overhead. The example below applies that to three deliveries in one line.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+distances = torch.tensor([[3.0], [7.0], [12.0]])
 weight, bias = 2.3, 8.0
 
 weight * distances + bias
@@ -718,51 +940,75 @@ weight * distances + bias
 #  [2.3*7.0  + 8.0],
 #  [2.3*12.0 + 8.0]]</span></pre></div>
 
-          <p>PyTorch's tensor math works <b>element-wise</b> — each element is operated on
-            independently. The same weight applies to every distance; the same bias adds to every
-            result. It reads like regular Python but runs on all elements at once.</p>
+          <p>Tensor math in PyTorch is <b>element-wise</b>. Each element is operated on independently.
+            The same weight applies to every distance and the same bias is added to every result.</p>
 
-          <p>This works for scalars, and for tensors of the same shape:</p>
+          <p>The code reads like ordinary Python, but it runs on all elements at once.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>elementwise.py</span></div><pre>a = torch.tensor([1, 2, 3])
+          <p>This works for a scalar, as above, and for two tensors of the same shape.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>a = torch.tensor([1, 2, 3])
 b = torch.tensor([4, 5, 6])
 
 a + b
 a * b
 a / b</pre></div>
+
+          <p>Running the example prints the three results.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([5, 7, 9])
 tensor([ 4, 10, 18])
 tensor([0.2500, 0.4000, 0.5000])</pre></div>
+
+          <p>Note the last line. Dividing two integer tensors gives you a float tensor. Part 10
+            returns to this.</p>
         </section>
 
-        <!-- ═══════════════ 07 BROADCASTING ═══════════════ -->
+        <!-- ═══════════════ 8 BROADCASTING ═══════════════ -->
         <section class="card" id="broadcasting">
           <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="12" r="2.5"/><path d="M11 8.5a6 6 0 0 1 0 7M14.5 6a10 10 0 0 1 0 12M18 3.5a14 14 0 0 1 0 17"/></svg></span>
-          <p class="sec-label">07 — Broadcasting</p>
-          <h2>Specify once, apply everywhere</h2>
-          <p class="lede">When one dimension is 1 and the other is larger, PyTorch expands the smaller one by repeating values.</p>
+          <p class="sec-label">8 — Broadcasting</p>
+          <h2>How Broadcasting Works</h2>
+          <p class="lede">Specify a value once and PyTorch applies it everywhere it is needed.</p>
 
-          <p>Three deliveries, three features each. You want adjustment factors: 1.1&times; for
-            distance, no change for time, a 5&times; penalty for bad weather. Repeating the row works
-            — but it's redundant:</p>
+          <p>Consider three deliveries with three features each. You want to apply adjustment factors:
+            1.1&times; for distance, no change for time, and a 5&times; penalty for bad weather.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>redundant.py</span></div><pre>data * torch.tensor([[1.1, 1.0, 5.0],
+          <p>Repeating the row three times works, and it is redundant.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+data = torch.tensor([[ 3.0,  8.0, 1.0],   <span class="c"># distance, hour, weather</span>
+                     [ 7.0, 17.0, 2.0],
+                     [12.0, 12.0, 1.0]])  <span class="c"># shape [3, 3]</span>
+
+data * torch.tensor([[1.1, 1.0, 5.0],
                      [1.1, 1.0, 5.0],
                      [1.1, 1.0, 5.0]])   <span class="c"># same shape, three copies</span></pre></div>
 
-          <p>Broadcasting lets you specify the values once:</p>
+          <p>Broadcasting lets you specify the values once instead.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>broadcast.py</span></div><pre>data * torch.tensor([[1.1, 1.0, 5.0]])  <span class="c"># one row does it all</span></pre></div>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>data * torch.tensor([[1.1, 1.0, 5.0]])  <span class="c"># one row does it all</span></pre></div>
 
-          <p>No loops. No manual repetition. You've already seen this — it's how a scalar weight
-            and bias applied to every distance at once. A scalar is just the smallest broadcast.</p>
+          <p>Both produce the same result. No loops, no manual repetition.</p>
 
-          <h3>The rule, dimension by dimension</h3>
+          <p>You have already seen this, in fact. It is how a scalar weight and bias applied to every
+            distance at once in the previous section. A scalar is the smallest possible broadcast.</p>
 
-          <p>Normally PyTorch requires exact dimension matches. The exception: a dimension of 1
-            expands to match. Combine a <code>(1, 3)</code> tensor with a <code>(3, 1)</code>
-            tensor and PyTorch checks each dimension in turn — <b>1 vs 3, the 1 expands; 3 vs 1,
-            the 1 expands. Both become (3, 3).</b></p>
+          <h3>The Two Rules</h3>
+
+          <p>Broadcasting follows two rules, applied in this order:</p>
+
+          <ol>
+            <li>If the two shapes have a different number of dimensions, pad the shorter one with 1s
+              <b>on the left</b> until they match.</li>
+            <li>For each dimension, if one size is 1, expand it to match the other. If neither is 1
+              and they differ, the operation fails.</li>
+          </ol>
+
+          <p>Take a <code>(1, 3)</code> tensor combined with a <code>(3, 1)</code> tensor. Rule 1 does
+            nothing, since both already have two dimensions. Rule 2 fires twice: 1 against 3 expands
+            the 1, then 3 against 1 expands the 1. Both become <code>(3, 3)</code>.</p>
 
           <div class="figwrap">
             <svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg" font-family="Fira Code, monospace" font-size="15">
@@ -828,66 +1074,66 @@ tensor([0.2500, 0.4000, 0.5000])</pre></div>
           <p class="caption"><b>(1, 3) + (3, 1) → (3, 3).</b> Dashed cells are the copies PyTorch
             makes for you. Each dimension of size 1 stretches to match the other tensor.</p>
 
-          <p>The real thing, straight from the notebook:</p>
+          <h3>When the Shapes Have Different Lengths</h3>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>cross_broadcast.py</span></div><pre>a = torch.tensor([1, 2, 3])       <span class="c"># shape [3]</span>
+          <p>Rule 1 is the one that gets forgotten, because it is invisible in the code.</p>
+
+          <p>What happens with <code>[3]</code> and <code>[3, 1]</code> — one dimension against two?
+            PyTorch lines the shapes up from the <b>right</b> and pads the shorter one with 1s on the
+            left. So <code>[3]</code> is read as <code>[1, 3]</code>, and you are back to the case
+            above.</p>
+
+          <table>
+            <tr><th>step</th><th>a</th><th>b</th></tr>
+            <tr><td>as written</td><td>[3]</td><td>[3, 1]</td></tr>
+            <tr><td>rule 1: pad on the left</td><td>[1, 3]</td><td>[3, 1]</td></tr>
+            <tr><td>rule 2: expand size-1 dims</td><td>[3, 3]</td><td>[3, 3]</td></tr>
+          </table>
+
+          <p>Which is why the example below works, even though the two shapes look incompatible.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>a = torch.tensor([1, 2, 3])       <span class="c"># shape [3]</span>
 b = torch.tensor([[1],
                   [2],
                   [3]])           <span class="c"># shape [3, 1]</span>
 
 a + b</pre></div>
+
+          <p>Running the example prints a 3&times;3 tensor.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[2, 3, 4],
         [3, 4, 5],
         [4, 5, 6]])</pre></div>
 
           <div class="takeaway">
-            <strong>Where you'll see it</strong>
-            Adjusting features across batches. Combining different dimensions of data. Applying
-            transformations efficiently. Once you know to look for it, broadcasting opportunities
-            appear everywhere in deep learning.
+            <strong>Where you will see this</strong>
+            Adjusting features across a batch. Combining data of different dimensions. Applying a
+            transformation without writing a loop. Once you know to look for it, broadcasting
+            opportunities turn up everywhere in deep learning code.
           </div>
         </section>
 
-        <!-- ═══════════════ 08 CHECKLIST ═══════════════ -->
-        <section class="card" id="checklist">
-          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 6h11M9 12h11M9 18h11M4 6l1.2 1.2L7.5 5M4 12l1.2 1.2L7.5 11M4 18l1.2 1.2L7.5 17"/></svg></span>
-          <p class="sec-label">08 — Debugging Checklist</p>
-          <h2>When a tensor error hits</h2>
-          <p class="lede">Five checks, in order. Most errors fall to the first two.</p>
-
-          <ol>
-            <li><b>Print <code>tensor.shape</code>.</b> Understanding the current dimensions is the
-              first step to any fix.</li>
-            <li><b>Read the error.</b> It names both shapes. Seen side by side, the fix is usually
-              obvious.</li>
-            <li><b>Check the batch dimension exists.</b> A single sample needs at minimum
-              <code>[1, 1]</code>.</li>
-            <li><b>Check the dtype.</b> <code>float32</code> for neural networks — cast with
-              <code>.float()</code> or <code>dtype=</code>.</li>
-            <li><b>Check the feature count</b> matches what the model was built for.</li>
-          </ol>
-
-          <div class="takeaway">
-            <strong>Permission to forget</strong>
-            You don't need to memorize everything. These patterns become second nature with
-            practice — and even the pros check the docs.
-          </div>
-        </section>
-
-        <!-- ═══════════════ 09 BEYOND ═══════════════ -->
+        <!-- ═══════════════ 9 MORE OPS ═══════════════ -->
         <section class="card" id="beyond">
           <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V5a1 1 0 0 1 1-1h13l2 2v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg></span>
-          <p class="sec-label">09 — Beyond the Videos</p>
-          <h2>Extras from the lab</h2>
-          <p class="lede">The lab notebooks go further than the lectures. The highlights, with real outputs.</p>
+          <p class="sec-label">9 — More Operations</p>
+          <h2>More Tensor Operations</h2>
+          <p class="lede">A short reference for the operations you will reach for next.</p>
 
-          <h3>reshape and transpose</h3>
+          <p>Skim this section now and come back to it when you need one of them.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>restructure.py</span></div><pre>x = torch.tensor([[1, 2, 3],
+          <h3>Reshape and Transpose</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+x = torch.tensor([[1, 2, 3],
                   [4, 5, 6]])         <span class="c"># [2, 3]</span>
 
 x.reshape(3, 2)
 x.transpose(0, 1)</pre></div>
+
+          <p>Running the example prints two tensors with the same shape.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[1, 2],
         [3, 4],
         [5, 6]])
@@ -895,17 +1141,25 @@ tensor([[1, 4],
         [2, 5],
         [3, 6]])</pre></div>
 
-          <p>Same shape, different tensors — <code>reshape</code> refills row by row;
-            <code>transpose</code> swaps dimensions. Two lab findings: <code>transpose(0, 1)</code>
-            equals <code>transpose(1, 0)</code>, and <code>transpose(0, 0)</code> or
-            <code>transpose(1, 1)</code> do nothing.</p>
+          <p>The same numbers, arranged differently — and these are not the same operation.</p>
 
-          <h3>Combining with torch.cat</h3>
+          <p><code>reshape</code> reads the elements in order and refills the new shape row by row.
+            <code>transpose</code> swaps two dimensions, so element <code>[i, j]</code> becomes
+            <code>[j, i]</code>. Same output shape here, different contents.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>cat.py</span></div><pre>x1 = 20 * x
+          <p>One thing worth knowing now and understanding later: <code>reshape</code> gives you a
+            <i>view</i> onto the same memory when it can, and quietly makes a copy when it cannot.
+            Part 10 shows you how to tell which one you got.</p>
+
+          <h3>Combining Tensors with torch.cat</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>x1 = 20 * x
 
 torch.cat((x, x1), dim=0)   <span class="c"># stack rows</span>
 torch.cat((x, x1), dim=1)   <span class="c"># stack columns</span></pre></div>
+
+          <p>Running the example prints the two combined tensors.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([[  1,   2,   3],
         [  4,   5,   6],
         [ 20,  40,  60],
@@ -913,25 +1167,37 @@ torch.cat((x, x1), dim=1)   <span class="c"># stack columns</span></pre></div>
 tensor([[  1,   2,   3,  20,  40,  60],
         [  4,   5,   6,  80, 100, 120]])   <span class="c"># [2, 6]</span></pre></div>
 
-          <p>All tensors must match in every dimension except the one being concatenated.</p>
+          <p>All tensors must match in every dimension except the one being concatenated. Get it wrong
+            and the error names the culprit for you.</p>
 
-          <h3>Boolean masks and dot products</h3>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output"><span class="err">RuntimeError: Sizes of tensors must match except in dimension 0.
+Expected size 3 but got size 4 for tensor number 1 in the list.</span></pre></div>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>mask_matmul.py</span></div><pre>x = torch.tensor([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+          <h3>Boolean Masks and Dot Products</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>x = torch.tensor([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
 x[x > 3]                    <span class="c"># boolean masking</span>
 
 a = torch.tensor([1, 2, 3])
 b = torch.tensor([4, 5, 6])
-torch.matmul(a, b)          <span class="c"># also: a @ b</span></pre></div>
+torch.matmul(a, b)          <span class="c"># also written a @ b</span></pre></div>
+
+          <p>Running the example prints the masked values and the dot product.</p>
+
           <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">tensor([ 4,  5,  6,  7,  8,  9, 10, 11, 12])
 tensor(32)</pre></div>
 
-          <h3>The moves, combined</h3>
+          <h3>Putting the Moves Together</h3>
 
-          <p>The lab exercises chain everything — slice, compare, combine, reshape — into feature
-            engineering:</p>
+          <p>Real feature engineering chains these operations. The example below slices out two
+            columns, builds a boolean mask from them, converts it, and attaches it as a new feature.</p>
 
-          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>feature_engineering.py</span></div><pre><span class="c"># trip_data columns: [distance_km, hour_of_day]</span>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre><span class="c"># columns: [distance_km, hour_of_day]</span>
+trip_data = torch.tensor([[ 4.2,  9.0],
+                          [15.7,  8.5],
+                          [12.1, 18.0],
+                          [ 3.3, 13.0]])   <span class="c"># shape [4, 2]</span>
+
 distances = trip_data[:, 0]
 hours     = trip_data[:, 1]
 
@@ -944,33 +1210,256 @@ mask = (is_morning_rush | is_evening_rush) &amp; is_long_trip
 new_feature_col = mask.float().unsqueeze(1)      <span class="c"># 1D bool → [N, 1] float</span>
 enhanced = torch.cat((trip_data, new_feature_col), dim=1)</pre></div>
 
-          <p>Slice out columns. Build masks with <code>&gt;</code>, <code>&amp;</code>,
-            <code>|</code>. Cast, unsqueeze, concatenate. Four sections of this post in eight
-            lines — that's the point.</p>
+          <p>Running the example gives a <code>[4, 3]</code> tensor, with the two long rush-hour trips
+            flagged.</p>
+
+          <p>Slice out the columns you need. Build masks with <code>&gt;</code>, <code>&amp;</code>
+            and <code>|</code>. Cast, unsqueeze and concatenate. That is four sections of this
+            tutorial in eight lines of code.</p>
         </section>
 
-        <!-- ═══════════════ FOOTER ═══════════════ -->
+        <!-- ═══════════════ 10 SURPRISES ═══════════════ -->
+        <section class="card" id="surprises">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.3.3.5.7.5 1.1h6c0-.4.2-.8.5-1.1A6 6 0 0 0 12 3z"/></svg></span>
+          <p class="sec-label">10 — Surprising Behaviors</p>
+          <h2>Five Surprising Behaviors</h2>
+          <p class="lede">None of these are in the first page of the docs. All five cost me time.</p>
+
+          <p>The five behaviors below were found by running experiments rather than by reading. Four
+            of them fail quietly, which is what makes them expensive.</p>
+
+          <h3>1. A Python Float Will Not Give You float64</h3>
+
+          <p>A Python <code>float</code> is 64-bit, so multiplying an integer tensor by
+            <code>2.0</code> ought to give you <code>float64</code>. It does not.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>import torch
+
+i64 = torch.tensor([1, 2])                       <span class="c"># int64</span>
+
+(i64 * 2.0).dtype                                <span class="c"># a plain Python float</span>
+(i64 * torch.tensor([2.0], dtype=torch.float64)).dtype   <span class="c"># a float64 tensor</span></pre></div>
+
+          <p>Running the example prints two different data types.</p>
+
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">torch.float32
+torch.float64</pre></div>
+
+          <p>PyTorch treats bare Python numbers as <b>weak</b>. They take part in the arithmetic but
+            do not get a vote on the result's data type, so you land on the default,
+            <code>float32</code>. A float64 <i>tensor</i> is strong, and does promote.</p>
+
+          <p>This is the place where PyTorch's promotion rules come apart from Python's. It is also
+            why a stray <code>float64</code> in your pipeline almost always traces back to NumPy or
+            pandas rather than to a number you typed.</p>
+
+          <h3>2. squeeze() on the Wrong Dimension Fails Silently</h3>
+
+          <p>Calling <code>squeeze(1)</code> removes dimension 1 if its size is 1. If it is not, you
+            might expect an error. You get your tensor back unchanged.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>t = torch.zeros(2, 3)
+t.squeeze(1).shape       <span class="c"># dimension 1 has size 3, not 1</span></pre></div>
+
+          <p>Running the example prints the original shape.</p>
+
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">torch.Size([2, 3])</pre></div>
+
+          <p>No warning and no exception. The bug shows up three lines later as a shape mismatch that
+            points at entirely the wrong place. Print the shape immediately after any
+            <code>squeeze</code> you were not completely sure about.</p>
+
+          <h3>3. reshape Sometimes Copies, and view Refuses To</h3>
+
+          <p><code>reshape</code> returns a view of the same memory when the layout allows it, and
+            copies when it does not. The <code>data_ptr()</code> function tells you which one you
+            got.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>x  = torch.tensor([[1, 2, 3],
+                   [4, 5, 6]])
+
+x.reshape(3, 2).data_ptr() == x.data_ptr()     <span class="c"># fresh, contiguous tensor</span>
+
+xt = x.transpose(0, 1)                         <span class="c"># transposing scrambles the layout</span>
+xt.is_contiguous()
+xt.reshape(2, 3).data_ptr() == xt.data_ptr()</pre></div>
+
+          <p>Running the example prints three booleans.</p>
+
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">True
+False
+False</pre></div>
+
+          <p>Now ask <code>view</code> to do the same job on the transposed tensor. It declines
+            outright rather than copying behind your back.</p>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>xt.view(2, 3)</pre></div>
+
+          <p>Running the example results in an error, as follows.</p>
+
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output"><span class="err">RuntimeError: view size is not compatible with input tensor's size and stride
+(at least one dimension spans across two contiguous subspaces).
+Use .reshape(...) instead.</span></pre></div>
+
+          <p>That is the whole difference between the two functions. <code>view</code> is a promise of
+            no copy, and it errors when it cannot keep that promise. <code>reshape</code> makes no
+            promise and always succeeds.</p>
+
+          <p>Reach for <code>reshape</code> unless you specifically need the guarantee.</p>
+
+          <h3>4. Two transpose Calls Are the Same Call</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>torch.equal(x.transpose(0, 1), x.transpose(1, 0))   <span class="c"># argument order</span>
+torch.equal(x.transpose(0, 0), x)                   <span class="c"># same dimension twice</span></pre></div>
+
+          <p>Running the example prints True twice.</p>
+
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">True
+True</pre></div>
+
+          <p><code>transpose</code> swaps a <i>pair</i> of dimensions, and a pair has no order. This
+            means <code>(0, 1)</code> and <code>(1, 0)</code> are one operation written two ways.</p>
+
+          <p>Passing the same index twice asks it to swap a dimension with itself, which does nothing.
+            Neither case raises an error. Both are silent no-ops if you meant something else.</p>
+
+          <h3>5. Integer Division Gives You Floats</h3>
+
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python</span></div><pre>a = torch.tensor([1, 2, 3])     <span class="c"># int64</span>
+b = torch.tensor([4, 5, 6])     <span class="c"># int64</span>
+
+(a / b), (a / b).dtype</pre></div>
+
+          <p>Running the example prints a float tensor.</p>
+
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div><pre class="output">(tensor([0.2500, 0.4000, 0.5000]), torch.float32)</pre></div>
+
+          <p>The <code>/</code> operator is true division, exactly as in Python 3, so two integer
+            tensors give you a float tensor. Use <code>//</code> if you wanted the floor.</p>
+
+          <p>This is worth knowing because it is a place where a <code>float32</code> can appear in a
+            pipeline you thought was integers from end to end.</p>
+
+          <div class="takeaway">
+            <strong>The pattern behind all five</strong>
+            Four of these fail quietly rather than loudly: a shape that did not change, a copy you did
+            not ask for, a data type the arithmetic did not imply. Quiet failures are exactly what a
+            printed <code>.shape</code> and <code>.dtype</code> catch.
+          </div>
+        </section>
+
+        <!-- ═══════════════ 11 CHECKLIST ═══════════════ -->
+        <section class="card" id="checklist">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 6h11M9 12h11M9 18h11M4 6l1.2 1.2L7.5 5M4 12l1.2 1.2L7.5 11M4 18l1.2 1.2L7.5 17"/></svg></span>
+          <p class="sec-label">11 — Debugging Checklist</p>
+          <h2>A Checklist for Debugging Tensor Errors</h2>
+          <p class="lede">Six checks, in order. Most errors fall to the first two.</p>
+
+          <p>When a tensor error hits, work down this list rather than guessing.</p>
+
+          <ol>
+            <li><b>Print <code>tensor.shape</code>.</b> Knowing the current dimensions is the first
+              step to any fix.</li>
+            <li><b>Read the error message.</b> It names both shapes. Seen side by side, the fix is
+              usually obvious.</li>
+            <li><b>Check that the batch dimension exists.</b> A single sample needs
+              <code>[1, 1]</code> at minimum.</li>
+            <li><b>Check the data type.</b> Use <code>float32</code> for neural networks, and cast
+              with <code>.float()</code> or <code>dtype=</code>.</li>
+            <li><b>Check the feature count</b> against what the model was built for.</li>
+            <li><b>If two tensors are being compared</b> — a loss against targets, a mask against data
+              — check that <i>every</i> dimension lines up, batch included.</li>
+          </ol>
+
+          <div class="takeaway">
+            <strong>Note</strong>
+            You do not need to memorize any of this. These patterns become second nature with
+            practice, and even experienced practitioners check the documentation.
+          </div>
+        </section>
+
+        <!-- ═══════════════ FURTHER READING ═══════════════ -->
+        <section class="card" id="reading">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+          <p class="sec-label">Further Reading</p>
+          <h2>Further Reading</h2>
+          <p class="lede">Resources if you want to go deeper on any part of this tutorial.</p>
+
+          <h3>APIs</h3>
+          <ul>
+            <li><a href="https://pytorch.org/docs/stable/tensors.html">torch.Tensor</a> — the full list of tensor methods.</li>
+            <li><a href="https://pytorch.org/docs/stable/notes/broadcasting.html">Broadcasting semantics</a> — the formal version of Part 8.</li>
+            <li><a href="https://pytorch.org/docs/stable/tensor_attributes.html">Tensor attributes</a> — data types and the type promotion rules.</li>
+            <li><a href="https://pytorch.org/docs/stable/generated/torch.reshape.html">torch.reshape</a> and <a href="https://pytorch.org/docs/stable/generated/torch.Tensor.view.html">torch.Tensor.view</a> — the copy-versus-view distinction from Part 10.</li>
+          </ul>
+
+          <h3>Courses</h3>
+          <ul>
+            <li><a href="https://www.deeplearning.ai/">PyTorch Fundamentals</a> on DeepLearning.AI, taught by Laurence Moroney.</li>
+          </ul>
+        </section>
+
+        <!-- ═══════════════ SUMMARY ═══════════════ -->
+        <section class="card" id="summary">
+          <span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 21V4M4 4h13l-2.5 4L17 12H4"/></svg></span>
+          <p class="sec-label">Summary</p>
+          <h2>Summary</h2>
+          <p class="lede">What you covered, and where to go next.</p>
+
+          <p>In this tutorial, you discovered how to work with tensor shapes, data types and
+            broadcasting in PyTorch.</p>
+
+          <p>Specifically, you learned:</p>
+
+          <ul>
+            <li>That the first number in a shape is the batch size and the rest describe one sample,
+              and that the batch size only stops mattering <i>inside</i> a layer.</li>
+            <li>That PyTorch gives you <code>int64</code> for whole numbers and <code>float32</code>
+              for decimals, and how to override both.</li>
+            <li>How <code>unsqueeze</code> and <code>squeeze</code> add and remove the batch dimension
+              that models require.</li>
+            <li>The two rules of broadcasting — pad the shorter shape on the left, then expand any
+              dimension of size 1 — and why the first one is easy to miss.</li>
+            <li>Five behaviors that fail silently, including weak scalar typing and the hidden copy
+              inside <code>reshape</code>.</li>
+          </ul>
+
+          <p>The next thing to reach for is the training loop, where these shapes start moving through
+            a model and back again.</p>
+        </section>
+
+        <!-- ═══════════════ COLOPHON ═══════════════ -->
         <footer class="card" id="colophon">
-          <p class="credit">This blog is inspired by the <b>PyTorch Fundamentals</b> course on
-            <a href="https://www.deeplearning.ai/">DeepLearning.AI</a>, offered by <b>Laurence
-            Moroney</b>. The explanations follow the course material; the code and outputs are from
-            my own notebooks.</p>
+          <h2>Colophon</h2>
+          <p class="credit">Every snippet on this page was executed on <b>PyTorch 2.13</b> and the
+            output pasted from the notebook, including the error messages, which are quoted verbatim
+            rather than paraphrased. Random values from <code>torch.rand</code> will differ on your
+            machine; everything else should match. Where behavior depends on the version, the version
+            is named in the text.</p>
+          <p class="credit" style="margin-top:12px">Structure and worked examples follow the
+            <b>PyTorch Fundamentals</b> course on
+            <a href="https://www.deeplearning.ai/">DeepLearning.AI</a> by <b>Laurence Moroney</b>. Part 10 is my own.</p>
         </footer>
 
-      </div>
+</div>
 
       <aside class="post-toc">
         <div class="toc-label">Contents</div>
         <ul class="toc-list">
-          <li><a href="#shapes">1 · Read the shape first</a></li>
-          <li><a href="#dtypes">2 · Defaults, promotion, float32</a></li>
-          <li><a href="#creating">3 · Four ways in</a></li>
-          <li><a href="#reshaping">4 · unsqueeze in, squeeze out</a></li>
-          <li><a href="#indexing">5 · Pull out what you need</a></li>
-          <li><a href="#math">6 · Element-wise, all at once</a></li>
-          <li><a href="#broadcasting">7 · Specify once, apply everywhere</a></li>
-          <li><a href="#checklist">8 · Debugging checklist</a></li>
-          <li><a href="#beyond">9 · Extras from the lab</a></li>
+          <li><a href="#overview">What you will learn</a></li>
+          <li><a href="#setup">1 · Setup and prerequisites</a></li>
+          <li><a href="#shapes">2 · Read a tensor shape</a></li>
+          <li><a href="#dtypes">3 · Control data types</a></li>
+          <li><a href="#creating">4 · Four ways to create</a></li>
+          <li><a href="#reshaping">5 · Add and remove dimensions</a></li>
+          <li><a href="#indexing">6 · Index and slice</a></li>
+          <li><a href="#math">7 · Element-wise math</a></li>
+          <li><a href="#broadcasting">8 · How broadcasting works</a></li>
+          <li><a href="#beyond">9 · More operations</a></li>
+          <li><a href="#surprises">10 · Five surprising behaviors</a></li>
+          <li><a href="#checklist">11 · Debugging checklist</a></li>
+          <li><a href="#reading">Further reading</a></li>
+          <li><a href="#summary">Summary</a></li>
         </ul>
       </aside>
     </div>
