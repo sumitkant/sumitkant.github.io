@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Attention in Transformers — Concepts and Code in PyTorch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Fira+Code:wght@300..700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
+  <style>
+    /* ── Attention palette (light · blue + orange) ── */
+    :root {
+      --paper: #F7FAFE;
+      --card: #FFFFFF;
+      --card-2: #EBF2FC;
+      --ink: #16233A;
+      --ink-dim: #5D6C87;
+      --iris: #1D5BD6;          /* blue accent */
+      --iris-soft: #E0EAFB;
+      --ember: #DD6A12;         /* orange accent */
+      --ember-soft: #FBEADA;
+      --rule: #DBE5F4;
+      --code-bg: #14213A;
+      --code-bar: #0D1729;
+      --code-text: #E9EFF9;
+      --code-dim: #8CA0C4;
+
+      --nav-h: 72px;
+      --content-w: 1100px;
+      --prose-w: 720px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100%
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Google Sans Flex", system-ui, sans-serif;
+      font-weight: 380;
+      font-optical-sizing: auto;
+      font-variation-settings: "slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 0;
+      font-size: 16px;
+      line-height: 1.72;
+      letter-spacing: -.003em;
+      /* ── static dot paper ── */
+      background-color: var(--paper);
+      background-image: radial-gradient(circle, rgba(29, 91, 214, .24) 1px, transparent 1.2px);
+      background-size: 24px 24px;
+      background-position: 0 0;
+      background-attachment: fixed;
+      background-repeat: repeat;
+    }
+
+    a {
+      color: var(--iris)
+    }
+
+    h1,
+    h2,
+    h3,
+    .banner-title,
+    .nav-logo {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: clamp(23px, 3.4vw, 30px);
+      letter-spacing: -.022em;
+      line-height: 1.2;
+      margin: 0 0 10px
+    }
+
+    h3 {
+      font-weight: 700;
+      font-size: 15.5px;
+      letter-spacing: -.005em;
+      margin: 32px 0 8px;
+      color: var(--iris)
+    }
+
+    p {
+      margin: 0 0 18px
+    }
+
+    ul,
+    ol {
+      padding-left: 20px
+    }
+
+    li {
+      margin-bottom: 8px
+    }
+
+    b {
+      font-weight: 650;
+      color: var(--iris)
+    }
+
+    code {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .85em;
+      color: #93460B;
+      background: var(--ember-soft);
+      padding: 1px 5px;
+      border-radius: 5px;
+    }
+
+    /* ── nav (copied from the reference post) ── */
+    #progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--iris), var(--ember));
+      z-index: 200;
+      transition: width .08s linear
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--rule);
+      background: rgba(247, 250, 254, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px)
+    }
+
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--ink)
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    .nav-links li {
+      margin: 0
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color 0.15s
+    }
+
+    .nav-links a:hover {
+      color: var(--iris)
+    }
+
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 5rem
+    }
+
+    /* ── banner ── */
+    .post-banner {
+      margin: 3rem 0 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: var(--card-2);
+      border: 1px solid var(--rule);
+      padding: 58px 46px 54px;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 18px 44px rgba(22, 51, 102, .10)
+    }
+
+    .banner-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .banner-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(100deg,
+          rgba(255, 255, 255, .95) 0%,
+          rgba(255, 255, 255, .88) 36%,
+          rgba(255, 255, 255, .52) 58%,
+          rgba(255, 255, 255, .10) 82%,
+          rgba(255, 255, 255, 0) 96%)
+    }
+
+    .banner-grid {
+      position: relative;
+      z-index: 2;
+      width: 100%
+    }
+
+    .banner-inner {
+      position: relative;
+      max-width: 62%
+    }
+
+    .banner-eyebrow {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 600;
+      font-size: .78rem;
+      letter-spacing: .20em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin: 0 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .banner-eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--iris);
+      display: inline-block
+    }
+
+    .banner-title {
+      font-weight: 800;
+      font-size: clamp(2.1rem, 5vw, 3.1rem);
+      line-height: 1.06;
+      letter-spacing: -.028em;
+      margin: 0 0 20px;
+      color: var(--ink)
+    }
+
+    .banner-title .accent {
+      color: var(--iris)
+    }
+
+    .banner-sub {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--ink-dim);
+      max-width: 60ch;
+      margin: 0
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 1.25rem 0
+    }
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--rule);
+      font-size: 12px;
+      color: var(--ink-dim);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      background: var(--card)
+    }
+
+    .meta-tag.accent-tag {
+      background: var(--iris);
+      color: #fff;
+      border-color: transparent;
+      font-weight: 600
+    }
+
+    /* ── layout + TOC ── */
+    .post-layout {
+      display: grid;
+      grid-template-columns: var(--prose-w) 1fr;
+      gap: 0 3rem;
+      align-items: start;
+      padding-top: .5rem
+    }
+
+    .post-prose {
+      min-width: 0
+    }
+
+    .post-toc {
+      position: sticky;
+      top: calc(var(--nav-h) + 1.5rem);
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      margin-top: 26px;
+      box-shadow: 0 10px 26px rgba(22, 51, 102, .07)
+    }
+
+    .toc-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 700;
+      margin-bottom: 12px
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin: 0;
+      padding: 0
+    }
+
+    .toc-list li {
+      margin: 0
+    }
+
+    .toc-list a {
+      font-size: 12.5px;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color 0.15s;
+      display: block;
+      line-height: 1.4
+    }
+
+    .toc-list a:hover,
+    .toc-list a.active {
+      color: var(--iris)
+    }
+
+    .toc-list a.active {
+      font-weight: 600
+    }
+
+    /* ── each section is a rounded rectangle floating over the dots ── */
+    section.card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px 30px;
+      margin: 26px 0;
+      scroll-margin-top: calc(var(--nav-h) + 1rem);
+      box-shadow: 0 18px 40px rgba(22, 51, 102, .09)
+    }
+
+    section.card>.sec-label,
+    section.card>h2 {
+      padding-right: 62px
+    }
+
+    /* eyebrow sits above the heading and carries the descriptive line */
+    .sec-label {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 10.5px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      line-height: 1.7;
+      color: var(--ink-dim);
+      margin: 0 0 8px
+    }
+
+    .lede {
+      font-size: 18px;
+      color: var(--ink-dim);
+      margin-bottom: 22px
+    }
+
+    /* ── code windows ── */
+    .win {
+      margin: 22px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid #253656;
+      background: var(--code-bg);
+      box-shadow: 0 14px 30px rgba(10, 24, 48, .30)
+    }
+
+    .win-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--code-bar);
+      border-bottom: 1px solid #060D18
+    }
+
+    .win-bar i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: block
+    }
+
+    .win-bar i:nth-child(1) {
+      background: #E58B57
+    }
+
+    .win-bar i:nth-child(2) {
+      background: #E5B34C
+    }
+
+    .win-bar i:nth-child(3) {
+      background: #6FA0F0
+    }
+
+    .win-bar span {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11.5px;
+      color: var(--code-dim);
+      margin-left: 8px;
+      letter-spacing: .03em
+    }
+
+    .win pre {
+      margin: 0;
+      background: transparent;
+      border: 0;
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px;
+      line-height: 1.75;
+      padding: 16px 18px;
+      color: var(--code-text);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      overflow-x: hidden
+    }
+
+    pre .c {
+      color: #7C8DB0;
+      font-style: italic
+    }
+
+    pre .k {
+      color: #8FB4FF
+    }
+
+    pre .s {
+      color: #F5A76C
+    }
+
+    .win.out {
+      background: var(--card-2);
+      border-color: var(--rule);
+      box-shadow: none
+    }
+
+    .win.out .win-bar {
+      background: #DFE9F8;
+      border-bottom: 1px solid var(--rule)
+    }
+
+    .win.out .win-bar span {
+      color: var(--ink-dim)
+    }
+
+    .win.out pre.output {
+      color: var(--ink);
+      font-size: 12.5px
+    }
+
+    /* ── tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-family: "Google Sans Flex", system-ui, sans-serif;
+      font-size: 13px;
+      margin: 22px 0
+    }
+
+    th,
+    td {
+      overflow-wrap: anywhere
+    }
+
+    th {
+      text-align: left;
+      font-weight: 640;
+      color: var(--iris);
+      border-bottom: 1px solid var(--rule);
+      padding: 8px 10px;
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #E6EDF8;
+      color: var(--ink-dim);
+      vertical-align: top
+    }
+
+    td:first-child {
+      color: var(--ink)
+    }
+
+    /* ── callouts ── */
+    .takeaway {
+      background: var(--iris-soft);
+      border: 1px solid #C4D6F5;
+      border-radius: var(--radius-md);
+      padding: 15px 18px;
+      margin: 24px 0;
+      font-size: 16px
+    }
+
+    .takeaway strong {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 700;
+      color: var(--iris);
+      display: block;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 5px
+    }
+
+    .warn {
+      background: var(--ember-soft);
+      border-color: #F2CFAC
+    }
+
+    .warn strong {
+      color: var(--ember)
+    }
+
+    .caption {
+      font-size: 13.5px;
+      color: var(--ink-dim);
+      line-height: 1.55;
+      margin: 12px 2px 26px
+    }
+
+    .caption b {
+      color: var(--iris);
+      font-weight: 650
+    }
+
+    /* ── figures ── */
+    .figwrap {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--card-2);
+      border: 1px solid var(--rule);
+      margin: 22px 0 0;
+      padding: 12px
+    }
+
+    .figwrap svg,
+    .figwrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: var(--radius-sm)
+    }
+
+    /* ── formula (rendered by KaTeX) ── */
+    .formula {
+      text-align: center;
+      margin: 26px 0;
+      font-size: 18.5px;
+      color: var(--ink);
+      overflow-x: auto
+    }
+
+    /* ── hand-calc matrices ── */
+    .mrow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 16px 22px;
+      margin: 20px 0 8px
+    }
+
+    .mlab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px
+    }
+
+    .mlab>b {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-dim)
+    }
+
+    .mlab>b .q {
+      color: var(--iris)
+    }
+
+    .mlab>b .o {
+      color: var(--ember)
+    }
+
+    .mx {
+      position: relative;
+      display: inline-grid;
+      gap: 1px 16px;
+      padding: 7px 15px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      text-align: right
+    }
+
+    .mx::before,
+    .mx::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 7px;
+      border: 1.8px solid #92A6C9;
+    }
+
+    .mx::before {
+      left: 0;
+      border-right: 0;
+      border-radius: 3px 0 0 3px
+    }
+
+    .mx::after {
+      right: 0;
+      border-left: 0;
+      border-radius: 0 3px 3px 0
+    }
+
+    .mx span.hi {
+      color: var(--ember);
+      font-weight: 640
+    }
+
+    .mx span.bl {
+      color: var(--iris);
+      font-weight: 640
+    }
+
+    .mop {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 600;
+      font-size: 17px;
+      color: var(--ink-dim)
+    }
+
+    /* ── related post tile ── */
+    .item.post-card {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      background: var(--card-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      margin: 20px 0 6px;
+      transition: transform .18s ease, box-shadow .18s ease
+    }
+
+    .item.post-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 42px rgba(22, 51, 102, .14)
+    }
+
+    .post-thumb {
+      width: 100%;
+      height: 100%
+    }
+
+    .post-body {
+      padding: 20px 24px
+    }
+
+    .post-tags {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 600;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 8px
+    }
+
+    .post-tags .p {
+      color: var(--iris);
+      font-weight: 700
+    }
+
+    .post-title {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 1.28;
+      letter-spacing: -.015em;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 7px;
+      transition: color .15s
+    }
+
+    .item.post-card:hover .post-title {
+      color: var(--iris)
+    }
+
+    .post-desc {
+      font-size: 14px;
+      color: var(--ink-dim);
+      margin: 0;
+      line-height: 1.55
+    }
+
+    /* ── section number, top right ── */
+    .sec-num {
+      position: absolute;
+      top: 24px;
+      right: 30px;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 800;
+      font-size: 30px;
+      letter-spacing: -.03em;
+      line-height: 1;
+      color: var(--iris);
+      opacity: .18;
+      pointer-events: none;
+      user-select: none
+    }
+
+    /* ── footer ── */
+    footer.card {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px;
+      margin: 26px 0 0;
+      color: var(--ink-dim);
+      font-size: 15px;
+      box-shadow: 0 18px 40px rgba(22, 51, 102, .09)
+    }
+
+    footer.card h2 {
+      color: var(--ink);
+      font-size: 20px;
+      margin-bottom: 12px
+    }
+
+    .credit {
+      margin: 0;
+      font-size: 14px
+    }
+
+    @media (max-width:900px) {
+      .post-layout {
+        grid-template-columns: 1fr
+      }
+
+      .post-toc {
+        display: none
+      }
+    }
+
+    @media (max-width:720px) {
+      .nav-links {
+        display: none
+      }
+
+      .page {
+        padding: 0 1rem 4rem
+      }
+
+      .nav-inner {
+        padding: 0 1rem
+      }
+
+      .post-banner {
+        padding: 34px 22px;
+        min-height: 260px
+      }
+
+      .banner-scrim {
+        background: rgba(255, 255, 255, .90)
+      }
+
+      .banner-inner {
+        max-width: 100%
+      }
+
+      .sec-num {
+        top: 18px;
+        right: 20px;
+        font-size: 24px
+      }
+
+      section.card,
+      footer.card {
+        padding: 26px 22px
+      }
+
+      .item.post-card {
+        grid-template-columns: 1fr
+      }
+
+      .post-thumb {
+        height: auto
+      }
+
+      .mx {
+        font-size: 12px;
+        gap: 1px 10px
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        transition: none !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="progress"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60"
+          style="display:block;  pointer-events:none; filter:brightness(0) saturate(0);"></object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../../blog.html" class="active">Blog</a></li>
+        <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page" id="top">
+
+    <div class="post-banner">
+      <svg class="banner-bg" viewBox="0 0 1200 380" preserveAspectRatio="xMidYMid slice"
+        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="1200" height="380" fill="#EBF2FC" />
+        <g opacity=".6">
+          <!-- faint grid -->
+          <g fill="none" stroke="#C4D5F0" stroke-width="1">
+            <rect x="560" y="52" width="286" height="286" />
+            <path d="M586 52v286M612 52v286M638 52v286M664 52v286M690 52v286M716 52v286M742 52v286M768 52v286M794 52v286M820 52v286" />
+            <path d="M560 78h286M560 104h286M560 130h286M560 156h286M560 182h286M560 208h286M560 234h286M560 260h286M560 286h286M560 312h286" />
+          </g>
+          <!-- attention heat cells inside the grid -->
+          <g fill="#1D5BD6">
+            <rect x="586" y="78" width="26" height="26" opacity=".34" />
+            <rect x="612" y="104" width="26" height="26" opacity=".18" />
+            <rect x="664" y="130" width="26" height="26" opacity=".26" />
+            <rect x="690" y="182" width="26" height="26" opacity=".14" />
+            <rect x="742" y="156" width="26" height="26" opacity=".30" />
+            <rect x="768" y="234" width="26" height="26" opacity=".20" />
+            <rect x="716" y="286" width="26" height="26" opacity=".26" />
+          </g>
+          <rect x="638" y="182" width="26" height="26" fill="#DD6A12" opacity=".8" />
+          <rect x="638" y="182" width="26" height="26" fill="none" stroke="#DD6A12" stroke-width="2.5" />
+        </g>
+        <!-- token chips + attention arcs -->
+        <g>
+          <g font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="16">
+            <rect x="880" y="256" width="86" height="42" rx="10" fill="#FFFFFF" stroke="#1D5BD6" stroke-width="1.6" />
+            <text x="923" y="283" text-anchor="middle" fill="#16233A">draw</text>
+            <rect x="994" y="256" width="60" height="42" rx="10" fill="#FFFFFF" stroke="#1D5BD6" stroke-width="1.6" />
+            <text x="1024" y="283" text-anchor="middle" fill="#16233A">a</text>
+            <rect x="1082" y="256" width="88" height="42" rx="10" fill="#FFFFFF" stroke="#1D5BD6" stroke-width="1.6" />
+            <text x="1126" y="283" text-anchor="middle" fill="#16233A">map</text>
+          </g>
+          <g fill="none" stroke-linecap="round">
+            <path d="M923 252 Q 973 168 1024 252" stroke="#1D5BD6" stroke-width="5" opacity=".72" />
+            <path d="M923 246 Q 1024 108 1126 246" stroke="#1D5BD6" stroke-width="2.2" opacity=".38" />
+            <path d="M1024 252 Q 1075 184 1126 252" stroke="#DD6A12" stroke-width="4" opacity=".8" />
+          </g>
+          <circle cx="923" cy="252" r="4" fill="#1D5BD6" />
+          <circle cx="1024" cy="252" r="4" fill="#1D5BD6" />
+          <circle cx="1126" cy="252" r="4" fill="#DD6A12" />
+        </g>
+      </svg>
+      <div class="banner-scrim"></div>
+      <div class="banner-grid">
+        <div class="banner-inner">
+          <p class="banner-eyebrow">Transformers · PyTorch</p>
+          <h1 class="banner-title">Attention, <span class="accent">from scratch</span></h1>
+          <p class="banner-sub">Self-attention, masked self-attention, and encoder-decoder attention — the matrix math,
+            the PyTorch code, and every number checked by hand.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">Attention</span>
+      <span class="meta-tag">Transformers</span>
+      <span class="meta-tag">PyTorch</span>
+    </div>
+
+    <div class="post-layout">
+      <div class="post-prose">
+
+        <section class="card" id="history">
+          <span class="sec-num" aria-hidden="true">01</span>
+          <p class="sec-label">A LITTLE HISTORY</p>
+          <h2>From translation to transformers</h2>
+          <p>The <b>attention mechanism</b> is the technical breakthrough that led to transformers, and transformers are
+            what made modern large language models possible. It started with machine translation. A basic approach from converting English to French is to take each English word and look up the French word it translates into. But that doesn't work well:</p>
+          <ul>
+            <li>Word order may not be the same in English and French.</li>
+            <li>Sentences can be different lengths. For example, "they arrived late" is five words in French.</li>
+          </ul>
+          <p>Around 2014, Yoshua Bengio's group at the University of Montreal and Chris Manning's group at Stanford independently
+            invented an early form of attention mechanism inside an <b>encoder-decoder</b> model:</p>
+          <ul>
+            <li>The <b>encoder</b> read one word at a time and produced an output vector per word. Earlier approaches
+              compressed the whole sentence into a single dense vector; these papers preserved every word's vector and
+              handed all of them to the decoder.</li>
+            <li>The per-word vectors captured the meaning of each word <i>in the context of the sentence</i> now called <b>contextual embeddings</b>.</li>
+            <li>The <b>decoder</b> generated the output one word at a time, weighting — attending to — each input
+              word's embedding independently, based on where that word sits in the input and where the decoder is in
+              producing the output. The model attends to the words most relevant for that step of the translation.</li>
+          </ul>
+
+          <div class="takeaway">
+            <strong>What is Attention?</strong>
+            Attention is a mechanism that lets a model <b>weight the most relevant parts of its input</b> or attend to when
+            encoding or generating each word, establishing relationships among the words in a sequence.
+
+            
+          <div class="figwrap">
+            <svg viewBox="0 0 720 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Redrawn attention visualization: lines from the word making in the top sentence connect to laws, since, 2009, itself, and most strongly to more and difficult in the bottom copy of the sentence">
+              <rect width="720" height="430" fill="#FFFFFF" rx="8" />
+              <rect x="446" y="20" width="24" height="60" rx="5" fill="#E0EAFB" stroke="#1D5BD6" stroke-width="1.2" />
+              <text x="47" y="26" transform="rotate(90 47 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">It</text>
+              <text x="71" y="26" transform="rotate(90 71 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">is</text>
+              <text x="95" y="26" transform="rotate(90 95 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">in</text>
+              <text x="119" y="26" transform="rotate(90 119 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">this</text>
+              <text x="143" y="26" transform="rotate(90 143 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">spirit</text>
+              <text x="167" y="26" transform="rotate(90 167 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">that</text>
+              <text x="191" y="26" transform="rotate(90 191 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">a</text>
+              <text x="215" y="26" transform="rotate(90 215 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">majority</text>
+              <text x="239" y="26" transform="rotate(90 239 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">of</text>
+              <text x="263" y="26" transform="rotate(90 263 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">American</text>
+              <text x="287" y="26" transform="rotate(90 287 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">governments</text>
+              <text x="311" y="26" transform="rotate(90 311 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">have</text>
+              <text x="335" y="26" transform="rotate(90 335 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">passed</text>
+              <text x="359" y="26" transform="rotate(90 359 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">new</text>
+              <text x="383" y="26" transform="rotate(90 383 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">laws</text>
+              <text x="407" y="26" transform="rotate(90 407 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">since</text>
+              <text x="431" y="26" transform="rotate(90 431 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">2009</text>
+              <text x="455" y="26" transform="rotate(90 455 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#16233A" font-weight="700">making</text>
+              <text x="479" y="26" transform="rotate(90 479 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">the</text>
+              <text x="503" y="26" transform="rotate(90 503 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">registration</text>
+              <text x="527" y="26" transform="rotate(90 527 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">or</text>
+              <text x="551" y="26" transform="rotate(90 551 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">voting</text>
+              <text x="575" y="26" transform="rotate(90 575 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">process</text>
+              <text x="599" y="26" transform="rotate(90 599 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">more</text>
+              <text x="623" y="26" transform="rotate(90 623 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">difficult</text>
+              <text x="647" y="26" transform="rotate(90 647 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">.</text>
+              <text x="671" y="26" transform="rotate(90 671 26)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">&lt;EOS&gt;</text>
+              <g fill="none" stroke-linecap="round">
+              <path d="M456,90 L380,266" stroke="#6FA0F0" stroke-width="1.6" opacity="0.4" />
+              <path d="M456,90 L404,266" stroke="#6FA0F0" stroke-width="1.6" opacity="0.35" />
+              <path d="M456,90 L428,266" stroke="#1D5BD6" stroke-width="2.6" opacity="0.7" />
+              <path d="M456,90 L452,266" stroke="#1D5BD6" stroke-width="2.0" opacity="0.5" />
+              <path d="M456,90 L596,266" stroke="#DD6A12" stroke-width="3.6" opacity="0.85" />
+              <path d="M456,90 L596,266" stroke="#B4550E" stroke-width="2.4" opacity="0.55" />
+              <path d="M456,90 L620,266" stroke="#DD6A12" stroke-width="3.6" opacity="0.9" />
+              <path d="M456,90 L620,266" stroke="#16233A" stroke-width="2.4" opacity="0.5" />
+              <path d="M456,90 L668,266" stroke="#6FA0F0" stroke-width="1.2" opacity="0.22" />
+              </g>
+              <circle cx="456" cy="90" r="3.5" fill="#1D5BD6" />
+              <rect x="371" y="272" width="18" height="14" rx="3" fill="#1D5BD6" opacity="0.12" />
+              <rect x="395" y="272" width="18" height="14" rx="3" fill="#1D5BD6" opacity="0.1" />
+              <rect x="419" y="272" width="18" height="14" rx="3" fill="#1D5BD6" opacity="0.3" />
+              <rect x="443" y="272" width="18" height="14" rx="3" fill="#1D5BD6" opacity="0.25" />
+              <rect x="587" y="272" width="18" height="14" rx="3" fill="#DD6A12" opacity="0.85" />
+              <rect x="611" y="272" width="18" height="14" rx="3" fill="#DD6A12" opacity="0.9" />
+              <rect x="659" y="272" width="18" height="14" rx="3" fill="#1D5BD6" opacity="0.08" />
+              <text x="47" y="298" transform="rotate(90 47 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">It</text>
+              <text x="71" y="298" transform="rotate(90 71 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">is</text>
+              <text x="95" y="298" transform="rotate(90 95 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">in</text>
+              <text x="119" y="298" transform="rotate(90 119 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">this</text>
+              <text x="143" y="298" transform="rotate(90 143 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">spirit</text>
+              <text x="167" y="298" transform="rotate(90 167 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">that</text>
+              <text x="191" y="298" transform="rotate(90 191 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">a</text>
+              <text x="215" y="298" transform="rotate(90 215 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">majority</text>
+              <text x="239" y="298" transform="rotate(90 239 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">of</text>
+              <text x="263" y="298" transform="rotate(90 263 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">American</text>
+              <text x="287" y="298" transform="rotate(90 287 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">governments</text>
+              <text x="311" y="298" transform="rotate(90 311 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">have</text>
+              <text x="335" y="298" transform="rotate(90 335 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">passed</text>
+              <text x="359" y="298" transform="rotate(90 359 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">new</text>
+              <text x="383" y="298" transform="rotate(90 383 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">laws</text>
+              <text x="407" y="298" transform="rotate(90 407 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">since</text>
+              <text x="431" y="298" transform="rotate(90 431 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">2009</text>
+              <text x="455" y="298" transform="rotate(90 455 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">making</text>
+              <text x="479" y="298" transform="rotate(90 479 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">the</text>
+              <text x="503" y="298" transform="rotate(90 503 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">registration</text>
+              <text x="527" y="298" transform="rotate(90 527 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">or</text>
+              <text x="551" y="298" transform="rotate(90 551 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">voting</text>
+              <text x="575" y="298" transform="rotate(90 575 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">process</text>
+              <text x="599" y="298" transform="rotate(90 599 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#16233A" font-weight="700">more</text>
+              <text x="623" y="298" transform="rotate(90 623 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#16233A" font-weight="700">difficult</text>
+              <text x="647" y="298" transform="rotate(90 647 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">.</text>
+              <text x="671" y="298" transform="rotate(90 671 298)" font-family="Google Sans Flex, sans-serif" font-size="12" fill="#5D6C87">&lt;EOS&gt;</text>
+              </svg>
+            
+          </div>
+           <p class="caption">From the original paper "Attention Is All You
+            Need" (Vaswani et al., 2017). Encoder
+            self-attention in layer 5 of 6, shown only for the word "making": several heads attend to a distant
+            dependency of the verb, completing the long-distance phrase "making&nbsp;…&nbsp;more difficult". Each line
+            is one head; thicker and darker means more attention.</p>
+          </div>
+
+          
+          
+          <p>In 2017, <a href="https://arxiv.org/abs/1706.03762">"Attention Is All You Need"</a> (Vaswani et al., Google
+            Brain) introduced the <b>transformer</b> and a more general form of attention. The number one criterion for
+            its design choices: <b>will this scale on a GPU</b>.</p>
+          <ul>
+            <li>Its encoder creates contextual embeddings for the whole input in a <b>single pass</b>; its decoder
+              produces the output one word at a time, with each output fed back as context for the next step.</li>
+            <li>The encoder went on to become <b>BERT</b> ("Bidirectional Encoder Representations from Transformers"),
+              the basis of nearly all embedding models used for RAG and recommenders today.</li>
+            <li>The decoder became the <b>GPT</b> ("Generative Pre-trained Transformer") family and most other popular
+              models like Claude, ChatGPT, LLaMa.</li>
+            <li>The original paper used <b>six layers of attention</b>; Llama&nbsp;3.2-405B uses 126. The basic
+              architecture is the same.</li>
+          </ul>
+
+         
+        </section>
+
+        <section class="card" id="parts">
+          <span class="sec-num" aria-hidden="true">03</span>
+          <p class="sec-label">THE SETUP</p>
+          <h2>Three parts of a transformer</h2>
+          <p>Transformers can look complicated, but fundamentally they require three main parts:</p>
+          <ul>
+            <li><b>Word embedding</b> converts words, bits of words, and symbols — collectively called tokens — into numbers.</li>
+
+            <li><b>Positional encoding</b> keeps track of word order. "Dogs chase cats" and "cats chase dogs" use the exact same words with very different meanings.</li>
+            <li><b>Attention</b> establishes relationships among words.</li>
+          </ul>
+          <p>In this post, we will build the three types of attention a transformer uses — <b>self-attention</b>, <b>masked self-attention</b>, and <b>encoder-decoder attention</b> also called <b>cross-attention</b>. For each type, we will code it from scratch and compare the matrix computations by hand to get a deeper understanding of how it works.</p>
+
+          <p>In the scheme of a transformer architecture, this is how they all sit together.</p>
+
+          <div class="figwrap">
+            <svg viewBox="0 0 760 950" xmlns="http://www.w3.org/2000/svg" role="img"
+              aria-label="The transformer architecture with its three attention blocks highlighted: self-attention in the encoder, masked self-attention in the decoder, and encoder-decoder attention connecting them">
+              <defs>
+                <marker id="ahC" markerWidth="5" markerHeight="5" refX="4.2" refY="2.5" orient="auto">
+                  <path d="M0,0 L5,2.5 L0,5 z" fill="#3A4A66" />
+                </marker>
+                <linearGradient id="gradC" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#1D5BD6" />
+                  <stop offset="1" stop-color="#DD6A12" />
+                </linearGradient>
+              </defs>
+              <rect width="760" height="950" fill="#FFFFFF" rx="8" />
+
+              <!-- legend -->
+              <g font-family="Google Sans Flex, sans-serif" font-size="12.5" fill="#16233A">
+                <rect x="40" y="60" width="18" height="18" rx="4" fill="#1D5BD6" />
+                <text x="66" y="74">self-attention · the encoder half (§5–8)</text>
+                <rect x="40" y="90" width="18" height="18" rx="4" fill="#DD6A12" />
+                <text x="66" y="104">masked self-attention · the decoder half (§9–11)</text>
+                <rect x="40" y="120" width="18" height="18" rx="4" fill="url(#gradC)" />
+                <text x="66" y="134">encoder-decoder attention · the bridge (§12)</text>
+              </g>
+
+              <!-- Nx containers -->
+              <rect x="116" y="509" width="228" height="270" rx="14" fill="#F4F8FE" stroke="#DBE5F4" />
+              <rect x="426" y="383" width="228" height="396" rx="14" fill="#F4F8FE" stroke="#DBE5F4" />
+              <text x="104" y="646" text-anchor="end" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                font-size="14" fill="#5D6C87">N×</text>
+              <text x="666" y="580" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="14"
+                fill="#5D6C87">N×</text>
+
+              <!-- attention glows -->
+              <rect x="139" y="697" width="182" height="56" rx="12" fill="#1D5BD6" opacity=".15" />
+              <rect x="449" y="697" width="182" height="56" rx="12" fill="#DD6A12" opacity=".15" />
+              <rect x="449" y="571" width="182" height="56" rx="12" fill="#DD6A12" opacity=".12" />
+
+              <!-- arrows and routes -->
+              <g stroke="#3A4A66" stroke-width="2" fill="none">
+                <!-- encoder column -->
+                <line x1="230" y1="900" x2="230" y2="878" marker-end="url(#ahC)" />
+                <line x1="230" y1="838" x2="230" y2="804" marker-end="url(#ahC)" />
+                <line x1="230" y1="810" x2="230" y2="764" />
+                <path d="M230,764 L206,749" marker-end="url(#ahC)" />
+                <path d="M230,764 L230,749" marker-end="url(#ahC)" />
+                <path d="M230,764 L254,749" marker-end="url(#ahC)" />
+                <path d="M230,770 H128 V662 H141" marker-end="url(#ahC)" />
+                <line x1="230" y1="703" x2="230" y2="678" marker-end="url(#ahC)" />
+                <line x1="230" y1="649" x2="230" y2="624" marker-end="url(#ahC)" />
+                <path d="M230,637 H128 V536 H141" marker-end="url(#ahC)" />
+                <line x1="230" y1="577" x2="230" y2="552" marker-end="url(#ahC)" />
+                <!-- encoder → decoder route (K, V) -->
+                <path d="M230,523 V470 H385 V632 H505" />
+                <path d="M505,632 L490,624" marker-end="url(#ahC)" />
+                <path d="M505,632 L520,624" marker-end="url(#ahC)" />
+                <!-- decoder column -->
+                <line x1="540" y1="898" x2="540" y2="878" marker-end="url(#ahC)" />
+                <line x1="540" y1="838" x2="540" y2="804" marker-end="url(#ahC)" />
+                <line x1="540" y1="810" x2="540" y2="764" />
+                <path d="M540,764 L516,749" marker-end="url(#ahC)" />
+                <path d="M540,764 L540,749" marker-end="url(#ahC)" />
+                <path d="M540,764 L564,749" marker-end="url(#ahC)" />
+                <path d="M540,770 H642 V662 H629" marker-end="url(#ahC)" />
+                <line x1="540" y1="703" x2="540" y2="678" marker-end="url(#ahC)" />
+                <line x1="540" y1="649" x2="540" y2="624" marker-end="url(#ahC)" />
+                <path d="M540,637 H642 V536 H629" marker-end="url(#ahC)" />
+                <line x1="540" y1="577" x2="540" y2="552" marker-end="url(#ahC)" />
+                <line x1="540" y1="523" x2="540" y2="498" marker-end="url(#ahC)" />
+                <path d="M540,509 H642 V410 H629" marker-end="url(#ahC)" />
+                <line x1="540" y1="451" x2="540" y2="426" marker-end="url(#ahC)" />
+                <line x1="540" y1="397" x2="540" y2="356" marker-end="url(#ahC)" />
+                <line x1="540" y1="319" x2="540" y2="288" marker-end="url(#ahC)" />
+                <line x1="540" y1="251" x2="540" y2="212" marker-end="url(#ahC)" />
+              </g>
+              <!-- branch dots -->
+              <g fill="#3A4A66">
+                <circle cx="230" cy="770" r="2.6" />
+                <circle cx="230" cy="637" r="2.6" />
+                <circle cx="540" cy="770" r="2.6" />
+                <circle cx="540" cy="637" r="2.6" />
+                <circle cx="540" cy="509" r="2.6" />
+                <circle cx="230" cy="523" r="2.6" />
+              </g>
+              <!-- route labels -->
+              <text x="378" y="566" text-anchor="end" font-family="Google Sans Flex, sans-serif" font-size="10.5"
+                fill="#8296B5">K, V from</text>
+              <text x="378" y="580" text-anchor="end" font-family="Google Sans Flex, sans-serif" font-size="10.5"
+                fill="#8296B5">the encoder</text>
+              <text x="554" y="641" font-family="Google Sans Flex, sans-serif" font-size="10.5"
+                fill="#8296B5">Q</text>
+
+              <!-- ENCODER boxes -->
+              <rect x="150" y="838" width="160" height="36" rx="8" fill="#FFFFFF" stroke="#92A6C9" />
+              <text x="230" y="861" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#16233A">Input Embedding</text>
+
+              <circle cx="230" cy="810" r="13" fill="#FFFFFF" stroke="#3A4A66" stroke-width="1.8" />
+              <line x1="222" y1="810" x2="238" y2="810" stroke="#3A4A66" stroke-width="1.8" />
+              <line x1="230" y1="818" x2="230" y2="802" stroke="#3A4A66" stroke-width="1.8" />
+              <circle cx="176" cy="810" r="12" fill="#E0EAFB" stroke="#1D5BD6" stroke-width="1.4" />
+              <path d="M168,810 q4,-9 8,0 q4,9 8,0" fill="none" stroke="#1D5BD6" stroke-width="1.6" />
+              <line x1="189" y1="810" x2="216" y2="810" stroke="#3A4A66" stroke-width="1.6" />
+              <text x="154" y="806" text-anchor="end" font-family="Google Sans Flex, sans-serif" font-size="12"
+                fill="#5D6C87">Positional</text>
+              <text x="154" y="820" text-anchor="end" font-family="Google Sans Flex, sans-serif" font-size="12"
+                fill="#5D6C87">Encoding</text>
+
+              <rect x="145" y="703" width="170" height="44" rx="9" fill="#1D5BD6" />
+              <text x="230" y="721" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#FFFFFF">Multi-Head</text>
+              <text x="230" y="737" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#FFFFFF">Attention</text>
+
+              <rect x="145" y="649" width="170" height="26" rx="7" fill="#FBEADA" stroke="#E8C49A" />
+              <text x="230" y="666" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="11.5" fill="#93460B">Add &amp; Norm</text>
+
+              <rect x="145" y="577" width="170" height="44" rx="9" fill="#E0EAFB" stroke="#1D5BD6"
+                stroke-width="1.3" />
+              <text x="230" y="595" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#1D5BD6">Feed</text>
+              <text x="230" y="611" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#1D5BD6">Forward</text>
+
+              <rect x="145" y="523" width="170" height="26" rx="7" fill="#FBEADA" stroke="#E8C49A" />
+              <text x="230" y="540" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="11.5" fill="#93460B">Add &amp; Norm</text>
+
+              <text x="230" y="920" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                font-size="13.5" fill="#16233A">Inputs</text>
+
+              <!-- DECODER boxes -->
+              <rect x="460" y="838" width="160" height="36" rx="8" fill="#FFFFFF" stroke="#92A6C9" />
+              <text x="540" y="861" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#16233A">Output Embedding</text>
+
+              <circle cx="540" cy="810" r="13" fill="#FFFFFF" stroke="#3A4A66" stroke-width="1.8" />
+              <line x1="532" y1="810" x2="548" y2="810" stroke="#3A4A66" stroke-width="1.8" />
+              <line x1="540" y1="802" x2="540" y2="818" stroke="#3A4A66" stroke-width="1.8" />
+              <circle cx="594" cy="810" r="12" fill="#E0EAFB" stroke="#1D5BD6" stroke-width="1.4" />
+              <path d="M586,810 q4,-9 8,0 q4,9 8,0" fill="none" stroke="#1D5BD6" stroke-width="1.6" />
+              <line x1="581" y1="810" x2="554" y2="810" stroke="#3A4A66" stroke-width="1.6" />
+              <text x="616" y="806" font-family="Google Sans Flex, sans-serif" font-size="12"
+                fill="#5D6C87">Positional</text>
+              <text x="616" y="820" font-family="Google Sans Flex, sans-serif" font-size="12"
+                fill="#5D6C87">Encoding</text>
+
+              <rect x="455" y="703" width="170" height="44" rx="9" fill="#DD6A12" />
+              <text x="540" y="721" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#FFFFFF">Masked Multi-Head</text>
+              <text x="540" y="737" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#FFFFFF">Attention</text>
+
+              <rect x="455" y="649" width="170" height="26" rx="7" fill="#FBEADA" stroke="#E8C49A" />
+              <text x="540" y="666" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="11.5" fill="#93460B">Add &amp; Norm</text>
+
+              <rect x="455" y="577" width="170" height="44" rx="9" fill="url(#gradC)" />
+              <text x="540" y="595" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#FFFFFF">Multi-Head</text>
+              <text x="540" y="611" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#FFFFFF">Attention</text>
+
+              <rect x="455" y="523" width="170" height="26" rx="7" fill="#FBEADA" stroke="#E8C49A" />
+              <text x="540" y="540" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="11.5" fill="#93460B">Add &amp; Norm</text>
+
+              <rect x="455" y="451" width="170" height="44" rx="9" fill="#E0EAFB" stroke="#1D5BD6"
+                stroke-width="1.3" />
+              <text x="540" y="469" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#1D5BD6">Feed</text>
+              <text x="540" y="485" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="12.5" fill="#1D5BD6">Forward</text>
+
+              <rect x="455" y="397" width="170" height="26" rx="7" fill="#FBEADA" stroke="#E8C49A" />
+              <text x="540" y="414" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="11.5" fill="#93460B">Add &amp; Norm</text>
+
+              <rect x="480" y="319" width="120" height="34" rx="8" fill="#FFFFFF" stroke="#92A6C9"
+                stroke-width="1.5" />
+              <text x="540" y="341" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13" fill="#16233A">Linear</text>
+
+              <rect x="480" y="251" width="120" height="34" rx="8" fill="#DD6A12" />
+              <text x="540" y="273" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13" fill="#FFFFFF">Softmax</text>
+
+              <text x="540" y="198" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                font-size="13.5" fill="#16233A">Output Probabilities</text>
+
+              <text x="540" y="918" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                font-size="13.5" fill="#16233A">Outputs</text>
+              <text x="540" y="936" text-anchor="middle" font-family="Google Sans Flex, sans-serif" font-size="11.5"
+                fill="#5D6C87">(shifted right)</text>
+            </svg>
+          </div>
+          <p class="caption"><b>The Transformer Architecture:</b> From the original paper by Vaswani et al. (2017), with the three attention blocks highlighted: blue self-attention in the encoder, orange masked self-attention in the decoder, and the gradient block bridging them with encoder-decoder attention.</p>
+        </section>
+
+
+        <section class="card" id="qkv">
+          <span class="sec-num" aria-hidden="true">04</span>
+          <p class="sec-label">TERMINOLOGY</p>
+          <h2>Queries, keys, and values</h2>
+
+
+          <p> In <i>"the coffee spilled on the laptop and it stopped working"</i>, "it" could refer to the laptop or to the coffee — attention is the mechanism that correctly associates "it" with the laptop.</p> <p> The most basic type is <b>self-attention</b>: it computes how similar each word is to every other word in the sentence, including itself, and it does this for every word. The similarities then determine how the transformer encodes each word: if "it" was more commonly associated with laptops than with coffee in the training sentences, the similarity score for the laptop gives it a larger impact on how "it" is encoded.</p>
+          
+          <p>The attention equation uses three matrices: <b>Q</b> for query, <b>K</b> for key, and <b>V</b> for value. The terms come from database terminology.</p>
+          <p>A hotel database pairs each guest's last name with a room number. A guest checks in and the clerk types a
+            misspelled last name, <i>Merser</i> instead of <i>Mercer</i>:</p>
+          <ul>
+            <li>The <b>query</b> — the misspelling the computer uses to search the database.</li>
+            <li>The <b>keys</b> — the actual names stored in the database. The computer compares the query to all of
+              the keys and ranks each one.</li>
+            <li>The <b>value</b> — what the database returns as the result of the search: room 537.</li>
+          </ul>
+          <p>In a transformer, the same roles appear. Given the prompt <i>"draw a map"</i>, the model converts each word into a word embedding, adds positional encoding, and gets the encodings representing each word — two numbers per word in this example, though 512 or more is far more common.</p>
+          <p>To create Q, K, and V:</p>
+          <ul>
+            <li><b>Stack the encodings in a matrix</b> and multiply it by a 2×2 matrix of query weights — two query
+              numbers per word. Likewise multiply by the key weights for K and the value weights for V.</li>
+            <li>The weight matrices are 2×2 because we started with two encoded values per word; with 512, a common
+              choice is 512×512. The only rule that matters: <b>the matrix math has to be possible</b>.</li>
+            <li>The weight matrices carry a transpose symbol because PyTorch prints its weights in a form that has to
+              be transposed before the math works out.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="math">
+          <span class="sec-num" aria-hidden="true">05</span>
+          <p class="sec-label">THE EQUATION</p>
+          <h2>Self-attention</h2>
+          <p class="lede">Self-attention learns the relationships between each word and every other word in the sentence, including itself, by considering the entire context</p>
+
+          <p>So here is the equation (looks indimidating). Let's break it step by step:</p>
+
+          <div class="formula">
+            $$\mathrm{Attention}(Q,\, K,\, V) \;=\; \mathrm{softmax}\!\left(\frac{QK^{T}}{\sqrt{d_k}}\right)V$$
+          </div>
+
+          <h3>Step 1 — QK<sup>T</sup>: similarity between every pair of words</h3>
+          <p>Multiply the query matrix Q by the transpose of the key matrix K. Transposing K is needed for the multiplication to work — but more importantly, it yields the <b>dot product</b> of each query with each key: multiply pairs of corresponding numbers, add them up. <b>A dot product is an unscaled measure of similarity between two things</b>, closely related to cosine similarity (cosine similarity scales the result into [−1,&nbsp;1]; the dot product is not scaled). QK<sup>T</sup> gives the unscaled dot-product similarities between all possible combinations of queries and keys.</p>
+
+          <h3>Step 2 — scale by √d<sub>k</sub></h3>
+          <p>Scale the similarities by the square root of d<sub>k</sub> — the dimension of the key matrix, i.e. the number of values per token. Dividing by the square root does not scale the similarities in any systematic way, but even with this limited scaling, the original authors reported it improved performance.</p>
+
+          <h3>Step 3 — softmax each row</h3>
+          <p>Take the softmax of each row. Softmax makes every row sum to 1, so the values read as a summary of relationships among the tokens: for <i>"draw a map"</i>, the row for "draw" might be 36% similar to itself, 40% to "a", and 24% to "map". <a href="#softmax">Section 6</a> opens up how softmax pulls this off.</p>
+
+          <div class="figwrap">
+            <svg viewBox="0 0 680 190" xmlns="http://www.w3.org/2000/svg" role="img"
+              aria-label="The new encoding for the word draw is a weighted mix: 36 percent draw, 40 percent a, 24 percent map">
+              <rect width="680" height="190" fill="#FFFFFF" rx="8" />
+              <text x="40" y="46" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="15"
+                fill="#16233A">The new "draw" is a weighted mix of every word's value</text>
+              <!-- stacked bar -->
+              <g>
+                <rect x="40" y="72" width="216" height="40" rx="6" fill="#1D5BD6" />
+                <rect x="260" y="72" width="240" height="40" fill="#DD6A12" />
+                <rect x="504" y="72" width="140" height="40" rx="6" fill="#8FB4FF" />
+                <text x="148" y="97" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                  font-size="14" fill="#FFFFFF">36%</text>
+                <text x="380" y="97" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                  font-size="14" fill="#FFFFFF">40%</text>
+                <text x="574" y="97" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                  font-size="14" fill="#16233A">24%</text>
+              </g>
+              <g font-family="Google Sans Flex, sans-serif" font-size="13" fill="#5D6C87">
+                <text x="148" y="140" text-anchor="middle">value of "draw"</text>
+                <text x="380" y="140" text-anchor="middle">value of "a"</text>
+                <text x="574" y="140" text-anchor="middle">value of "map"</text>
+              </g>
+              <text x="40" y="172" font-family="Google Sans Flex, sans-serif" font-size="12.5" fill="#8296B5">softmax
+                percentages from the row for "draw" · they always sum to 100%</text>
+            </svg>
+          </div>
+          <p class="caption"><b>The softmax row is a recipe.</b> The percentages fix how much influence each word's value has on the final encoding of "draw".</p>
+
+          <h3>Step 4 — multiply by V</h3>
+          <p>Multiply the percentages by the values in V. The percentages fix how much influence each word has on the final encoding of any given word: 36% of draw's value + 40% of a's value + 24% of map's value gives the first self-attention score for "draw". Repeat for every row and every column of V.</p>
+
+          <div class="figwrap">
+            <svg viewBox="0 0 680 440" xmlns="http://www.w3.org/2000/svg" role="img"
+              aria-label="Scaled dot-product attention flowchart: Q and K enter a MatMul, then Scale, an optional Mask, SoftMax, and a final MatMul with V">
+              <defs>
+                <marker id="ahA" markerWidth="5" markerHeight="5" refX="4.2" refY="2.5" orient="auto">
+                  <path d="M0,0 L5,2.5 L0,5 z" fill="#3A4A66" />
+                </marker>
+              </defs>
+              <rect width="680" height="440" fill="#FFFFFF" rx="8" />
+              <text x="340" y="30" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                font-size="16" fill="#16233A">Scaled Dot-Product Attention</text>
+
+              <!-- arrows -->
+              <g stroke="#3A4A66" stroke-width="2" fill="none">
+                <line x1="255" y1="392" x2="255" y2="366" marker-end="url(#ahA)" />
+                <line x1="325" y1="392" x2="325" y2="366" marker-end="url(#ahA)" />
+                <line x1="440" y1="392" x2="440" y2="128" marker-end="url(#ahA)" />
+                <line x1="290" y1="326" x2="290" y2="310" marker-end="url(#ahA)" />
+                <line x1="290" y1="270" x2="290" y2="254" marker-end="url(#ahA)" />
+                <line x1="290" y1="214" x2="290" y2="198" marker-end="url(#ahA)" />
+                <line x1="290" y1="158" x2="290" y2="128" marker-end="url(#ahA)" />
+                <line x1="365" y1="88" x2="365" y2="52" marker-end="url(#ahA)" />
+              </g>
+
+              <!-- boxes, bottom to top -->
+              <rect x="215" y="326" width="150" height="36" rx="9" fill="#1D5BD6" />
+              <text x="290" y="349" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13.5" fill="#FFFFFF">MatMul</text>
+
+              <rect x="215" y="270" width="150" height="36" rx="9" fill="#E0EAFB" stroke="#1D5BD6"
+                stroke-width="1.4" />
+              <text x="290" y="293" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13.5" fill="#1D5BD6">Scale</text>
+
+              <rect x="215" y="214" width="150" height="36" rx="9" fill="#FBEADA" stroke="#DD6A12" stroke-width="1.6"
+                stroke-dasharray="5 4" />
+              <text x="290" y="237" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13.5" fill="#93460B">Mask (opt.)</text>
+
+              <rect x="215" y="158" width="150" height="36" rx="9" fill="#DD6A12" />
+              <text x="290" y="181" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13.5" fill="#FFFFFF">SoftMax</text>
+
+              <rect x="280" y="88" width="170" height="36" rx="9" fill="#1D5BD6" />
+              <text x="365" y="111" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13.5" fill="#FFFFFF">MatMul</text>
+
+              <!-- step annotations -->
+              <g font-family="Google Sans Flex, sans-serif" font-size="11.5" fill="#8296B5" text-anchor="end">
+                <text x="205" y="348">step 1 · Q·Kᵀ</text>
+                <text x="205" y="292">step 2 · ÷ √dₖ</text>
+                <text x="205" y="236">used in §10–11</text>
+                <text x="205" y="180">step 3</text>
+                <text x="270" y="110">step 4 · × V</text>
+              </g>
+
+              <!-- input labels -->
+              <g font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="14" fill="#16233A"
+                text-anchor="middle">
+                <text x="255" y="414">Q</text>
+                <text x="325" y="414">K</text>
+                <text x="440" y="414">V</text>
+              </g>
+            </svg>
+          </div>
+          <p class="caption"><b>The four steps as the original paper draws them.</b> Redrawn from Figure 2 of Vaswani et al. (2017). V skips the similarity math and joins only at the last MatMul. The dashed Mask box stays idle until §10.</p>
+
+          <div class="takeaway">
+            <strong>In summary</strong>
+            The equation calculates the scaled dot-product similarities among all the words, converts them into
+            percentages with softmax, and uses those percentages to scale the values — the results are the
+            self-attention scores for each word.
+          </div>
+        </section>
+
+        <section class="card" id="softmax">
+          <span class="sec-num" aria-hidden="true">06</span>
+          <p class="sec-label">A CLOSER LOOK</p>
+          <h2>Softmax, demystified</h2>
+          <p class="lede">Softmax turns raw scores into shares of a whole — positive percentages that sum to 100% — and it has to survive negative inputs.</p>
+
+          <p>The obvious trick fails. Say three judges score three desserts <b>2.0</b>, <b>1.0</b>, and <b>−1.0</b>, and we want each dessert's share of the praise. Dividing by the sum gives 100%, 50%, and <b>−50%</b> — a negative share of praise, which means nothing. And scores that sum to zero cannot be divided at all.</p>
+
+          <p>Softmax adds one move before dividing: push every score through the exponential, e<sup>x</sup>. That buys
+            exactly the two properties needed:</p>
+          <ul>
+            <li>e<sup>x</sup> is <b>always positive</b> — e<sup>−1</sup> is 0.368, not a negative number — so negative
+              scores become small shares instead of nonsense.</li>
+            <li>e<sup>x</sup> <b>amplifies gaps</b> — a score 1 higher gets an e&nbsp;≈&nbsp;2.72× bigger share, not a
+              slightly bigger one.</li>
+          </ul>
+          <p>For the three desserts:</p>
+
+          <div class="mrow">
+            <div class="mlab"><b>scores</b>
+              <div class="mx" style="grid-template-columns:auto">
+                <span>2.0</span>
+                <span>1.0</span>
+                <span class="hi">−1.0</span>
+              </div>
+            </div>
+            <span class="mop">e<sup>x</sup> →</span>
+            <div class="mlab"><b>always positive</b>
+              <div class="mx" style="grid-template-columns:auto">
+                <span>7.389</span>
+                <span>2.718</span>
+                <span>0.368</span>
+              </div>
+            </div>
+            <span class="mop">÷ 10.475 =</span>
+            <div class="mlab"><b>shares</b>
+              <div class="mx" style="grid-template-columns:auto">
+                <span class="bl">70.5%</span>
+                <span>25.9%</span>
+                <span>3.5%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="figwrap">
+            <svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img"
+              aria-label="Raw scores of 2, 1 and minus 1, including a negative bar, become positive percentage shares of 70.5, 25.9 and 3.5 percent after softmax">
+              <rect width="680" height="250" fill="#FFFFFF" rx="8" />
+              <g font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="14" fill="#16233A">
+                <text x="60" y="38">raw scores</text>
+                <text x="440" y="38">shares after softmax</text>
+              </g>
+              <!-- left: raw scores with baseline -->
+              <line x1="50" y1="150" x2="280" y2="150" stroke="#DBE5F4" stroke-width="1.5" />
+              <g>
+                <rect x="70" y="70" width="44" height="80" rx="5" fill="#1D5BD6" />
+                <rect x="140" y="110" width="44" height="40" rx="5" fill="#1D5BD6" opacity=".75" />
+                <rect x="210" y="150" width="44" height="40" rx="5" fill="#DD6A12" />
+              </g>
+              <g font-family="Google Sans Flex, sans-serif" font-size="13" fill="#5D6C87" text-anchor="middle">
+                <text x="92" y="62">2.0</text>
+                <text x="162" y="102">1.0</text>
+                <text x="232" y="208">−1.0</text>
+              </g>
+              <!-- arrow -->
+              <g stroke="#5D6C87" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M306 130h56" />
+                <path d="M354 123l10 7-10 7" />
+              </g>
+              <text x="334" y="115" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                font-size="12.5" fill="#1D5BD6">softmax</text>
+              <!-- right: shares, all positive -->
+              <line x1="420" y1="190" x2="650" y2="190" stroke="#DBE5F4" stroke-width="1.5" />
+              <g>
+                <rect x="440" y="63" width="44" height="127" rx="5" fill="#1D5BD6" />
+                <rect x="510" y="143" width="44" height="47" rx="5" fill="#1D5BD6" opacity=".75" />
+                <rect x="580" y="184" width="44" height="6" rx="3" fill="#DD6A12" />
+              </g>
+              <g font-family="Google Sans Flex, sans-serif" font-size="13" fill="#5D6C87" text-anchor="middle">
+                <text x="462" y="55">70.5%</text>
+                <text x="532" y="135">25.9%</text>
+                <text x="602" y="176">3.5%</text>
+              </g>
+              <text x="60" y="238" font-family="Google Sans Flex, sans-serif" font-size="12.5" fill="#8296B5">the
+                negative score survives as a small positive share — and the gaps between scores get amplified</text>
+            </svg>
+          </div>
+          <p class="caption"><b>"Soft" max.</b> A hard max hands the winner 100% and everyone else 0%. Softmax gives the winner the biggest share but keeps every option alive — which is what lets gradients flow during training.</p>
+
+          <p>Exponentiate, then divide by the total. That is the whole equation:</p>
+
+          <div class="formula">
+            $$\mathrm{softmax}(x_i) \;=\; \frac{e^{x_i}}{\sum_{j=1}^{n} e^{x_j}}$$
+          </div>
+
+          <p>Mapped back to the desserts: x<sub>i</sub> is one score (2.0), e<sup>x<sub>i</sub></sup> is its positivized, gap-amplified version (7.389), the denominator is the total (10.475), and the ratio is the share (70.5%). Every term is positive and the denominator is their sum, so the outputs are guaranteed positive and guaranteed to sum to 1. No special cases.</p>
+
+          <p>In attention, the items are the keys competing for one query's attention: each row of the scaled similarity matrix goes through this recipe independently, which is why every row of the softmax matrix sums to 1. The exponential is also what makes masking exact — e<sup>−∞</sup>&nbsp;=&nbsp;0, so a masked position does not get a <i>small</i> share. It gets none.</p>
+
+          <!-- <div class="takeaway">
+            <strong>Softmax in one line</strong>
+            Exponentiate to make every score positive and stretch the gaps; divide by the total to make them shares.
+            Winner takes most — not all.
+          </div> -->
+        </section>
+
+        <section class="card" id="code-sa">
+          <span class="sec-num" aria-hidden="true">07</span>
+          <p class="sec-label">IMPLEMENTATION</p>
+          <h2>Coding self-attention in PyTorch</h2>
+          <p>Three imports cover everything: <code>torch</code> for tensors — multi-dimensional lists optimized for neural networks — plus its helper functions; <code>torch.nn</code> for the <code>Module</code> and <code>Linear</code> classes; and <code>torch.nn.functional</code> for softmax.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>imports</span></div>
+            <pre><span class="k">import</span> torch
+<span class="k">import</span> torch.nn <span class="k">as</span> nn
+<span class="k">import</span> torch.nn.functional <span class="k">as</span> F</pre>
+          </div>
+
+          <p>The class:</p>
+          <ul>
+            <li>Inherits from <code>nn.Module</code>, the base class for every neural network module you make with
+              PyTorch and calls the parent's <code>__init__</code> which initializes a host of features including gradient computation</li>
+            <li><code>n_embed</code> is the <b>number of word embedding values per token</b>; it sets the size of the
+              weight matrices that create the queries, keys, and values.</li>
+            <li>Each weight matrix is an <code>nn.Linear</code>, where <code>in_features</code> sets the rows and
+              <code>out_features</code> sets the columns (both <code>n_embed</code> here). The Linear object does not
+              just store the weights — it <b>also does the math</b> when the time comes.</li>
+            <li>The original transformer manuscript does not add bias terms when calculating attention, so
+              <code>bias=False</code>.</li>
+            <li><code>row</code> and <code>col</code> are convenience parameters: usually the first dimension is the
+              batch size, this example does not use batches, and these let us adjust later.</li>
+          </ul>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>self_attention.py</span></div>
+            <pre><span class="k">class</span> SelfAttention(nn.Module):
+
+    <span class="k">def</span> __init__(self, n_embed=2, row=0, col=1):
+        super().__init__()
+        self.n_embed = n_embed
+        self.WQ = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.WK = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.WV = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.row = row
+        self.col = col
+
+    <span class="k">def</span> forward(self, x):
+        Q = self.WQ(x)
+        K = self.WK(x)
+        V = self.WV(x)
+
+        q_dot_k = Q @ K.transpose(dim0=self.row, dim1=self.col)
+        scaled_q_dot_k = q_dot_k / torch.tensor(K.size(self.col))**0.5
+        softmax = F.softmax(scaled_q_dot_k, dim=self.col)
+        attention_scores = softmax @ V
+        <span class="k">return</span> attention_scores</pre>
+          </div>
+
+          <p><code>forward</code> is the four steps in order: pass the token encodings (word embeddings plus positional encoding) through W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub> to get Q, K, V; multiply Q by K transposed; scale by the square root of the number of values per key; softmax to get the attention percents; multiply by V for the attention scores. There are no rules about the weight matrix shapes beyond the multiplication working out.</p>
+
+          <p>To test: a matrix of encodings for three tokens, two numbers each. <code>torch.manual_seed</code> seeds the random number generator so everyone gets the same results. Calling the object passes the matrix to <code>forward</code> — that is what inheriting from <code>nn.Module</code> buys.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>run it</span></div>
+            <pre>c = torch.tensor([[<span class="s">1.16</span>, <span class="s">0.23</span>],
+                  [<span class="s">0.57</span>, <span class="s">1.36</span>],
+                  [<span class="s">4.41</span>, <span class="s">-2.16</span>]])
+
+torch.manual_seed(<span class="s">42</span>)
+sa = SelfAttention(n_embed=<span class="s">2</span>, row=<span class="s">0</span>, col=<span class="s">1</span>)
+sa(c)</pre>
+          </div>
+
+          <div class="win out">
+            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+            <pre class="output">tensor([[1.0100, 1.0641],
+        [0.2040, 0.7057],
+        [3.4989, 2.2427]], grad_fn=&lt;MmBackward0&gt;)</pre>
+          </div>
+
+          <p>The <code>grad_fn</code> bit of the tensor is used for training the weights with backpropagation. We are coding a self-attention class, not a full transformer, so no training happens here.</p>
+        </section>
+
+        <section class="card" id="byhand-sa">
+          <span class="sec-num" aria-hidden="true">08</span>
+          <p class="sec-label">VERIFICATION</p>
+          <h2>Checking the math by hand</h2>
+          <p class="lede">A tensor of numbers proves nothing by itself. The spreadsheet redoes the whole calculation and must land on the same answer.</p>
+
+          <p>First, extract the weights the object is actually using — print them and pass the encodings directly to each Linear to validate the math the class performs. PyTorch prints the weights in a form that has to be transposed before the math works on paper; the matrices below carry the transpose. Every step from here is a plain row&nbsp;×&nbsp;column sum of products.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>inspect the weights</span></div>
+            <pre>sa.WQ.weight, sa.WK.weight, sa.WV.weight</pre>
+          </div>
+
+          <div class="win out">
+            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+            <pre class="output">(tensor([[ 0.5406,  0.5869], [-0.1657,  0.6496]]),   <span class="c"># WQ</span>
+ tensor([[-0.1549,  0.1427], [-0.3443,  0.4153]]),   <span class="c"># WK</span>
+ tensor([[ 0.6233, -0.5188], [ 0.6146,  0.1323]]))   <span class="c"># WV</span></pre>
+          </div>
+
+          <h3>Encodings × weights → Q, K, V</h3>
+          <p>Every entry is a sum of products. The first query number: 1.16&nbsp;×&nbsp;0.5406 + 0.23&nbsp;×&nbsp;0.5869 = 0.7621:</p>
+
+          <div class="mrow">
+            <div class="mlab"><b>Encodings</b>
+              <div class="mx" style="grid-template-columns:repeat(2,auto)">
+                <span>1.16</span><span>0.23</span>
+                <span>0.57</span><span>1.36</span>
+                <span>4.41</span><span>−2.16</span>
+              </div>
+            </div>
+            <span class="mop">×</span>
+            <div class="mlab"><b>W<span class="q">Q</span><sup>T</sup></b>
+              <div class="mx" style="grid-template-columns:repeat(2,auto)">
+                <span>0.5406</span><span>−0.1657</span>
+                <span>0.5869</span><span>0.6496</span>
+              </div>
+            </div>
+            <span class="mop">=</span>
+            <div class="mlab"><b><span class="q">Q</span></b>
+              <div class="mx" style="grid-template-columns:repeat(2,auto)">
+                <span>0.7621</span><span>−0.0428</span>
+                <span>1.1063</span><span>0.7890</span>
+                <span>1.1163</span><span>−2.1339</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mrow">
+            <div class="mlab"><b>K</b>
+              <div class="mx" style="grid-template-columns:repeat(2,auto)">
+                <span>−0.1469</span><span>−0.3039</span>
+                <span>0.1058</span><span>0.3686</span>
+                <span>−0.9913</span><span>−2.4154</span>
+              </div>
+            </div>
+            <div class="mlab"><b>V</b>
+              <div class="mx" style="grid-template-columns:repeat(2,auto)">
+                <span>0.6037</span><span>0.7434</span>
+                <span>−0.3503</span><span>0.5303</span>
+                <span>3.8694</span><span>2.4246</span>
+              </div>
+            </div>
+          </div>
+
+          <h3>QK<sup>T</sup>, then scale by √2</h3>
+          <p>Dot product of each query row with each key row, then divide by √2&nbsp;≈&nbsp;1.4142:</p>
+
+          <div class="mrow">
+            <div class="mlab"><b><span class="q">Q</span>K<sup>T</sup></b>
+              <div class="mx" style="grid-template-columns:repeat(3,auto)">
+                <span>−0.099</span><span>0.065</span><span>−0.652</span>
+                <span>−0.402</span><span>0.408</span><span>−3.003</span>
+                <span>0.484</span><span>−0.668</span><span>4.048</span>
+              </div>
+            </div>
+            <span class="mop">÷ √2 =</span>
+            <div class="mlab"><b>scaled</b>
+              <div class="mx" style="grid-template-columns:repeat(3,auto)">
+                <span>−0.070</span><span>0.046</span><span>−0.461</span>
+                <span>−0.284</span><span>0.288</span><span>−2.123</span>
+                <span>0.343</span><span>−0.473</span><span>2.862</span>
+              </div>
+            </div>
+          </div>
+
+          <h3>Softmax, in two moves</h3>
+          <p>Softmax as defined: exponentiate every entry, then divide it by its row sum. Every row of the result sums to 1:</p>
+
+          <div class="mrow">
+            <div class="mlab"><b>exp</b>
+              <div class="mx" style="grid-template-columns:repeat(3,auto)">
+                <span>0.932</span><span>1.047</span><span>0.631</span>
+                <span>0.752</span><span>1.334</span><span>0.120</span>
+                <span>1.409</span><span>0.623</span><span>17.497</span>
+              </div>
+            </div>
+            <span class="mop">→</span>
+            <div class="mlab"><b>softmax</b>
+              <div class="mx" style="grid-template-columns:repeat(3,auto)">
+                <span>0.357</span><span>0.401</span><span>0.242</span>
+                <span>0.341</span><span>0.605</span><span>0.054</span>
+                <span>0.072</span><span>0.032</span><span class="bl">0.896</span>
+              </div>
+            </div>
+          </div>
+
+          <p>The third row already tells a story: the last token puts 89.6% of its attention on itself. Its encoding (4.41,&nbsp;−2.16) sits far from the other two, so it mostly keeps its own value.</p>
+
+          <h3>Softmax × V → attention scores</h3>
+          <p>The first score: 0.357&nbsp;×&nbsp;0.6037 + 0.401&nbsp;×&nbsp;(−0.3503) + 0.242&nbsp;×&nbsp;3.8694 = 1.0100:</p>
+
+          <div class="mrow">
+            <div class="mlab"><b>by hand</b>
+              <div class="mx" style="grid-template-columns:repeat(2,auto)">
+                <span>1.0100</span><span>1.0641</span>
+                <span>0.2039</span><span>0.7057</span>
+                <span>3.4991</span><span>2.2429</span>
+              </div>
+            </div>
+            <span class="mop">vs</span>
+            <div class="mlab"><b>PyTorch</b>
+              <div class="mx" style="grid-template-columns:repeat(2,auto)">
+                <span>1.0100</span><span>1.0641</span>
+                <span>0.2040</span><span>0.7057</span>
+                <span>3.4989</span><span>2.2427</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <strong>They match</strong>
+            The hand calculation agrees with PyTorch to about three decimals. The drift exists only because the weights
+            went into the spreadsheet at four decimals; PyTorch keeps full precision.
+          </div>
+        </section>
+
+        <section class="card" id="masked">
+          <span class="sec-num" aria-hidden="true">09</span>
+          <p class="sec-label">ENCODERS VS DECODERS</p>
+          <h2>Why mask anything?</h2>
+          <p class="lede">Self-attention looks both ways. Masked self-attention only looks at the words that came before it.</p>
+          <p>The difference is easiest to see by asking why embeddings exist at all:</p>
+          <ul>
+            <li>Assigning each word one random number works in theory, but similar words like "great" and "awesome"
+              end up with very different numbers — the network needs far more complexity and training, because
+              learning to process "great" will not help it use "awesome".</li>
+            <li>Similar words used in similar ways should get <b>similar numbers</b>, so learning one helps learn the
+              other.</li>
+            <li>The same word appears in different contexts — a sincere "this coffee is great" versus a sarcastic "my
+              laptop just died, great" — so each word should get <b>more than one number</b>.</li>
+          </ul>
+          <p>Years before transformers, standalone neural networks created word embeddings:</p>
+          <ul>
+            <li>One input per unique word, one output per word, inputs connected to activation functions. The number
+              of activation functions decides how many numbers represent each word; the weights on the connections
+              from inputs to activation functions <i>are</i> the embedding values, initialized randomly and
+              trained.</li>
+            <li>The training objective: <b>each word in the training data should predict the next word</b>. After
+              training, "great" and "awesome" cluster together on a graph of the embeddings — similar words used in
+              similar contexts.</li>
+            <li>Feeding in more context (say, the preceding four words predicting the next) improves the embeddings
+              but <b>ignores word order</b>: "the coffee spilled on" produces the same inputs as the jumbled "coffee
+              on spilled the".</li>
+            <li>A transformer's <b>positional encoding</b> layer fixes that, and the <b>attention</b> layer then
+              establishes relationships among the words.</li>
+          </ul>
+
+          <h3>Encoder-only transformers</h3>
+          <p>When self-attention factors in all of the words — including those that came <i>after</i> the word of interest — the output is a new kind of embedding called a <b>context aware embedding</b>, or contextualized embedding. Where word embeddings only cluster individual words, context aware embeddings can cluster similar sentences and even similar documents. They can also feed a normal neural network that classifies sentiment, or serve as variables in a logistic regression model that does classification. Transformers that only use self-attention are called <b>encoder-only</b> transformers.</p>
+          <h3>Decoder-only transformers</h3>
+          <p>A <b>decoder-only</b> transformer starts with the same word embedding and positional encoding, but uses <b>masked self-attention</b> instead of self-attention. The big difference: self-attention can look at words before <i>and after</i> the word of interest; masked self-attention ignores every word that comes after it. For the first word of <i>"the coffee spilled on the laptop and it stopped working"</i>, it may use only "the". At "it", it sees everything up to "it" and nothing after.</p>
+          <p>Because a decoder-only transformer can never look ahead at what comes next, it can be trained to generate responses to prompts: give it the first part of a sentence and modify the weights until it generates the rest. This is why ChatGPT — a decoder-only transformer — is called a <i>generative</i> model: it was specifically trained to generate the text that comes after a prompt. Where an encoder-only transformer creates context aware embeddings, a decoder-only transformer creates <b>generative inputs</b> that plug into a simple neural network that generates new tokens.</p>
+          <!-- <div class="takeaway warn">
+            <strong>The one-line difference</strong>
+            Self-attention looks both ways; masked self-attention never looks ahead. Encoder-only models embed;
+            decoder-only models generate.
+          </div> -->
+        </section>
+
+        <section class="card" id="mask-math">
+          <span class="sec-num" aria-hidden="true">10</span>
+          <p class="sec-label">THE EQUATION, MASKED</p>
+          <h2>The mask, step by step</h2>
+          <p>The only difference between the self-attention equation and the masked version: add a new matrix <b>M</b> — M for mask — to the scaled similarities. Q, K, V, the similarities, and the √d<sub>k</sub> scaling are calculated just like before, so the hand calculation resumes from the scaled-similarity matrix above.</p>
+
+          <div class="formula">
+            $$\mathrm{Masked\;Attention}(Q,\, K,\, V) \;=\; \mathrm{softmax}\!\left(\frac{QK^{T}}{\sqrt{d_k}} + M\right)V$$
+          </div>
+          <p>The purpose of the mask is to prevent any token from including anything that comes after it. For <i>"draw a
+              map"</i>:</p>
+          <ul>
+            <li>"draw" only includes itself.</li>
+            <li>"a" includes itself and "draw".</li>
+            <li>"map" includes everything.</li>
+          </ul>
+          <p>M adds <b>zeros</b> to the values we want to include and <b>negative infinity</b> to any value we need to
+            mask out. Adding zero changes nothing. Adding −∞ turns the scaled similarity into −∞, and after softmax
+            those positions get exactly 0% — since e<sup>−∞</sup>&nbsp;=&nbsp;0.</p>
+
+          <div class="figwrap">
+            <svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img"
+              aria-label="A 3 by 3 mask matrix: zeros on and below the diagonal, minus infinity above it">
+              <rect width="680" height="250" fill="#FFFFFF" rx="8" />
+              <text x="40" y="42" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="15"
+                fill="#16233A">The mask M — rows are queries, columns are keys</text>
+              <!-- column labels -->
+              <g font-family="Google Sans Flex, sans-serif" font-size="13" fill="#5D6C87" text-anchor="middle">
+                <text x="285" y="80">draw</text>
+                <text x="385" y="80">a</text>
+                <text x="485" y="80">map</text>
+              </g>
+              <!-- row labels -->
+              <g font-family="Google Sans Flex, sans-serif" font-size="13" fill="#5D6C87" text-anchor="end">
+                <text x="222" y="120">draw</text>
+                <text x="222" y="170">a</text>
+                <text x="222" y="220">map</text>
+              </g>
+              <!-- cells -->
+              <g font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="15" text-anchor="middle">
+                <rect x="238" y="96" width="94" height="38" rx="7" fill="#E0EAFB" />
+                <text x="285" y="121" fill="#1D5BD6">0</text>
+                <rect x="338" y="96" width="94" height="38" rx="7" fill="#FBEADA" />
+                <text x="385" y="121" fill="#DD6A12">−∞</text>
+                <rect x="438" y="96" width="94" height="38" rx="7" fill="#FBEADA" />
+                <text x="485" y="121" fill="#DD6A12">−∞</text>
+
+                <rect x="238" y="146" width="94" height="38" rx="7" fill="#E0EAFB" />
+                <text x="285" y="171" fill="#1D5BD6">0</text>
+                <rect x="338" y="146" width="94" height="38" rx="7" fill="#E0EAFB" />
+                <text x="385" y="171" fill="#1D5BD6">0</text>
+                <rect x="438" y="146" width="94" height="38" rx="7" fill="#FBEADA" />
+                <text x="485" y="171" fill="#DD6A12">−∞</text>
+
+                <rect x="238" y="196" width="94" height="38" rx="7" fill="#E0EAFB" />
+                <text x="285" y="221" fill="#1D5BD6">0</text>
+                <rect x="338" y="196" width="94" height="38" rx="7" fill="#E0EAFB" />
+                <text x="385" y="221" fill="#1D5BD6">0</text>
+                <rect x="438" y="196" width="94" height="38" rx="7" fill="#E0EAFB" />
+                <text x="485" y="221" fill="#1D5BD6">0</text>
+              </g>
+              <text x="570" y="171" font-family="Google Sans Flex, sans-serif" font-size="12.5"
+                fill="#8296B5">upper triangle</text>
+              <text x="570" y="188" font-family="Google Sans Flex, sans-serif" font-size="12.5" fill="#8296B5">=
+                the future</text>
+            </svg>
+          </div>
+          <p class="caption"><b>Lower triangle open, upper triangle blocked.</b> Each row may attend to itself and anything to its left — never to anything after it.</p>
+
+          <h3>The masked hand calculation</h3>
+          <p>Add M to the scaled similarities (the spreadsheet stands in −1×10<sup>23</sup> for −∞), then exponentiate — the blocked entries collapse to zero:</p>
+
+          <div class="mrow">
+            <div class="mlab"><b>scaled + M</b>
+              <div class="mx" style="grid-template-columns:repeat(3,auto)">
+                <span>−0.070</span><span class="hi">−∞</span><span class="hi">−∞</span>
+                <span>−0.284</span><span>0.288</span><span class="hi">−∞</span>
+                <span>0.343</span><span>−0.473</span><span>2.862</span>
+              </div>
+            </div>
+            <span class="mop">exp →</span>
+            <div class="mlab"><b>exp</b>
+              <div class="mx" style="grid-template-columns:repeat(3,auto)">
+                <span>0.932</span><span class="hi">0</span><span class="hi">0</span>
+                <span>0.752</span><span>1.334</span><span class="hi">0</span>
+                <span>1.409</span><span>0.623</span><span>17.497</span>
+              </div>
+            </div>
+          </div>
+
+          <p>Row-normalize and multiply by the same V as before:</p>
+
+          <div class="mrow">
+            <div class="mlab"><b>softmax</b>
+              <div class="mx" style="grid-template-columns:repeat(3,auto)">
+                <span class="bl">1.000</span><span class="hi">0</span><span class="hi">0</span>
+                <span>0.361</span><span>0.639</span><span class="hi">0</span>
+                <span>0.072</span><span>0.032</span><span>0.896</span>
+              </div>
+            </div>
+            <span class="mop">× V =</span>
+            <div class="mlab"><b>masked scores</b>
+              <div class="mx" style="grid-template-columns:repeat(2,auto)">
+                <span>0.6037</span><span>0.7434</span>
+                <span>−0.0063</span><span>0.6071</span>
+                <span>3.4991</span><span>2.2429</span>
+              </div>
+            </div>
+          </div>
+
+          <p>Three things to notice. The first token attends 100% to itself, so its score is exactly its own row of V. The second row mixes only the first two tokens. The third row is identical to unmasked self-attention — the last token was always allowed to see everything.</p>
+        </section>
+
+        <section class="card" id="code-msa">
+          <span class="sec-num" aria-hidden="true">11</span>
+          <p class="sec-label">IMPLEMENTATION</p>
+          <h2>Coding masked self-attention</h2>
+          <p>The class is the previous one plus a <code>mask</code> switch — off, and it computes the original
+            self-attention; one class, both behaviors. Building the mask takes three moves:</p>
+          <ol>
+            <li><code>torch.ones</code> creates a 3×3 matrix of ones, because there are three tokens.</li>
+            <li><code>torch.tril</code> turns the ones in the upper triangle into zeros and leaves the lower triangle
+              alone.</li>
+            <li>Comparing with <code>== 0</code> converts the zeros into Trues — the positions to mask out — and the
+              ones into Falses.</li>
+          </ol>
+          <p><code>masked_fill</code> then replaces every True position in the scaled similarities with a very large
+            negative number standing in for −∞, and leaves every False position alone. Print the mask before trusting
+            it.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>masked_self_attention.py</span></div>
+            <pre><span class="k">class</span> MaskedSelfAttention(nn.Module):
+
+    <span class="k">def</span> __init__(self, n_embed=2, row=0, col=1, mask=<span class="k">False</span>):
+        super().__init__()
+        self.n_embed = n_embed
+        self.WQ = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.WK = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.WV = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.row = row
+        self.col = col
+        self.mask = mask
+
+    <span class="k">def</span> forward(self, x):
+        Q = self.WQ(x)
+        K = self.WK(x)
+        V = self.WV(x)
+
+        q_dot_k = Q @ K.transpose(dim0=self.row, dim1=self.col)
+        scaled_q_dot_k = q_dot_k / torch.tensor(K.size(self.col))**0.5
+
+        <span class="c"># masking</span>
+        <span class="k">if</span> self.mask:
+            tril = torch.tril(torch.ones(scaled_q_dot_k.size()))
+            scaled_q_dot_k = scaled_q_dot_k.masked_fill(tril == 0, float(<span class="s">'-inf'</span>))
+        softmax = F.softmax(scaled_q_dot_k, dim=self.col)
+        attention_scores = softmax @ V
+        <span class="k">return</span> attention_scores</pre>
+          </div>
+
+          <p>Same encodings, same seed, same parameters, mask on:</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>run it</span></div>
+            <pre>torch.manual_seed(<span class="s">42</span>)
+msa = MaskedSelfAttention(n_embed=<span class="s">2</span>, row=<span class="s">0</span>, col=<span class="s">1</span>, mask=<span class="k">True</span>)
+msa(c)</pre>
+          </div>
+
+          <div class="win out">
+            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+            <pre class="output">tensor([[ 0.6038,  0.7434],
+        [-0.0062,  0.6072],
+        [ 3.4989,  2.2427]], grad_fn=&lt;MmBackward0&gt;)</pre>
+          </div>
+
+          <p>Exactly the hand-calculated matrix: first row equal to V's first row, last row unchanged. With <code>mask=False</code> the same object reproduces the original self-attention output — a free check that masking is the only thing that changed.</p>
+        </section>
+
+        <section class="card" id="encdec">
+          <span class="sec-num" aria-hidden="true">12</span>
+          <p class="sec-label">CROSS-ATTENTION</p>
+          <h2>Encoder-decoder attention</h2>
+          <p>Before encoder-only and decoder-only transformers existed, the first transformer ever made had both parts: an <b>encoder</b> that used self-attention and a <b>decoder</b> that used masked self-attention, connected so they could calculate a third thing — <b>encoder-decoder attention</b>.</p>
+          <p>The recipe changes in one place: <b>the encoder's output calculates the keys and values, and the queries are calculated from the decoder's masked self-attention output</b>. Once Q, K, and V exist, encoder-decoder attention is calculated just like self-attention, using every similarity — no mask. This first transformer was a seq-to-seq (encoder-decoder) model built to translate one language into another: the encoder calculates self-attention over "the sky is blue", and the decoder uses the encoder's output to calculate encoder-decoder attention, which generates "el cielo es azul".</p>
+          <p>Trace it on the architecture map in <a href="#overview">the overview</a>: K and V climb out of the encoder tower into the gradient block; Q rises from below.</p>
+
+          <p>The names fall out of this history. The encoder alone proved useful — <b>encoder-only</b> transformers. The decoder alone could generate text, including translations — <b>decoder-only</b> transformers.</p>
+          <p>Seq-to-seq models have faded for pure language modeling, but the pattern survives in <b>multimodal models</b>: an encoder trained on images or sound produces context aware embeddings, and a text decoder consumes them through encoder-decoder attention to caption images or answer audio prompts.</p>
+          <div class="takeaway">
+            <strong>All it asks of the code</strong>
+            Cross-attention only requires flexibility about where Q, K, and V come from — the exact change in the final
+            class below.
+          </div>
+        </section>
+
+        <section class="card" id="mha">
+          <span class="sec-num" aria-hidden="true">13</span>
+          <p class="sec-label">SCALING UP</p>
+          <h2>Multi-head attention</h2>
+          <p>For a simple example, one attention unit works fine. To correctly establish how words relate in longer, more complicated sentences and paragraphs, transformers apply attention to the encoded values multiple times <i>simultaneously</i>. Each attention unit is a <b>head</b>, and each head has its own sets of weights for calculating the queries, keys, and values. Multiple heads calculating attention is <b>multi-head attention</b>. The manuscript that first described transformers used eight heads.</p>
+          <p>More heads mean more outputs: three heads producing two attention values each give six values where the
+            encoding had two. Three ways back down to the original number of encoded values:</p>
+          <ol>
+            <li>Connect all the attention values to a <b>fully connected layer</b> with that many outputs.</li>
+            <li>Shrink the <b>value weight matrix</b> — with one column of weights, each head outputs one value, so
+              two heads land back on two.</li>
+            <li>Code the transformer to be <b>flexible</b> about these sizes.</li>
+          </ol>
+
+          <div class="figwrap">
+            <svg viewBox="0 0 680 470" xmlns="http://www.w3.org/2000/svg" role="img"
+              aria-label="Multi-head attention flowchart: V, K and Q each pass through h Linear layers into h parallel scaled dot-product attention blocks, whose outputs are concatenated and passed through a final Linear layer">
+              <defs>
+                <marker id="ahB" markerWidth="5" markerHeight="5" refX="4.2" refY="2.5" orient="auto">
+                  <path d="M0,0 L5,2.5 L0,5 z" fill="#3A4A66" />
+                </marker>
+              </defs>
+              <rect width="680" height="470" fill="#FFFFFF" rx="8" />
+              <text x="340" y="30" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="700"
+                font-size="16" fill="#16233A">Multi-Head Attention</text>
+
+              <!-- arrows -->
+              <g stroke="#3A4A66" stroke-width="2" fill="none" z-index="100">
+                <line x1="200" y1="406" x2="200" y2="378" marker-end="url(#ahB)" />
+                <line x1="340" y1="406" x2="340" y2="378" marker-end="url(#ahB)" />
+                <line x1="480" y1="406" x2="480" y2="378" marker-end="url(#ahB)" />
+                <line x1="200" y1="340" x2="200" y2="284" marker-end="url(#ahB)" />
+                <line x1="340" y1="340" x2="340" y2="284" marker-end="url(#ahB)" />
+                <line x1="480" y1="340" x2="480" y2="284" marker-end="url(#ahB)" />
+                <line x1="340" y1="220" x2="340" y2="186" marker-end="url(#ahB)" />
+                <line x1="340" y1="152" x2="340" y2="124" marker-end="url(#ahB)" />
+                <line x1="340" y1="86" x2="340" y2="50" marker-end="url(#ahB)" />
+              </g>
+              <!-- ghost arrows from the hidden heads -->
+              <g stroke="#B9C6DC" stroke-width="1.6" fill="none">
+                <line x1="356" y1="225" x2="356" y2="186" />
+                <line x1="370" y1="218" x2="370" y2="186" />
+              </g>
+
+              <!-- scaled dot-product attention stack -->
+              <rect x="156" y="210" width="400" height="52" rx="10" fill="#FFFFFF" stroke="#C6D3E8" />
+              <rect x="148" y="218" width="400" height="52" rx="10" fill="#F4F8FE" stroke="#AAB9D4" />
+              <rect x="140" y="226" width="400" height="52" rx="10" fill="#1D5BD6" />
+              <text x="340" y="257" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="14" fill="#FFFFFF">Scaled Dot-Product Attention</text>
+              <path d="M545,246 L578,226" stroke="#3A4A66" stroke-width="2" fill="none" />
+              <text x="588" y="232" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="14"
+                fill="#16233A">h</text>
+              <text x="588" y="250" font-family="Google Sans Flex, sans-serif" font-size="11" fill="#8296B5">heads</text>
+
+              <!-- concat -->
+              <rect x="280" y="152" width="120" height="32" rx="8" fill="#FBEADA" stroke="#DD6A12"
+                stroke-width="1.5" />
+              <text x="340" y="173" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13" fill="#93460B">Concat</text>
+
+              <!-- top linear -->
+              <rect x="292" y="86" width="96" height="32" rx="8" fill="#FFFFFF" stroke="#92A6C9" stroke-width="1.5" />
+              <text x="340" y="107" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="600"
+                font-size="13" fill="#16233A">Linear</text>
+
+              <!-- bottom linears with per-head stacks -->
+              <g>
+                <rect x="164" y="328" width="96" height="32" rx="8" fill="#FFFFFF" stroke="#C6D3E8" />
+                <rect x="158" y="334" width="96" height="32" rx="8" fill="#F4F8FE" stroke="#AAB9D4" />
+                <rect x="152" y="340" width="96" height="32" rx="8" fill="#E0EAFB" stroke="#1D5BD6"
+                  stroke-width="1.4" />
+                <text x="200" y="361" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif"
+                  font-weight="600" font-size="13" fill="#1D5BD6">Linear</text>
+              </g>
+              <g>
+                <rect x="304" y="328" width="96" height="32" rx="8" fill="#FFFFFF" stroke="#C6D3E8" />
+                <rect x="298" y="334" width="96" height="32" rx="8" fill="#F4F8FE" stroke="#AAB9D4" />
+                <rect x="292" y="340" width="96" height="32" rx="8" fill="#E0EAFB" stroke="#1D5BD6"
+                  stroke-width="1.4" />
+                <text x="340" y="361" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif"
+                  font-weight="600" font-size="13" fill="#1D5BD6">Linear</text>
+              </g>
+              <g>
+                <rect x="444" y="328" width="96" height="32" rx="8" fill="#FFFFFF" stroke="#C6D3E8" />
+                <rect x="438" y="334" width="96" height="32" rx="8" fill="#F4F8FE" stroke="#AAB9D4" />
+                <rect x="432" y="340" width="96" height="32" rx="8" fill="#E0EAFB" stroke="#1D5BD6"
+                  stroke-width="1.4" />
+                <text x="480" y="361" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif"
+                  font-weight="600" font-size="13" fill="#1D5BD6">Linear</text>
+              </g>
+              <text x="548" y="352" font-family="Google Sans Flex, sans-serif" font-size="11.5"
+                fill="#8296B5">h separate</text>
+              <text x="548" y="368" font-family="Google Sans Flex, sans-serif" font-size="11.5"
+                fill="#8296B5">weight sets</text>
+
+              <!-- input labels -->
+              <g font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="14" fill="#16233A"
+                text-anchor="middle">
+                <text x="200" y="428">V</text>
+                <text x="340" y="428">K</text>
+                <text x="480" y="428">Q</text>
+              </g>
+            </svg>
+          </div>
+          <p class="caption"><b>Multi-head attention as the original paper draws it.</b> Redrawn from Figure 2 of Vaswani et al. (2017). The stacked outlines are the h heads. Each head's Linear projections are its own W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub>; Concat is our <code>torch.cat</code>; the final Linear brings the concatenated values back to the original size.</p>
+        </section>
+
+        <section class="card" id="code-mha">
+          <span class="sec-num" aria-hidden="true">14</span>
+          <p class="sec-label">IMPLEMENTATION</p>
+          <h2>One class for all three</h2>
+          <p>One <code>Attention</code> class implements all three attention types. The <code>__init__</code> is
+            unchanged. The <code>forward</code> changes twice:</p>
+          <ul>
+            <li>It accepts <b>different encodings for the queries, keys, and values</b>.</li>
+            <li>It passes those potentially different encodings to the matrices that create Q, K, and V. Everything
+              else is the same.</li>
+          </ul>
+          <p>The same tensor three times is self-attention. Encoder output for keys and values, decoder output for
+            queries is cross-attention. <code>mask=True</code> is masked.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>attention.py</span></div>
+            <pre><span class="k">class</span> Attention(nn.Module):
+
+    <span class="k">def</span> __init__(self, n_embed=2, row=0, col=1):
+        super().__init__()
+        self.n_embed = n_embed
+        self.WQ = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.WK = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.WV = nn.Linear(n_embed, n_embed, bias=<span class="k">False</span>)
+        self.row = row
+        self.col = col
+
+    <span class="k">def</span> forward(self, enc_q, enc_k, enc_v, mask=<span class="k">False</span>):
+        Q = self.WQ(enc_q)
+        K = self.WK(enc_k)
+        V = self.WV(enc_v)
+
+        q_dot_k = Q @ K.transpose(dim0=self.row, dim1=self.col)
+        scaled_q_dot_k = q_dot_k / torch.tensor(K.size(self.col))**0.5
+
+        <span class="c"># masking</span>
+        <span class="k">if</span> mask:
+            tril = torch.tril(torch.ones(scaled_q_dot_k.size()))
+            scaled_q_dot_k = scaled_q_dot_k.masked_fill(tril == 0, float(<span class="s">'-inf'</span>))
+        softmax = F.softmax(scaled_q_dot_k, dim=self.col)
+        attention_scores = softmax @ V
+        <span class="k">return</span> attention_scores</pre>
+          </div>
+
+          <p><code>MultiHeadAttention</code> adds one new parameter, <code>num_heads</code>. A for loop creates that many <code>Attention</code> objects — each initialized with the same arguments, each carrying its own weights — stored in an <code>nn.ModuleList</code>, a list of modules we can index. The forward pass loops the encoding matrices through every head and concatenates what comes back.</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>multi_head_attention.py</span></div>
+            <pre><span class="k">class</span> MultiHeadAttention(nn.Module):
+
+    <span class="k">def</span> __init__(self, n_embed=2, row=0, col=1, num_heads=1):
+        super().__init__()
+        self.heads = nn.ModuleList([Attention(n_embed, row, col) <span class="k">for</span> _ <span class="k">in</span> range(num_heads)])
+        self.col = col
+
+    <span class="k">def</span> forward(self, enc_q, enc_k, enc_v, mask=<span class="k">False</span>):
+        attention_scores_concatenated = torch.cat([
+            head(enc_q, enc_k, enc_v) <span class="k">for</span> head <span class="k">in</span> self.heads
+        ], dim=self.col)
+        <span class="k">return</span> attention_scores_concatenated</pre>
+          </div>
+
+          <p>Using the same encodings for queries, keys, and values keeps the results comparable to everything above. One head with the same seed must reproduce the single-head answer. Two heads must produce twice as many values:</p>
+
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>run it</span></div>
+            <pre>q, k, v = c, c, c
+
+torch.manual_seed(<span class="s">42</span>)
+ca = Attention(n_embed=<span class="s">2</span>, row=<span class="s">0</span>, col=<span class="s">1</span>)
+ca(q, k, v)          <span class="c"># same output as SelfAttention — 1.0100, 1.0641, ...</span>
+
+torch.manual_seed(<span class="s">42</span>)
+mha = MultiHeadAttention(n_embed=<span class="s">2</span>, row=<span class="s">0</span>, col=<span class="s">1</span>, num_heads=<span class="s">2</span>)
+mha(q, k, v)</pre>
+          </div>
+
+          <div class="win out">
+            <div class="win-bar"><i></i><i></i><i></i><span>output — two heads</span></div>
+            <pre class="output">tensor([[ 1.0100,  1.0641, -0.7081, -0.8268],
+        [ 0.2040,  0.7057, -0.7417, -0.9193],
+        [ 3.4989,  2.2427, -0.7190, -0.8447]], grad_fn=&lt;CatBackward0&gt;)</pre>
+          </div>
+
+          <p>The first two columns are the single-head answer — the first head drew the same seed-42 weights. The last two are the second head's view of the same tokens with its own freshly initialized weights. Six values per token from two in: exactly the growth the fully connected layer (or a slimmer value matrix) brings back down inside a real transformer.</p>
+
+        </section>
+
+        <footer class="card" id="colophon">
+          <p class="credit">This post distills <a href="https://www.deeplearning.ai/short-courses/attention-in-transformers-concepts-and-code-in-pytorch/"><b>Attention in Transformers: Concepts and Code in PyTorch</b></a> on DeepLearning.AI, taught by <b>Josh Starmer</b> of <a href="https://statquest.org/">StatQuest</a>. The explanations follow the course; the code, the outputs, and the spreadsheet hand-verification are my own.</p>
+          <p class="credit" style="margin-top:14px">
+            Vaswani et al. (2017), <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a> ·
+            Bahdanau et al. (2014), <a href="https://arxiv.org/abs/1409.0473">Neural Machine Translation by Jointly
+              Learning to Align and Translate</a>
+          </p>
+        </footer>
+
+      </div>
+
+      <aside class="post-toc">
+        <div class="toc-label">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#history">1 · From translation to transformers</a></li>
+          <li><a href="#parts">2 · Three parts of a transformer</a></li>
+          <li><a href="#qkv">3 · Queries, keys, and values</a></li>
+          <li><a href="#math">4 · Self-attention, step by step</a></li>
+          <li><a href="#softmax">5 · Softmax, demystified</a></li>
+          <li><a href="#code-sa">6 · Coding self-attention</a></li>
+          <li><a href="#byhand-sa">7 · Checking the math by hand</a></li>
+          <li><a href="#masked">8 · Why mask anything?</a></li>
+          <li><a href="#mask-math">9 · The mask, step by step</a></li>
+          <li><a href="#code-msa">10 · Coding masked self-attention</a></li>
+          <li><a href="#encdec">11 · Encoder-decoder attention</a></li>
+          <li><a href="#mha">12 · Multi-head attention</a></li>
+          <li><a href="#code-mha">13 · One class for all three</a></li>
+        </ul>
+      </aside>
+    </div>
+
+  </main>
+
+  <script>
+    // scroll progress + active TOC link
+    const prog = document.getElementById('progress');
+    const secs = [...document.querySelectorAll('section.card'), document.getElementById('colophon')].filter(Boolean);
+    const links = [...document.querySelectorAll('.toc-list a')];
+
+    function onScroll() {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+
+      let active = 0;
+      const y = h.scrollTop + 140;
+      document.querySelectorAll('section.card').forEach((s, i) => { if (s.offsetTop <= y) active = i });
+      links.forEach((a, i) => a.classList.toggle('active', i === active));
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  </script>
+
+</body>
+
+</html>
