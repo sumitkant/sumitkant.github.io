@@ -1,0 +1,2 @@
+# local-only scratch: virtualenvs, model weights, raw inputs for one-off scripts
+_local/
