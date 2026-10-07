@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Full Stack GenAI Syllabus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root{
+  --ground:#F2F4F6; --surface:#FFFFFF; --ink:#141C24; --ink-2:#2E3A45; --muted:#5A6672; --rule:#D3DAE1;
+  --accent:#0A7266; --accent-ink:#075A51; --accent-soft:#E0EEEB; --accent-line:#B7D8D2;
+  --amber:#8F5A0C; --amber-soft:#F5EBDC; --code-bg:#E6EBEF;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --sans:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1419; --surface:#151D24; --ink:#E3E9EE; --ink-2:#C3CDD5; --muted:#91A0AC; --rule:#27323C;
+    --accent:#3DBDAB; --accent-ink:#7ED6C9; --accent-soft:#11302B; --accent-line:#1E4A43;
+    --amber:#E2A652; --amber-soft:#2B2213; --code-bg:#1E2830;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1419; --surface:#151D24; --ink:#E3E9EE; --ink-2:#C3CDD5; --muted:#91A0AC; --rule:#27323C;
+  --accent:#3DBDAB; --accent-ink:#7ED6C9; --accent-soft:#11302B; --accent-line:#1E4A43;
+  --amber:#E2A652; --amber-soft:#2B2213; --code-bg:#1E2830;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.6;padding-inline:24px;padding-block:0 80px}
+a{color:var(--accent-ink);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:.1em .38em;border-radius:4px;white-space:nowrap}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+
+.wrap{max-width:1180px;margin-inline:auto;display:grid;grid-template-columns:210px minmax(0,1fr);gap:64px}
+
+/* ---------- rail ---------- */
+.rail{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding-block:40px 24px}
+.rail-label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.rail ol,.rail ul{list-style:none;margin:0 0 24px;padding:0;display:grid;gap:2px}
+.rail a{display:flex;align-items:center;gap:10px;color:var(--ink-2);text-decoration:none;font-size:13.5px;padding:5px 8px;margin-inline:-8px;border-radius:6px;line-height:1.3}
+.rail a:hover{background:var(--surface);color:var(--ink)}
+.rail .n{font-family:var(--mono);font-size:11.5px;color:var(--muted);width:14px;text-align:right;flex:none}
+.dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--rule);flex:none;margin-left:auto}
+.dot.part{border-color:var(--accent);background:linear-gradient(90deg,var(--accent) 50%,transparent 50%)}
+.dot.full{border-color:var(--accent);background:var(--accent)}
+
+/* ---------- header ---------- */
+.main{max-width:860px;min-width:0}
+.masthead{padding-block:56px 40px;display:grid;gap:22px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(36px,6vw,54px);line-height:1.02;letter-spacing:-.02em}
+.lede{font-size:18.5px;line-height:1.55;color:var(--ink-2);max-width:62ch}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:10px;overflow:hidden;margin:6px 0 0}
+.facts div{background:var(--surface);padding:12px 14px}
+.facts dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:2px 0 0;font-family:var(--display);font-weight:500;font-size:20px;font-variant-numeric:tabular-nums}
+.progress{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.bar{flex:1 1 220px;height:6px;border-radius:3px;background:var(--rule);overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s ease}
+.progress-text{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.linkbtn{font:inherit;font-family:var(--mono);font-size:12px;color:var(--muted);background:none;border:0;padding:2px 0;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkbtn:hover{color:var(--ink)}
+
+.loop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;padding-block:22px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.loop div{display:grid;gap:3px;align-content:start}
+.loop b{font-family:var(--display);font-weight:500;font-size:17px}
+.loop span{font-size:13.5px;color:var(--muted);line-height:1.45}
+
+/* ---------- sections ---------- */
+section{padding-block:56px 0;scroll-margin-top:12px}
+.sec-head{display:grid;gap:10px;margin-bottom:24px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,36px);line-height:1.08;letter-spacing:-.015em}
+.sec-intro{color:var(--ink-2);max-width:66ch}
+h3{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+
+.table-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.stage-cell{white-space:nowrap}
+td.stage-cell a{color:var(--ink);text-decoration:none}
+td.stage-cell a:hover{color:var(--accent)}
+td .num{font-family:var(--mono);color:var(--muted);font-size:12px;margin-right:8px}
+td.easy{font-weight:600;color:var(--accent-ink)}
+
+/* ---------- stage ---------- */
+.stage{border-top:1px solid var(--rule);margin-top:56px;padding-top:48px}
+.stage-head{display:grid;gap:10px;margin-bottom:22px}
+.why{font-size:17px;line-height:1.55;color:var(--ink-2);max-width:64ch}
+
+.ladder{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin-bottom:10px}
+.rung{display:grid;gap:2px;padding:9px 13px;border:1px solid var(--rule);border-radius:8px;background:var(--surface);min-width:0}
+.rung.easy{background:var(--accent);border-color:var(--accent)}
+.rung-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.rung.easy .rung-label{color:var(--ground);opacity:.85}
+.rung .tool{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--ink)}
+.rung.easy .tool{color:var(--ground);text-decoration:none}
+.rung.easy .tool:hover{text-decoration:underline}
+.arrow{align-self:center;color:var(--muted);font-family:var(--mono)}
+.tool-why{font-size:14.5px;color:var(--muted);max-width:70ch;margin-bottom:8px}
+.heads-up{display:flex;gap:10px;align-items:baseline;font-size:14px;background:var(--amber-soft);color:var(--ink-2);padding:9px 13px;border-radius:8px;margin-top:12px;max-width:72ch}
+.heads-up b{font-family:var(--mono);font-weight:500;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--amber);flex:none}
+
+.block{margin-top:34px}
+.variations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 28px;margin:0;padding:0}
+.variations div{display:grid;gap:3px;align-content:start}
+.variations dt{font-weight:600;font-size:14.5px;line-height:1.35}
+.variations dd{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.5}
+
+.readings{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--rule)}
+.reading{display:grid;grid-template-columns:26px minmax(0,1fr);gap:4px 10px;padding:13px 0;border-bottom:1px solid var(--rule)}
+.reading input,.done input{accent-color:var(--accent);width:17px;height:17px;margin:3px 0 0;cursor:pointer}
+.reading .r-title{font-weight:600;font-size:15px;line-height:1.4}
+.reading .r-title a{color:var(--ink);text-decoration:none;background-image:linear-gradient(var(--accent-line),var(--accent-line));background-size:100% 1px;background-position:0 100%;background-repeat:no-repeat}
+.reading .r-title a:hover{color:var(--accent-ink)}
+.reading .r-order{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-right:6px;font-weight:400}
+.r-meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.r-why{font-size:14.5px;color:var(--ink-2);margin-top:3px}
+.r-why a{font-size:14px}
+.reading.is-done .r-title a{color:var(--muted)}
+
+.tutorial{background:var(--accent-soft);border-radius:12px;padding:24px 26px;display:grid;gap:14px}
+.tutorial .t-label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink)}
+.tutorial h4{font-family:var(--display);font-weight:700;font-size:23px;line-height:1.15;margin:0;text-wrap:balance}
+.tutorial .goal{color:var(--ink-2);max-width:66ch}
+.steps{margin:0;padding:0;list-style:none;counter-reset:step;display:grid;gap:9px}
+.steps li{counter-increment:step;display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;font-size:14.5px;line-height:1.5}
+.steps li::before{content:counter(step);font-family:var(--mono);font-size:12px;color:var(--accent-ink);border:1px solid var(--accent-line);border-radius:50%;width:22px;height:22px;display:grid;place-items:center;margin-top:1px}
+.done{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;border-top:1px solid var(--accent-line);padding-top:14px;font-size:14.5px}
+.done b{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent-ink);display:block}
+
+/* ---------- capstones ---------- */
+.caps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.cap{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:22px;display:grid;gap:10px;align-content:start}
+.cap .track{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent-ink)}
+.cap h4{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.15;margin:0}
+.cap p{font-size:14.5px;color:var(--ink-2)}
+.cap dl{margin:4px 0 0;display:grid;gap:8px}
+.cap dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.cap dd{margin:1px 0 0;font-size:14px;line-height:1.5}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-family:var(--mono);font-size:11px;padding:1px 6px;border:1px solid var(--rule);border-radius:4px;color:var(--ink-2);background:var(--ground)}
+.ships{margin-top:22px;padding:18px 22px;border:1px dashed var(--accent-line);border-radius:12px}
+.ships ul{margin:8px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 24px;font-size:14.5px}
+.ships li::before{content:"□ ";font-family:var(--mono);color:var(--accent-ink)}
+
+.courses td:first-child{min-width:190px}
+.courses td:nth-child(2){min-width:150px;font-size:13.5px}
+.courses td:nth-child(3){min-width:220px}
+.courses td:nth-child(5){min-width:220px;color:var(--ink-2)}
+.courses .c-name{font-weight:600}
+.courses .c-by{display:block;font-size:12.5px;color:var(--muted)}
+.legend{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:10px;line-height:1.7}
+.skip{margin-top:22px;font-size:14.5px;color:var(--ink-2)}
+.skip ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px}
+
+.watch{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--rule)}
+.watch li{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;padding:12px 0;border-bottom:1px solid var(--rule);font-size:14.5px}
+.watch .w-what{font-family:var(--mono);font-size:12.5px;font-weight:500;color:var(--amber)}
+footer{margin-top:56px;font-size:13px;color:var(--muted);max-width:70ch}
+
+/* ---------- responsive ---------- */
+@media (max-width: 960px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  .rail{position:static;max-height:none;padding-block:20px 0;overflow:visible}
+  .rail-label,.rail ul{display:none}
+  .rail ol{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin:0;scrollbar-width:thin}
+  .rail ol a{margin:0;white-space:nowrap;background:var(--surface);border:1px solid var(--rule);padding:5px 10px}
+  .rail .dot{margin-left:4px}
+  .masthead{padding-top:28px}
+}
+@media (max-width: 640px){
+  body{font-size:15px;padding-inline:16px}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .loop{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .variations,.caps,.ships ul{grid-template-columns:minmax(0,1fr)}
+  .tutorial{padding:20px 18px}
+  .watch li{grid-template-columns:minmax(0,1fr);gap:2px}
+  code{white-space:normal}
+  .arrow{display:none}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <nav class="rail" aria-label="Syllabus sections">
+    <div class="rail-label">Stages</div>
+    <ol id="rail-stages"></ol>
+    <div class="rail-label">Reference</div>
+    <ul>
+      <li><a href="#ladder">Tool ladder</a></li>
+      <li><a href="#capstones">Capstones</a></li>
+      <li><a href="#courses">Courses with projects</a></li>
+      <li><a href="#watchlist">Watchlist</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <header class="masthead">
+      <div class="eyebrow">Learning plan · researched 15 Sep 2026</div>
+      <h1>Full Stack GenAI Syllabus</h1>
+      <p class="lede">Twelve stages that follow the GenAI stack from tokens to fine-tuning, in the order that each one builds on the last. Every stage adds a layer to one running project: <strong>Blog Copilot</strong>, an assistant over the ~50 posts on sumitkant.github.io.</p>
+      <dl class="facts">
+        <div><dt>Stages</dt><dd>12</dd></div>
+        <div><dt>Pace</dt><dd>~8 h / week</dd></div>
+        <div><dt>Stages take</dt><dd>16 weeks</dd></div>
+        <div><dt>Capstone</dt><dd>+6 weeks</dd></div>
+      </dl>
+      <div class="progress">
+        <div class="bar" aria-hidden="true"><span id="bar-fill"></span></div>
+        <span class="progress-text" id="progress-text" aria-live="polite">0 of 60 checked</span>
+        <button class="linkbtn" id="reset" type="button">Clear checkmarks</button>
+      </div>
+    </header>
+
+    <div class="loop" aria-label="How each stage works">
+      <div><b>Read</b><span>Four readings, ordered from first read to deepest.</span></div>
+      <div><b>Compare</b><span>The variations you should be able to choose between.</span></div>
+      <div><b>Build</b><span>A tutorial that tries those variations on Blog Copilot.</span></div>
+      <div><b>Prove</b><span>A measurable “done when” before moving on.</span></div>
+    </div>
+
+    <section id="ladder">
+      <div class="sec-head">
+        <h2>Tool ladder</h2>
+        <p class="sec-intro">One easiest tool per stage to learn the concept, a close alternative, and what production teams graduate to. Picks were checked for 2026 maintenance status, not just popularity.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Stage</th><th>Start with</th><th>Then</th><th>Graduate to</th></tr></thead>
+          <tbody id="ladder-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div id="stages"></div>
+
+    <section id="capstones" class="stage">
+      <div class="sec-head">
+        <div class="eyebrow">Weeks 17–22</div>
+        <h2>Capstones</h2>
+        <p class="sec-intro">Pick one, matched to the kind of role you want. Each maps to a flavour of “full stack” from the job-posting research and starts from a course project so you aren’t building scaffolding from zero.</p>
+      </div>
+      <div class="caps">
+        <article class="cap">
+          <div class="track">Product engineer track</div>
+          <h4>Torchvision Docs Copilot</h4>
+          <p>Ask how to do an image transform and get a cited answer, runnable code, and the transformed image rendered inline. It grows naturally out of your Torchvision Playground.</p>
+          <dl>
+            <div><dt>Stack</dt><dd>Next.js + AI SDK generative UI · FastAPI · pgvector hybrid search with a reranker over PyTorch docs · sandboxed code-execution tool · Langfuse · DeepEval CI gate</dd></div>
+            <div><dt>Proof to publish</dt><dd>Live URL, retrieval recall and “code runs first time” rate, cost per question</dd></div>
+            <div><dt>Start from</dt><dd><a href="https://github.com/DataTalksClub/llm-zoomcamp" target="_blank" rel="noopener">LLM Zoomcamp</a> project structure + <a href="https://vercel.com/academy/ai-sdk" target="_blank" rel="noopener">Vercel Academy AI SDK</a></dd></div>
+            <div><dt>Layers</dt><dd class="tags"><span class="tag">R</span><span class="tag">T</span><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span><span class="tag">UX</span><span class="tag">D</span><span class="tag">S</span></dd></div>
+          </dl>
+        </article>
+        <article class="cap">
+          <div class="track">Forward-deployed track</div>
+          <h4>A two-week pilot for a real team</h4>
+          <p>Find a lab, nonprofit or small business with a repetitive inbox or intake workflow and deploy an agent that drafts the work for a human to approve.</p>
+          <dl>
+            <div><dt>Stack</dt><dd>Agent with MCP tools into their existing sheets, calendar or email · approval before anything is sent · Langfuse traces · weekly error review</dd></div>
+            <div><dt>Proof to publish</dt><dd>A case study with before/after numbers (time saved, share of drafts accepted), published with their permission</dd></div>
+            <div><dt>Start from</dt><dd><a href="https://academy.langchain.com/" target="_blank" rel="noopener">LangChain Academy</a> Ambient Agents project</dd></div>
+            <div><dt>Layers</dt><dd class="tags"><span class="tag">T</span><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span><span class="tag">D</span><span class="tag">S</span></dd></div>
+          </dl>
+        </article>
+        <article class="cap">
+          <div class="track">Platform track</div>
+          <h4>An MCP server people install</h4>
+          <p>Wrap a public data source you know well, such as arXiv papers or a government open-data portal, as a remote MCP server, then prove models can actually use it.</p>
+          <dl>
+            <div><dt>Stack</dt><dd>FastMCP over Streamable HTTP · OAuth · test suite · listed in the MCP registry · tool-use eval of three models on 30 tasks, before and after rewriting tool descriptions</dd></div>
+            <div><dt>Proof to publish</dt><dd>Installs or stars, the eval table, a write-up on what made tools easier for models to use</dd></div>
+            <div><dt>Start from</dt><dd><a href="https://huggingface.co/learn/mcp-course/unit0/introduction" target="_blank" rel="noopener">Hugging Face MCP Course</a> unit 3 + <a href="https://anthropic.skilljar.com/" target="_blank" rel="noopener">Anthropic Academy</a></dd></div>
+            <div><dt>Layers</dt><dd class="tags"><span class="tag">T</span><span class="tag">A</span><span class="tag">E</span><span class="tag">D</span><span class="tag">S</span></dd></div>
+          </dl>
+        </article>
+        <article class="cap">
+          <div class="track">Agent depth track</div>
+          <h4>A GAIA ablation study</h4>
+          <p>Take the Hugging Face Agents Course final agent well past its 30% pass mark and publish exactly which planner, tool and model choices moved the score.</p>
+          <dl>
+            <div><dt>Stack</dt><dd>OpenAI Agents SDK or LangGraph · swappable planners, tools and models · Langfuse traces · cost per solved task</dd></div>
+            <div><dt>Proof to publish</dt><dd>Leaderboard score and an interactive results post on your site, in the style of your Attention and Torchvision pieces</dd></div>
+            <div><dt>Start from</dt><dd><a href="https://huggingface.co/learn/agents-course/unit0/introduction" target="_blank" rel="noopener">Hugging Face Agents Course</a></dd></div>
+            <div><dt>Layers</dt><dd class="tags"><span class="tag">M</span><span class="tag">T</span><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span></dd></div>
+          </dl>
+        </article>
+      </div>
+      <div class="ships">
+        <h3 style="margin:0">Every capstone ships with</h3>
+        <ul>
+          <li>A live URL</li>
+          <li>README with an architecture diagram</li>
+          <li>An eval report with real numbers</li>
+          <li>Trace screenshots of a failure you fixed</li>
+          <li>A cost and latency table</li>
+          <li>A one-page threat model</li>
+          <li>A two-minute demo video</li>
+          <li>A write-up on sumitkant.github.io</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="courses">
+      <div class="sec-head">
+        <h2>Courses with projects</h2>
+        <p class="sec-intro">Status, price and dates checked on 15 September 2026. Free options come first; use them as a base and apply the extension to make the project yours.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="courses">
+          <thead><tr><th>Course</th><th>Cost · format</th><th>What you build</th><th>Layers</th><th>Make it stand out</th></tr></thead>
+          <tbody>
+            <tr><td><a class="c-name" href="https://huggingface.co/learn/agents-course/unit0/introduction" target="_blank" rel="noopener">Agents Course</a><span class="c-by">Hugging Face</span></td><td>Free · self-paced · certificate</td><td>An agent that clears 30% on GAIA benchmark questions, with a student leaderboard</td><td><span class="tags"><span class="tag">M</span><span class="tag">T</span><span class="tag">A</span><span class="tag">E</span></span></td><td>Publish ablations with traces and cost per task</td></tr>
+            <tr><td><a class="c-name" href="https://huggingface.co/learn/mcp-course/unit0/introduction" target="_blank" rel="noopener">MCP Course</a><span class="c-by">Hugging Face</span></td><td>Free · 5 units · certificate</td><td>An end-to-end MCP application, then a deployed one</td><td><span class="tags"><span class="tag">T</span><span class="tag">A</span><span class="tag">D</span></span></td><td>Add OAuth, tests and a tool-use eval</td></tr>
+            <tr><td><a class="c-name" href="https://github.com/DataTalksClub/llm-zoomcamp" target="_blank" rel="noopener">LLM Zoomcamp</a><span class="c-by">DataTalks.Club</span></td><td>Free · 10 weeks · peer-reviewed</td><td>Your own end-to-end RAG app, reviewed by three peers. The 2026 cohort closed 7 Sep; materials are self-paced</td><td><span class="tags"><span class="tag">M</span><span class="tag">R</span><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span></span></td><td>Add a Next.js front end, an MCP retriever and a CI eval gate</td></tr>
+            <tr><td><a class="c-name" href="https://academy.langchain.com/" target="_blank" rel="noopener">Ambient Agents · Deep Research</a><span class="c-by">LangChain Academy</span></td><td>Free · 1.5–2.5 h each</td><td>An email assistant or a research agent, with LangSmith evals</td><td><span class="tags"><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span><span class="tag">D</span></span></td><td>Point it at a real inbox or domain; add approvals and MCP tools</td></tr>
+            <tr><td><a class="c-name" href="https://github.com/decodingml/second-brain-ai-assistant-course" target="_blank" rel="noopener">Second Brain AI Assistant</a><span class="c-by">Decoding ML</span></td><td>Free (~$5 API) · 6 modules</td><td>Agentic RAG over your notes with data pipelines, a fine-tuned model, evals and deployment</td><td><span class="tags"><span class="tag">R</span><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span><span class="tag">D</span><span class="tag">FT</span></span></td><td>Add auth, multiple users, a streaming UI and injection guardrails</td></tr>
+            <tr><td><a class="c-name" href="https://vercel.com/academy/ai-sdk" target="_blank" rel="noopener">Builders Guide to the AI SDK</a><span class="c-by">Vercel Academy</span></td><td>Free · ~12 h</td><td>A streaming chatbot with tools, plus classification and extraction features</td><td><span class="tags"><span class="tag">UX</span><span class="tag">T</span><span class="tag">D</span></span></td><td>Use as the front end for any capstone</td></tr>
+            <tr><td><a class="c-name" href="https://anthropic.skilljar.com/" target="_blank" rel="noopener">Building with the Claude API</a><span class="c-by">Anthropic Academy</span></td><td>Free · self-paced</td><td>Exercises on tools, RAG, MCP, prompt evals and agent patterns; no graded capstone</td><td><span class="tags"><span class="tag">M</span><span class="tag">R</span><span class="tag">T</span><span class="tag">A</span><span class="tag">E</span></span></td><td>Pair with the MCP server capstone</td></tr>
+            <tr><td><a class="c-name" href="https://towardsai.com/academy/full-stack-ai-engineering/" target="_blank" rel="noopener">Full Stack AI Engineering</a><span class="c-by">Towards AI</span></td><td>$349 · self-paced · 60+ h</td><td>An AI tutor, then your own LLM product reviewed by instructors</td><td><span class="tags"><span class="tag">M</span><span class="tag">R</span><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span><span class="tag">D</span><span class="tag">FT</span><span class="tag">UX</span></span></td><td>Best-value paid option with a reviewed capstone</td></tr>
+            <tr><td><a class="c-name" href="https://maven.com/alexey-grigorev/from-rag-to-agents" target="_blank" rel="noopener">AI Engineering Buildcamp: From RAG to Agents</a><span class="c-by">Alexey Grigorev · Maven</span></td><td>$1,799 · cohort 21 Sep – 22 Nov 2026</td><td>A capstone with PydanticAI, LLM judges and OpenTelemetry monitoring</td><td><span class="tags"><span class="tag">R</span><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span></span></td><td>Starts next week, if you want structure and deadlines</td></tr>
+            <tr><td><a class="c-name" href="https://maven.com/swirl-ai/end-to-end-ai-engineering" target="_blank" rel="noopener">End-to-End AI Engineering Bootcamp</a><span class="c-by">Aurimas Griciūnas · Maven</span></td><td>$2,200 · cohort 19 Oct – 13 Dec 2026 · $500 compute</td><td>A capstone built sprint by sprint and deployed for Demo Day (LangGraph, FastAPI, Docker, Kubernetes)</td><td><span class="tags"><span class="tag">R</span><span class="tag">A</span><span class="tag">E</span><span class="tag">O</span><span class="tag">D</span></span></td><td>Choose if deployment depth is your biggest gap</td></tr>
+            <tr><td><a class="c-name" href="https://maven.com/parlance-labs/evals" target="_blank" rel="noopener">AI Evals for Engineers &amp; PMs</a><span class="c-by">Hamel Husain &amp; Shreya Shankar · Maven</span></td><td>$4,200 · cohort 10 Oct – 21 Nov 2026</td><td>Homework assignments, no capstone</td><td><span class="tags"><span class="tag">E</span><span class="tag">O</span><span class="tag">S</span></span></td><td>A depth course for stage 7, not a project base</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="legend">M models · R retrieval · T tools/MCP · A agents · E evals · O observability · UX app/UI · D deploy · S safety · FT fine-tuning</p>
+      <div class="skip">
+        <h3>Use as reference, not as a project base</h3>
+        <ul>
+          <li><strong>Full Stack Deep Learning LLM Bootcamp</strong>: from 2023; the ideas hold, the tools have moved on.</li>
+          <li><strong>Kaggle 5-Day AI Agents Intensive</strong>: good material, but the 2026 capstone closed in July.</li>
+          <li><strong>anthropics/courses</strong> on GitHub: now archived; use Anthropic Academy instead.</li>
+          <li><strong>PhiloAgents</strong> (Decoding ML): one of the few free projects with a real UI, but last updated October 2025.</li>
+          <li><strong>ai-engineering-hub</strong>: 90+ demo-depth projects; an idea bank rather than a capstone.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="watchlist">
+      <div class="sec-head">
+        <h2>Watchlist</h2>
+        <p class="sec-intro">Changes from the past year that will trip up older tutorials.</p>
+      </div>
+      <ul class="watch">
+        <li><span class="w-what">LiteLLM</span><span>Versions 1.82.7 and 1.82.8 shipped malware in a March 2026 supply-chain attack. Pin your dependency versions.</span></li>
+        <li><span class="w-what">MCP Python SDK 2.0</span><span>The built-in FastMCP class is now <code>MCPServer</code>; imports from <code>mcp.server.fastmcp</code> break. Standalone <code>fastmcp</code> 4.x is a separate package.</span></li>
+        <li><span class="w-what">LLM Guard</span><span>Archived July 2026 after Palo Alto Networks acquired Protect AI. Unmaintained.</span></li>
+        <li><span class="w-what">OpenAI fine-tuning</span><span>Self-serve fine-tuning is winding down; no new jobs can be created after 6 January 2027.</span></li>
+        <li><span class="w-what">Acquisitions</span><span>OpenAI acquired promptfoo (March 2026) and ClickHouse acquired Langfuse (January 2026). Both say they remain open source.</span></li>
+        <li><span class="w-what">Slowing projects</span><span>Chainlit is community-maintained since May 2025; Ragas and smolagents have had no release for months.</span></li>
+        <li><span class="w-what">Moved standards</span><span>OpenTelemetry GenAI conventions now live in their own repository and are still experimental. OWASP’s 2026 LLM Top 10 replaces the 2025 list.</span></li>
+      </ul>
+    </section>
+
+    <footer>
+      Built from verified job postings, docs and course pages as of 15 September 2026. Readings marked paid are the only paywalled items. Checkmarks are saved in this browser only.
+    </footer>
+  </main>
+</div>
+
+<script>
+const STAGES = [
+{
+  title:"How LLMs work", layer:"Foundations", weeks:"Week 1", hours:"~10 h",
+  why:"Cost, latency, context limits and hallucination all trace back to tokens and sampling. Build this mental model before touching an API.",
+  tool:{easy:"Transformer Explainer", url:"https://poloclub.github.io/transformer-explainer/", next:"Tiktokenizer", grad:"LLM Visualization (bbycroft)",
+    why:"Runs a real GPT-2 in your browser: change the prompt or temperature and watch attention and next-token probabilities move. Nothing to install."},
+  variations:[
+    ["Words vs tokens","Models read subword tokens, not words. Pricing, context limits and odd failures like miscounting letters all follow from tokenisation."],
+    ["Greedy vs temperature vs top-k / top-p","Always picking the likeliest token is repeatable but flat; sampling adds variety and risk. Know which knob to turn when output is too random or too dull."],
+    ["Base vs instruction-tuned vs reasoning models","Pretraining supplies knowledge, post-training supplies helpful behaviour, and reasoning models spend extra tokens thinking — slower and costlier, better on hard problems."],
+    ["Advertised vs effective context","A model can accept a huge window yet use its middle poorly. That’s why retrieval in stage 3 still matters."]
+  ],
+  readings:[
+    {t:"Transformer Explainer", url:"https://poloclub.github.io/transformer-explainer/", by:"Polo Club, Georgia Tech · 2024", fmt:"interactive · 40 min", why:"Poke at sampling and attention live before reading anything."},
+    {t:"Deep Dive into LLMs like ChatGPT", url:"https://www.youtube.com/watch?v=7xTGNNLPyMI", by:"Andrej Karpathy · 2025", fmt:"video · 3 h 31 min", why:"The whole pipeline in one sitting: tokens, pretraining, post-training, reinforcement learning, reasoning and why models hallucinate."},
+    {t:"The Illustrated Transformer", url:"https://jalammar.github.io/illustrated-transformer/", by:"Jay Alammar · 2018", fmt:"article · 45 min", why:"The standard visual walkthrough of self-attention. Reread your own Attention in Transformers post afterwards as a self-check."},
+    {t:"AI Engineering, chapters 1–2", url:"https://www.oreilly.com/library/view/ai-engineering/9781098166298/ch01.html", by:"Chip Huyen · O’Reilly 2025", fmt:"book, paid · 3 h", why:"Sampling, post-training and the model landscape from an engineer’s point of view.", alt:{label:"Free chapter summaries", url:"https://github.com/chiphuyen/aie-book"}}
+  ],
+  tutorial:{name:"Token budget of your blog", goal:"Find out whether your whole site fits in one prompt, and why you still wouldn’t send it that way.",
+    steps:[
+      "Extract clean text from every post under <code>Blogs/</code> with BeautifulSoup and save <code>posts.jsonl</code> (slug, title, url, text).",
+      "Count tokens per post with <code>tiktoken</code>; record the corpus total and the largest post.",
+      "Paste a paragraph with code and proper nouns into Tiktokenizer and note where single words split into several tokens.",
+      "In Transformer Explainer, run one prompt at temperature 0.2, 1.0 and 1.6, then top-p 0.5 versus 0.95. Log what changes.",
+      "Write a short note: what would sending the full corpus with every question cost, and what would it do to answer quality?"
+    ],
+    done:"You have <code>posts.jsonl</code>, a token table, and a written argument for retrieval over stuffing the context window."}
+},
+{
+  title:"LLM APIs & prompting", layer:"Models via API", weeks:"Week 2", hours:"~9 h",
+  why:"The API call is the unit of work for everything that follows. Learn to get reliable, typed, streamed output rather than just a chat reply.",
+  tool:{easy:"OpenAI Python SDK", url:"https://github.com/openai/openai-python", next:"Pydantic AI", grad:"LiteLLM gateway",
+    why:"Its Chat Completions format is the de facto standard: Ollama, vLLM, OpenRouter and Gemini all accept it when you change <code>base_url</code>, so one client reaches most models."},
+  note:"If you adopt LiteLLM later, pin versions: 1.82.7 and 1.82.8 shipped malware in a March 2026 supply-chain attack.",
+  variations:[
+    ["Free text vs JSON mode vs schema-enforced output","Parsing prose breaks. JSON mode guarantees valid JSON; structured outputs guarantee it matches your schema. Use the last for anything a program reads."],
+    ["Blocking vs streaming","Streaming doesn’t speed up generation, but first words in under a second change how fast the product feels."],
+    ["Zero-shot vs few-shot vs step-by-step","Examples fix format and tone; asking for reasoning helps hard tasks. With reasoning models, set the reasoning-effort parameter instead of writing “think step by step”."],
+    ["Instructions vs context","Keep stable instructions in the system prompt and wrap variable material, like posts or retrieved chunks, in clear tags so the model can tell them apart."],
+    ["One provider vs several","The same prompt behaves differently across models. Comparing two early builds the habit of measuring instead of assuming."]
+  ],
+  readings:[
+    {t:"Prompting Fundamentals and How to Apply Them Effectively", url:"https://eugeneyan.com/writing/prompting/", by:"Eugene Yan · 2024", fmt:"article · 30 min", why:"A short, tool-agnostic tour of roles, tags, examples and chain-of-thought."},
+    {t:"Prompt Engineering Interactive Tutorial", url:"https://github.com/anthropics/prompt-eng-interactive-tutorial", by:"Anthropic", fmt:"notebooks · 3–4 h", why:"Nine hands-on chapters. The model it uses is old; the techniques aren’t.", alt:{label:"Current prompting best practices", url:"https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"}},
+    {t:"Prompt guidance for GPT-5.5", url:"https://developers.openai.com/api/docs/guides/prompt-guidance?model=gpt-5.5", by:"OpenAI · 2026", fmt:"docs · 1 h", why:"How to prompt current reasoning models: effort, verbosity and outcome-first instructions."},
+    {t:"Structured Outputs", url:"https://developers.openai.com/api/docs/guides/structured-outputs", by:"OpenAI", fmt:"docs · 30 min", why:"Schema-enforced JSON with Pydantic and Zod, and how refusals come back."}
+  ],
+  tutorial:{name:"Post cards, three ways", goal:"Turn every post into a typed summary card and learn what each prompting upgrade actually buys you.",
+    steps:[
+      "Summarise one post with a bare prompt through the OpenAI SDK. Save the output and the token usage.",
+      "Rewrite it with a system prompt, the post wrapped in <code>&lt;post&gt;</code> tags and two hand-written example summaries. Compare.",
+      "Define a Pydantic <code>PostCard</code> (title, three key ideas, tags, audience level) and request it with structured outputs for every post.",
+      "Stream a long summary to the terminal and time the first token against the full response.",
+      "Point <code>base_url</code> at a second provider, such as Gemini’s OpenAI-compatible endpoint or OpenRouter, and rerun the batch."
+    ],
+    done:"<code>cards.jsonl</code> covers every post with zero schema failures, and you have a table of latency, tokens and cost for two providers."}
+},
+{
+  title:"App & UX", layer:"App / UX", weeks:"Week 3", hours:"~9 h",
+  why:"Users experience the interface, not the model. Postings at Cursor, Harvey and Replit treat streaming, citations and approval flows as core front-end work.",
+  tool:{easy:"Gradio", url:"https://www.gradio.app/", next:"Streamlit", grad:"Vercel AI SDK + Next.js",
+    why:"<code>gr.ChatInterface(fn).launch()</code> gives a streaming chat UI in about five lines, and the same app deploys free to Hugging Face Spaces in stage 9."},
+  variations:[
+    ["Chat box vs task-shaped interface","Chat is flexible but makes users guess what to ask. A form, a button or inline suggestions often serve a known job better."],
+    ["Streaming text vs streaming objects vs generative UI","Beyond words arriving live, you can stream structured data into a component or render tool results as interactive UI."],
+    ["Approve-before vs undo-after","Risky actions like sending or deleting need a confirmation step; cheap ones can run immediately and offer undo."],
+    ["Trust signals","Citations, visible sources and honest uncertainty tell users when to rely on an answer."],
+    ["Python UI vs React front end","Gradio and Streamlit are fastest to a demo; product teams ship TypeScript and React against a Python or Node API."]
+  ],
+  readings:[
+    {t:"The Shape of AI", url:"https://www.shapeof.ai/", by:"Emily Campbell · 2025", fmt:"pattern library · 1 h", why:"A catalogue of AI interface patterns to borrow from: wayfinders, governors and trust builders."},
+    {t:"Build a basic LLM chat app", url:"https://docs.streamlit.io/develop/tutorials/chat-and-llm-apps/build-conversational-apps", by:"Streamlit", fmt:"docs · 45 min", why:"The canonical streaming chat loop in Python; the same shape maps directly onto Gradio’s ChatInterface."},
+    {t:"AI SDK UI: Chatbot", url:"https://ai-sdk.dev/docs/ai-sdk-ui/chatbot", by:"Vercel · AI SDK v7", fmt:"docs · 2 h", why:"Read in order: <code>useChat</code> streaming, then tool usage with approval, then generative UI.", alt:{label:"Generative user interfaces", url:"https://ai-sdk.dev/docs/ai-sdk-ui/generative-user-interfaces"}},
+    {t:"Imagining Better Interfaces to Language Models", url:"https://thesephist.com/posts/latent/", by:"Linus Lee · 2022", fmt:"essay · 25 min", why:"The case for moving past the chat box.", alt:{label:"Maggie Appleton’s Language Model Sketchbook", url:"https://maggieappleton.com/lm-sketchbook"}}
+  ],
+  tutorial:{name:"Two front doors", goal:"Put the post-card generator behind a chat UI and a non-chat UI, then decide which one the job deserves.",
+    steps:[
+      "Wrap the stage-1 summariser in <code>gr.ChatInterface</code> with streaming: paste a post URL, get the card streamed back.",
+      "Build a second view with <code>gr.Blocks</code>: a dropdown of your posts, a Generate button and a rendered card with tags. No chat.",
+      "Rebuild the chat version in Streamlit, about 30 lines. Note what each framework made easy or awkward.",
+      "Add Regenerate and “Draft LinkedIn teaser” actions, with a confirmation step before anything leaves the app.",
+      "Stretch: scaffold a Next.js page using the AI SDK’s <code>useChat</code> against the same model."
+    ],
+    done:"Both interfaces run locally, first tokens appear within a second, and you can explain in two sentences when chat is the wrong interface."}
+},
+{
+  title:"Retrieval (RAG)", layer:"Data & retrieval", weeks:"Weeks 4–5", hours:"~12 h",
+  why:"Most enterprise GenAI is retrieval over private data. The skill isn’t calling a vector database; it’s measuring whether the right passage came back.",
+  tool:{easy:"Chroma", url:"https://github.com/chroma-core/chroma", next:"LanceDB", grad:"pgvector",
+    why:"<code>pip install chromadb</code>, add documents, query. It embeds text by default and runs in-process, so there’s no server to manage. Graduate to pgvector to keep vectors beside your app data."},
+  variations:[
+    ["Fixed-size vs structure-aware vs semantic chunking","Fixed windows are simple; splitting on headings keeps ideas whole; semantic splitting follows topic shifts. The right choice depends on how the documents are written."],
+    ["Dense vs keyword (BM25) vs hybrid search","Embeddings match meaning; BM25 matches exact terms like library names. Hybrid search with rank fusion usually beats either alone."],
+    ["No reranker vs cross-encoder rerank","Retrieve 30 candidates cheaply, then let a slower, more accurate model pick the best five."],
+    ["Plain chunks vs contextual chunks","Prepending a short generated note on where a chunk sits in its document substantially cut retrieval failures in Anthropic’s tests."],
+    ["Classic vs GraphRAG vs agentic RAG","Classic RAG answers local questions; GraphRAG handles “what themes run through everything?”; agentic RAG lets the model decide when and what to search."]
+  ],
+  readings:[
+    {t:"Chunking Strategies for LLM Applications", url:"https://www.pinecone.io/learn/chunking-strategies/", by:"Pinecone · updated 2025", fmt:"article · 30 min", why:"The chunking options and their trade-offs, with examples."},
+    {t:"Introducing Contextual Retrieval", url:"https://www.anthropic.com/news/contextual-retrieval", by:"Anthropic · 2024", fmt:"article · 25 min", why:"BM25, embeddings, reranking and contextual chunks combined, with measured failure-rate reductions."},
+    {t:"Systematically Improving Your RAG", url:"https://jxnl.co/writing/2024/05/22/systematically-improving-your-rag/", by:"Jason Liu · 2024", fmt:"article · 30 min", why:"Measure retrieval with synthetic questions before tuning generation."},
+    {t:"GraphRAG documentation", url:"https://microsoft.github.io/graphrag/", by:"Microsoft Research", fmt:"docs · 1–2 h", why:"When a knowledge graph beats chunk search, and its global, local and DRIFT query modes.", alt:{label:"Context Rot (Chroma, 2025)", url:"https://www.trychroma.com/research/context-rot"}}
+  ],
+  tutorial:{name:"Ask my blog", goal:"Answer questions about your own writing with citations, and prove which retrieval setup finds the right post.",
+    steps:[
+      "Hand-write 30 question → correct-post pairs. This is your first golden set; keep it in <code>golden.jsonl</code>.",
+      "Build two Chroma collections: fixed 500-token chunks with overlap, and chunks split on each post’s <code>h2</code>/<code>h3</code> headings.",
+      "Score recall@5 for each. Add BM25 with <code>rank_bm25</code> and merge results with reciprocal rank fusion to score hybrid versions of both.",
+      "Generate answers that cite live post URLs, and decline when nothing relevant comes back.",
+      "Add a Sources panel to the Gradio app from stage 2."
+    ],
+    done:"A 2×2 table of recall@5 (fixed or heading chunks × dense or hybrid), a chosen default with a reason, and no citations to posts that don’t exist."}
+},
+{
+  title:"Tools & MCP", layer:"Tools & protocols", weeks:"Week 6", hours:"~9 h",
+  why:"Tools are how a model takes action. MCP is now the standard way to package tools once and use them from any client.",
+  tool:{easy:"FastMCP 4", url:"https://pypi.org/project/fastmcp/", next:"Official MCP Python SDK 2.x", grad:"Remote server tested with MCP Inspector",
+    why:"Decorate a Python function and it becomes an MCP tool. It’s the most documented route in and sits on top of the official SDK."},
+  note:"MCP Python SDK 2.0 (July 2026) renamed its built-in class to <code>MCPServer</code>, so tutorials importing <code>mcp.server.fastmcp</code> break. Standalone <code>fastmcp</code> 4.x is a separate package.",
+  variations:[
+    ["Native function calling vs an MCP server","Tool definitions inside your API call are quickest for one app; an MCP server can be reused by Claude, Cursor, ChatGPT and your own agent."],
+    ["Tools vs resources vs prompts","MCP’s three building blocks: tools take actions, resources expose read-only data, prompts are reusable templates."],
+    ["stdio vs Streamable HTTP","stdio runs a local process for desktop clients; Streamable HTTP serves remote clients and needs authentication."],
+    ["Many narrow tools vs a few well-designed ones","Agents choose badly between overlapping tools. Clear names, tight descriptions and compact responses matter more than tool count."],
+    ["Load every tool vs load on demand","Putting every tool schema in context is expensive; searching for tools or calling them from generated code keeps context small."]
+  ],
+  readings:[
+    {t:"Function calling", url:"https://developers.openai.com/api/docs/guides/function-calling", by:"OpenAI", fmt:"docs · 30 min", why:"The basic loop: define tools, let the model request one, run it, return the result."},
+    {t:"Writing effective tools for AI agents", url:"https://www.anthropic.com/engineering/writing-tools-for-agents", by:"Anthropic · 2025", fmt:"article · 30 min", why:"Naming, descriptions, token-efficient responses and using evals to improve tools."},
+    {t:"MCP specification (2026-07-28)", url:"https://modelcontextprotocol.io/specification/latest", by:"Model Context Protocol", fmt:"spec · 2 h", why:"Hosts, clients, servers, transports, and the newer Tasks and MCP Apps extensions."},
+    {t:"Code execution with MCP", url:"https://www.anthropic.com/engineering/code-execution-with-mcp", by:"Anthropic · 2025", fmt:"article · 20 min", why:"Loading tools only when needed, shrinking one example from 150k tokens to 2k."}
+  ],
+  tutorial:{name:"The Blog MCP server", goal:"Expose your blog as tools once, then use it from two different AI clients.",
+    steps:[
+      "Add a <code>search_posts(query, k)</code> tool to your stage-1 script with native function calling and watch the request/response loop.",
+      "Re-implement it as a FastMCP server with a tool (<code>search_posts</code>), a resource (<code>post://{slug}</code>) and a prompt (<code>linkedin_teaser</code>).",
+      "Open it in MCP Inspector (<code>npx @modelcontextprotocol/inspector</code>) and call each piece by hand.",
+      "Connect it over stdio to Claude Desktop or Cursor and ask questions about your posts.",
+      "Serve it over Streamable HTTP, then rewrite tool descriptions wherever the client picked the wrong tool."
+    ],
+    done:"The same server works in two MCP clients, and Inspector shows every tool, resource and prompt with descriptions a stranger could follow."}
+},
+{
+  title:"Agents & orchestration", layer:"Orchestration", weeks:"Weeks 7–8", hours:"~14 h",
+  why:"Agent design is the most-cited skill in the postings, and that includes knowing when a fixed workflow beats an agent.",
+  tool:{easy:"OpenAI Agents SDK", url:"https://github.com/openai/openai-agents-python", next:"Pydantic AI", grad:"LangGraph",
+    why:"An <code>Agent</code> plus <code>Runner.run_sync</code> is enough to start. Tools, handoffs, guardrails and tracing are built in, and it works with non-OpenAI models."},
+  variations:[
+    ["Workflow vs agent","A workflow follows code paths you wrote; an agent chooses its own steps. Workflows are cheaper and predictable, so reach for an agent only when the path can’t be known in advance."],
+    ["The five workflow patterns","Prompt chaining, routing, parallelisation, orchestrator–workers and evaluator–optimiser. Many production “agents” are one of these."],
+    ["ReAct loop vs plan-then-execute","ReAct decides one step at a time and adapts; planning first is easier to inspect and safer, which matters again in stage 10."],
+    ["Single agent vs multi-agent","Anthropic’s research system gains from parallel sub-agents; Cognition argues shared context matters more. Read both, then test it yourself."],
+    ["Memory strategies","Keep the full transcript, compact it into summaries, or have the agent write notes to a file. Each trades cost against what the agent can recall."]
+  ],
+  readings:[
+    {t:"Building Effective AI Agents", url:"https://www.anthropic.com/engineering/building-effective-agents", by:"Anthropic · 2024", fmt:"article · 30 min", why:"Workflows versus agents and the patterns above. Read this first."},
+    {t:"12-Factor Agents", url:"https://github.com/humanlayer/12-factor-agents", by:"Dex Horthy, HumanLayer", fmt:"guide · 1.5 h", why:"Own your prompts, context window and control flow instead of hiding them inside a framework."},
+    {t:"Effective context engineering for AI agents", url:"https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents", by:"Anthropic · 2025", fmt:"article · 30 min", why:"Compaction, note-taking and sub-agents.", alt:{label:"LangChain on context engineering", url:"https://www.langchain.com/blog/context-engineering-for-agents"}},
+    {t:"How we built our multi-agent research system", url:"https://www.anthropic.com/engineering/multi-agent-research-system", by:"Anthropic · 2025", fmt:"article · 40 min", why:"Read it next to the counter-argument.", alt:{label:"Cognition: Don’t Build Multi-Agents", url:"https://cognition.com/blog/dont-build-multi-agents"}}
+  ],
+  tutorial:{name:"The post-idea researcher", goal:"Given a topic, draft an outline for a new post that links your three most relevant posts and names what you haven’t covered yet. Build it three ways.",
+    steps:[
+      "Build it as a fixed chain in plain Python: retrieve → outline → critique. No framework.",
+      "Rebuild it as a single Agents SDK agent that calls your Blog MCP server and decides its own steps.",
+      "Add an evaluator–optimiser loop: a critic reviews the outline, with at most two revision rounds.",
+      "Try a multi-agent version where a researcher hands off to an editor, keeping everything else identical.",
+      "Run every version on the same five topics and log steps, tokens, seconds and your own 1–5 quality rating."
+    ],
+    done:"A comparison table across chain, agent and multi-agent, and a one-paragraph decision on which you would ship and why."}
+},
+{
+  title:"Observability", layer:"Evals & observability", weeks:"Week 9", hours:"~8 h",
+  why:"You can’t fix what you can’t see. Traces come before evals because error analysis starts from reading real traces.",
+  tool:{easy:"Langfuse", url:"https://langfuse.com/", next:"Arize Phoenix", grad:"Self-hosted Langfuse or LangSmith",
+    why:"One tool for traces, prompt versions and scores, with a free cloud tier or <code>docker compose up</code> to self-host. The <code>@observe</code> decorator instruments a function in a few lines."},
+  variations:[
+    ["Logs vs traces","A log line says something happened; a trace is a tree of spans — model call, retrieval, tool call — showing what caused what."],
+    ["Vendor SDK vs OpenTelemetry","Vendor decorators are fastest; OpenTelemetry’s GenAI conventions make traces portable between tools, though they’re still experimental."],
+    ["What to measure","Tokens, cost, time to first token versus total latency, tool calls and error rate — per request, per user and per feature."],
+    ["Debugging vs monitoring","Offline you inspect individual bad runs; in production you watch trends and collect feedback such as thumbs up or down."],
+    ["Trace everything vs sample and redact","Capture everything in development; in production, sample and strip personal data before it’s stored."]
+  ],
+  readings:[
+    {t:"Langfuse observability overview", url:"https://langfuse.com/docs/observability/overview", by:"Langfuse", fmt:"docs · 30 min", why:"Traces, sessions, users and scores explained through a working tool."},
+    {t:"AI Agent Observability: Evolving Standards and Best Practices", url:"https://opentelemetry.io/blog/2025/ai-agent-observability/", by:"OpenTelemetry · 2025", fmt:"article · 20 min", why:"Where the open standard for agent tracing is heading."},
+    {t:"GenAI semantic conventions", url:"https://github.com/open-telemetry/semantic-conventions-genai", by:"OpenTelemetry", fmt:"spec · 1 h", why:"The standard <code>gen_ai.*</code> attribute names. Moved to this repository in 2026 and still in development."},
+    {t:"OpenTelemetry for LLM observability", url:"https://langfuse.com/integrations/native/opentelemetry", by:"Langfuse", fmt:"docs · 30 min", why:"How those standard attributes show up in a real tool."}
+  ],
+  tutorial:{name:"Instrument the copilot", goal:"Make every answer traceable from question to retrieval to tool call to final output.",
+    steps:[
+      "Add <code>@observe</code> to the RAG pipeline and the stage-5 agent; group traces by session and user.",
+      "Add thumbs up/down buttons in Gradio that attach a score to the matching trace.",
+      "Run your 30 golden questions plus 20 new ones, then build a view of p50/p95 latency, cost per question and tool calls per run.",
+      "Find the three worst answers and identify, from the trace alone, the step that went wrong.",
+      "Send the same run to Arize Phoenix through OpenTelemetry to test how portable your traces are."
+    ],
+    done:"You can diagnose any bad answer from its trace in under two minutes, and you know your cost per question to the cent."}
+},
+{
+  title:"Evals", layer:"Evals & observability", weeks:"Weeks 10–11", hours:"~15 h",
+  why:"The clearest differentiator in the job postings. Hiring managers call back people who can show measured quality, not just demos.",
+  tool:{easy:"DeepEval", url:"https://github.com/confident-ai/deepeval", next:"promptfoo", grad:"Inspect AI or Braintrust",
+    why:"Python-native and pytest-shaped, with ready-made RAG and agent metrics, so evals slot into the test suite you already run. Try promptfoo’s YAML configs for red-teaming."},
+  note:"OpenAI acquired promptfoo in March 2026; it says it remains open source. Ragas hasn’t released since January 2026.",
+  variations:[
+    ["Error analysis vs off-the-shelf metrics","Read real traces, note what went wrong and group the failures before picking metrics. Generic scores like “helpfulness” rarely match your actual failures."],
+    ["Code checks vs LLM judges vs human labels","Use code for anything objective, a model judge for subjective criteria, and your own labels to check the judge."],
+    ["Pass/fail vs 1–5 scores","Binary judgements are easier to label consistently and easier to act on than fuzzy scales."],
+    ["Retrieval metrics vs answer metrics","Recall@k says whether the right passage arrived; faithfulness says whether the answer stuck to it. Fix them separately."],
+    ["Offline suite vs online evals","A golden set runs in CI before release; online evals score sampled production traces. For agents, compare pass@k (succeeds at least once) with pass^k (succeeds every time)."]
+  ],
+  readings:[
+    {t:"Your AI Product Needs Evals", url:"https://hamel.dev/blog/posts/evals/", by:"Hamel Husain · 2024", fmt:"article · 30 min", why:"Why evals are the engine of improvement, with a worked example."},
+    {t:"AI Evals: Everything You Need to Know", url:"https://hamel.dev/blog/posts/evals-faq/", by:"Hamel Husain & Shreya Shankar · updated 2026", fmt:"FAQ · 2 h", why:"Error analysis, binary judges and CI evals: the practical reference."},
+    {t:"Demystifying evals for AI agents", url:"https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents", by:"Anthropic · 2026", fmt:"article · 45 min", why:"Code, model and human graders for agents, and pass@k versus pass^k."},
+    {t:"Evaluating the Effectiveness of LLM-Evaluators", url:"https://eugeneyan.com/writing/llm-evaluators/", by:"Eugene Yan · 2024", fmt:"article · 1 h", why:"What research says about model judges.", alt:{label:"Who Validates the Validators? (paper)", url:"https://arxiv.org/abs/2404.12272"}}
+  ],
+  tutorial:{name:"From vibes to a CI gate", goal:"Replace “looks good” with a failing build when quality drops.",
+    steps:[
+      "Pull 100 traces from Langfuse, write a one-line note on each failure, then group the notes into four to six failure modes.",
+      "Write code checks for the objective modes: schema is valid, every cited URL exists, and the app declines when retrieval returns nothing.",
+      "Write a pass/fail LLM judge for one subjective mode, such as “the answer is supported by the cited post”. Label 40 examples yourself and measure agreement.",
+      "Wrap retrieval recall, the code checks and the judge in a DeepEval test suite.",
+      "Add a GitHub Action that fails a pull request when the pass rate drops more than five points, then break chunking on purpose and watch it fail."
+    ],
+    done:"The judge agrees with your labels at least 85% of the time, and a deliberately broken pull request is blocked by CI."}
+},
+{
+  title:"Models, inference & cost", layer:"Models & inference", weeks:"Week 12", hours:"~9 h",
+  why:"Postings ask for cost and latency reasoning, like “this costs X per request; halve it.” Model choice, local inference and caching are the levers.",
+  tool:{easy:"Ollama", url:"https://ollama.com/", next:"LM Studio", grad:"vLLM",
+    why:"One installer, then <code>ollama run</code>. It serves an OpenAI-compatible API at <code>localhost:11434/v1</code>, so your stage-1 code runs against local models unchanged."},
+  variations:[
+    ["Hosted API vs local vs self-hosted serving","APIs give the best models with no infrastructure; local models give privacy and no per-call cost; self-hosting on GPUs pays off only at steady, high volume."],
+    ["Precision and quantisation","Dropping from 16-bit to 8- or 4-bit weights (GGUF, AWQ, GPTQ) shrinks memory and speeds inference at some quality cost. Measure it with your evals."],
+    ["Latency levers","Stream, use a smaller model, cache repeated prompt prefixes, and batch requests on the server, which is what vLLM’s PagedAttention enables."],
+    ["One model vs routing","Send easy questions to a cheap model and escalate hard ones. A router is only as good as its ability to detect “hard”."],
+    ["Prompt caching vs response caching","Providers discount a repeated prompt prefix; a semantic cache skips the call entirely for near-duplicate questions."]
+  ],
+  readings:[
+    {t:"Building A Generative AI Platform", url:"https://huyenchip.com/2024/07/25/genai-platform.html", by:"Chip Huyen · 2024", fmt:"article · 1 h", why:"Routers, gateways, caches and guardrails arranged as one architecture."},
+    {t:"Prompt caching", url:"https://platform.claude.com/docs/en/build-with-claude/prompt-caching", by:"Anthropic", fmt:"docs · 30 min", why:"Cache pricing, where to place breakpoints and what invalidates the cache."},
+    {t:"vLLM: Easy, Fast, and Cheap LLM Serving with PagedAttention", url:"https://vllm.ai/blog/2023-06-20-vllm", by:"vLLM team · 2023", fmt:"article · 20 min", why:"Why serving throughput is a memory problem.", alt:{label:"OpenAI-compatible server quickstart", url:"https://docs.vllm.ai/en/latest/getting_started/quickstart.html"}},
+    {t:"Quantization overview", url:"https://huggingface.co/docs/transformers/main/en/quantization/overview", by:"Hugging Face", fmt:"docs · 30 min", why:"The main quantisation formats compared.", alt:{label:"Bookmark Artificial Analysis for price and speed", url:"https://artificialanalysis.ai/"}}
+  ],
+  tutorial:{name:"The price–performance bake-off", goal:"Put a number on what quality costs for Blog Copilot.",
+    steps:[
+      "Pull a small open model with Ollama and point your OpenAI SDK <code>base_url</code> at it. No other code changes.",
+      "Run the stage-7 eval suite against a frontier API model, a budget API model, and the local model at two quantisation levels.",
+      "Turn on prompt caching for the system prompt and shared context, and measure the cost change over 50 questions.",
+      "Build a router: the budget model answers first and escalates when a quick check fails.",
+      "Plot pass rate against cost per question for every configuration."
+    ],
+    done:"A quality-versus-cost chart with at least four points, and a routing policy within three points of the best pass rate at lower cost."}
+},
+{
+  title:"Deploy & production", layer:"Infra & deploy", weeks:"Weeks 13–14", hours:"~13 h",
+  why:"“Shipped to production” appears in nearly every posting. A live URL with guardrails on cost and failure is the proof.",
+  tool:{easy:"Hugging Face Spaces", url:"https://huggingface.co/spaces", next:"Modal", grad:"Modal backend + Vercel front end",
+    why:"Push a Gradio app and it’s live on a free CPU tier, the shortest path from laptop to shareable URL. Modal adds Python functions with GPUs and monthly free credits."},
+  variations:[
+    ["Demo host vs serverless vs containers vs Kubernetes","Spaces for demos, serverless like Modal for bursty Python and GPU work, containers on a platform for always-on APIs, Kubernetes when a platform team already runs it."],
+    ["One app vs API + front end","A single Gradio app is quick; a FastAPI backend with a separate UI lets web, chat and MCP clients share one backend."],
+    ["Reliability patterns","Timeouts, retries with backoff, a fallback provider and per-user rate limits. LLM APIs slow down and fail more often than typical services."],
+    ["Cost controls","Spend caps, token limits per request and per user, and alerts before the bill arrives."],
+    ["Manual deploy vs CI/CD with an eval gate","Automate test → eval → deploy so a prompt tweak can’t quietly degrade quality."]
+  ],
+  readings:[
+    {t:"What We’ve Learned From A Year of Building with LLMs", url:"https://applied-llms.org/", by:"Yan, Bischof, Frye, Husain, Liu & Shankar · 2024", fmt:"long read · 2 h", why:"Tactical, operational and strategic lessons from six practitioners."},
+    {t:"Patterns for Building LLM-based Systems & Products", url:"https://eugeneyan.com/writing/llm-patterns/", by:"Eugene Yan · 2023", fmt:"article · 1.5 h", why:"Evals, caching, guardrails and defensive UX as reusable patterns."},
+    {t:"FastAPI in Containers: Docker", url:"https://fastapi.tiangolo.com/deployment/docker/", by:"FastAPI", fmt:"docs · 45 min", why:"Packaging the backend properly."},
+    {t:"LLMOps lecture", url:"https://fullstackdeeplearning.com/llm-bootcamp/spring-2023/llmops/", by:"Josh Tobin, Full Stack Deep Learning · 2023", fmt:"video · ~1 h", why:"Dated model names, durable ideas on testing and monitoring."}
+  ],
+  tutorial:{name:"Ship Blog Copilot", goal:"Put the copilot on your own site with a live URL, safe failure modes and an automated release.",
+    steps:[
+      "Split the app: a FastAPI backend with a streaming <code>/ask</code> endpoint and <code>/health</code>, with the Gradio UI as a client.",
+      "Containerise the backend with Docker and keep every key in environment variables or platform secrets.",
+      "Deploy the UI to Hugging Face Spaces and the backend to Modal, or put both on Spaces to stay free.",
+      "Add request timeouts, retries, a fallback provider, a per-IP rate limit and a monthly spend cap.",
+      "Create a GitHub Actions pipeline — tests, then the stage-7 eval gate, then deploy — and embed the live app in a new post on sumitkant.github.io."
+    ],
+    done:"A public URL on your site, deploys that happen only when evals pass, and answers that keep coming when the primary provider key is revoked."}
+},
+{
+  title:"Safety & security", layer:"Safety & governance", weeks:"Week 15", hours:"~10 h",
+  why:"The least mature layer and a growing interview topic. Prompt injection is an architecture problem, not a filtering problem.",
+  tool:{easy:"OpenAI Moderation endpoint", url:"https://developers.openai.com/api/docs/guides/moderation", next:"Llama Prompt Guard 2", grad:"NeMo Guardrails",
+    why:"Free, one call, and covers text and images: the quickest way to learn input and output checks. Prompt Guard 2 is a small local classifier for injection attempts."},
+  note:"LLM Guard was archived in July 2026 and is unmaintained; skip tutorials built on it.",
+  variations:[
+    ["Direct vs indirect prompt injection","Direct injection is typed by the user; indirect injection hides in content the model reads — retrieved posts, web pages, tool results — and is far harder to stop."],
+    ["The lethal trifecta and the Rule of Two","Private data plus untrusted content plus a way to send data out adds up to exfiltration risk. Design so an agent never holds all three at once."],
+    ["Filters vs architecture","Classifiers catch known attacks and miss new ones. Plan-then-execute, dual-model designs and permissioned tools limit damage even when an injection gets through."],
+    ["Moderation vs security vs privacy","Harmful content, hijacked instructions and leaked personal data are different problems with different controls."],
+    ["Where guardrails sit","On input, on output, and — most importantly for agents — at the moment a tool executes."]
+  ],
+  readings:[
+    {t:"The lethal trifecta for AI agents", url:"https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/", by:"Simon Willison · 2025", fmt:"article · 15 min", why:"The clearest model of when prompt injection becomes dangerous.", alt:{label:"Follow his prompt-injection tag", url:"https://simonwillison.net/tags/prompt-injection/"}},
+    {t:"Agents Rule of Two", url:"https://ai.meta.com/blog/practical-ai-agent-security/", by:"Meta AI · 2025", fmt:"article · 14 min", why:"A practical design rule built on the trifecta."},
+    {t:"OWASP Top 10 for LLM Applications 2026", url:"https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/", by:"OWASP GenAI · 2026", fmt:"standard · 2 h", why:"Replaces the 2025 list.", alt:{label:"Top 10 for Agentic Applications", url:"https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"}},
+    {t:"Design Patterns for Securing LLM Agents against Prompt Injections", url:"https://arxiv.org/abs/2506.08837", by:"Beurer-Kellner et al. · 2025", fmt:"paper · 1.5 h", why:"Defensive architectures and their trade-offs.", alt:{label:"CaMeL: Defeating Prompt Injections by Design", url:"https://arxiv.org/abs/2503.18813"}}
+  ],
+  tutorial:{name:"Attack your own copilot", goal:"Break Blog Copilot with an indirect injection, then close the hole with design rather than hope.",
+    steps:[
+      "Add a test post containing hidden instructions, such as telling the assistant to send readers to an unknown link, and ask a question that retrieves it.",
+      "Map your app against the trifecta: which private data, untrusted content and outbound channels does it have?",
+      "Add moderation on input and output and Prompt Guard 2 on retrieved chunks; measure false positives on your 30 golden questions.",
+      "Constrain tools: read-only access, an allow-list of link domains, and no rendering of links to unknown sites.",
+      "Add 20 red-team cases to the stage-7 CI suite and write a one-page threat model mapped to the OWASP 2026 list."
+    ],
+    done:"The planted attack works before your changes and fails after, the red-team cases run in CI, and the threat model is published with the project."}
+},
+{
+  title:"Fine-tuning", layer:"Models & inference", weeks:"Week 16 · optional", hours:"~11 h",
+  why:"Rarer in postings than retrieval and evals, but expected at Mistral, Databricks and platform teams. Learn when it’s the wrong tool as much as how to do it.",
+  tool:{easy:"Unsloth", url:"https://unsloth.ai/docs/get-started/fine-tuning-llms-guide", next:"Hugging Face TRL", grad:"Axolotl",
+    why:"Free Colab notebooks take you through a LoRA fine-tune end to end, and it runs fast on a single GPU."},
+  note:"OpenAI is winding down self-serve fine-tuning; no new jobs after 6 January 2027. Learn open-weight fine-tuning instead.",
+  variations:[
+    ["Prompting and RAG vs fine-tuning","Retrieval adds knowledge; fine-tuning changes behaviour — format, style, tone, or letting a small model do a big model’s narrow job."],
+    ["Full fine-tune vs LoRA vs QLoRA","LoRA trains small adapter matrices; QLoRA does it on a quantised base so it fits consumer GPUs. Recent work shows LoRA matching full tuning in most post-training cases."],
+    ["SFT vs preference tuning vs distillation","Supervised fine-tuning imitates examples; DPO learns from preferred-versus-rejected pairs; distillation trains a small model on a larger model’s outputs."],
+    ["Synthetic vs human-written data","Synthetic data scales quickly but inherits the teacher model’s habits; a few hundred careful human examples often matter more."]
+  ],
+  readings:[
+    {t:"Fine-tuning LLMs Guide", url:"https://unsloth.ai/docs/get-started/fine-tuning-llms-guide", by:"Unsloth", fmt:"docs · 1 h", why:"Choosing a model, building a dataset, hyperparameters, and exporting to Ollama or vLLM."},
+    {t:"Practical Tips for Finetuning LLMs Using LoRA", url:"https://magazine.sebastianraschka.com/p/practical-tips-for-finetuning-llms", by:"Sebastian Raschka · 2023", fmt:"article · 40 min", why:"Experiment-backed advice on ranks, learning rates and what actually matters."},
+    {t:"LLM Course, chapter 11: Supervised Fine-Tuning", url:"https://huggingface.co/learn/llm-course/chapter11/1", by:"Hugging Face", fmt:"course · 3 h", why:"Chat templates, SFT and LoRA with the TRL library."},
+    {t:"LoRA Without Regret", url:"https://thinkingmachines.ai/blog/lora/", by:"John Schulman, Thinking Machines · 2025", fmt:"article · 45 min", why:"When LoRA matches full fine-tuning, and the settings that make it work."}
+  ],
+  tutorial:{name:"Your writing voice in a small model", goal:"Find out, with numbers, whether fine-tuning beats good prompting for writing in your style.",
+    steps:[
+      "Build 300–500 training pairs from your posts: an outline or topic as input, a paragraph in your voice as output.",
+      "Run a QLoRA fine-tune of a small open model in an Unsloth Colab notebook.",
+      "Export the merged model to GGUF and serve it through Ollama.",
+      "Compare the base model with few-shot examples, the fine-tuned model and a frontier model, using your eval suite plus a blind style test."
+    ],
+    done:"A results table and a clear verdict on whether fine-tuning earned its cost for this task."}
+}
+];
+
+const pad = n => String(n).padStart(2,"0");
+const ext = (url, text, cls) => `<a${cls?` class="${cls}"`:""} href="${url}" target="_blank" rel="noopener">${text}</a>`;
+
+document.getElementById("rail-stages").innerHTML = STAGES.map((s,i)=>
+  `<li><a href="#s${i}"><span class="n">${i}</span><span>${s.title}</span><span class="dot" data-dot="s${i}"></span></a></li>`).join("");
+
+document.getElementById("ladder-rows").innerHTML = STAGES.map((s,i)=>
+  `<tr><td class="stage-cell"><span class="num">${pad(i)}</span><a href="#s${i}">${s.title}</a></td><td class="easy">${s.tool.easy}</td><td>${s.tool.next}</td><td>${s.tool.grad}</td></tr>`).join("");
+
+document.getElementById("stages").innerHTML = STAGES.map((s,i)=>{
+  const sid = `s${i}`;
+  const readings = s.readings.map((r,j)=>`
+    <li class="reading" data-row="${sid}-r${j}">
+      <input type="checkbox" id="${sid}-r${j}" data-stage="${sid}" aria-label="Mark ${r.t.replace(/"/g,"")} as read">
+      <div>
+        <div class="r-title"><span class="r-order">${j+1}.</span>${ext(r.url, r.t)}</div>
+        <div class="r-meta">${r.by} · ${r.fmt}</div>
+        <p class="r-why">${r.why}${r.alt?` Then: ${ext(r.alt.url, r.alt.label)}.`:""}</p>
+      </div>
+    </li>`).join("");
+  const vars = s.variations.map(v=>`<div><dt>${v[0]}</dt><dd>${v[1]}</dd></div>`).join("");
+  const steps = s.tutorial.steps.map(x=>`<li><span>${x}</span></li>`).join("");
+  return `
+  <section class="stage" id="${sid}">
+    <div class="stage-head">
+      <div class="eyebrow">Stage ${i} · ${s.layer} · ${s.weeks} · ${s.hours}</div>
+      <h2>${s.title}</h2>
+      <p class="why">${s.why}</p>
+    </div>
+    <div class="ladder" aria-label="Tool ladder">
+      <div class="rung easy"><span class="rung-label">Easiest to start</span>${ext(s.tool.url, s.tool.easy, "tool")}</div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="rung"><span class="rung-label">Then</span><span class="tool">${s.tool.next}</span></div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="rung"><span class="rung-label">Graduate to</span><span class="tool">${s.tool.grad}</span></div>
+    </div>
+    <p class="tool-why">${s.tool.why}</p>
+    ${s.note?`<p class="heads-up"><b>Heads-up</b><span>${s.note}</span></p>`:""}
+    <div class="block">
+      <h3>Variations to understand</h3>
+      <dl class="variations">${vars}</dl>
+    </div>
+    <div class="block">
+      <h3>Readings, in order</h3>
+      <ol class="readings">${readings}</ol>
+    </div>
+    <div class="block tutorial">
+      <div class="t-label">Tutorial · Blog Copilot</div>
+      <h4>${s.tutorial.name}</h4>
+      <p class="goal">${s.tutorial.goal}</p>
+      <ol class="steps">${steps}</ol>
+      <div class="done">
+        <input type="checkbox" id="${sid}-done" data-stage="${sid}" aria-label="Mark stage ${i} tutorial done">
+        <label for="${sid}-done"><b>Done when</b>${s.tutorial.done}</label>
+      </div>
+    </div>
+  </section>`;
+}).join("");
+
+const KEY = "genai-syllabus-progress-v1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { state = {}; }
+const boxes = [...document.querySelectorAll('input[type="checkbox"][data-stage]')];
+
+function refresh(){
+  const total = boxes.length, done = boxes.filter(b=>b.checked).length;
+  document.getElementById("bar-fill").style.width = (done/total*100) + "%";
+  document.getElementById("progress-text").textContent = `${done} of ${total} checked`;
+  STAGES.forEach((_,i)=>{
+    const own = boxes.filter(b=>b.dataset.stage===`s${i}`);
+    const d = own.filter(b=>b.checked).length;
+    const dot = document.querySelector(`[data-dot="s${i}"]`);
+    dot.classList.toggle("full", d===own.length);
+    dot.classList.toggle("part", d>0 && d<own.length);
+  });
+  boxes.forEach(b=>{ const row = b.closest(".reading"); if(row) row.classList.toggle("is-done", b.checked); });
+}
+boxes.forEach(b=>{
+  b.checked = !!state[b.id];
+  b.addEventListener("change", ()=>{
+    state[b.id] = b.checked;
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+    refresh();
+  });
+});
+document.getElementById("reset").addEventListener("click", ()=>{
+  state = {}; boxes.forEach(b=>b.checked=false);
+  try { localStorage.removeItem(KEY); } catch(e) {}
+  refresh();
+});
+refresh();
+</script>
+
+</body>
+</html>
