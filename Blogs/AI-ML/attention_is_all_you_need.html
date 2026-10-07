@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What I Learned from Attention Is All You Need</title>
+  <meta name="description" content="A simple, technical walkthrough of the core ideas, architecture, training recipe, results, and evaluation details in Attention Is All You Need." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Google+Sans+Flex:opsz,wght@6..144,300..700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --paper: #f7f2e7;
+      --ink: #26342f;
+      --muted: #66736d;
+      --forest: #315c4c;
+      --forest-soft: #dce9e2;
+      --plum: #6d3b5e;
+      --plum-soft: #eadde6;
+      --gold: #b77b2c;
+      --line: #d7d1c5;
+      --card: rgba(255,255,255,.84);
+      --shadow: 0 18px 50px rgba(52, 61, 55, .08);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Google Sans Flex", system-ui, sans-serif;
+      background-color: var(--paper);
+      background-image: radial-gradient(circle, rgba(49,92,76,.18) 1px, transparent 1.2px);
+      background-size: 24px 24px;
+      background-attachment: fixed;
+      line-height: 1.68;
+    }
+    a { color: var(--plum); }
+    code, pre { font-family: "Fira Code", monospace; }
+    .progress { position: fixed; top: 0; left: 0; height: 4px; width: 0; z-index: 1000; background: linear-gradient(90deg, var(--forest), var(--plum)); }
+    nav {
+      position: sticky; top: 0; z-index: 900;
+      backdrop-filter: blur(14px);
+      background: rgba(247,242,231,.86);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner { max-width: 1180px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 28px; }
+    .brand { font-weight: 700; text-decoration: none; color: var(--ink); letter-spacing: -.02em; }
+    .nav-links { margin-left: auto; display: flex; gap: 20px; font-size: .92rem; }
+    .nav-links a { text-decoration: none; color: var(--muted); }
+    .nav-links a:hover { color: var(--forest); }
+    .hero { max-width: 1180px; margin: 44px auto 30px; padding: 0 24px; }
+    .hero-card { background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(238,244,239,.92)); border: 1px solid var(--line); border-radius: 28px; overflow: hidden; box-shadow: var(--shadow); }
+    .hero-copy { padding: 52px 52px 22px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; color: var(--forest); font-weight: 700; }
+    h1 { font-size: clamp(2.7rem, 6vw, 5.4rem); line-height: .98; letter-spacing: -.055em; margin: 12px 0 20px; max-width: 950px; }
+    .dek { max-width: 820px; font-size: 1.18rem; color: var(--muted); margin: 0; }
+    .hero-art { padding: 0 22px 22px; }
+    .hero-art svg { width: 100%; height: auto; display: block; border-radius: 20px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .tag { border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; font-size: .83rem; background: rgba(255,255,255,.64); }
+    .layout { max-width: 1180px; margin: 0 auto 90px; padding: 0 24px; display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 30px; align-items: start; }
+    main { min-width: 0; }
+    .toc { position: sticky; top: 88px; background: rgba(255,255,255,.78); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
+    .toc strong { display: block; margin-bottom: 10px; font-size: .9rem; }
+    .toc a { display: block; text-decoration: none; color: var(--muted); font-size: .88rem; padding: 5px 0; }
+    .toc a:hover { color: var(--forest); }
+    .section { scroll-margin-top: 84px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 34px; margin-bottom: 24px; }
+    .section-num { font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; color: var(--plum); font-weight: 700; }
+    h2 { font-size: clamp(1.8rem, 3vw, 2.55rem); letter-spacing: -.035em; margin: 6px 0 20px; line-height: 1.08; }
+    h3 { font-size: 1.28rem; letter-spacing: -.018em; margin: 26px 0 10px; }
+    p { margin: 0 0 16px; }
+    .lead { font-size: 1.08rem; color: #45544e; }
+    .callout { background: var(--forest-soft); border-left: 4px solid var(--forest); padding: 18px 20px; border-radius: 0 14px 14px 0; margin: 22px 0; }
+    .question { background: var(--plum-soft); border-left-color: var(--plum); }
+    .question .q { font-weight: 700; color: var(--plum); margin-bottom: 8px; }
+    .formula { overflow-x: auto; background: #fbfaf6; border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; margin: 18px 0; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; margin: 18px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin: 18px 0; }
+    .mini { background: #fbfaf6; border: 1px solid var(--line); border-radius: 15px; padding: 17px; }
+    .mini b { display: block; margin-bottom: 4px; }
+    .number { font-size: 1.9rem; font-weight: 700; color: var(--forest); letter-spacing: -.04em; }
+    table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: .94rem; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--forest); font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; }
+    .code-window { background: #26342f; color: #f7f2e7; border-radius: 15px; overflow: hidden; margin: 20px 0; }
+    .code-bar { padding: 9px 14px; background: #1f2a26; color: #b9c6c0; font-family: "Fira Code"; font-size: .75rem; }
+    pre { margin: 0; padding: 18px; overflow-x: auto; font-size: .86rem; line-height: 1.55; }
+    figure { margin: 24px 0; }
+    figure svg { width: 100%; height: auto; display: block; background: #fbfaf6; border: 1px solid var(--line); border-radius: 16px; }
+    figcaption { color: var(--muted); font-size: .86rem; margin-top: 7px; }
+    .takeaway { font-size: 1.12rem; font-weight: 600; border-top: 1px solid var(--line); padding-top: 17px; margin-top: 24px; }
+    footer { max-width: 1180px; margin: 0 auto 50px; padding: 0 24px; color: var(--muted); font-size: .9rem; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 6px 0; }
+    .small { font-size: .9rem; color: var(--muted); }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; order: -1; }
+      .nav-links { display: none; }
+      .hero-copy { padding: 34px 28px 18px; }
+      .section { padding: 25px 21px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="https://sumitkant.github.io/">SK</a>
+    <div class="nav-links">
+      <a href="../../blog.html">Blog</a>
+      <a href="../../bookshelf.html">Books & Reading</a>
+      <a href="../../johnnysmusiclab.html">Music Lab</a>
+      <a href="../../genai-lab.html">GenAI Lab</a>
+      <a href="../../neuralnotework.html">My Second Brain</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-card">
+    <div class="hero-copy">
+      <div class="eyebrow">Paper learnings · NeurIPS 2017</div>
+      <h1>What I Learned from “Attention Is All You Need”</h1>
+      <p class="dek">A first-principles walkthrough of why the Transformer replaced recurrence, how attention actually works, what the famous complexity table means, and how to interpret the paper’s perplexity, BLEU and parsing F1 results.</p>
+      <div class="meta">
+        <span class="tag">Transformer</span><span class="tag">Self-attention</span><span class="tag">Machine translation</span><span class="tag">Constituency parsing</span>
+      </div>
+    </div>
+    <div class="hero-art">
+      <svg viewBox="0 0 1200 420" role="img" aria-label="Tokens connected directly through attention rather than a recurrent chain">
+        <defs>
+          <linearGradient id="bg" x1="0" x2="1"><stop offset="0" stop-color="#e5eee8"/><stop offset="1" stop-color="#eee1ea"/></linearGradient>
+          <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-opacity=".12"/></filter>
+        </defs>
+        <rect width="1200" height="420" rx="26" fill="url(#bg)"/>
+        <g stroke="#315c4c" stroke-width="4" opacity=".38">
+          <path d="M185 210 C330 80 455 80 600 210"/><path d="M185 210 C340 340 460 340 600 210"/>
+          <path d="M600 210 C750 70 865 95 1015 210"/><path d="M600 210 C750 345 875 340 1015 210"/>
+          <path d="M185 210 C450 20 760 25 1015 210" stroke="#6d3b5e"/><path d="M185 210 C450 400 760 400 1015 210" stroke="#6d3b5e"/>
+        </g>
+        <g filter="url(#shadow)" font-family="Google Sans Flex, sans-serif" text-anchor="middle">
+          <g transform="translate(185 210)"><circle r="64" fill="#fff" stroke="#315c4c" stroke-width="4"/><text y="7" font-size="25" fill="#26342f">Token 1</text></g>
+          <g transform="translate(600 210)"><circle r="70" fill="#fff" stroke="#6d3b5e" stroke-width="5"/><text y="7" font-size="27" fill="#26342f">Attention</text></g>
+          <g transform="translate(1015 210)"><circle r="64" fill="#fff" stroke="#315c4c" stroke-width="4"/><text y="7" font-size="25" fill="#26342f">Token n</text></g>
+        </g>
+        <text x="600" y="375" text-anchor="middle" font-family="Google Sans Flex, sans-serif" font-size="22" fill="#66736d">Any token can interact directly with any other token in one self-attention layer.</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+<main>
+<section class="section" id="why">
+  <div class="section-num">01 · The problem</div>
+  <h2>Why replace recurrence at all?</h2>
+  <p class="lead">Before the Transformer, strong sequence models were usually RNNs, LSTMs or GRUs. Their main weakness was not that they could not model language; it was that they had to process a sequence step by step.</p>
+  <div class="formula">\[h_t=f(h_{t-1},x_t)\]</div>
+  <p>That dependency means token 5 cannot be processed until token 4 has produced its hidden state. Even on a GPU, much of the sequence computation therefore remains sequential.</p>
+  <div class="code-window"><div class="code-bar">RNN information flow</div><pre>x₁ → h₁ → h₂ → h₃ → … → hₙ</pre></div>
+  <p>Convolutional sequence models improved parallelism, but a local convolution still needs several layers before two distant tokens can influence one another.</p>
+  <div class="callout"><b>The Transformer’s core bet:</b> instead of passing information through a chain, let every token directly decide which other tokens matter to it.</div>
+  <p class="takeaway">The architecture shift is from <em>sequential state propagation</em> to <em>direct token-to-token communication</em>.</p>
+</section>
+
+<section class="section" id="architecture">
+  <div class="section-num">02 · Architecture</div>
+  <h2>The Transformer at a glance</h2>
+  <p>The model is still an encoder–decoder. The encoder turns input tokens into contextual representations. The decoder then generates the output sequence autoregressively.</p>
+  <div class="grid-2">
+    <div class="mini"><b>Encoder</b>6 identical layers. Each layer contains multi-head self-attention and a position-wise feed-forward network.</div>
+    <div class="mini"><b>Decoder</b>6 layers. Each adds masked self-attention, encoder–decoder attention and a feed-forward network.</div>
+  </div>
+  <p>Every sub-layer is wrapped by a residual connection and layer normalization:</p>
+  <div class="formula">\[\mathrm{LayerNorm}(x+\mathrm{Sublayer}(x))\]</div>
+  <figure>
+    <svg viewBox="0 0 1000 500" role="img" aria-label="Simplified Transformer encoder decoder architecture">
+      <style>.b{fill:#fff;stroke:#315c4c;stroke-width:3}.p{fill:#fff;stroke:#6d3b5e;stroke-width:3}.t{font:22px 'Google Sans Flex';fill:#26342f}.s{font:18px 'Google Sans Flex';fill:#66736d}.a{stroke:#66736d;stroke-width:3;marker-end:url(#m)}</style>
+      <defs><marker id="m" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#66736d"/></marker></defs>
+      <rect x="80" y="65" width="320" height="350" rx="24" class="b"/><rect x="600" y="65" width="320" height="350" rx="24" class="p"/>
+      <text x="240" y="105" text-anchor="middle" class="t">Encoder × 6</text><text x="760" y="105" text-anchor="middle" class="t">Decoder × 6</text>
+      <rect x="125" y="145" width="230" height="70" rx="14" fill="#dce9e2"/><text x="240" y="187" text-anchor="middle" class="s">Multi-head self-attention</text>
+      <rect x="125" y="270" width="230" height="70" rx="14" fill="#dce9e2"/><text x="240" y="312" text-anchor="middle" class="s">Feed-forward network</text>
+      <rect x="645" y="130" width="230" height="64" rx="14" fill="#eadde6"/><text x="760" y="168" text-anchor="middle" class="s">Masked self-attention</text>
+      <rect x="645" y="230" width="230" height="64" rx="14" fill="#eadde6"/><text x="760" y="268" text-anchor="middle" class="s">Cross-attention</text>
+      <rect x="645" y="330" width="230" height="64" rx="14" fill="#eadde6"/><text x="760" y="368" text-anchor="middle" class="s">Feed-forward network</text>
+      <line x1="400" y1="262" x2="640" y2="262" class="a"/><text x="520" y="242" text-anchor="middle" class="s">encoder output</text>
+    </svg>
+    <figcaption>Attention mixes information across tokens; the feed-forward block transforms each token representation independently.</figcaption>
+  </figure>
+  <p>For the base model, the residual-stream dimension is <b>512</b>. The feed-forward block expands each position from <b>512 → 2048 → 512</b>.</p>
+</section>
+
+<section class="section" id="attention">
+  <div class="section-num">03 · Core operation</div>
+  <h2>Attention from first principles</h2>
+  <p class="lead">For each token, the model creates three learned representations: a query, a key and a value.</p>
+  <div class="grid-3">
+    <div class="mini"><b>Query</b>What information am I looking for?</div>
+    <div class="mini"><b>Key</b>What kind of information do I contain?</div>
+    <div class="mini"><b>Value</b>What information should I pass if I am relevant?</div>
+  </div>
+  <div class="formula">\[\mathrm{Attention}(Q,K,V)=\mathrm{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\]</div>
+  <h3>Read the equation as a five-step process</h3>
+  <ol>
+    <li>Create Q, K and V vectors for every token.</li>
+    <li>Compute all query–key similarity scores with \(QK^T\).</li>
+    <li>Scale the scores by \(\sqrt{d_k}\).</li>
+    <li>Apply softmax so each row becomes a distribution of attention weights.</li>
+    <li>Use those weights to take a weighted combination of the value vectors.</li>
+  </ol>
+  <div class="callout"><b>Why scale by \(\sqrt{d_k}\)?</b> Dot products tend to grow in magnitude as the vector dimension grows. Large values can push softmax into saturated regions and make gradients tiny. Scaling keeps the score range better behaved.</div>
+  <figure>
+    <svg viewBox="0 0 1000 330" role="img" aria-label="Query key value attention flow">
+      <style>.bx{fill:#fff;stroke:#d7d1c5;stroke-width:2}.tx{font:20px 'Google Sans Flex';fill:#26342f}.sm{font:17px 'Google Sans Flex';fill:#66736d}.ln{stroke:#315c4c;stroke-width:3;marker-end:url(#ma)}</style>
+      <defs><marker id="ma" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#315c4c"/></marker></defs>
+      <rect x="60" y="105" width="145" height="90" rx="16" class="bx"/><text x="132" y="145" text-anchor="middle" class="tx">Q, K, V</text><text x="132" y="172" text-anchor="middle" class="sm">projections</text>
+      <rect x="270" y="105" width="145" height="90" rx="16" class="bx"/><text x="342" y="145" text-anchor="middle" class="tx">QKᵀ</text><text x="342" y="172" text-anchor="middle" class="sm">similarity</text>
+      <rect x="480" y="105" width="145" height="90" rx="16" class="bx"/><text x="552" y="145" text-anchor="middle" class="tx">Scale</text><text x="552" y="172" text-anchor="middle" class="sm">÷ √dₖ</text>
+      <rect x="690" y="105" width="145" height="90" rx="16" class="bx"/><text x="762" y="145" text-anchor="middle" class="tx">Softmax</text><text x="762" y="172" text-anchor="middle" class="sm">weights</text>
+      <line x1="205" y1="150" x2="263" y2="150" class="ln"/><line x1="415" y1="150" x2="473" y2="150" class="ln"/><line x1="625" y1="150" x2="683" y2="150" class="ln"/>
+      <path d="M762 195 C762 260 540 280 410 250" fill="none" class="ln"/><text x="570" y="285" class="sm">weighted combination of V</text>
+    </svg>
+  </figure>
+</section>
+
+<section class="section" id="multihead">
+  <div class="section-num">04 · Multiple views</div>
+  <h2>Why use multiple attention heads?</h2>
+  <p>A single attention distribution has to compress every useful relationship into one weighted average. Multi-head attention gives the model several learned projection spaces in parallel.</p>
+  <div class="formula">\[\mathrm{head}_i=\mathrm{Attention}(QW_i^Q,KW_i^K,VW_i^V)\]</div>
+  <div class="formula">\[\mathrm{MultiHead}(Q,K,V)=\mathrm{Concat}(\mathrm{head}_1,\ldots,\mathrm{head}_h)W^O\]</div>
+  <p>The base Transformer uses <b>8 heads</b> with \(d_{model}=512\), so each head works in a <b>64-dimensional</b> projected space:</p>
+  <div class="formula">\[512/8=64\]</div>
+  <p>Different heads can learn different kinds of relationships—local phrase structure, long-range dependencies, syntactic relations or reference patterns. The appendix visualizations show that different heads indeed attend to different structures.</p>
+  <div class="callout"><b>Three places attention appears:</b> encoder self-attention, masked decoder self-attention, and encoder–decoder cross-attention.</div>
+</section>
+
+<section class="section" id="position">
+  <div class="section-num">05 · Order</div>
+  <h2>Attention alone does not know token order</h2>
+  <p>Self-attention can compare token representations, but by itself it has no built-in notion that one token came before another. The model therefore adds a positional vector to every token embedding.</p>
+  <div class="formula">\[\mathrm{InputRepresentation}=\mathrm{TokenEmbedding}+\mathrm{PositionalEncoding}\]</div>
+  <p>The paper uses sinusoidal functions at different frequencies:</p>
+  <div class="formula">\[PE_{(pos,2i)}=\sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)\]</div>
+  <div class="formula">\[PE_{(pos,2i+1)}=\cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)\]</div>
+  <p>These give each position a deterministic pattern. The authors also tried learned position embeddings and reported almost identical translation quality in their experiment.</p>
+  <p class="takeaway">Attention tells the model <em>what relates to what</em>; positional encoding tells it <em>where each token sits</em>.</p>
+</section>
+
+<section class="section" id="table1">
+  <div class="section-num">06 · The famous comparison</div>
+  <h2>What Table 1 is really saying</h2>
+  <p>Table 1 is not an accuracy table. It compares four layer types on three architectural properties: computational cost, sequential depth and the number of hops needed for distant positions to communicate.</p>
+  <table>
+    <thead><tr><th>Layer</th><th>Complexity</th><th>Sequential ops</th><th>Max path</th></tr></thead>
+    <tbody>
+      <tr><td>Self-attention</td><td>\(O(n^2d)\)</td><td>\(O(1)\)</td><td>\(O(1)\)</td></tr>
+      <tr><td>Recurrent</td><td>\(O(nd^2)\)</td><td>\(O(n)\)</td><td>\(O(n)\)</td></tr>
+      <tr><td>Convolutional</td><td>\(O(knd^2)\)</td><td>\(O(1)\)</td><td>\(O(\log_k n)\)</td></tr>
+      <tr><td>Restricted attention</td><td>\(O(rnd)\)</td><td>\(O(1)\)</td><td>\(O(n/r)\)</td></tr>
+    </tbody>
+  </table>
+  <div class="question callout">
+    <div class="q">Question I had while reading: “I did not understand Table 1. Help me understand from scratch.”</div>
+    <p><b>Sequential operations</b> asks how many computation stages must wait for previous stages. An RNN has roughly \(n\); self-attention can compute all pairwise scores together, so it has constant sequential depth with respect to sequence length.</p>
+    <p><b>Maximum path length</b> asks how many computational hops are needed for one token to influence another. In an RNN, two distant positions may require \(O(n)\) hops. In full self-attention, token 1 can directly attend to token \(n\) in one layer: \(O(1)\).</p>
+    <p><b>The trade-off:</b> that direct global access requires an \(n\times n\) attention matrix, which creates the quadratic \(n^2\) term.</p>
+  </div>
+  <h3>Why self-attention can be cheaper than recurrence</h3>
+  <p>Compare \(n^2d\) with \(nd^2\). Cancel \(nd\), and self-attention is cheaper in this simplified comparison when:</p>
+  <div class="formula">\[n&lt;d\]</div>
+  <p>For \(n=100\) and \(d=512\): self-attention is about <b>5.12 million</b> operations by the simplified term, versus about <b>26.2 million</b> for recurrence—roughly <b>5.1× lower</b>.</p>
+  <p class="takeaway">The win is not “attention is always cheaper.” The win is <b>parallelism + constant path length</b>, with quadratic sequence-length cost as the trade-off.</p>
+</section>
+
+<section class="section" id="training">
+  <div class="section-num">07 · Training recipe</div>
+  <h2>How the original Transformer was trained</h2>
+  <div class="grid-3">
+    <div class="mini"><span class="number">4.5M</span><b>EN→DE pairs</b>WMT 2014 English–German.</div>
+    <div class="mini"><span class="number">36M</span><b>EN→FR pairs</b>WMT 2014 English–French.</div>
+    <div class="mini"><span class="number">8×</span><b>NVIDIA P100</b>Training hardware.</div>
+  </div>
+  <p>The English–German experiment used a shared BPE vocabulary of roughly <b>37K tokens</b>. Batches contained approximately <b>25K source tokens + 25K target tokens</b>.</p>
+  <h3>Optimization</h3>
+  <p>Adam was used with \(\beta_1=0.9\), \(\beta_2=0.98\), and \(\epsilon=10^{-9}\). The learning rate warmed up for <b>4,000 steps</b>, then decayed approximately with the inverse square root of the step number.</p>
+  <div class="formula">\[\mathrm{lrate}=d_{model}^{-0.5}\min(\mathrm{step}^{-0.5},\mathrm{step}\cdot\mathrm{warmup}^{-1.5})\]</div>
+  <p>The base model trained for about <b>100K steps / 12 hours</b>. The big model trained for about <b>300K steps / 3.5 days</b>.</p>
+  <h3>Regularization</h3>
+  <p>The base model used <b>0.1 dropout</b> and <b>0.1 label smoothing</b>. A useful subtlety: label smoothing can improve BLEU and accuracy while making perplexity worse, because the model is deliberately discouraged from becoming maximally confident in the target label.</p>
+</section>
+
+<section class="section" id="results">
+  <div class="section-num">08 · Translation results</div>
+  <h2>What the results actually showed</h2>
+  <div class="grid-3">
+    <div class="mini"><span class="number">28.4</span><b>BLEU</b>Big Transformer, WMT14 English→German.</div>
+    <div class="mini"><span class="number">41.8</span><b>BLEU</b>Big Transformer, WMT14 English→French.</div>
+    <div class="mini"><span class="number">213M</span><b>Parameters</b>Approximate size of the big model.</div>
+  </div>
+  <p>BLEU measures overlap between generated translations and reference translations using n-gram matching and a brevity penalty. Higher is better. The paper’s important claim was not only strong translation quality, but strong quality with substantially less training computation than several previous systems listed in the comparison.</p>
+  <h3>Table 3: model variation results</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Dev perplexity</th><th>Dev BLEU</th></tr></thead>
+    <tbody><tr><td>Base Transformer</td><td>4.92</td><td>25.8</td></tr><tr><td>Big Transformer</td><td>4.33</td><td>26.4</td></tr></tbody>
+  </table>
+  <div class="question callout">
+    <div class="q">Question I had while reading: “What is perplexity on page 9?”</div>
+    <p>Perplexity is a transformation of average cross-entropy loss:</p>
+    <div class="formula">\[\mathrm{PPL}=e^{\mathrm{cross\ entropy}}\]</div>
+    <p>Lower is better. A loose intuition is the model’s effective number of plausible next-token choices. So <b>4.33</b> is better than <b>4.92</b>, although the model is not literally choosing uniformly among 4.33 tokens.</p>
+    <p>These are <b>per-wordpiece perplexities</b>, so they should not be directly compared with word-level perplexities produced under a different tokenization scheme.</p>
+  </div>
+</section>
+
+<section class="section" id="parsing">
+  <div class="section-num">09 · Beyond translation</div>
+  <h2>Why the parsing experiment mattered</h2>
+  <p>The paper also applied the Transformer to English constituency parsing. This is a structured prediction task: given a sentence, predict a tree describing grammatical constituents such as noun phrases and verb phrases.</p>
+  <div class="code-window"><div class="code-bar">Example gold parse structure</div><pre>(S
+  (NP (DT The) (NN cat))
+  (VP (VBD sat)
+      (PP (IN on)
+          (NP (DT the) (NN mat)))))</pre></div>
+  <table>
+    <thead><tr><th>Training setup</th><th>WSJ Section 23 F1</th></tr></thead>
+    <tbody><tr><td>Transformer, WSJ only</td><td><b>91.3</b></td></tr><tr><td>Transformer, semi-supervised</td><td><b>92.7</b></td></tr><tr><td>Best result listed in the paper table</td><td>93.3</td></tr></tbody>
+  </table>
+  <div class="question callout">
+    <div class="q">Question I had while reading: “What is F1 score in Table 4?”</div>
+    <p>F1 measures how well the predicted parse tree recovers the constituents in the gold tree.</p>
+    <div class="formula">\[P=\frac{\text{correct predicted constituents}}{\text{all predicted constituents}},\quad R=\frac{\text{correct predicted constituents}}{\text{all gold constituents}}\]</div>
+    <div class="formula">\[F1=2\frac{PR}{P+R}\]</div>
+    <p>If the gold tree contains 100 constituents, the model predicts 95, and 90 are correct, precision is 94.7%, recall is 90%, and F1 is about <b>92.3</b>.</p>
+  </div>
+  <div class="question callout">
+    <div class="q">Question I had while reading: “How do you prepare this ground-truth structure? Is it already in a dataset?”</div>
+    <p>Yes. The experiment uses the <b>Penn Treebank</b>, a pre-existing manually annotated linguistic dataset. The paper does not build the gold trees from scratch.</p>
+    <ol>
+      <li>Start with raw sentences, largely from Wall Street Journal text.</li>
+      <li>Assign part-of-speech labels and phrase-structure annotations.</li>
+      <li>Human annotators create and/or correct parse trees under a common guideline.</li>
+      <li>Run quality-control and consistency checks.</li>
+      <li>Split the treebank into train, development and test sections.</li>
+    </ol>
+    <p>For this experiment, <b>WSJ Section 22</b> was used for development and <b>Section 23</b> for final evaluation. The WSJ-only training set contains roughly <b>40K sentences</b>.</p>
+  </div>
+</section>
+
+<section class="section" id="new">
+  <div class="section-num">10 · What was actually new</div>
+  <h2>The breakthrough was the architecture, not a single ingredient</h2>
+  <p>Encoder–decoder models already existed. Attention already existed. Residual connections, layer normalization and feed-forward networks already existed. Positional representations also had precedent.</p>
+  <p>The important step was combining these ideas into a practical sequence model where <b>attention replaces recurrent and convolutional sequence-processing layers</b>, then showing that the design was both computationally attractive and empirically strong.</p>
+  <div class="callout"><b>The design question changed:</b> from “How do we build a better recurrent sequence model?” to “How far can we scale and improve attention-based models?”</div>
+</section>
+
+<section class="section" id="cheatsheet">
+  <div class="section-num">11 · Memory aid</div>
+  <h2>The numbers and ideas worth remembering</h2>
+  <div class="grid-2">
+    <div class="mini"><b>Base Transformer</b>6 encoder + 6 decoder layers; \(d_{model}=512\); 8 heads; \(d_k=d_v=64\); \(d_{ff}=2048\); ~65M parameters.</div>
+    <div class="mini"><b>Big Transformer</b>\(d_{model}=1024\); 16 heads; \(d_{ff}=4096\); ~213M parameters; dev PPL 4.33; dev BLEU 26.4.</div>
+  </div>
+  <h3>Five ideas to keep</h3>
+  <ol>
+    <li><b>Self-attention</b> lets every token directly gather information from other tokens.</li>
+    <li><b>Queries and keys</b> determine relevance; <b>values</b> carry the information being aggregated.</li>
+    <li><b>Multi-head attention</b> gives the model several learned relationship spaces in parallel.</li>
+    <li><b>Positional encoding</b> is necessary because attention alone does not encode order.</li>
+    <li>The Transformer trades the RNN’s sequential path for highly parallel computation with <b>quadratic token-pair interactions</b>.</li>
+  </ol>
+  <p class="takeaway">The simplest mental model: <b>every token repeatedly asks the rest of the sequence, “What information should I pull from you?”</b></p>
+</section>
+
+<section class="section" id="source">
+  <div class="section-num">Source</div>
+  <h2>Paper</h2>
+  <p><i>Attention Is All You Need</i> — Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser and Illia Polosukhin. NeurIPS 2017.</p>
+  <p class="small">This article was generated from detailed study notes of the paper, with the specific questions raised during the reading session folded into the relevant sections.</p>
+</section>
+</main>
+
+<aside class="toc">
+  <strong>On this page</strong>
+  <a href="#why">Why replace recurrence?</a>
+  <a href="#architecture">Architecture</a>
+  <a href="#attention">Attention</a>
+  <a href="#multihead">Multi-head attention</a>
+  <a href="#position">Positional encoding</a>
+  <a href="#table1">Understanding Table 1</a>
+  <a href="#training">Training recipe</a>
+  <a href="#results">Translation results</a>
+  <a href="#parsing">Parsing & F1</a>
+  <a href="#new">What was new?</a>
+  <a href="#cheatsheet">Cheat sheet</a>
+</aside>
+</div>
+
+<footer>Learning notes · Attention Is All You Need</footer>
+<script>
+  const bar = document.getElementById('progress');
+  function updateProgress() {
+    const h = document.documentElement;
+    const scrolled = h.scrollTop || document.body.scrollTop;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (scrolled / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', updateProgress, {passive:true});
+  updateProgress();
+</script>
+</body>
+</html>

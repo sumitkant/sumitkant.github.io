@@ -329,8 +329,9 @@
     /* ── layout + TOC ── */
     .post-layout {
       display: grid;
-      grid-template-columns: var(--prose-w) 1fr;
-      gap: 0 3rem;
+      grid-template-columns: var(--prose-w) minmax(0, 240px);
+      justify-content: space-between;
+      gap: 0 2.5rem;
       align-items: start;
       padding-top: .5rem
     }
@@ -554,6 +555,23 @@
 
     td:first-child {
       color: var(--ink)
+    }
+
+    table.glossary td:first-child {
+      font-weight: 650;
+      color: var(--red-deep)
+    }
+
+    table.glossary tr.grp td {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 10.5px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--card-2);
+      padding-top: 7px;
+      padding-bottom: 7px
     }
 
     td.num {
@@ -1941,6 +1959,93 @@ loss = L2 + <span class="s">0.5</span> * L1                                <span
               unseen ones.</li>
           </ul>
 
+          <h3>The benchmarks, decoded</h3>
+          <p>Each benchmark is a public dataset with a fixed test set, so different models can be compared on the same
+            questions. Here is what every abbreviation stands for and what it asks the model to do:</p>
+          <table class="glossary">
+            <thead>
+              <tr>
+                <th style="width:17%">Name</th>
+                <th style="width:33%">Stands for</th>
+                <th>What the model must do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="grp"><td colspan="3">Natural language inference</td></tr>
+              <tr>
+                <td>MNLI</td>
+                <td>Multi-Genre Natural Language Inference</td>
+                <td>Decide if a hypothesis follows from, contradicts, or is unrelated to a premise, across many genres.
+                  "-m" is matched genres, "-mm" mismatched.</td>
+              </tr>
+              <tr>
+                <td>SNLI</td>
+                <td>Stanford Natural Language Inference</td>
+                <td>The same task on sentences describing photos.</td>
+              </tr>
+              <tr>
+                <td>SciTail</td>
+                <td>Science entailment dataset</td>
+                <td>Decide if a statement follows from a sentence, using school science exam questions.</td>
+              </tr>
+              <tr>
+                <td>QNLI</td>
+                <td>Question Natural Language Inference</td>
+                <td>Decide if a Wikipedia sentence contains the answer to a question.</td>
+              </tr>
+              <tr>
+                <td>RTE</td>
+                <td>Recognizing Textual Entailment</td>
+                <td>Decide if one passage implies another. Very small: about 2,500 training examples.</td>
+              </tr>
+              <tr class="grp"><td colspan="3">Question answering &amp; commonsense reasoning</td></tr>
+              <tr>
+                <td>Story Cloze</td>
+                <td>Story Cloze Test ("cloze" means fill in the blank)</td>
+                <td>Read a four-sentence story and pick the right ending out of two.</td>
+              </tr>
+              <tr>
+                <td>RACE</td>
+                <td>ReAding Comprehension from Examinations</td>
+                <td>Answer multiple-choice questions on passages from English exams for Chinese students. "-m" is
+                  middle school, "-h" high school.</td>
+              </tr>
+              <tr class="grp"><td colspan="3">Classification &amp; semantic similarity</td></tr>
+              <tr>
+                <td>CoLA</td>
+                <td>Corpus of Linguistic Acceptability</td>
+                <td>Decide if a sentence is grammatical.</td>
+              </tr>
+              <tr>
+                <td>SST-2</td>
+                <td>Stanford Sentiment Treebank, 2 classes</td>
+                <td>Decide if a movie-review sentence is positive or negative.</td>
+              </tr>
+              <tr>
+                <td>MRPC</td>
+                <td>Microsoft Research Paraphrase Corpus</td>
+                <td>Decide if two news sentences mean the same thing.</td>
+              </tr>
+              <tr>
+                <td>STS-B</td>
+                <td>Semantic Textual Similarity Benchmark</td>
+                <td>Score how similar in meaning two sentences are, from 0 to 5.</td>
+              </tr>
+              <tr>
+                <td>QQP</td>
+                <td>Quora Question Pairs</td>
+                <td>Decide if two questions asked on Quora are duplicates.</td>
+              </tr>
+              <tr class="grp"><td colspan="3">Overall</td></tr>
+              <tr>
+                <td>GLUE</td>
+                <td>General Language Understanding Evaluation</td>
+                <td>Not a single task: a bundle of nine (including CoLA, SST-2, MRPC, STS-B, QQP, MNLI, QNLI and RTE),
+                  averaged into one overall score.</td>
+              </tr>
+            </tbody>
+          </table>
+
           <h3>Results against the previous best</h3>
           <p>Two datasets from each category, with every method the paper compares against on them (Tables 2–4).
             <b>GPT-1 is in red</b>, the strongest earlier result in black, and other earlier methods in grey. The badge
@@ -2266,14 +2371,12 @@ State of the art on 9 of 12 benchmarks</pre>
               href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf"><b>Improving
                 Language Understanding by Generative Pre-Training</b></a> by Alec Radford, Karthik Narasimhan, Tim
             Salimans and Ilya Sutskever (OpenAI, 2018)</p>
-          <p class="credit" style="margin-top:14px">References:
-            <ul>
-              <li>Dai &amp; Le (2015), <a href="https://arxiv.org/abs/1511.01432">Semi-supervised Sequence Learning</a></li>
-              <li>Vaswani et al. (2017), <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></li>
-              <li>Zhu et al. (2015), <a href="https://arxiv.org/abs/1506.06724">Aligning Books and Movies</a> (BookCorpus)</li>
-            </ul>
-          </div>
-        </p>
+          <p class="credit" style="margin-top:14px">References:</p>
+          <ul class="credit">
+            <li>Dai &amp; Le (2015), <a href="https://arxiv.org/abs/1511.01432">Semi-supervised Sequence Learning</a></li>
+            <li>Vaswani et al. (2017), <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></li>
+            <li>Zhu et al. (2015), <a href="https://arxiv.org/abs/1506.06724">Aligning Books and Movies</a> (BookCorpus)</li>
+          </ul>
         </footer>
 
       </div>
