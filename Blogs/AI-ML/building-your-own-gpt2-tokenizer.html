@@ -4,10 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Building your own GPT-2 tokenizer from scratch</title>
-  <meta name="description" content="Why a language model needs a tokenizer, why it is built on Unicode and UTF-8 bytes, how byte-pair encoding is trained and used, and which familiar LLM failures are tokenizer failures.">
-  <meta property="og:title" content="Building your own GPT-2 tokenizer from scratch">
-  <meta property="og:description" content="Unicode, UTF-8, byte-pair encoding trained on Shakespeare, encode/decode, and the model behaviours this explains.">
+  <meta name="description" content="What tokenization is, why so many strange LLM behaviours trace back to it, and how to build the GPT-2 tokenizer yourself — byte-pair encoding over UTF-8, trained on Shakespeare.">
+  <link rel="canonical" href="https://sumitkant.github.io/Blogs/AI-ML/building-your-own-gpt2-tokenizer.html">
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sumit Kant">
+  <meta property="og:url" content="https://sumitkant.github.io/Blogs/AI-ML/building-your-own-gpt2-tokenizer.html">
+  <meta property="og:title" content="Building your own GPT-2 tokenizer from scratch">
+  <meta property="og:description" content="What tokenization is, why so many strange LLM behaviours trace back to it, and how to build the GPT-2 tokenizer yourself — byte-pair encoding over UTF-8, trained on Shakespeare.">
+  <meta property="og:image" content="https://sumitkant.github.io/images/Blogs/18.GPT2Tokenizer/tokenizer-og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Glass token chunks flowing together into one larger token on a blue and yellow background">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Building your own GPT-2 tokenizer from scratch">
+  <meta name="twitter:description" content="What tokenization is, why so many strange LLM behaviours trace back to it, and how to build the GPT-2 tokenizer yourself — byte-pair encoding over UTF-8, trained on Shakespeare.">
+  <meta name="twitter:image" content="https://sumitkant.github.io/images/Blogs/18.GPT2Tokenizer/tokenizer-og.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
