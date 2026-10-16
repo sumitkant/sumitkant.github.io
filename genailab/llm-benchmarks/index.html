@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Every benchmark used in the GPT-1, GPT-2 and GPT-3 papers — 45 datasets across 9 categories, with release dates, state-of-the-art scores and a dedicated page for each."/>
+  <title>LLM Benchmarks — GenAI Lab — Sumit Kant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f2efe9; --border: rgba(0,0,0,.08);
+      --text-primary: #1a1a18; --text-secondary: #6b6b65; --text-tertiary: #a8a8a0;
+      --accent: #c85c2a; --font: 'Plus Jakarta Sans', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+      --radius: 18px; --nav-h: 72px; --content-w: 1100px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-primary); font-family: var(--font); -webkit-font-smoothing: antialiased; line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    /* ambient blobs for the glass to refract */
+    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .ambient span { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; mix-blend-mode: multiply; animation: drift 28s ease-in-out infinite alternate; }
+    .ambient .b1 { width: 560px; height: 560px; left: -140px; top: -120px; background: #c7d2fe; }
+    .ambient .b2 { width: 520px; height: 520px; right: -160px; top: 120px; background: #fde68a; animation-delay: -9s; }
+    .ambient .b3 { width: 480px; height: 480px; left: 30%; top: 55%; background: #bae6fd; animation-delay: -17s; }
+    .ambient .b4 { width: 420px; height: 420px; right: 18%; bottom: -160px; background: #fbcfe8; animation-delay: -4s; }
+    @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(40px,30px,0) scale(1.08); } }
+    @media (prefers-reduced-motion: reduce) { .ambient span { animation: none; } }
+    .grain { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    nav { position: sticky; top: 0; z-index: 200; height: var(--nav-h); background: rgba(242,239,233,.72); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-back { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text-secondary); transition: color .15s; }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .page { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+    .glass { background: rgba(255,255,255,.52); border: 1px solid rgba(255,255,255,.75); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 10px 30px -12px rgba(26,26,24,.18); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); border-radius: var(--radius); }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1.3; white-space: nowrap; }
+    .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .chip { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 700; font-family: var(--mono); letter-spacing: .02em; color: #fff; white-space: nowrap; }
+    footer.site { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 1.5rem 2rem 3rem; font-size: 12.5px; color: var(--text-tertiary); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    footer.site a { color: var(--text-secondary); }
+    @media (max-width: 640px) { .page { padding: 0 1rem 4rem; } .nav-inner { padding: 0 1rem; } footer.site { padding: 1.5rem 1rem 3rem; } }
+
+    .hero { padding: 3.25rem 0 2rem; }
+    .hero-eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; margin-bottom: 10px; }
+    .hero-title { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 800; line-height: 1.08; letter-spacing: -.03em; margin-bottom: 12px; }
+    .hero-title strong { color: var(--accent); font-weight: 800; }
+    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 640px; }
+    .hero-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .stat { padding: 10px 16px; border-radius: 14px; display: flex; flex-direction: column; min-width: 110px; }
+    .stat b { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+    .stat span { font-size: 11px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+    .filters { position: sticky; top: calc(var(--nav-h) + 10px); z-index: 50; padding: 14px 16px; margin: 0 0 22px; display: flex; flex-direction: column; gap: 10px; }
+    .filters-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .search { flex: 1 1 240px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(255,255,255,.6); border: 1px solid rgba(0,0,0,.06); }
+    .search svg { width: 15px; height: 15px; stroke: var(--text-tertiary); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .search input { flex: 1; border: 0; background: transparent; font: inherit; font-size: 13.5px; color: var(--text-primary); outline: none; min-width: 0; }
+    .search input::placeholder { color: var(--text-tertiary); }
+    .fbtn { font: inherit; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(0,0,0,.08); background: rgba(255,255,255,.5); color: var(--text-secondary); cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 7px; }
+    .fbtn:hover { background: rgba(255,255,255,.85); color: var(--text-primary); }
+    .fbtn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--text-tertiary)); box-shadow: 0 0 0 3px rgba(var(--crgb, 0,0,0), .15); }
+    .fbtn.active { background: var(--c, var(--text-primary)); border-color: transparent; color: #fff; }
+    .fbtn.active .dot { background: #fff; box-shadow: none; }
+    .fbtn.paper.active { background: var(--c); }
+    .flabel { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); margin-right: 2px; }
+    .fsep { width: 1px; height: 18px; background: rgba(0,0,0,.1); margin: 0 4px; }
+    .count { margin-left: auto; font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+    select.sort { font: inherit; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(0,0,0,.08); background: rgba(255,255,255,.5); color: var(--text-secondary); cursor: pointer; }
+
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .tile { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 18px 18px 16px; min-height: 236px; overflow: hidden; transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s, border-color .22s; --c: #999; }
+    .tile::before { content: ''; position: absolute; inset: -40% auto auto -20%; width: 70%; height: 90%; background: radial-gradient(closest-side, rgba(var(--crgb), .32), transparent 70%); pointer-events: none; }
+    .tile::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--c), transparent 80%); opacity: .9; }
+    .tile:hover { transform: translateY(-4px); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 24px 40px -18px rgba(var(--crgb), .45); border-color: rgba(255,255,255,.95); }
+    .tile.hidden { display: none; }
+    .tile-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; position: relative; }
+    .tile .pill { color: var(--c); background: rgba(var(--crgb), .12); }
+    .tile-papers { display: flex; gap: 4px; }
+    .tile h3 { font-size: 19px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; position: relative; }
+    .tile .full { font-size: 11.5px; color: var(--text-tertiary); margin-top: -6px; font-weight: 500; }
+    .tile p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; flex: 1; position: relative; }
+    .tile-foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,.1); font-size: 11.5px; color: var(--text-secondary); position: relative; }
+    .tile-foot .lbl { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 1px; }
+    .tile-foot b { font-size: 13px; color: var(--text-primary); font-weight: 700; }
+    .tile-foot .sota { text-align: right; max-width: 60%; }
+    .tile-foot .sota small { display: block; font-size: 10.5px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .empty { display: none; padding: 40px; text-align: center; color: var(--text-secondary); font-size: 14px; }
+    .empty.show { display: block; }
+    .legend { margin-top: 36px; padding: 18px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: var(--text-secondary); }
+    .legend .pill { color: var(--c); background: rgba(var(--crgb), .12); }
+    .legend .chip { margin-right: 2px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .filters { position: static; } .count { margin-left: 0; width: 100%; } .tile { min-height: 0; } }
+</style>
+</head>
+<body>
+<div class="ambient"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span></div>
+<div class="grain"></div>
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+      <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;"></object>
+    </a>
+    <a href="../../genai-lab.html" class="nav-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>GenAI Lab</a>
+  </div>
+</nav>
+<main class="page">
+  <header class="hero">
+    <p class="hero-eyebrow">GenAI Lab · Evaluation</p>
+    <h1 class="hero-title">LLM <strong>Benchmarks</strong></h1>
+    <p class="hero-sub">Every benchmark the GPT-1, GPT-2 and GPT-3 papers were evaluated on, consolidated in one place. Each tile opens a page with the original paper, what the task actually tests, worked examples, the GPT-era scores, today's state of the art, and a quickstart for running it yourself.</p>
+    <div class="hero-stats">
+      <div class="stat glass"><b>45</b><span>benchmarks</span></div>
+      <div class="stat glass"><b>9</b><span>categories</span></div>
+      <div class="stat glass"><b>13 · 13 · 28</b><span>GPT-1 · GPT-2 · GPT-3</span></div>
+    </div>
+  </header>
+
+  <section class="filters glass" aria-label="Filters">
+    <div class="filters-row">
+      <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="q" type="search" placeholder="Search benchmarks — e.g. entailment, perplexity, SuperGLUE" autocomplete="off"/></label>
+      <span class="flabel">Used in</span><button class="fbtn paper" data-paper="GPT-1" style="--c:#1a1a18;--crgb:26,26,24">GPT-1</button><button class="fbtn paper" data-paper="GPT-2" style="--c:#c85c2a;--crgb:200,92,42">GPT-2</button><button class="fbtn paper" data-paper="GPT-3" style="--c:#0f766e;--crgb:15,118,110">GPT-3</button>
+      <span class="fsep"></span>
+      <select class="sort" id="sort" aria-label="Sort"><option value="cat">Sort: category</option><option value="name">Sort: name</option><option value="year">Sort: year ↑</option><option value="year-desc">Sort: year ↓</option></select>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="filters-row">
+      <span class="flabel">Category</span>
+      <button class="fbtn cat active" data-cat="all" style="--c:#1a1a18;--crgb:26,26,24"><span class="dot"></span>All</button><button class="fbtn cat" data-cat="nli" style="--c:#6366f1;--crgb:99,102,241"><span class="dot"></span>NLI</button><button class="fbtn cat" data-cat="rc" style="--c:#0ea5e9;--crgb:14,165,233"><span class="dot"></span>Reading Comprehension</button><button class="fbtn cat" data-cat="qa" style="--c:#10b981;--crgb:16,185,129"><span class="dot"></span>Question Answering</button><button class="fbtn cat" data-cat="commonsense" style="--c:#f59e0b;--crgb:245,158,11"><span class="dot"></span>Commonsense Reasoning</button><button class="fbtn cat" data-cat="lm" style="--c:#f43f5e;--crgb:244,63,94"><span class="dot"></span>Language Modeling</button><button class="fbtn cat" data-cat="cls" style="--c:#8b5cf6;--crgb:139,92,246"><span class="dot"></span>Similarity &amp; Classification</button><button class="fbtn cat" data-cat="suite" style="--c:#14b8a6;--crgb:20,184,166"><span class="dot"></span>Benchmark Suites</button><button class="fbtn cat" data-cat="gen" style="--c:#ec4899;--crgb:236,72,153"><span class="dot"></span>Generation</button><button class="fbtn cat" data-cat="synthetic" style="--c:#64748b;--crgb:100,116,139"><span class="dot"></span>Synthetic / Probing</button>
+    </div>
+  </section>
+
+  <section class="grid" id="grid">
+<a class="tile glass" href="anli.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-3" data-year="2019" data-name="anli" data-search="anli adversarial nli three rounds of human-written nli examples that fooled the strongest model of the previous round; still unsaturated. nli gpt-3">
+  <div class="tile-top"><span class="pill">NLI</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>ANLI</h3>
+  <div class="full">Adversarial NLI</div>
+  <p>Three rounds of human-written NLI examples that fooled the strongest model of the previous round; still unsaturated.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Oct 2019</b></div>
+    <div class="sota"><span class="lbl">SOTA · R3 test accuracy</span><b>74.7</b><small>ST-MoE-32B · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="commitmentbank.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-3" data-year="2019" data-name="commitmentbank (cb)" data-search="commitmentbank (cb) commitmentbank tiny 3-way entailment set about embedded clauses — how committed is the speaker to the clause being true? nli gpt-3">
+  <div class="tile-top"><span class="pill">NLI</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>CommitmentBank (CB)</h3>
+  <div class="full">CommitmentBank</div>
+  <p>Tiny 3-way entailment set about embedded clauses — how committed is the speaker to the clause being true?</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>2019 (SuperGLUE)</b></div>
+    <div class="sota"><span class="lbl">SOTA · SuperGLUE test</span><b>98.6 F1 / 99.2 acc</b><small>Vega v2 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="multinli.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1" data-year="2017" data-name="multinli" data-search="multinli multi-genre natural language inference 433k nli pairs across ten genres (fiction, government, telephone speech, …) with matched and mismatched test sets. nli gpt-1">
+  <div class="tile-top"><span class="pill">NLI</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>MultiNLI</h3>
+  <div class="full">Multi-Genre Natural Language Inference</div>
+  <p>433k NLI pairs across ten genres (fiction, government, telephone speech, …) with matched and mismatched test sets.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Apr 2017</b></div>
+    <div class="sota"><span class="lbl">SOTA · matched test accuracy</span><b>92.6</b><small>Turing NLR v5 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="qnli.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1" data-year="2018" data-name="qnli" data-search="qnli question-answering nli squad recast as a binary task: does this wikipedia sentence contain the answer to this question? nli gpt-1">
+  <div class="tile-top"><span class="pill">NLI</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>QNLI</h3>
+  <div class="full">Question-answering NLI</div>
+  <p>SQuAD recast as a binary task: does this Wikipedia sentence contain the answer to this question?</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Apr 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · test accuracy</span><b>99.2</b><small>DeBERTa · 2021</small></div>
+  </div>
+</a>
+<a class="tile glass" href="rte.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1 GPT-3" data-year="2005" data-name="rte" data-search="rte recognizing textual entailment the small, hard, classic entailment set from the pascal/tac challenges; in both glue and superglue. nli gpt-1 gpt-3">
+  <div class="tile-top"><span class="pill">NLI</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>RTE</h3>
+  <div class="full">Recognizing Textual Entailment</div>
+  <p>The small, hard, classic entailment set from the PASCAL/TAC challenges; in both GLUE and SuperGLUE.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>2005–2009 (RTE1–5), bundled 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · test accuracy</span><b>96.0</b><small>Vega v2 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="scitail.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1" data-year="2018" data-name="scitail" data-search="scitail science entailment 27k entailment pairs built from science-exam questions and web sentences; no neutral class. nli gpt-1">
+  <div class="tile-top"><span class="pill">NLI</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>SciTail</h3>
+  <div class="full">Science Entailment</div>
+  <p>27k entailment pairs built from science-exam questions and web sentences; no neutral class.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Feb 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · test accuracy</span><b>97.7</b><small>DeBERTa · 2020</small></div>
+  </div>
+</a>
+<a class="tile glass" href="snli.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1" data-year="2015" data-name="snli" data-search="snli stanford natural language inference 570k human-written sentence pairs labelled entailment, contradiction or neutral; the first large-scale nli corpus. nli gpt-1">
+  <div class="tile-top"><span class="pill">NLI</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>SNLI</h3>
+  <div class="full">Stanford Natural Language Inference</div>
+  <p>570k human-written sentence pairs labelled entailment, contradiction or neutral; the first large-scale NLI corpus.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Sep 2015</b></div>
+    <div class="sota"><span class="lbl">SOTA · test accuracy</span><b>93.1</b><small>EFL · 2021</small></div>
+  </div>
+</a>
+<a class="tile glass" href="boolq.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2019" data-name="boolq" data-search="boolq boolean questions 16k naturally occurring yes/no questions from google search, each paired with a wikipedia passage. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill">Reading Comprehension</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>BoolQ</h3>
+  <div class="full">Boolean Questions</div>
+  <p>16k naturally occurring yes/no questions from Google search, each paired with a Wikipedia passage.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>May 2019</b></div>
+    <div class="sota"><span class="lbl">SOTA · SuperGLUE test accuracy</span><b>92.4</b><small>ST-MoE-32B · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="coqa.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-2 GPT-3" data-year="2018" data-name="coqa" data-search="coqa conversational question answering 127k questions in 8k multi-turn conversations about a passage; each question depends on the ones before it. reading comprehension gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill">Reading Comprehension</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>CoQA</h3>
+  <div class="full">Conversational Question Answering</div>
+  <p>127k questions in 8k multi-turn conversations about a passage; each question depends on the ones before it.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Aug 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · overall test F1</span><b>90.7</b><small>RoBERTa + AT + KD ensemble · 2020</small></div>
+  </div>
+</a>
+<a class="tile glass" href="drop.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2019" data-name="drop" data-search="drop discrete reasoning over paragraphs 96k questions that need counting, sorting, dates or arithmetic over a wikipedia paragraph; answers are numbers, dates or spans. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill">Reading Comprehension</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>DROP</h3>
+  <div class="full">Discrete Reasoning Over Paragraphs</div>
+  <p>96k questions that need counting, sorting, dates or arithmetic over a Wikipedia paragraph; answers are numbers, dates or spans.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Mar 2019</b></div>
+    <div class="sota"><span class="lbl">SOTA · F1</span><b>91.6</b><small>DeepSeek-V3 · 2024</small></div>
+  </div>
+</a>
+<a class="tile glass" href="multirc.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2018" data-name="multirc" data-search="multirc multi-sentence reading comprehension questions with several candidate answers, any number of which can be correct; answering needs more than one sentence. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill">Reading Comprehension</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>MultiRC</h3>
+  <div class="full">Multi-Sentence Reading Comprehension</div>
+  <p>Questions with several candidate answers, any number of which can be correct; answering needs more than one sentence.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Jun 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · SuperGLUE test</span><b>89.6 F1a / 65.8 EM</b><small>ST-MoE-32B · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="quac.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2018" data-name="quac" data-search="quac question answering in context teacher–student dialogues about a hidden wikipedia section; 100k questions, many unanswerable, still below human level. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill">Reading Comprehension</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>QuAC</h3>
+  <div class="full">Question Answering in Context</div>
+  <p>Teacher–student dialogues about a hidden Wikipedia section; 100k questions, many unanswerable, still below human level.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Aug 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · test F1</span><b>76.3</b><small>CKT-QA ensemble · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="race.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-1 GPT-3" data-year="2017" data-name="race" data-search="race reading comprehension from examinations 100k multiple-choice questions from chinese middle- and high-school english exams; answers often need reasoning over the whole passage. reading comprehension gpt-1 gpt-3">
+  <div class="tile-top"><span class="pill">Reading Comprehension</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>RACE</h3>
+  <div class="full">ReAding Comprehension from Examinations</div>
+  <p>100k multiple-choice questions from Chinese middle- and high-school English exams; answers often need reasoning over the whole passage.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Apr 2017</b></div>
+    <div class="sota"><span class="lbl">SOTA · accuracy</span><b>92.9 (RACE-H)</b><small>Claude 3 Opus · 2024</small></div>
+  </div>
+</a>
+<a class="tile glass" href="record.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2018" data-name="record" data-search="record reading comprehension with commonsense reasoning dataset 120k cloze-style queries over cnn/daily mail articles; fill the masked entity in a sentence that needs commonsense. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill">Reading Comprehension</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>ReCoRD</h3>
+  <div class="full">Reading Comprehension with Commonsense Reasoning Dataset</div>
+  <p>120k cloze-style queries over CNN/Daily Mail articles; fill the masked entity in a sentence that needs commonsense.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Oct 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · SuperGLUE test</span><b>96.4 F1 / 95.9 EM</b><small>Turing NLR v5 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="squad2.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2018" data-name="squad 2.0" data-search="squad 2.0 stanford question answering dataset v2 squad plus 50k unanswerable questions written to look answerable; the model must extract a span or abstain. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill">Reading Comprehension</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>SQuAD 2.0</h3>
+  <div class="full">Stanford Question Answering Dataset v2</div>
+  <p>SQuAD plus 50k unanswerable questions written to look answerable; the model must extract a span or abstain.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Jun 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · test</span><b>93.2 F1 / 90.9 EM</b><small>IE-Net ensemble · 2021</small></div>
+  </div>
+</a>
+<a class="tile glass" href="natural-questions.html" style="--c:#10b981;--crgb:16,185,129" data-cat="qa" data-papers="GPT-2 GPT-3" data-year="2019" data-name="natural questions" data-search="natural questions natural questions (nq / nq-open) 300k real google queries with wikipedia answers; the closed-book &#x27;nq-open&#x27; variant asks the model to answer from memory. question answering gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill">Question Answering</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>Natural Questions</h3>
+  <div class="full">Natural Questions (NQ / NQ-Open)</div>
+  <p>300k real Google queries with Wikipedia answers; the closed-book &#x27;NQ-Open&#x27; variant asks the model to answer from memory.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Jan 2019</b></div>
+    <div class="sota"><span class="lbl">SOTA · NQ-Open test exact match</span><b>60.4</b><small>Atlas · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="triviaqa.html" style="--c:#10b981;--crgb:16,185,129" data-cat="qa" data-papers="GPT-3" data-year="2017" data-name="triviaqa" data-search="triviaqa triviaqa 95k trivia questions written by enthusiasts, with wikipedia and web evidence; the standard closed-book knowledge probe. question answering gpt-3">
+  <div class="tile-top"><span class="pill">Question Answering</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>TriviaQA</h3>
+  <div class="full">TriviaQA</div>
+  <p>95k trivia questions written by enthusiasts, with Wikipedia and web evidence; the standard closed-book knowledge probe.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>May 2017</b></div>
+    <div class="sota"><span class="lbl">SOTA · TriviaQA-Wiki exact match</span><b>91.8</b><small>Llama 3.1 405B · 2024</small></div>
+  </div>
+</a>
+<a class="tile glass" href="webquestions.html" style="--c:#10b981;--crgb:16,185,129" data-cat="qa" data-papers="GPT-3" data-year="2013" data-name="webquestions" data-search="webquestions webquestions 6k questions from the google suggest api answered against freebase; the oldest open-domain qa set still in use. question answering gpt-3">
+  <div class="tile-top"><span class="pill">Question Answering</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>WebQuestions</h3>
+  <div class="full">WebQuestions</div>
+  <p>6k questions from the Google Suggest API answered against Freebase; the oldest open-domain QA set still in use.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Oct 2013</b></div>
+    <div class="sota"><span class="lbl">SOTA · test exact match</span><b>56.0</b><small>GRG 7B · 2023</small></div>
+  </div>
+</a>
+<a class="tile glass" href="arc.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2018" data-name="arc" data-search="arc ai2 reasoning challenge (arc-easy / arc-challenge) 7.8k grade-school science questions; the challenge split holds the ones retrieval and co-occurrence methods got wrong. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill">Commonsense Reasoning</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>ARC</h3>
+  <div class="full">AI2 Reasoning Challenge (ARC-Easy / ARC-Challenge)</div>
+  <p>7.8k grade-school science questions; the Challenge split holds the ones retrieval and co-occurrence methods got wrong.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Mar 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · accuracy</span><b>96.9 (Challenge)</b><small>Llama 3.1 405B · 2024</small></div>
+  </div>
+</a>
+<a class="tile glass" href="copa.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2011" data-name="copa" data-search="copa choice of plausible alternatives 1,000 tiny causal puzzles: given a premise, which of two alternatives is the more plausible cause or effect? commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill">Commonsense Reasoning</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>COPA</h3>
+  <div class="full">Choice of Plausible Alternatives</div>
+  <p>1,000 tiny causal puzzles: given a premise, which of two alternatives is the more plausible cause or effect?</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>2011</b></div>
+    <div class="sota"><span class="lbl">SOTA · SuperGLUE test accuracy</span><b>99.4</b><small>Vega v2 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="hellaswag.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2019" data-name="hellaswag" data-search="hellaswag hellaswag (harder endings, longer contexts, low-shot activities for situations with adversarial generations) pick the most plausible continuation of a scene from four options; wrong options were machine-generated to fool bert. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill">Commonsense Reasoning</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>HellaSwag</h3>
+  <div class="full">HellaSwag (Harder Endings, Longer contexts, Low-shot Activities for Situations With Adversarial Generations)</div>
+  <p>Pick the most plausible continuation of a scene from four options; wrong options were machine-generated to fool BERT.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>May 2019</b></div>
+    <div class="sota"><span class="lbl">SOTA · accuracy</span><b>95.4</b><small>Claude 3 Opus · 2024</small></div>
+  </div>
+</a>
+<a class="tile glass" href="openbookqa.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2018" data-name="openbookqa" data-search="openbookqa openbookqa 6k science questions that need one &#x27;open book&#x27; fact plus commonsense the book does not contain. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill">Commonsense Reasoning</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>OpenBookQA</h3>
+  <div class="full">OpenBookQA</div>
+  <p>6k science questions that need one &#x27;open book&#x27; fact plus commonsense the book does not contain.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Sep 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · test accuracy</span><b>95.2</b><small>X-Reasoner · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="piqa.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2019" data-name="piqa" data-search="piqa physical interaction: question answering choose the sensible way to accomplish an everyday physical goal — &#x27;to separate egg whites…&#x27; — from two solutions. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill">Commonsense Reasoning</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>PIQA</h3>
+  <div class="full">Physical Interaction: Question Answering</div>
+  <p>Choose the sensible way to accomplish an everyday physical goal — &#x27;to separate egg whites…&#x27; — from two solutions.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Nov 2019</b></div>
+    <div class="sota"><span class="lbl">SOTA · test accuracy</span><b>90.1</b><small>UNICORN · 2021</small></div>
+  </div>
+</a>
+<a class="tile glass" href="story-cloze.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-1 GPT-3" data-year="2016" data-name="story cloze" data-search="story cloze story cloze test (rocstories) given four sentences of a five-sentence story, choose the right fifth sentence from two candidates. commonsense reasoning gpt-1 gpt-3">
+  <div class="tile-top"><span class="pill">Commonsense Reasoning</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>Story Cloze</h3>
+  <div class="full">Story Cloze Test (ROCStories)</div>
+  <p>Given four sentences of a five-sentence story, choose the right fifth sentence from two candidates.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Apr 2016</b></div>
+    <div class="sota"><span class="lbl">SOTA · test accuracy</span><b>91.8</b><small>Li et al. 2019 · 2019</small></div>
+  </div>
+</a>
+<a class="tile glass" href="winograd-schema.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-2 GPT-3" data-year="2012" data-name="winograd schema challenge" data-search="winograd schema challenge winograd schema challenge (wsc273 / superglue wsc) 273 hand-crafted pronoun-resolution puzzles where one word flips the answer; the classic test of commonsense. commonsense reasoning gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill">Commonsense Reasoning</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>Winograd Schema Challenge</h3>
+  <div class="full">Winograd Schema Challenge (WSC273 / SuperGLUE WSC)</div>
+  <p>273 hand-crafted pronoun-resolution puzzles where one word flips the answer; the classic test of commonsense.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>2012 (WSC273); 2019 SuperGLUE version</b></div>
+    <div class="sota"><span class="lbl">SOTA · accuracy</span><b>~91.6 (WSC273)</b><small>OK-Transformer · 2023</small></div>
+  </div>
+</a>
+<a class="tile glass" href="winogrande.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2019" data-name="winogrande" data-search="winogrande winogrande 44k winograd-style fill-in-the-blank items, crowd-sourced then adversarially filtered; still a standard llm metric. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill">Commonsense Reasoning</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>WinoGrande</h3>
+  <div class="full">WinoGrande</div>
+  <p>44k Winograd-style fill-in-the-blank items, crowd-sourced then adversarially filtered; still a standard LLM metric.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Jul 2019</b></div>
+    <div class="sota"><span class="lbl">SOTA · dev accuracy</span><b>96.1</b><small>ST-MoE-32B · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="childrens-book-test.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2015" data-name="children&#x27;s book test" data-search="children&#x27;s book test children&#x27;s book test (cbt-cn / cbt-ne) twenty sentences of a children&#x27;s book, then a 21st with a word missing; choose it from ten candidates. scored on common nouns and named entities. language modeling gpt-2">
+  <div class="tile-top"><span class="pill">Language Modeling</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span></span></div>
+  <h3>Children&#x27;s Book Test</h3>
+  <div class="full">Children&#x27;s Book Test (CBT-CN / CBT-NE)</div>
+  <p>Twenty sentences of a children&#x27;s book, then a 21st with a word missing; choose it from ten candidates. Scored on common nouns and named entities.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Nov 2015</b></div>
+    <div class="sota"><span class="lbl">SOTA · test accuracy</span><b>93.3 (CN)</b><small>GPT-2 1.5B · 2019</small></div>
+  </div>
+</a>
+<a class="tile glass" href="enwik8.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2006" data-name="enwik8" data-search="enwik8 enwik8 (hutter prize) the first 100 mb of a raw wikipedia xml dump, scored in bits per byte; the character-level compression benchmark. language modeling gpt-2">
+  <div class="tile-top"><span class="pill">Language Modeling</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span></span></div>
+  <h3>enwik8</h3>
+  <div class="full">enwik8 (Hutter Prize)</div>
+  <p>The first 100 MB of a raw Wikipedia XML dump, scored in bits per byte; the character-level compression benchmark.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>2006</b></div>
+    <div class="sota"><span class="lbl">SOTA · bits per character</span><b>0.94</b><small>Transformer-XL 24L + dynamic evaluation · 2019</small></div>
+  </div>
+</a>
+<a class="tile glass" href="lambada.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2 GPT-3" data-year="2016" data-name="lambada" data-search="lambada language modeling broadened to account for discourse aspects predict the last word of a passage that humans can guess only with the full context, never from the last sentence alone. language modeling gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill">Language Modeling</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>LAMBADA</h3>
+  <div class="full">LAnguage Modeling Broadened to Account for Discourse Aspects</div>
+  <p>Predict the last word of a passage that humans can guess only with the full context, never from the last sentence alone.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Jun 2016</b></div>
+    <div class="sota"><span class="lbl">SOTA · accuracy</span><b>89.7</b><small>PaLM 540B · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="one-billion-word.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2013" data-name="one billion word" data-search="one billion word one billion word benchmark (1bw / lm1b) 800m words of shuffled news sentences with an 800k vocabulary; the big sentence-level lm benchmark of 2014–2019. language modeling gpt-2">
+  <div class="tile-top"><span class="pill">Language Modeling</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span></span></div>
+  <h3>One Billion Word</h3>
+  <div class="full">One Billion Word Benchmark (1BW / LM1B)</div>
+  <p>800M words of shuffled news sentences with an 800k vocabulary; the big sentence-level LM benchmark of 2014–2019.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Dec 2013</b></div>
+    <div class="sota"><span class="lbl">SOTA · test perplexity</span><b>21.8</b><small>Transformer-XL Large · 2019</small></div>
+  </div>
+</a>
+<a class="tile glass" href="penn-treebank.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2 GPT-3" data-year="1993" data-name="penn treebank" data-search="penn treebank penn treebank (ptb, mikolov version) 1m words of wall street journal text with a 10k vocabulary and no punctuation; the oldest lm benchmark still reported. language modeling gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill">Language Modeling</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>Penn Treebank</h3>
+  <div class="full">Penn Treebank (PTB, Mikolov version)</div>
+  <p>1M words of Wall Street Journal text with a 10k vocabulary and no punctuation; the oldest LM benchmark still reported.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>1993 (corpus); 2011 LM split</b></div>
+    <div class="sota"><span class="lbl">SOTA · word-level test perplexity</span><b>20.5</b><small>GPT-3 175B · 2020</small></div>
+  </div>
+</a>
+<a class="tile glass" href="text8.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2006" data-name="text8" data-search="text8 text8 enwik8 stripped to lower-case letters and spaces only — 27 symbols, 100m characters. language modeling gpt-2">
+  <div class="tile-top"><span class="pill">Language Modeling</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span></span></div>
+  <h3>text8</h3>
+  <div class="full">text8</div>
+  <p>enwik8 stripped to lower-case letters and spaces only — 27 symbols, 100M characters.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>2006</b></div>
+    <div class="sota"><span class="lbl">SOTA · bits per character</span><b>1.038</b><small>Transformer-XL 24L + dynamic evaluation · 2019</small></div>
+  </div>
+</a>
+<a class="tile glass" href="wikitext-103.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2016" data-name="wikitext-103" data-search="wikitext-103 wikitext-103 103m words of wikipedia articles with a 267k vocabulary; the standard large word-level perplexity benchmark of the transformer-xl era. language modeling gpt-2">
+  <div class="tile-top"><span class="pill">Language Modeling</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span></span></div>
+  <h3>WikiText-103</h3>
+  <div class="full">WikiText-103</div>
+  <p>103M words of Wikipedia articles with a 267k vocabulary; the standard large word-level perplexity benchmark of the Transformer-XL era.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Sep 2016</b></div>
+    <div class="sota"><span class="lbl">SOTA · test perplexity</span><b>10.81</b><small>Megatron-LM 8.3B · 2019</small></div>
+  </div>
+</a>
+<a class="tile glass" href="wikitext-2.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2016" data-name="wikitext-2" data-search="wikitext-2 wikitext-2 2m words of good/featured wikipedia articles with punctuation, case and numbers preserved; the small word-level lm benchmark. language modeling gpt-2">
+  <div class="tile-top"><span class="pill">Language Modeling</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span></span></div>
+  <h3>WikiText-2</h3>
+  <div class="full">WikiText-2</div>
+  <p>2M words of Good/Featured Wikipedia articles with punctuation, case and numbers preserved; the small word-level LM benchmark.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Sep 2016</b></div>
+    <div class="sota"><span class="lbl">SOTA · test perplexity</span><b>18.34 (word-level, zero-shot)</b><small>GPT-2 1.5B · 2019</small></div>
+  </div>
+</a>
+<a class="tile glass" href="cola.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2018" data-name="cola" data-search="cola corpus of linguistic acceptability 10k sentences from linguistics textbooks marked grammatical or not; scored by matthews correlation. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill">Similarity &amp; Classification</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>CoLA</h3>
+  <div class="full">Corpus of Linguistic Acceptability</div>
+  <p>10k sentences from linguistics textbooks marked grammatical or not; scored by Matthews correlation.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>May 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · GLUE test MCC</span><b>73.8</b><small>Vega v1 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="mrpc.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2005" data-name="mrpc" data-search="mrpc microsoft research paraphrase corpus 5.8k news sentence pairs labelled as paraphrases or not; small, imbalanced, part of glue. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill">Similarity &amp; Classification</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>MRPC</h3>
+  <div class="full">Microsoft Research Paraphrase Corpus</div>
+  <p>5.8k news sentence pairs labelled as paraphrases or not; small, imbalanced, part of GLUE.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>2005</b></div>
+    <div class="sota"><span class="lbl">SOTA · GLUE test</span><b>94.5 F1 / 92.6 acc</b><small>Vega v1 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="qqp.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2017" data-name="qqp" data-search="qqp quora question pairs 400k pairs of quora questions labelled duplicate or not; the big paraphrase task in glue. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill">Similarity &amp; Classification</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>QQP</h3>
+  <div class="full">Quora Question Pairs</div>
+  <p>400k pairs of Quora questions labelled duplicate or not; the big paraphrase task in GLUE.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Jan 2017</b></div>
+    <div class="sota"><span class="lbl">SOTA · GLUE test</span><b>76.7 F1 / 91.1 acc</b><small>Vega v1 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="sst2.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2013" data-name="sst-2" data-search="sst-2 stanford sentiment treebank (binary) 67k movie-review phrases labelled positive or negative; the standard sentiment benchmark. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill">Similarity &amp; Classification</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>SST-2</h3>
+  <div class="full">Stanford Sentiment Treebank (binary)</div>
+  <p>67k movie-review phrases labelled positive or negative; the standard sentiment benchmark.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Oct 2013</b></div>
+    <div class="sota"><span class="lbl">SOTA · GLUE test accuracy</span><b>97.9</b><small>Vega v1 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="stsb.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2017" data-name="sts-b" data-search="sts-b semantic textual similarity benchmark 8.6k sentence pairs rated 0–5 for similarity; the one regression task in glue. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill">Similarity &amp; Classification</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>STS-B</h3>
+  <div class="full">Semantic Textual Similarity Benchmark</div>
+  <p>8.6k sentence pairs rated 0–5 for similarity; the one regression task in GLUE.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Aug 2017</b></div>
+    <div class="sota"><span class="lbl">SOTA · GLUE test</span><b>93.7 Pearson / 93.3 Spearman</b><small>Turing NLR v5 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="wic.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-3" data-year="2018" data-name="wic" data-search="wic word-in-context does the same word mean the same thing in these two sentences? 7.5k pairs; still below human level. similarity &amp; classification gpt-3">
+  <div class="tile-top"><span class="pill">Similarity &amp; Classification</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>WiC</h3>
+  <div class="full">Word-in-Context</div>
+  <p>Does the same word mean the same thing in these two sentences? 7.5k pairs; still below human level.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Aug 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · SuperGLUE test accuracy</span><b>77.7</b><small>ST-MoE-32B · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="glue.html" style="--c:#14b8a6;--crgb:20,184,166" data-cat="suite" data-papers="GPT-1" data-year="2018" data-name="glue" data-search="glue general language understanding evaluation nine sentence-level tasks and one leaderboard score; the benchmark gpt-1 and bert were measured on. benchmark suites gpt-1">
+  <div class="tile-top"><span class="pill">Benchmark Suites</span><span class="tile-papers"><span class="chip" style="background:#1a1a18" title="Evaluated in the GPT-1 paper">GPT-1</span></span></div>
+  <h3>GLUE</h3>
+  <div class="full">General Language Understanding Evaluation</div>
+  <p>Nine sentence-level tasks and one leaderboard score; the benchmark GPT-1 and BERT were measured on.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Apr 2018</b></div>
+    <div class="sota"><span class="lbl">SOTA · overall leaderboard score</span><b>91.3</b><small>Vega v1 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="superglue.html" style="--c:#14b8a6;--crgb:20,184,166" data-cat="suite" data-papers="GPT-3" data-year="2019" data-name="superglue" data-search="superglue superglue glue&#x27;s harder successor: eight tasks (boolq, cb, copa, multirc, record, rte, wic, wsc) chosen because bert still failed them. benchmark suites gpt-3">
+  <div class="tile-top"><span class="pill">Benchmark Suites</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>SuperGLUE</h3>
+  <div class="full">SuperGLUE</div>
+  <p>GLUE&#x27;s harder successor: eight tasks (BoolQ, CB, COPA, MultiRC, ReCoRD, RTE, WiC, WSC) chosen because BERT still failed them.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>May 2019</b></div>
+    <div class="sota"><span class="lbl">SOTA · overall leaderboard score</span><b>91.3</b><small>Vega v2 · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="cnn-dailymail.html" style="--c:#ec4899;--crgb:236,72,153" data-cat="gen" data-papers="GPT-2" data-year="2015" data-name="cnn / daily mail" data-search="cnn / daily mail cnn / daily mail summarization 300k news articles paired with their bullet-point highlights; the default abstractive summarisation benchmark. generation gpt-2">
+  <div class="tile-top"><span class="pill">Generation</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span></span></div>
+  <h3>CNN / Daily Mail</h3>
+  <div class="full">CNN / Daily Mail summarization</div>
+  <p>300k news articles paired with their bullet-point highlights; the default abstractive summarisation benchmark.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>Jun 2015 (QA); 2016 as summarization</b></div>
+    <div class="sota"><span class="lbl">SOTA · ROUGE-1 / 2 / L</span><b>47.78 / 23.55 / 44.57</b><small>BRIO · 2022</small></div>
+  </div>
+</a>
+<a class="tile glass" href="wmt-translation.html" style="--c:#ec4899;--crgb:236,72,153" data-cat="gen" data-papers="GPT-2 GPT-3" data-year="2014" data-name="wmt translation" data-search="wmt translation wmt14 en↔fr, wmt16 en↔de, wmt16 en↔ro shared-task test sets for french, german and romanian ↔ english; scored in bleu. gpt-2 tried fr–en, gpt-3 all three pairs. generation gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill">Generation</span><span class="tile-papers"><span class="chip" style="background:#c85c2a" title="Evaluated in the GPT-2 paper">GPT-2</span><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>WMT Translation</h3>
+  <div class="full">WMT14 En↔Fr, WMT16 En↔De, WMT16 En↔Ro</div>
+  <p>Shared-task test sets for French, German and Romanian ↔ English; scored in BLEU. GPT-2 tried Fr–En, GPT-3 all three pairs.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>2014 / 2016</b></div>
+    <div class="sota"><span class="lbl">SOTA · BLEU</span><b>per pair</b><small>see per-direction · 2020</small></div>
+  </div>
+</a>
+<a class="tile glass" href="gpt3-synthetic-tasks.html" style="--c:#64748b;--crgb:100,116,139" data-cat="synthetic" data-papers="GPT-3" data-year="2020" data-name="gpt-3 synthetic tasks" data-search="gpt-3 synthetic tasks arithmetic, word scrambling, sat analogies, news generation, novel words, grammar correction tasks the gpt-3 authors invented to probe in-context learning: 2–5 digit arithmetic, unscrambling words, sat analogies, and human detection of generated news. synthetic / probing gpt-3">
+  <div class="tile-top"><span class="pill">Synthetic / Probing</span><span class="tile-papers"><span class="chip" style="background:#0f766e" title="Evaluated in the GPT-3 paper">GPT-3</span></span></div>
+  <h3>GPT-3 synthetic tasks</h3>
+  <div class="full">Arithmetic, word scrambling, SAT analogies, news generation, novel words, grammar correction</div>
+  <p>Tasks the GPT-3 authors invented to probe in-context learning: 2–5 digit arithmetic, unscrambling words, SAT analogies, and human detection of generated news.</p>
+  <div class="tile-foot">
+    <div><span class="lbl">Released</span><b>May 2020</b></div>
+    <div class="sota"><span class="lbl">SOTA · no shared leaderboard</span><b>n/a</b><small>no shared leaderboard · 2020</small></div>
+  </div>
+</a>
+  </section>
+  <div class="empty" id="empty">Nothing matches that filter. Try clearing the search or picking another category.</div>
+
+  <aside class="legend glass">
+    <span class="flabel">Legend</span><span class="pill" style="--c:#6366f1;--crgb:99,102,241">NLI · 7</span><span class="pill" style="--c:#0ea5e9;--crgb:14,165,233">Reading Comprehension · 8</span><span class="pill" style="--c:#10b981;--crgb:16,185,129">Question Answering · 3</span><span class="pill" style="--c:#f59e0b;--crgb:245,158,11">Commonsense Reasoning · 8</span><span class="pill" style="--c:#f43f5e;--crgb:244,63,94">Language Modeling · 8</span><span class="pill" style="--c:#8b5cf6;--crgb:139,92,246">Similarity &amp; Classification · 6</span><span class="pill" style="--c:#14b8a6;--crgb:20,184,166">Benchmark Suites · 2</span><span class="pill" style="--c:#ec4899;--crgb:236,72,153">Generation · 2</span><span class="pill" style="--c:#64748b;--crgb:100,116,139">Synthetic / Probing · 1</span>
+    <span style="flex-basis:100%"></span>
+    <span><span class="chip" style="background:#1a1a18">GPT-1</span> Radford et al., 2018 · fine-tuned</span>
+    <span><span class="chip" style="background:#c85c2a">GPT-2</span> Radford et al., 2019 · zero-shot</span>
+    <span><span class="chip" style="background:#0f766e">GPT-3</span> Brown et al., 2020 · few-shot</span>
+  </aside>
+</main>
+<footer class="site">
+  <span>Sumit Kant · GenAI Lab · LLM Benchmarks · last updated October 2026</span>
+  <span><a href="../../genai-lab.html">GenAI Lab</a> · <a href="../../blog.html">Blog</a></span>
+</footer>
+<script>
+(function() {
+  const grid = document.getElementById('grid');
+  const tiles = Array.from(grid.querySelectorAll('.tile'));
+  const q = document.getElementById('q'), count = document.getElementById('count'), empty = document.getElementById('empty'), sort = document.getElementById('sort');
+  const catBtns = Array.from(document.querySelectorAll('.fbtn.cat'));
+  const paperBtns = Array.from(document.querySelectorAll('.fbtn.paper'));
+  const catOrder = ["nli", "rc", "qa", "commonsense", "lm", "cls", "suite", "gen", "synthetic"];
+  let cat = 'all', papers = new Set();
+
+  function apply() {
+    const needle = q.value.trim().toLowerCase();
+    let shown = 0;
+    tiles.forEach(t => {
+      const okCat = cat === 'all' || t.dataset.cat === cat;
+      const tp = t.dataset.papers.split(' ');
+      const okPaper = papers.size === 0 || [...papers].every(p => tp.includes(p));
+      const okQ = !needle || t.dataset.search.includes(needle);
+      const show = okCat && okPaper && okQ;
+      t.classList.toggle('hidden', !show); if (show) shown++;
+    });
+    count.textContent = shown + ' of ' + tiles.length;
+    empty.classList.toggle('show', shown === 0);
+    try { localStorage.setItem('llmb-filter', JSON.stringify({cat, papers:[...papers], q:q.value, sort:sort.value})); } catch(e) {}
+  }
+  function resort() {
+    const v = sort.value;
+    const sorted = tiles.slice().sort((a,b) => {
+      if (v === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+      if (v === 'year') return (+a.dataset.year - +b.dataset.year) || a.dataset.name.localeCompare(b.dataset.name);
+      if (v === 'year-desc') return (+b.dataset.year - +a.dataset.year) || a.dataset.name.localeCompare(b.dataset.name);
+      return (catOrder.indexOf(a.dataset.cat) - catOrder.indexOf(b.dataset.cat)) || a.dataset.name.localeCompare(b.dataset.name);
+    });
+    sorted.forEach(t => grid.appendChild(t));
+  }
+  catBtns.forEach(b => b.addEventListener('click', () => { cat = b.dataset.cat; catBtns.forEach(x => x.classList.toggle('active', x === b)); apply(); }));
+  paperBtns.forEach(b => b.addEventListener('click', () => { const p = b.dataset.paper; if (papers.has(p)) papers.delete(p); else papers.add(p); b.classList.toggle('active', papers.has(p)); apply(); }));
+  q.addEventListener('input', apply);
+  sort.addEventListener('change', () => { resort(); apply(); });
+  // deep-link: ?cat=nli&paper=GPT-2
+  const u = new URLSearchParams(location.search);
+  if (u.get('cat') && catOrder.includes(u.get('cat'))) { cat = u.get('cat'); catBtns.forEach(x => x.classList.toggle('active', x.dataset.cat === cat)); }
+  (u.get('paper') || '').split(',').filter(Boolean).forEach(p => { papers.add(p); const b = paperBtns.find(x => x.dataset.paper === p); if (b) b.classList.add('active'); });
+  if (!u.toString()) { try { const s = JSON.parse(localStorage.getItem('llmb-filter') || 'null'); if (s) { cat = s.cat || 'all'; catBtns.forEach(x => x.classList.toggle('active', x.dataset.cat === cat)); (s.papers||[]).forEach(p => { papers.add(p); const b = paperBtns.find(x => x.dataset.paper === p); if (b) b.classList.add('active'); }); q.value = s.q || ''; sort.value = s.sort || 'cat'; resort(); } } catch(e) {} }
+  apply();
+})();
+</script>
+</body>
+</html>

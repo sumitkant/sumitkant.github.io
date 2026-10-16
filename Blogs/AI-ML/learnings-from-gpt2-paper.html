@@ -4,9 +4,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-    content="A close reading of the GPT-2 paper, Language Models are Unsupervised Multitask Learners: WebText, byte-level BPE, the model, the zero-shot experiments and the memorization analysis.">
   <title>GPT-2: When Next-Token Prediction Becomes Multitask Learning</title>
+  <meta name="description" content="GPT-1 needed a fine-tuning run for every task. A year later, OpenAI asked a bolder question: if a language model is big enough and reads enough of the web, does it still need the fine-tuning at all?">
+  <link rel="canonical" href="https://sumitkant.github.io/Blogs/AI-ML/learnings-from-gpt2-paper.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sumit Kant">
+  <meta property="og:url" content="https://sumitkant.github.io/Blogs/AI-ML/learnings-from-gpt2-paper.html">
+  <meta property="og:title" content="GPT-2: When Next-Token Prediction Becomes Multitask Learning">
+  <meta property="og:description" content="GPT-1 needed a fine-tuning run for every task. A year later, OpenAI asked a bolder question: if a language model is big enough and reads enough of the web, does it still need the fine-tuning at all?">
+  <meta property="og:image" content="https://sumitkant.github.io/images/Blogs/17.GPT2Paper/gpt2-og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Glass documents streaming into a stack of transformer layers that branches into several task outputs, on a black and red background">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GPT-2: When Next-Token Prediction Becomes Multitask Learning">
+  <meta name="twitter:description" content="GPT-1 needed a fine-tuning run for every task. A year later, OpenAI asked a bolder question: if a language model is big enough and reads enough of the web, does it still need the fine-tuning at all?">
+  <meta name="twitter:image" content="https://sumitkant.github.io/images/Blogs/17.GPT2Paper/gpt2-og.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Fira+Code:wght@300..700&display=swap"
@@ -323,9 +336,8 @@
     /* ── layout + TOC ── */
     .post-layout {
       display: grid;
-      grid-template-columns: var(--prose-w) minmax(0, 240px);
-      justify-content: space-between;
-      gap: 0 2.5rem;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 0 28px;
       align-items: start;
       padding-top: .5rem
     }
@@ -580,6 +592,22 @@
 
     td:first-child {
       color: var(--ink)
+    }
+
+    table.t6 th,
+    table.t6 td {
+      padding: 8px 6px;
+      text-align: right
+    }
+
+    table.t6 th:first-child,
+    table.t6 td:first-child {
+      text-align: left
+    }
+
+    table.t6 th {
+      letter-spacing: .04em;
+      font-size: 10.5px
     }
 
     td.num {
@@ -1005,6 +1033,240 @@
       color: var(--ink-dim)
     }
 
+    /* ── benchmark links (placeholder until the benchmarks page exists) ── */
+    a.bench-ref {
+      color: inherit;
+      text-decoration: underline dotted var(--burg);
+      text-underline-offset: 3px
+    }
+
+    /* ── diverging bar chart ── */
+    .dv-chart {
+      margin: 18px 0 6px
+    }
+
+    .dv-row {
+      display: grid;
+      grid-template-columns: minmax(0, 210px) 1fr 86px;
+      gap: 12px;
+      align-items: center;
+      margin: 8px 0
+    }
+
+    .dv-label {
+      font-size: 14px;
+      line-height: 1.3;
+      color: var(--ink);
+      font-weight: 600
+    }
+
+    .dv-metric {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: var(--ink-dim);
+      font-variant-numeric: tabular-nums
+    }
+
+    .dv-track {
+      position: relative;
+      height: 22px;
+      background: var(--black-soft);
+      border-radius: 5px
+    }
+
+    .dv-track::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -3px;
+      bottom: -3px;
+      width: 1.5px;
+      background: var(--ink)
+    }
+
+    .dv-fill {
+      position: absolute;
+      top: 0;
+      height: 100%
+    }
+
+    .dv-fill.pos {
+      left: 50%;
+      background: var(--burg);
+      border-radius: 0 5px 5px 0
+    }
+
+    .dv-fill.neg {
+      right: 50%;
+      background: #8A8484;
+      border-radius: 5px 0 0 5px
+    }
+
+    .dv-val {
+      font-size: 13px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums
+    }
+
+    .dv-val.pos {
+      color: var(--burg)
+    }
+
+    .dv-val.neg {
+      color: var(--ink-dim)
+    }
+
+    /* ── paired bar chart ── */
+    .pr-key {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+      font-size: 13px;
+      color: var(--ink-dim);
+      margin: 8px 0 4px
+    }
+
+    .pr-key span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    .pr-key i {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      display: inline-block
+    }
+
+    .pr-group {
+      font-weight: 720;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border-bottom: 2px solid var(--black);
+      padding-bottom: 6px;
+      margin: 20px 0 10px
+    }
+
+    .pr-row {
+      display: grid;
+      grid-template-columns: minmax(0, 210px) 1fr;
+      gap: 12px;
+      align-items: center;
+      margin: 10px 0
+    }
+
+    .pr-label {
+      font-size: 14px;
+      line-height: 1.3;
+      font-weight: 600;
+      color: var(--ink)
+    }
+
+    .pr-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      background: var(--black-soft);
+      border-radius: 5px;
+      padding: 3px
+    }
+
+    .pr-line {
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    .pr-bar {
+      height: 18px;
+      border-radius: 4px;
+      flex: none;
+      min-width: 3px
+    }
+
+    .pr-line span {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ink-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-variant-numeric: tabular-nums
+    }
+
+    .pr-line:first-child span {
+      color: var(--burg);
+      font-weight: 750
+    }
+
+    .pr-bar.gpt {
+      background: var(--burg)
+    }
+
+    .pr-bar.ref {
+      background: var(--black)
+    }
+
+    /* ── benchmark cards ── */
+    .bench {
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      background: var(--card-2);
+      padding: 14px 18px;
+      margin: 12px 0
+    }
+
+    .bench-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-weight: 740;
+      font-size: 16px;
+      margin-bottom: 2px
+    }
+
+    .bench-num {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--burg);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap
+    }
+
+    .bench p {
+      font-size: 14.5px;
+      line-height: 1.6;
+      margin: 0 0 8px
+    }
+
+    .bench p:last-child {
+      margin-bottom: 0
+    }
+
+    .bench-desc {
+      color: var(--ink-dim)
+    }
+
+    .bench-inf span,
+    .bench-why span {
+      display: block;
+      font-weight: 720;
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--burg)
+    }
+
+    .bench-why span {
+      color: var(--ink)
+    }
+
     /* ── stat strip ── */
     .stats {
       display: grid;
@@ -1250,6 +1512,34 @@
         gap: 4px
       }
 
+      .dv-row {
+        grid-template-columns: 1fr 64px;
+        gap: 4px 10px
+      }
+
+      .dv-label {
+        grid-column: 1 / -1
+      }
+
+      .pr-row {
+        grid-template-columns: 1fr;
+        gap: 4px
+      }
+
+      table.t6 {
+        font-size: 11.5px
+      }
+
+      table.t6 th,
+      table.t6 td {
+        padding: 6px 3px
+      }
+
+      table.t6 th {
+        font-size: 9px;
+        letter-spacing: 0
+      }
+
       .formula {
         font-size: 16px
       }
@@ -1298,7 +1588,7 @@
   <main class="page" id="top">
 
     <div class="post-banner"
-      style="--banner-img:url('../../images/Blogs/17.GPT2Paper/gpt2-banner.png')">
+      style="--banner-img:url('../../images/Blogs/17.GPT2Paper/gpt2-banner.png?v=2')">
       <div class="banner-scrim"></div>
       <div class="banner-inner">
         <p class="banner-eyebrow">Paper Notes · Radford et al., 2019</p>
@@ -1558,199 +1848,47 @@
           <p>A general language model should be able to assign a probability to <i>any</i> string. And the NLP techniques often used preprocessing steps like lowercasing and stemming, restricting the space of modelable strings. Playing with UNICODE representation of characters was an elegant way to handle this as it contains ~150K characters and can represent any language. However, character level encoding is inefficient. Modeling raw bytes avoids the problem, since
             every Unicode string can be encoded with only <b>256 possible byte values</b>, but byte sequences are long
             and slow to model.</p>
-          <p>GPT-2 uses <b>byte-level BPE</b> to get both. It starts from bytes, then learns merges that combine
-            frequently co-occurring byte sequences into larger tokens. Every string can still be encoded, and common
-            words still end up as single tokens. The resulting vocabulary has <b>50,257 tokens</b>.</p>
+          <p>GPT-2 keeps GPT-1's core idea, BPE, but changes what it runs on. GPT-1 cleaned its text with
+            <b>ftfy</b>, split it into words with the <b>spaCy</b> tokenizer, and learned 40,000 merges starting from
+            <b>characters</b>, so a character it never saw in training had no symbol at all. GPT-2 drops the cleanup
+            and the English-specific pre-tokenizer, and runs BPE directly on <b>raw UTF-8 bytes</b>. Any string can
+            now be encoded, and 50,000 merges give a vocabulary of <b>50,257 tokens</b> (256 bytes + 50,000 merges +
+            1 end-of-text token). The one rule it adds is that BPE <b>can't merge across character categories</b>,
+            so <code>dog.</code>, <code>dog!</code> and <code>dog?</code> don't each take up a vocabulary slot.</p>
 
-          <h3>Step 1 · characters → Unicode code points</h3>
-          <p>Take a small string with plain English, punctuation and an emoji, and look up each character's code
-            point with <code>ord</code>:</p>
-          <div class="win">
-            <div class="win-bar"><i></i><i></i><i></i><span>code points · python</span></div>
-            <pre>text = <span class="s">"Hello World!😀"</span>
-dict((c, ord(c)) <span class="k">for</span> c <span class="k">in</span> text)</pre>
+          <div class="takeaway">
+            <strong>Why bytes win</strong>
+            Unicode has over 1.1 million possible code points, about 150K of them assigned. Bytes have 256. An emoji
+            like 😀 is code point 128,512, but in UTF-8 it is just four bytes, <code>240 159 152 128</code>, and BPE
+            can merge those back into a single token if it shows up often enough.
           </div>
-          <div class="win out">
-            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
-            <pre>{'H': 72, 'e': 101, 'l': 108, 'o': 111, ' ': 32, 'W': 87,
- 'r': 114, 'd': 100, '!': 33, '😀': 128512}</pre>
-          </div>
-          <p>English letters sit below 128, but the emoji is code point <b>128,512</b>. A model that used code points
-            directly would need a slot for every one of them, and Unicode is huge:</p>
-          <div class="win">
-            <div class="win-bar"><i></i><i></i><i></i><span>size of unicode · python 3.13</span></div>
-            <pre><span class="k">import</span> sys, unicodedata
 
-sys.maxunicode + <span class="k">1</span>   <span class="c"># every possible code point</span>
-
-<span class="c"># characters actually assigned (not unassigned, private-use or surrogates)</span>
-sum(unicodedata.category(chr(i)) <span class="k">not in</span> (<span class="s">"Cn"</span>, <span class="s">"Co"</span>, <span class="s">"Cs"</span>)
-    <span class="k">for</span> i <span class="k">in</span> range(sys.maxunicode + <span class="k">1</span>))</pre>
-          </div>
-          <div class="win out">
-            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
-            <pre>1114112
-149878</pre>
-          </div>
-          <p>That is a base vocabulary of roughly <b>150,000</b> symbols before a single merge is learned, and most of
-            them appear so rarely that the model could never learn good embeddings for them.</p>
-
-          <h3>Step 2 · code points → UTF-8 bytes</h3>
-          <p>Now encode the same string as UTF-8 and look at the raw bytes:</p>
-          <div class="win">
-            <div class="win-bar"><i></i><i></i><i></i><span>bytes · python</span></div>
-            <pre>text.encode(<span class="s">'utf-8'</span>)
-text_bytes = list(text.encode(<span class="s">'utf-8'</span>))
-text_bytes
-dict((c, chr(c)) <span class="k">for</span> c <span class="k">in</span> text_bytes)</pre>
-          </div>
-          <div class="win out">
-            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
-            <pre>b'Hello World!\xf0\x9f\x98\x80'
-
-[72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33, 240, 159, 152, 128]
-
-{72: 'H', 101: 'e', 108: 'l', 111: 'o', 32: ' ', 87: 'W', 114: 'r',
- 100: 'd', 33: '!', 240: 'ð', 159: '\x9f', 152: '\x98', 128: '\x80'}</pre>
-          </div>
-          <p>Three things to notice:</p>
-          <ul>
-            <li>The English characters map to <b>one byte each</b>, with the same numbers as their code points.</li>
-            <li>The emoji becomes <b>four bytes</b>: <code>240 159 152 128</code>. So 13 characters turn into 16
-              bytes.</li>
-            <li>On their own, those four bytes are meaningless (<code>chr(240)</code> is <code>'ð'</code>). They only
-              mean 😀 when read together.</li>
-          </ul>
-
-          <div class="stages">
-            <div class="stage s1">
-              <span class="tag">Unicode code points</span>
-              <h4>1,114,112 slots</h4>
-              <p>~150K assigned characters. A huge base vocabulary, most of it rare.</p>
+          <h3>Go deeper</h3>
+          <a class="item post-card" href="building-your-own-gpt2-tokenizer.html">
+            <img class="post-thumb" src="../../images/Blogs/18.GPT2Tokenizer/tokenizer-card.jpg" alt="" loading="lazy">
+            <div class="post-body">
+              <div class="post-tags"><span class="p">Tokenization</span> · GPT-2</div>
+              <span class="post-title">Building Your Own GPT-2 Tokenizer from Scratch</span>
+              <p class="post-desc">Byte-pair encoding over UTF-8, step by step: count pairs, merge, repeat, and train
+                the GPT-2 tokenizer yourself on Shakespeare.</p>
             </div>
-            <div class="stage s2">
-              <span class="tag">UTF-8 bytes</span>
-              <h4>256 values</h4>
-              <p>Every value from 0 to 255. Any string in any language fits, so nothing is ever unknown.</p>
-            </div>
-          </div>
+          </a>
 
-          <h3>Step 3 · BPE merges bytes back into useful chunks</h3>
-          <p>Bytes solve coverage but make sequences longer. BPE fixes that. It counts every adjacent pair of symbols
-            in the training data, merges the most frequent pair into a new symbol with the next free ID (256, 257,
-            …), and repeats. Here are four merges applied to our example:</p>
-          <div class="win">
-            <div class="win-bar"><i></i><i></i><i></i><span>bpe merges · python</span></div>
-            <pre><span class="k">def</span> merge(ids, pair, new_id):
-    out, i = [], <span class="k">0</span>
-    <span class="k">while</span> i &lt; len(ids):
-        <span class="k">if</span> i &lt; len(ids) - <span class="k">1</span> <span class="k">and</span> (ids[i], ids[i+<span class="k">1</span>]) == pair:
-            out.append(new_id); i += <span class="k">2</span>
-        <span class="k">else</span>:
-            out.append(ids[i]); i += <span class="k">1</span>
-    <span class="k">return</span> out
-
-<span class="c"># pretend these were the most frequent pairs in a large corpus</span>
-merges = [(<span class="k">108</span>, <span class="k">108</span>), (<span class="k">240</span>, <span class="k">159</span>), (<span class="k">257</span>, <span class="k">152</span>), (<span class="k">258</span>, <span class="k">128</span>)]
-
-ids = text_bytes
-<span class="k">for</span> new_id, pair <span class="k">in</span> enumerate(merges, start=<span class="k">256</span>):
-    ids = merge(ids, pair, new_id)
-    print(new_id, pair, len(ids), ids)</pre>
-          </div>
-          <div class="win out">
-            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
-            <pre>256 (108, 108) 15 [72, 101, 256, 111, 32, 87, 111, 114, 108, 100, 33, 240, 159, 152, 128]
-257 (240, 159) 14 [72, 101, 256, 111, 32, 87, 111, 114, 108, 100, 33, 257, 152, 128]
-258 (257, 152) 13 [72, 101, 256, 111, 32, 87, 111, 114, 108, 100, 33, 258, 128]
-259 (258, 128) 12 [72, 101, 256, 111, 32, 87, 111, 114, 108, 100, 33, 259]</pre>
-          </div>
-          <p>Merge 256 turns <code>"ll"</code> into one token. Merges 257 to 259 glue the four emoji bytes back
-            together, so 😀 is a single token again (ID 259). The sequence shrinks from 16 to 12 symbols, and the
-            vocabulary only grows by the merges we choose to keep.</p>
-          <p>In a 13-character string every pair appears once, so the merges above are picked by hand. On 40 GB of
-            WebText the counts are real, and the frequent pairs are things like common word pieces, spaces before
-            words, and popular emoji. GPT-2 keeps <b>50,000 merges</b>, which is where its vocabulary size comes
-            from:</p>
-          <div class="formula">$$256\ \text{bytes} + 50{,}000\ \text{merges} + 1\ \text{end-of-text token} =
-            50{,}257\ \text{tokens}$$</div>
-          <p>One tweak from the paper: BPE is <b>not allowed to merge across character categories</b>, so letters
-            don't fuse with punctuation. Without this, the vocabulary fills up with variants like <code>dog.</code>,
-            <code>dog!</code> and <code>dog?</code>. Spaces are the exception, which is why many GPT-2 tokens include a
-            leading space.</p>
-
-          <h3>How GPT-1 did it: spaCy, then character-level BPE</h3>
-          <p>GPT-1 took a more traditional route. It cleaned BooksCorpus with the <b>ftfy</b> library, then ran the
-            <b>spaCy tokenizer</b> to split the text into words and punctuation (for example
-            <code>Hello World!</code> → <code>Hello</code> · <code>World</code> · <code>!</code>). BPE with
-            <b>40,000 merges</b> was then learned on top of those words, starting from characters rather than
-            bytes.</p>
-          <p>That works well for clean English books, but the base alphabet is whatever characters showed up in
-            training. A character it never saw has no symbol at all. Starting from bytes removes that failure mode
-            and also drops the dependence on a language-specific pre-tokenizer like spaCy.</p>
-
-          <h3>GPT-1 vs GPT-2 encoding</h3>
-          <table>
-            <thead>
-              <tr>
-                <th style="width:24%">Aspect</th>
-                <th style="width:34%">GPT-1</th>
-                <th>GPT-2</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Tokenization</td>
-                <td><b>Standard BPE over text / Unicode characters</b></td>
-                <td><b>Byte-level BPE</b></td>
-              </tr>
-              <tr>
-                <td>Base symbols</td>
-                <td>characters / subwords</td>
-                <td><b>256 byte values</b></td>
-              </tr>
-              <tr>
-                <td>Unknown characters</td>
-                <td>can be problematic, depends on vocabulary coverage</td>
-                <td>essentially <b>no OOV problem</b></td>
-              </tr>
-              <tr>
-                <td>Vocabulary</td>
-                <td>~40K tokens</td>
-                <td><b>50,257 tokens</b></td>
-              </tr>
-              <tr>
-                <td>Unicode handling</td>
-                <td>less universal</td>
-                <td>robust to arbitrary Unicode text</td>
-              </tr>
-              <tr>
-                <td>Spaces</td>
-                <td>handled more conventionally</td>
-                <td>spaces become part of tokenization behavior, often visible as special byte-mapped symbols
-                  internally</td>
-              </tr>
-            </tbody>
-          </table>
           <div class="sec-gloss">
             <div class="gloss-label">Glossary</div>
             <dl>
-              <dt>Unknown token</dt>
-              <dd>A catch-all placeholder that throws the real word away.</dd>
               <dt>BPE</dt>
               <dd>Byte Pair Encoding: repeatedly glue together the pair of symbols that appears most often, until common chunks become single units.</dd>
-              <dt>Unicode code point</dt>
-              <dd>The official number Unicode gives each character.</dd>
-              <dt>UTF-8</dt>
-              <dd>The most common way to write characters as bytes.</dd>
-              <dt>OOV</dt>
-              <dd>Out-of-vocabulary: text the tokenizer cannot represent.</dd>
               <dt>Merge</dt>
               <dd>One BPE step: replace every occurrence of a frequent pair of symbols with a single new symbol.</dd>
-              <dt>spaCy</dt>
-              <dd>A popular open-source NLP library. Its tokenizer splits text into words and punctuation.</dd>
+              <dt>UTF-8</dt>
+              <dd>The most common way to write characters as bytes. English letters take 1 byte, emoji take 4.</dd>
               <dt>ftfy</dt>
               <dd>"Fixes text for you": a library that repairs broken Unicode and normalizes punctuation.</dd>
+              <dt>spaCy</dt>
+              <dd>A popular open-source NLP library. Its tokenizer splits text into words and punctuation.</dd>
+              <dt>Character category</dt>
+              <dd>Unicode's grouping of characters into letters, digits, punctuation, symbols and so on.</dd>
             </dl>
           </div>
         </section>
@@ -1822,13 +1960,13 @@ ids = text_bytes
             released models. The layer, head and width columns are right. Only the parameter column is off, and the
             table above uses the corrected numbers.
           </div>
-          <div class="sec-gloss">
+          <!-- <div class="sec-gloss">
             <div class="gloss-label">Glossary</div>
             <dl>
               <dt>Layer norm</dt>
               <dd>A step that rescales the numbers inside the network to keep training stable.</dd>
             </dl>
-          </div>
+          </div> -->
         </section>
 
         <!-- 06 ─────────────────────────────────────────── -->
@@ -1836,23 +1974,44 @@ ids = text_bytes
           <span class="sec-num" aria-hidden="true">06</span>
           <p class="sec-label">BEFORE BENCHMARKING</p>
           <h2>A nuance before benchmarking</h2>
-          <p>GPT-2 is still doing language modeling, just on
-            datasets it was never trained on. The difficulty is that each benchmark uses its own tokenizer and
-            reports results in its own units.</p>
+          <p>Before the results, the paper explains how it evaluates GPT-2 on existing language-modeling benchmarks.
+            GPT-2 is still predicting the next token, just on datasets it was never trained on. Two problems come up
+            straight away: every benchmark reports its score in its own unit, and many benchmarks have been
+            preprocessed in ways that look nothing like the web text GPT-2 learned from. The paper puts it like
+            this:</p>
 
-          <h3>What is a "canonical prediction unit"?</h3>
-          <p>Raw negative log-likelihood grows with the length of the dataset, so benchmarks normalize it by a
-            standard unit, usually a word, a character or a byte:</p>
+          <div class="takeaway note">
+            <strong>What the paper says</strong>
+            <p><i>"Results on language modeling datasets are commonly reported in a quantity which is a scaled or
+                exponentiated version of the average negative log probability per <b>canonical prediction unit</b>,
+                usually a character, a byte, or a word."</i></p>
+            <p><i>"For many of these datasets, WebText LMs would be tested significantly out-of-distribution, having
+                to predict aggressively standardized text, tokenization artifacts such as disconnected punctuation and
+                contractions, shuffled sentences, and even the string &lt;UNK&gt; […] We report our main results
+                using <b>invertible de-tokenizers</b> which remove as many of these tokenization / pre-processing
+                artifacts as possible."</i></p>
+          </div>
+
+          <h3>Canonical prediction unit: the benchmark's official unit</h3>
+          <p>GPT-2 splits text into its own BPE tokens, other models split it into words or characters, so "loss per
+            token" means something different for each model. To compare them, every benchmark fixes one official
+            unit (its <i>canonical</i> unit) and everyone divides by that, whatever their tokenizer does
+            internally.</p>
+          <p>So GPT-2 computes the total log-probability of the whole test set, then divides by the number of
+            canonical units in it:</p>
           <div class="formula">$$\text{average loss} = \frac{-\log p(\text{dataset})}{N}$$</div>
           <dl class="legend">
             <dt>\(N\)</dt>
             <dd>the number of canonical units (words, characters or bytes) in the benchmark</dd>
           </dl>
-          <p>Perplexity is then derived from this normalized loss. Because the denominator is fixed by the benchmark,
-            models with different internal tokenizers can be compared fairly.</p>
+          <p>For example, if a word-level benchmark contains the sentence <code>the cat sat</code>, GPT-2 might spend
+            four BPE tokens on it, but \(N\) is still 3 words. Perplexity is then derived from this per-word loss.
+            Because the denominator is fixed by the benchmark, models with completely different tokenizers can be
+            compared fairly.</p>
 
-          <h3>Why invertible de-tokenizers?</h3>
-          <p>Older benchmarks often ship with artificial preprocessing:</p>
+          <h3>Invertible de-tokenizer: undo the benchmark's preprocessing</h3>
+          <p>Many older benchmarks were tokenized before release, with punctuation and contractions split off by
+            spaces:</p>
           <div class="task">
             <div class="task-name">Tokenized benchmark <em>→ natural text</em></div>
             <div class="seq">
@@ -1862,10 +2021,14 @@ ids = text_bytes
               <span class="tok ex">I don't like it.</span>
             </div>
           </div>
-          <p>GPT-2 was trained on natural web text, so that spacing looks strange to it. An invertible de-tokenizer
-            removes these artifacts while keeping a one-to-one mapping back to the benchmark's format, so likelihood
-            can still be computed correctly. The paper reports roughly <b>2.5 to 5 perplexity points</b> of
-            improvement from this step alone.</p>
+          <p>GPT-2 almost never saw text like that on the web. Some benchmarks even replace rare words with the
+            literal string <code>&lt;UNK&gt;</code>, which appears only 26 times in 40 billion bytes of WebText. The
+            model ends up penalized for not predicting formatting quirks rather than language.</p>
+          <p>A <b>de-tokenizer</b> is a small script that turns the benchmark text back into natural text. It has to
+            be <b>invertible</b>: there must be an exact, one-to-one way back to the original benchmark format. That
+            way GPT-2 reads natural text, but the probability can still be counted against the official benchmark
+            text and its canonical units, so the score stays comparable. The paper calls this a simple form of
+            domain adaptation, and reports <b>2.5 to 5 perplexity points</b> of improvement from it.</p>
 
           <div class="takeaway">
             <strong>Result</strong>
@@ -1880,319 +2043,249 @@ ids = text_bytes
               <dd>How surprised the model is by the real text; lower is better.</dd>
               <dt>Perplexity</dt>
               <dd>Roughly, how many options the model is torn between at each step; lower is better.</dd>
+              <dt>Canonical prediction unit</dt>
+              <dd>The official unit a benchmark divides its loss by (word, character or byte), whatever the model's own tokenizer.</dd>
               <dt>Invertible de-tokenizer</dt>
-              <dd>A script that undoes this odd spacing in a way that can be reversed exactly.</dd>
+              <dd>A script that undoes a benchmark's odd spacing in a way that can be reversed exactly.</dd>
+              <dt>Domain adaptation</dt>
+              <dd>Adjusting for the gap between the kind of data a model was trained on and the kind it is tested on.</dd>
             </dl>
           </div>
         </section>
 
         <!-- 07 ─────────────────────────────────────────── -->
-        <section class="card" id="cbt-lambada">
+        <section class="card" id="benchmarks">
           <span class="sec-num" aria-hidden="true">07</span>
-          <p class="sec-label">Experiments · Cloze tasks</p>
-          <h2>CBT and LAMBADA: filling the blank, near and far</h2>
+          <p class="sec-label">Experiments · Zero-shot results</p>
+          <h2>Insights from benchmarking</h2>
+          <p class="lede">GPT-2 was tested on 8 language-modeling datasets and 5 kinds of downstream task.</p>
 
-          <h3>Children's Book Test</h3>
-          <p>CBT is a multiple-choice cloze task: one word is removed from a passage and the model picks it from ten
-            candidates. Results are reported by word type. The largest GPT-2 reaches about <b>93.3%</b> on common
-            nouns and <b>89.1%</b> on named entities.</p>
-          <p>Before scoring, the authors remove <b>PTB-style tokenization artifacts</b>. PTB is Penn Treebank
-            tokenization, which turns natural text such as <code>I don't know.</code> into <code>I do n't know
-              .</code>. The de-tokenizer restores the natural form before GPT-2 sees it.</p>
-
-          <h3>LAMBADA</h3>
-          <p>LAMBADA asks the model to predict the last word of a passage, where a human can only guess it after
-            reading the wider context. It tests long-range dependencies directly.</p>
-
-          <div class="stats">
-            <div class="stat">
-              <div class="v">8.6</div>
-              <div class="l">perplexity on LAMBADA</div>
+          <h3>Language modeling: how much better than the previous best?</h3>
+          <div class="dv-chart" role="img"
+            aria-label="Reduction in perplexity or bits per character versus the previous best: LAMBADA 91%, WikiText-2 53%, Penn Treebank 23%, text8 9%, enwik8 6%, WikiText-103 4.5% better; One Billion Word 93% worse">
+            <div class="dv-row">
+              <span class="dv-label"><a class="bench-ref" data-bench="lambada" href="#">LAMBADA</a> <span class="dv-metric">PPL 99.8 → 8.63</span></span>
+              <div class="dv-track"><div class="dv-fill pos" style="width:45.7%"></div></div>
+              <span class="dv-val pos">91% better</span>
             </div>
-            <div class="stat">
-              <div class="v">52.66%</div>
-              <div class="l">accuracy, unconstrained</div>
+            <div class="dv-row">
+              <span class="dv-label"><a class="bench-ref" data-bench="wikitext-2" href="#">WikiText-2</a> <span class="dv-metric">PPL 39.14 → 18.34</span></span>
+              <div class="dv-track"><div class="dv-fill pos" style="width:26.6%"></div></div>
+              <span class="dv-val pos">53% better</span>
             </div>
-            <div class="stat">
-              <div class="v">63.24%</div>
-              <div class="l">with a stop-word filter</div>
+            <div class="dv-row">
+              <span class="dv-label"><a class="bench-ref" data-bench="ptb" href="#">Penn Treebank</a> <span class="dv-metric">PPL 46.54 → 35.76</span></span>
+              <div class="dv-track"><div class="dv-fill pos" style="width:11.6%"></div></div>
+              <span class="dv-val pos">23% better</span>
             </div>
-            <div class="stat">
-              <div class="v">~19%</div>
-              <div class="l">of correct answers not in the context</div>
+            <div class="dv-row">
+              <span class="dv-label"><a class="bench-ref" data-bench="text8" href="#">text8</a> <span class="dv-metric">BPC 1.08 → 0.98</span></span>
+              <div class="dv-track"><div class="dv-fill pos" style="width:4.7%"></div></div>
+              <span class="dv-val pos">9% better</span>
+            </div>
+            <div class="dv-row">
+              <span class="dv-label"><a class="bench-ref" data-bench="enwik8" href="#">enwik8</a> <span class="dv-metric">BPB 0.99 → 0.93</span></span>
+              <div class="dv-track"><div class="dv-fill pos" style="width:3.0%"></div></div>
+              <span class="dv-val pos">6% better</span>
+            </div>
+            <div class="dv-row">
+              <span class="dv-label"><a class="bench-ref" data-bench="wikitext-103" href="#">WikiText-103</a> <span class="dv-metric">PPL 18.3 → 17.48</span></span>
+              <div class="dv-track"><div class="dv-fill pos" style="width:2.2%"></div></div>
+              <span class="dv-val pos">4% better</span>
+            </div>
+            <div class="dv-row">
+              <span class="dv-label"><a class="bench-ref" data-bench="1bw" href="#">One Billion Word</a> <span class="dv-metric">PPL 21.8 → 42.16</span></span>
+              <div class="dv-track"><div class="dv-fill neg" style="width:46.7%"></div></div>
+              <span class="dv-val neg">93% worse</span>
             </div>
           </div>
+          <p class="caption">Relative reduction in perplexity (PPL) or bits per character/byte (BPC/BPB) for the
+            1.5B model versus the previous best. Lower raw scores are better on all of these. <b>Gains are largest
+              where earlier models had the least data or the longest context, and negative on One Billion Word.</b>
+          </p>
+          <ul>
+            <li><b>Small datasets gain most.</b> Penn Treebank and WikiText-2 have only 1 to 2 million training
+              tokens, so models trained on them alone had little to learn from. GPT-2 arrives with 40 GB of prior
+              reading.</li>
+            
+            <li><b>One Billion Word goes backwards.</b> Uses destructive preprocessing where sentences are shuffled, which destroys the long-range
+              structure GPT-2 relies on, and it is the largest dataset of the eight.</li>
+          </ul>
 
-          <p>The last number matters. Forcing the model to pick a word that already appears in the passage would
-            throw away valid predictions, so the authors only filter out stop words.</p>
+          <h3>Downstream tasks: GPT-2 zero-shot vs the reference</h3>
+          <div class="pr-key"><span><i style="background:var(--burg)"></i>GPT-2, zero-shot</span><span><i
+                style="background:var(--black)"></i>reference system</span></div>
+          <div class="pr-group">Beats the previous best</div>
+          <div class="pr-chart" role="img"
+            aria-label="GPT-2 versus previous best: CBT common nouns 93.3 vs 85.7, CBT named entities 89.05 vs 82.3, Winograd 70.7 vs 63.7, LAMBADA accuracy 63.24 vs 59.23">
+            <div class="pr-row">
+              <span class="pr-label"><a class="bench-ref" data-bench="cbt" href="#">CBT common nouns</a> <span class="dv-metric">accuracy</span></span>
+              <div class="pr-bars">
+                <div class="pr-line"><div class="pr-bar gpt" style="width:calc((100% - 170px) * 0.933)"></div><span>93.3</span></div>
+                <div class="pr-line"><div class="pr-bar ref" style="width:calc((100% - 170px) * 0.857)"></div><span>85.7 · previous best</span></div>
+              </div>
+            </div>
+            <div class="pr-row">
+              <span class="pr-label"><a class="bench-ref" data-bench="cbt" href="#">CBT named entities</a> <span class="dv-metric">accuracy</span></span>
+              <div class="pr-bars">
+                <div class="pr-line"><div class="pr-bar gpt" style="width:calc((100% - 170px) * 0.8905)"></div><span>89.05</span></div>
+                <div class="pr-line"><div class="pr-bar ref" style="width:calc((100% - 170px) * 0.823)"></div><span>82.3 · previous best</span></div>
+              </div>
+            </div>
+            <div class="pr-row">
+              <span class="pr-label"><a class="bench-ref" data-bench="winograd" href="#">Winograd</a> <span class="dv-metric">accuracy</span></span>
+              <div class="pr-bars">
+                <div class="pr-line"><div class="pr-bar gpt" style="width:calc((100% - 170px) * 0.707)"></div><span>70.7</span></div>
+                <div class="pr-line"><div class="pr-bar ref" style="width:calc((100% - 170px) * 0.637)"></div><span>63.7 · previous best</span></div>
+              </div>
+            </div>
+            <div class="pr-row">
+              <span class="pr-label"><a class="bench-ref" data-bench="lambada" href="#">LAMBADA</a> <span class="dv-metric">accuracy</span></span>
+              <div class="pr-bars">
+                <div class="pr-line"><div class="pr-bar gpt" style="width:calc((100% - 170px) * 0.6324)"></div><span>63.24</span></div>
+                <div class="pr-line"><div class="pr-bar ref" style="width:calc((100% - 170px) * 0.5923)"></div><span>59.23 · previous best</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="pr-group">Far behind supervised or specialist systems</div>
+          <div class="pr-chart" role="img"
+            aria-label="GPT-2 versus reference: CoQA 55 vs 89 human F1, WMT-14 French to English 11.5 vs 33.5 BLEU, CNN/Daily Mail 21.4 vs 32.75 ROUGE, Natural Questions 4.1 vs 30 to 50 percent">
+            <div class="pr-row">
+              <span class="pr-label"><a class="bench-ref" data-bench="coqa" href="#">CoQA</a> <span class="dv-metric">F1</span></span>
+              <div class="pr-bars">
+                <div class="pr-line"><div class="pr-bar gpt" style="width:calc((100% - 170px) * 0.55)"></div><span>55</span></div>
+                <div class="pr-line"><div class="pr-bar ref" style="width:calc((100% - 170px) * 0.89)"></div><span>89 · humans</span></div>
+              </div>
+            </div>
+            <div class="pr-row">
+              <span class="pr-label"><a class="bench-ref" data-bench="wmt14" href="#">WMT-14 Fr→En</a> <span class="dv-metric">BLEU</span></span>
+              <div class="pr-bars">
+                <div class="pr-line"><div class="pr-bar gpt" style="width:calc((100% - 170px) * 0.115)"></div><span>11.5</span></div>
+                <div class="pr-line"><div class="pr-bar ref" style="width:calc((100% - 170px) * 0.335)"></div><span>33.5 · best unsupervised MT</span></div>
+              </div>
+            </div>
+            <div class="pr-row">
+              <span class="pr-label"><a class="bench-ref" data-bench="cnn-dm" href="#">CNN/Daily Mail</a> <span class="dv-metric">ROUGE avg</span></span>
+              <div class="pr-bars">
+                <div class="pr-line"><div class="pr-bar gpt" style="width:calc((100% - 170px) * 0.214)"></div><span>21.4</span></div>
+                <div class="pr-line"><div class="pr-bar ref" style="width:calc((100% - 170px) * 0.3275)"></div><span>32.75 · supervised</span></div>
+              </div>
+            </div>
+            <div class="pr-row">
+              <span class="pr-label"><a class="bench-ref" data-bench="natural-questions" href="#">Natural Questions</a> <span class="dv-metric">exact match</span></span>
+              <div class="pr-bars">
+                <div class="pr-line"><div class="pr-bar gpt" style="width:calc((100% - 170px) * 0.041)"></div><span>4.1</span></div>
+                <div class="pr-line"><div class="pr-bar ref" style="width:calc((100% - 170px) * 0.3)"></div><span>30 · open-domain QA, 30–50</span></div>
+              </div>
+            </div>
+          </div>
+          <p class="caption">All scores on a 0–100 scale, but each task has its own metric, so compare bars within a
+            row, not across rows. <b>The split is the story: tasks that look like next-word prediction are won,
+              tasks that need knowledge or long generation are not.</b></p>
+
+          <h3>Benchmark by benchmark</h3>
+          <div class="bench">
+            <div class="bench-head"><a class="bench-ref" data-bench="lambada" href="#">LAMBADA</a><span class="bench-num">8.63 PPL · 63.24%</span></div>
+            <p class="bench-desc">Predict the last word of a passage, where a human needs the whole passage, not just the last sentence, to guess it.</p>
+            <p class="bench-inf"><span>Inference</span>Perplexity falls from 99.8 to 8.63 and accuracy beats the previous best. GPT-2 really does use long-range context.</p>
+            <p class="bench-why"><span>Why it makes sense</span>Earlier models were trained on LAMBADA's own small novel corpus and struggled to carry information far back. GPT-2 has a 1,024-token window and 40 GB of practice. Unfiltered accuracy is only 52.66% because many wrong guesses were valid continuations of the sentence, not valid <i>final</i> words; a stop-word filter lifts it to 63.24%.</p>
+          </div>
+          <div class="bench">
+            <div class="bench-head"><a class="bench-ref" data-bench="cbt" href="#">Children's Book Test</a><span class="bench-num">93.3% · 89.05%</span></div>
+            <p class="bench-desc">Pick the missing word in a passage from 10 candidates, scored separately for common nouns and named entities.</p>
+            <p class="bench-inf"><span>Inference</span>Beats the previous best on both, with accuracy still climbing as the model grows.</p>
+            <p class="bench-why"><span>Why it makes sense</span>A cloze test is next-word prediction with a multiple-choice sheet, exactly what GPT-2 is trained to do. One test-set book, <i>The Jungle Book</i>, is in WebText, so the paper reports the validation set instead.</p>
+          </div>
+          <div class="bench">
+            <div class="bench-head"><a class="bench-ref" data-bench="winograd" href="#">Winograd Schema Challenge</a><span class="bench-num">70.70%</span></div>
+            <p class="bench-desc">Decide what a pronoun refers to in a sentence that needs commonsense, like which object was "too big" to fit.</p>
+            <p class="bench-inf"><span>Inference</span>About 7 points above the previous best.</p>
+            <p class="bench-why"><span>Why it makes sense</span>Each option can be scored as "which full sentence is more likely?", which is again language modeling. With only 273 examples, a few questions move the score a lot, so treat the margin with care.</p>
+          </div>
+          <div class="bench">
+            <div class="bench-head"><a class="bench-ref" data-bench="coqa" href="#">CoQA</a><span class="bench-num">55 F1</span></div>
+            <p class="bench-desc">Answer a chain of conversational questions about a document.</p>
+            <p class="bench-inf"><span>Inference</span>Matches or beats 3 of 4 baseline systems without any of their 127,000+ training examples, but is far below the ~89 F1 of humans.</p>
+            <p class="bench-why"><span>Why it makes sense</span>The paper notes GPT-2 often leans on simple tricks, such as answering a "who" question with a name from the document. Reading comprehension needs more than surface patterns, so the gap to supervised systems is expected.</p>
+          </div>
+          <div class="bench">
+            <div class="bench-head"><a class="bench-ref" data-bench="cnn-dm" href="#">CNN/Daily Mail</a><span class="bench-num">21.40 ROUGE</span></div>
+            <p class="bench-desc">Summarize a news article; GPT-2 is prompted by adding <code>TL;DR:</code> after it.</p>
+            <p class="bench-inf"><span>Inference</span>Barely beats picking 3 random sentences (20.98) and trails simply copying the first 3 (Lead-3, 31.55). Removing <code>TL;DR:</code> drops it to 15.03.</p>
+            <p class="bench-why"><span>Why it makes sense</span>News puts the key facts first, so Lead-3 is very hard to beat on word overlap. GPT-2 writes freely, often focuses on the end of the article and mixes up details, and ROUGE punishes every word that differs. The 6-point drop without the hint shows the prompt is read as a task.</p>
+          </div>
+          <div class="bench">
+            <div class="bench-head"><a class="bench-ref" data-bench="wmt14" href="#">WMT-14 English–French</a><span class="bench-num">5 / 11.5 BLEU</span></div>
+            <p class="bench-desc">Translate sentences, prompted with example pairs in the form <code>english = french</code>.</p>
+            <p class="bench-inf"><span>Inference</span>English→French is weak at 5 BLEU; French→English reaches 11.5, far behind the best unsupervised system at 33.5.</p>
+            <p class="bench-why"><span>Why it makes sense</span>Only about 10 MB of WebText was French, roughly 0.025% of the corpus. Reading French and writing English uses GPT-2's strong English model; writing French does not. Any translation at all from so little data is the surprise.</p>
+          </div>
+          <div class="bench">
+            <div class="bench-head"><a class="bench-ref" data-bench="natural-questions" href="#">Natural Questions</a><span class="bench-num">4.1% exact match</span></div>
+            <p class="bench-desc">Answer real Google search questions from memory, with no document to read.</p>
+            <p class="bench-inf"><span>Inference</span>Low overall, but 63.1% correct on the 1% of questions it is most confident about, and 5.3× more correct answers than the smallest GPT-2.</p>
+            <p class="bench-why"><span>Why it makes sense</span>Every fact has to be stored in 1.5B parameters. Dedicated open-domain systems that search documents score 30–50%. The smallest model does not even beat the 1.0% of a baseline that returns the most common answer per question type, so knowledge clearly grows with size.</p>
+          </div>
+
+          <!-- <h3>Combined insights</h3>
+          <ol class="recap">
+            <li><b>The closer a task is to next-word prediction, the better GPT-2 does.</b> Cloze tests, LAMBADA and
+              Winograd can all be scored as "which text is more likely?", and GPT-2 beats the state of the art on
+              each. Summarization, translation and QA need something extra, and it trails badly.</li>
+            <li><b>Pretraining matters most where labeled data is scarce.</b> The biggest jumps are on small
+              datasets, and the smallest on datasets with huge training sets of their own.</li>
+            <li><b>Long context is the real upgrade.</b> LAMBADA perplexity falls by 91%, while a benchmark with
+              shuffled sentences gets worse.</li>
+            <li><b>The prompt defines the task.</b> Adding <code>TL;DR:</code> is worth about 6 ROUGE points;
+              <code>english = french</code> pairs turn a language model into a weak translator.</li>
+            <li><b>Overlap metrics are harsh on free generation.</b> ROUGE and BLEU reward matching exact words, so a
+              model that paraphrases or wanders scores low even when the output is fluent.</li>
+            <li><b>Knowledge is present but thin.</b> 4.1% on Natural Questions overall, yet 63.1% on the questions
+              GPT-2 is most sure of. It knows a little, and it partly knows what it knows.</li>
+            <li><b>Bigger is better on every task, and nothing has plateaued.</b> In every experiment the largest
+              model is the best, which is the strongest argument of the paper.</li>
+          </ol> -->
+
+          <!-- <div class="takeaway dark">
+            <strong>The headline</strong>
+            Zero-shot learning is real but uneven. GPT-2 is already state of the art wherever the task is language
+            modeling in disguise, and still a long way from useful wherever the task needs facts, faithful
+            summaries or a second language.
+          </div> -->
+
           <div class="sec-gloss">
             <div class="gloss-label">Glossary</div>
             <dl>
+              <dt>BPC / BPB</dt>
+              <dd>Bits per character / per byte: perplexity's cousin for character-level benchmarks; lower is better.</dd>
               <dt>Cloze task</dt>
               <dd>Fill in the blank.</dd>
-              <dt>Penn Treebank</dt>
-              <dd>A classic, widely used annotated English dataset.</dd>
-            </dl>
-          </div>
-        </section>
-
-        <!-- 08 ─────────────────────────────────────────── -->
-        <section class="card" id="reasoning-qa">
-          <span class="sec-num" aria-hidden="true">08</span>
-          <p class="sec-label">Experiments · Reasoning &amp; reading</p>
-          <h2>Winograd and reading comprehension</h2>
-          <p>On the <b>Winograd Schema Challenge</b>, a test of commonsense pronoun resolution, GPT-2 reaches
-            <b>70.70%</b> accuracy, about seven points above the previous state of the art reported in the paper. The
-            benchmark has only 273 examples, so take the margin with some caution.</p>
-
-          <p>On <b>CoQA</b>, conversational question answering, GPT-2 gets the document, the dialogue history and a
-            final <code>A:</code> as a cue to start answering:</p>
-          <div class="task">
-            <div class="task-name">CoQA prompt <em>zero-shot</em></div>
-            <div class="seq">
-              <span class="tok txt">document</span>
-              <span class="tok txt">Q: … A: …</span>
-              <span class="tok txt">Q: new question</span>
-              <span class="tok sp">A:</span>
-              <span class="to"><b>→</b> generated answer</span>
-            </div>
-          </div>
-          <p>It reaches <b>55 F1</b> without using any of the 127,000+ supervised training examples. That matches or
-            beats 3 of the 4 baseline systems, but it is still far below humans and strong supervised models.</p>
-
-          <h3>What is an extractive, pointer-network style answer?</h3>
-          <p>Instead of generating an answer freely, an extractive QA model predicts where the answer starts and ends
-            inside the passage, like a pointer network:</p>
-          <div class="formula">$$P(\text{start} = i), \qquad P(\text{end} = j)$$</div>
-          <p>For "Marie Curie was born in Warsaw", it can point straight at <code>Warsaw</code>. GPT-2 is generative.
-            It writes the answer token by token and is not limited to copying a span, which is both more flexible and
-            easier to get wrong.</p>
-          <div class="sec-gloss">
-            <div class="gloss-label">Glossary</div>
-            <dl>
               <dt>Pronoun resolution</dt>
               <dd>Working out who or what words like “it” or “they” refer to.</dd>
-              <dt>Extractive QA</dt>
-              <dd>One that can only copy its answer out of the passage.</dd>
-              <dt>Pointer network</dt>
-              <dd>A model that answers by pointing at positions in its input.</dd>
-            </dl>
-          </div>
-        </section>
-
-        <!-- 09 ─────────────────────────────────────────── -->
-        <section class="card" id="summarization">
-          <span class="sec-num" aria-hidden="true">09</span>
-          <p class="sec-label">Experiments · Summarization</p>
-          <h2>A task induced by "TL;DR:"</h2>
-          <p>This is my favorite experiment in the paper. To summarize an article from CNN/Daily Mail, the authors append
-            the string <code>TL;DR:</code>, the internet's own shorthand for "here's the summary".</p>
-
-          <div class="task">
-            <div class="task-name">Summarization prompt <em>top-k sampling, k = 2</em></div>
-            <div class="seq">
-              <span class="tok txt">news article …</span>
-              <span class="tok ex">TL;DR:</span>
-              <span class="to"><b>→</b> 100 generated tokens</span>
-              <span class="to"><b>→</b> first 3 sentences = summary</span>
-            </div>
-          </div>
-
-          <p>Top-k sampling keeps the output focused. The output clearly reads like a summary, but it often focuses on the most recent part of the article or
-            gets details wrong. On ROUGE it only just beats picking three random sentences from the article.</p>
-
-          <div class="bars" role="img"
-            aria-label="Average ROUGE F1: Bottom-Up 32.75, Lead-3 31.55, Seq2Seq + Attention 23.99, GPT-2 with TL;DR 21.40, Random-3 20.98, GPT-2 without hint 15.03">
-            <div class="bar-row">
-              <span class="bar-label">Bottom-Up Summarization</span>
-              <div class="bar-track">
-                <div class="bar-fill" style="width:93.6%">32.75</div>
-              </div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">Lead-3</span>
-              <div class="bar-track">
-                <div class="bar-fill" style="width:90.1%">31.55</div>
-              </div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">Seq2Seq + Attention</span>
-              <div class="bar-track">
-                <div class="bar-fill grey" style="width:68.5%">23.99</div>
-              </div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label"><b>GPT-2 + TL;DR:</b></span>
-              <div class="bar-track">
-                <div class="bar-fill burg" style="width:61.1%">21.40</div>
-              </div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">Random-3</span>
-              <div class="bar-track">
-                <div class="bar-fill grey" style="width:60%">20.98</div>
-              </div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">GPT-2, no hint</span>
-              <div class="bar-track">
-                <div class="bar-fill grey" style="width:42.9%">15.03</div>
-              </div>
-            </div>
-          </div>
-          <p class="caption">Average of ROUGE-1, ROUGE-2 and ROUGE-L F1 on CNN/Daily Mail. Lead-3 and Random-3 are simple baselines. Removing the
-            <b>TL;DR:</b> cue costs about 6.4 points, so the model really is reading the prompt as a task.</p>
-
-          <table>
-            <thead>
-              <tr>
-                <th>System</th>
-                <th>R-1</th>
-                <th>R-2</th>
-                <th>R-L</th>
-                <th>Avg</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Bottom-Up Summarization</td>
-                <td class="num">41.22</td>
-                <td class="num">18.68</td>
-                <td class="num">38.34</td>
-                <td class="num">32.75</td>
-              </tr>
-              <tr>
-                <td>Lead-3</td>
-                <td class="num">40.38</td>
-                <td class="num">17.66</td>
-                <td class="num">36.62</td>
-                <td class="num">31.55</td>
-              </tr>
-              <tr class="hl">
-                <td>GPT-2 + TL;DR:</td>
-                <td>29.34</td>
-                <td>8.27</td>
-                <td>26.58</td>
-                <td>21.40</td>
-              </tr>
-              <tr>
-                <td>GPT-2, no hint</td>
-                <td class="num">21.58</td>
-                <td class="num">4.03</td>
-                <td class="num">19.47</td>
-                <td class="num">15.03</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <h3>What is ROUGE F1?</h3>
-          <p><b>ROUGE-1</b> measures unigram overlap with a reference summary, <b>ROUGE-2</b> bigram overlap, and
-            <b>ROUGE-L</b> the longest common subsequence. F1 balances precision and recall:</p>
-          <div class="formula">$$F_1 = \frac{2PR}{P + R}$$</div>
-          <div class="takeaway note">
-            <strong>Caveat</strong>
-            ROUGE measures word overlap. It does not check whether a summary is factually correct or means the same
-            thing as the reference.
-          </div>
-          <div class="sec-gloss">
-            <div class="gloss-label">Glossary</div>
-            <dl>
-              <dt>CNN/Daily Mail</dt>
-              <dd>A standard dataset of news stories paired with human-written summaries.</dd>
-              <dt>Top-k sampling</dt>
-              <dd>At each step, pick randomly among only the k most likely next tokens; here just the top 2.</dd>
+              <dt>Stop words</dt>
+              <dd>Very common words like “the”, “and” or “of”.</dd>
+              <dt>F1</dt>
+              <dd>A 0 to 100 score of how much the answer's words overlap with the correct answer.</dd>
               <dt>ROUGE</dt>
               <dd>A score of word overlap with a human-written summary.</dd>
               <dt>Lead-3</dt>
-              <dd>Copy the first three sentences.</dd>
-              <dt>Random-3</dt>
-              <dd>Copy three random sentences.</dd>
-              <dt>Longest common subsequence</dt>
-              <dd>The longest run of words appearing in the same order in both, gaps allowed.</dd>
-            </dl>
-          </div>
-        </section>
-
-        <!-- 10 ─────────────────────────────────────────── -->
-        <section class="card" id="translation">
-          <span class="sec-num" aria-hidden="true">10</span>
-          <p class="sec-label">Experiments · Translation</p>
-          <h2>Translation from almost no French</h2>
-          <p>To get GPT-2 to translate, the authors condition it on example pairs in the form <code>english sentence =
-              french sentence</code>, then give it a new English sentence followed by <code>=</code>. Quality is measured with BLEU.</p>
-          <div class="task">
-            <div class="task-name">Translation prompt <em>few example pairs</em></div>
-            <div class="seq">
-              <span class="tok txt">english</span><span class="tok sp">=</span><span class="tok txt">french</span>
-              <span class="tok txt">english</span><span class="tok sp">=</span><span class="tok txt">french</span>
-              <span class="tok">new english</span><span class="tok ex">=</span>
-              <span class="to"><b>→</b> french</span>
-            </div>
-          </div>
-
-          <div class="stages">
-            <div class="stage s1">
-              <span class="tag">English → French</span>
-              <h4>~5 BLEU</h4>
-              <p>Weak. Producing fluent French is hard for a model that has seen very little of it.</p>
-            </div>
-            <div class="stage s2">
-              <span class="tag">French → English</span>
-              <h4>~11.5 BLEU</h4>
-              <p>Much stronger, because GPT-2 is a far better English language model.</p>
-            </div>
-          </div>
-
-          <h3>How little French was there?</h3>
-          <p>A footnote points to <b>CLD2</b> (Compact Language Detector 2), an existing open-source language
-            identifier that uses lightweight statistics over byte and character sequences. The authors used it to
-            estimate that only about <b>10 MB</b> of WebText was French:</p>
-          <div class="formula">$$\frac{10\ \text{MB}}{40{,}000\ \text{MB}} \approx 0.025\%$$</div>
-          <p>So explicit French was a tiny sliver of the corpus, and the model still picked up enough to translate a
-            little.</p>
-          <div class="sec-gloss">
-            <div class="gloss-label">Glossary</div>
-            <dl>
+              <dd>A baseline that copies the first three sentences of the article.</dd>
               <dt>BLEU</dt>
               <dd>A 0 to 100 score of how closely the output matches human translations.</dd>
-            </dl>
-          </div>
-        </section>
-
-        <!-- 11 ─────────────────────────────────────────── -->
-        <section class="card" id="qa">
-          <span class="sec-num" aria-hidden="true">11</span>
-          <p class="sec-label">Experiments · Question answering</p>
-          <h2>Knowledge stored in the parameters</h2>
-          <p>On <b>Natural Questions</b>, GPT-2 is seeded with example question and answer pairs and then asked new
-            factual questions, with no passage to read from. Whatever it answers has to come from its weights.</p>
-          <p>The largest model gets roughly <b>4.1% exact match</b>. That is poor next to dedicated open-domain QA
-            systems, but it is real evidence that facts learned during language modeling can sometimes be pulled
-            straight out of the parameters.</p>
-
-          <div class="takeaway">
-            <strong>The pattern that keeps repeating</strong>
-            The smallest GPT-2 does not even beat a trivial baseline that answers based on question type. The
-            largest one does. Across the paper, capabilities that smaller models barely show start to appear as the
-            model grows.
-          </div>
-          <div class="sec-gloss">
-            <div class="gloss-label">Glossary</div>
-            <dl>
-              <dt>Natural Questions</dt>
-              <dd>Real questions people typed into Google.</dd>
+              <dt>Exact match</dt>
+              <dd>The answer counts only if it matches the correct one exactly.</dd>
               <dt>Open-domain QA</dt>
               <dd>Answering questions on any topic, usually by searching documents first.</dd>
             </dl>
           </div>
         </section>
 
-        <!-- 12 ─────────────────────────────────────────── -->
+        <!-- 08 ─────────────────────────────────────────── -->
         <section class="card" id="contamination">
-          <span class="sec-num" aria-hidden="true">12</span>
+          <span class="sec-num" aria-hidden="true">08</span>
           <p class="sec-label">Generalization vs memorization</p>
           <h2>Did GPT-2 just see the test set?</h2>
-          <p>A zero-shot result means little if the test examples were already in the training data. With 40 GB of
+          <p>A zero-shot result can be contaminated if the test examples were already in the training data. With 40 GB of
             web text, that is a fair worry. The authors check overlap between WebText and public benchmarks using a
             <b>Bloom filter</b> over normalized <b>8-grams</b>.</p>
 
@@ -2232,7 +2325,7 @@ ids = text_bytes
             give false positives, never false negatives.</p>
 
           <h3>How would you build one?</h3>
-          <p>Normalize the training text, cut it into 8-word shingles, hash each shingle into the filter, then query
+          <p>Normalize the training text, cut it into 8-word shingles (overlapping chunks), hash each shingle into the filter, then query
             the evaluation shingles with the same normalization.</p>
           <div class="win">
             <div class="win-bar"><i></i><i></i><i></i><span>minimal concept · python</span></div>
@@ -2261,26 +2354,53 @@ bf = BloomFilter(capacity=<span class="k">10_000_000</span>, error_rate=<span cl
             short enough to still catch copied passages.
           </div>
 
-          <h3>Why are there two rows in Table 6?</h3>
-          <p>They set up two overlap baselines for each benchmark's test set:</p>
-          <table>
+          <h3>Table 6: how much of each test set is already in training data?</h3>
+          <p>For six of the language-modeling benchmarks, the paper cuts every test set into 8-grams and checks what
+            percentage of them also appear in a training set. Each column is a benchmark's test set. Each row is the
+            training set it is checked against: the benchmark's own training split, or WebText.</p>
+          <table class="t6">
             <thead>
               <tr>
-                <th style="width:32%">Row</th>
-                <th>Meaning</th>
+                <th style="width:17%">Checked against</th>
+                <th>PTB</th>
+                <th>WikiText-2</th>
+                <th>enwik8</th>
+                <th>text8</th>
+                <th>WikiText-103</th>
+                <th>1BW</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Dataset train</td>
-                <td>% of test 8-grams also found in that benchmark's own training split</td>
+                <td class="num">2.67%</td>
+                <td class="num">0.66%</td>
+                <td class="num">7.50%</td>
+                <td class="num">2.34%</td>
+                <td class="num">9.09%</td>
+                <td class="num">13.19%</td>
               </tr>
-              <tr>
+              <tr class="hl">
                 <td>WebText train</td>
-                <td>% of test 8-grams also found in GPT-2's WebText training set</td>
+                <td>0.88%</td>
+                <td>1.63%</td>
+                <td>6.31%</td>
+                <td>3.94%</td>
+                <td>2.42%</td>
+                <td>3.75%</td>
               </tr>
             </tbody>
           </table>
+
+          <h3>Why are there two rows in Table 6?</h3>
+          <p>The WebText row on its own is hard to judge. Is 3.94% overlap on text8 a lot? The first row gives the
+            answer by providing a baseline: how much a benchmark's test set already overlaps with <i>its own</i>
+            training split. That overlap is normal and accepted, because test and training splits come from the same
+            source and share common phrases, names and boilerplate.</p>
+          <p>So the real question is whether WebText overlaps with the test sets <i>more</i> than their own training
+            data does. On average it does not: about <b>3.2%</b> for WebText versus <b>5.9%</b> for the benchmarks'
+            own training splits. WebText is higher on only two datasets, WikiText-2 and text8, and even there the
+            overlap is a few percent.</p>
 
           <div class="bars" role="img" aria-label="Average 8-gram overlap: 5.9% with own training split, 3.2% with WebText">
             <div class="bar-row">
@@ -2298,7 +2418,7 @@ bf = BloomFilter(capacity=<span class="k">10_000_000</span>, error_rate=<span cl
           </div>
           <p class="caption">Average overlap with test sets. <b>WebText overlap exists</b>, but it is smaller than the
             overlap already present inside the benchmarks themselves.</p>
-          <div class="sec-gloss">
+          <!-- <div class="sec-gloss">
             <div class="gloss-label">Glossary</div>
             <dl>
               <dt>Bloom filter</dt>
@@ -2308,12 +2428,12 @@ bf = BloomFilter(capacity=<span class="k">10_000_000</span>, error_rate=<span cl
               <dt>Shingles</dt>
               <dd>Overlapping chunks: words 1 to 8, 2 to 9, and so on.</dd>
             </dl>
-          </div>
+          </div> -->
         </section>
 
-        <!-- 13 ─────────────────────────────────────────── -->
-        <section class="card" id="discussion">
-          <span class="sec-num" aria-hidden="true">13</span>
+        <!-- hidden · discussion ─────────────────────────── -->
+        <!-- <section class="card" id="discussion">
+          <span class="sec-num" aria-hidden="true">09</span>
           <p class="sec-label">Discussion</p>
           <h2>What GPT-2 changes conceptually</h2>
           <p>The paper treats unsupervised task learning as something worth studying in its own right. Pretraining
@@ -2372,14 +2492,14 @@ bf = BloomFilter(capacity=<span class="k">10_000_000</span>, error_rate=<span cl
           <p>GPT-1's fine-tuning updates the whole Transformer, not just a small classifier head, and it can keep the
             language-modeling loss as an auxiliary objective during supervised training:</p>
           <div class="formula">$$L = L_{\text{supervised}} + \lambda\, L_{\text{LM}}$$</div>
-        </section>
+        </section> -->
 
-        <!-- 14 ─────────────────────────────────────────── -->
+        <!-- 09 ─────────────────────────────────────────── -->
         <section class="card" id="lessons">
-          <span class="sec-num" aria-hidden="true">14</span>
+          <span class="sec-num" aria-hidden="true">09</span>
           <p class="sec-label">Wrapping up</p>
           <h2>My Learnings</h2>
-          <p>GPT-2's lasting contribution is not just that a 1.5B-parameter Transformer wrote better text. It is the
+          <!-- <p>GPT-2's lasting contribution is not just that a 1.5B-parameter Transformer wrote better text. It is the
             argument that language modeling, given diverse enough data and enough capacity, becomes a general
             task-learning mechanism.</p>
 
@@ -2423,7 +2543,7 @@ bf = BloomFilter(capacity=<span class="k">10_000_000</span>, error_rate=<span cl
               <h4>What came next</h4>
               <p>zero-shot → few-shot → instruction following</p>
             </div>
-          </div>
+          </div> -->
 
           <div class="takeaway dark">
             <strong>The key lesson</strong>
@@ -2469,15 +2589,10 @@ bf = BloomFilter(capacity=<span class="k">10_000_000</span>, error_rate=<span cl
           <li><a href="#webtext">3 · WebText</a></li>
           <li><a href="#tokenization">4 · Byte-level BPE</a></li>
           <li><a href="#model">5 · The model</a></li>
-          <li><a href="#language-modeling">6 · Zero-shot language modeling</a></li>
-          <li><a href="#cbt-lambada">7 · CBT &amp; LAMBADA</a></li>
-          <li><a href="#reasoning-qa">8 · Winograd &amp; CoQA</a></li>
-          <li><a href="#summarization">9 · Summarization</a></li>
-          <li><a href="#translation">10 · Translation</a></li>
-          <li><a href="#qa">11 · Question answering</a></li>
-          <li><a href="#contamination">12 · Generalization vs memorization</a></li>
-          <li><a href="#discussion">13 · Discussion</a></li>
-          <li><a href="#lessons">14 · My Learnings</a></li>
+          <li><a href="#language-modeling">6 · A nuance before benchmarking</a></li>
+          <li><a href="#benchmarks">7 · Insights from benchmarking</a></li>
+          <li><a href="#contamination">8 · Generalization vs memorization</a></li>
+          <li><a href="#lessons">9 · My Learnings</a></li>
         </ul>
       </aside>
     </div>
@@ -2485,6 +2600,18 @@ bf = BloomFilter(capacity=<span class="k">10_000_000</span>, error_rate=<span cl
   </main>
 
   <script>
+    // benchmark links: set BENCHMARKS_PAGE once the benchmarks page is published,
+    // e.g. 'benchmarks.html'. Each link then points to BENCHMARKS_PAGE#<data-bench>.
+    const BENCHMARKS_PAGE = '';
+    document.querySelectorAll('a.bench-ref').forEach(a => {
+      if (BENCHMARKS_PAGE) {
+        a.href = BENCHMARKS_PAGE + '#' + a.dataset.bench;
+      } else {
+        a.title = 'Benchmarks page coming soon';
+        a.addEventListener('click', e => e.preventDefault());
+      }
+    });
+
     // scroll progress + active TOC link
     const prog = document.getElementById('progress');
     const links = [...document.querySelectorAll('.toc-list a')];

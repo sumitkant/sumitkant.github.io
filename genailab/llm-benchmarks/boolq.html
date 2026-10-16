@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="BoolQ — 16k naturally occurring yes/no questions from Google search, each paired with a Wikipedia passage."/>
+  <title>BoolQ — LLM Benchmarks — GenAI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f2efe9; --border: rgba(0,0,0,.08);
+      --text-primary: #1a1a18; --text-secondary: #6b6b65; --text-tertiary: #a8a8a0;
+      --accent: #c85c2a; --font: 'Plus Jakarta Sans', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+      --radius: 18px; --nav-h: 72px; --content-w: 1100px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-primary); font-family: var(--font); -webkit-font-smoothing: antialiased; line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    /* ambient blobs for the glass to refract */
+    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .ambient span { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; mix-blend-mode: multiply; animation: drift 28s ease-in-out infinite alternate; }
+    .ambient .b1 { width: 560px; height: 560px; left: -140px; top: -120px; background: #c7d2fe; }
+    .ambient .b2 { width: 520px; height: 520px; right: -160px; top: 120px; background: #fde68a; animation-delay: -9s; }
+    .ambient .b3 { width: 480px; height: 480px; left: 30%; top: 55%; background: #bae6fd; animation-delay: -17s; }
+    .ambient .b4 { width: 420px; height: 420px; right: 18%; bottom: -160px; background: #fbcfe8; animation-delay: -4s; }
+    @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(40px,30px,0) scale(1.08); } }
+    @media (prefers-reduced-motion: reduce) { .ambient span { animation: none; } }
+    .grain { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    nav { position: sticky; top: 0; z-index: 200; height: var(--nav-h); background: rgba(242,239,233,.72); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-back { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text-secondary); transition: color .15s; }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .page { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+    .glass { background: rgba(255,255,255,.52); border: 1px solid rgba(255,255,255,.75); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 10px 30px -12px rgba(26,26,24,.18); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); border-radius: var(--radius); }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1.3; white-space: nowrap; }
+    .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .chip { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 700; font-family: var(--mono); letter-spacing: .02em; color: #fff; white-space: nowrap; }
+    footer.site { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 1.5rem 2rem 3rem; font-size: 12.5px; color: var(--text-tertiary); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    footer.site a { color: var(--text-secondary); }
+    @media (max-width: 640px) { .page { padding: 0 1rem 4rem; } .nav-inner { padding: 0 1rem; } footer.site { padding: 1.5rem 1rem 3rem; } }
+
+    .hero { padding: 3rem 0 2rem; display: grid; grid-template-columns: 1fr; gap: 18px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .hero-eyebrow .pill { color: var(--c); background: rgba(var(--crgb), .14); }
+    .hero-title { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.05; letter-spacing: -.035em; }
+    .hero-full { font-size: 14px; color: var(--text-tertiary); font-weight: 500; margin-top: 6px; }
+    .hero-sub { font-size: 15.5px; color: var(--text-secondary); line-height: 1.7; max-width: 680px; margin-top: 12px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .badge { display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: var(--text-secondary); }
+    .badge b { color: var(--text-primary); }
+    .badge svg { width: 13px; height: 13px; stroke: var(--c); fill: none; stroke-width: 2.2; }
+    .badge.sota { background: rgba(var(--crgb), .14); border-color: rgba(var(--crgb), .25); color: var(--text-primary); }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 32px; align-items: start; }
+    .toc { position: sticky; top: calc(var(--nav-h) + 20px); padding: 14px 6px 14px 14px; font-size: 12.5px; }
+    .toc .flabel { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
+    .toc a { display: block; padding: 5px 8px; border-radius: 8px; color: var(--text-secondary); border-left: 2px solid transparent; }
+    .toc a:hover { color: var(--text-primary); background: rgba(255,255,255,.5); }
+    .toc a.active { color: var(--c); border-left-color: var(--c); font-weight: 600; }
+    .toc .n { font-family: var(--mono); font-size: 10px; color: var(--text-tertiary); margin-right: 6px; }
+
+    section.card { padding: 26px 28px; margin-bottom: 18px; scroll-margin-top: calc(var(--nav-h) + 16px); }
+    .sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+    .sec-num { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--c); letter-spacing: .08em; }
+    .sec-head h2 { font-size: 21px; font-weight: 800; letter-spacing: -.02em; }
+    .lede { font-size: 13.5px; color: var(--text-secondary); margin: -6px 0 14px; }
+    .prose p { font-size: 15px; line-height: 1.75; color: #2a2a27; margin-bottom: 14px; max-width: 70ch; }
+    .prose p:last-child { margin-bottom: 0; }
+
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 22px; }
+    .fact { padding: 10px 0; border-bottom: 1px dashed rgba(0,0,0,.1); }
+    .fact .k { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 3px; }
+    .fact .v { font-size: 13.5px; line-height: 1.5; }
+    .paper-card { margin-top: 16px; padding: 14px 16px; border-radius: 12px; background: rgba(var(--crgb), .08); border: 1px solid rgba(var(--crgb), .18); display: flex; gap: 14px; align-items: flex-start; }
+    .paper-card svg { width: 18px; height: 18px; stroke: var(--c); fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 3px; }
+    .paper-card .t { font-weight: 700; font-size: 14px; }
+    .paper-card .a { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
+    .paper-card a.l { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--c); }
+
+    .examples { display: grid; gap: 12px; }
+    .ex { padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,.55); border: 1px solid rgba(0,0,0,.06); }
+    .ex .t { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--c); margin-bottom: 8px; }
+    .ex .row { display: grid; grid-template-columns: 120px 1fr; gap: 10px; padding: 5px 0; font-size: 13.5px; line-height: 1.55; }
+    .ex .row .k { font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; padding-top: 3px; }
+    .ex .row .v { white-space: pre-wrap; }
+    .ex .ans { margin-top: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(var(--crgb), .12); font-size: 13px; }
+    .ex .ans b { color: var(--c); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; margin-right: 8px; }
+
+    table.res { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    table.res th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); padding: 8px 10px 8px 0; border-bottom: 1px solid rgba(0,0,0,.12); }
+    table.res td { padding: 11px 10px 11px 0; border-bottom: 1px dashed rgba(0,0,0,.1); vertical-align: top; line-height: 1.5; }
+    table.res td.score { font-weight: 700; font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+    table.res td.note { color: var(--text-secondary); font-size: 12.5px; }
+
+    .sota-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px; }
+    .sota-box { padding: 16px 18px; border-radius: 14px; background: rgba(255,255,255,.55); border: 1px solid rgba(0,0,0,.06); }
+    .sota-box .k { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 6px; }
+    .sota-box .big { font-size: 30px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05; color: var(--c); }
+    .sota-box .big.sm { font-size: 17px; line-height: 1.3; }
+    .sota-box .v { font-size: 14px; font-weight: 600; line-height: 1.4; }
+    .sota-box .s { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .sat { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .sat.yes { background: rgba(16,185,129,.14); color: #047857; }
+    .sat.no { background: rgba(245,158,11,.16); color: #b45309; }
+    .sota-note { margin-top: 14px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+    .sota-note a { color: var(--c); font-weight: 600; }
+
+    .win { margin: 14px 0; border-radius: 12px; overflow: hidden; background: #16161a; border: 1px solid rgba(0,0,0,.25); box-shadow: 0 12px 28px -16px rgba(0,0,0,.5); }
+    .win-bar { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: #202026; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .win-bar i { width: 10px; height: 10px; border-radius: 50%; background: #3a3a44; display: inline-block; }
+    .win-bar i:nth-child(1) { background: #ff5f57; } .win-bar i:nth-child(2) { background: #febc2e; } .win-bar i:nth-child(3) { background: #28c840; }
+    .win-bar span { margin-left: auto; font-family: var(--mono); font-size: 11px; color: #8a8a96; }
+    .win pre { margin: 0; padding: 16px 18px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: #e6e6ea; tab-size: 4; }
+    .win pre .c { color: #7c7c8a; } .win pre .s { color: #a5d6a7; } .win pre .k { color: #c792ea; } .win pre .f { color: #82aaff; } .win pre .n { color: #f78c6c; }
+    .step { font-size: 13.5px; font-weight: 700; margin: 18px 0 2px; display: flex; align-items: center; gap: 8px; }
+    .step .no { width: 20px; height: 20px; border-radius: 6px; background: var(--c); color: #fff; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); }
+    .step-sub { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 4px; }
+
+    ul.plain { list-style: none; display: grid; gap: 8px; }
+    ul.plain li { position: relative; padding-left: 20px; font-size: 14px; line-height: 1.6; color: #2a2a27; }
+    ul.plain li::before { content: ''; position: absolute; left: 0; top: 10px; width: 8px; height: 8px; border-radius: 2px; background: var(--c); transform: rotate(45deg); opacity: .8; }
+    ul.refs li a { color: var(--c); font-weight: 600; }
+    ul.refs li small { display: block; color: var(--text-tertiary); font-family: var(--mono); font-size: 11px; word-break: break-all; }
+
+    .pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }
+    .pager a { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; font-weight: 700; transition: transform .2s; }
+    .pager a:hover { transform: translateY(-2px); }
+    .pager a span { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); }
+    .pager a.next { text-align: right; align-items: flex-end; }
+    .pager a.all { flex: 0 0 auto; align-items: center; justify-content: center; color: var(--text-secondary); font-weight: 600; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { display: none; } .sota-grid { grid-template-columns: 1fr; } .facts { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) { section.card { padding: 20px 16px; } .ex .row { grid-template-columns: 1fr; gap: 2px; } .pager { flex-direction: column; } .pager a.next { align-items: flex-start; text-align: left; } }
+
+    :root { --c: #0ea5e9; --crgb: 14,165,233; }
+    .ambient .b1 { background: #0ea5e9; opacity: .22; }
+  </style>
+</head>
+<body>
+<div class="ambient"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span></div>
+<div class="grain"></div>
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+      <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;"></object>
+    </a>
+    <a href="index.html" class="nav-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>LLM Benchmarks</a>
+  </div>
+</nav>
+<main class="page">
+  <header class="hero">
+    <div>
+      <div class="hero-eyebrow"><a class="pill" href="index.html?cat=rc">Reading Comprehension</a><span class="chip" style="background:#0f766e">GPT-3</span></div>
+      <h1 class="hero-title">BoolQ</h1>
+      <div class="hero-full">Boolean Questions</div>
+      <p class="hero-sub">16k naturally occurring yes/no questions from Google search, each paired with a Wikipedia passage.</p>
+      <div class="hero-meta">
+        <span class="badge glass"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Released <b>May 2019</b></span>
+        <span class="badge glass"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Metric <b>SuperGLUE test accuracy</b></span>
+        <span class="badge glass sota"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>SOTA <b>92.4</b> · ST-MoE-32B (2022)</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div>
+      <section class="card glass" id="glance">
+        <div class="sec-head"><span class="sec-num">01</span><h2>At a glance</h2></div>
+        <div class="facts"><div class="fact"><div class="k">Task</div><div class="v">Binary (yes / no) given a passage</div></div><div class="fact"><div class="k">Size</div><div class="v">9.4k train / 3.3k dev / 3.2k test</div></div><div class="fact"><div class="k">Metric</div><div class="v">Accuracy</div></div><div class="fact"><div class="k">Source</div><div class="v">Real queries issued to Google, passages from Wikipedia; built from the Natural Questions pipeline</div></div><div class="fact"><div class="k">Part of</div><div class="v">SuperGLUE</div></div></div>
+        <div class="paper-card">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <div><div class="t">BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions</div><div class="a">Clark, Lee, Chang, Kwiatkowski, Collins, Toutanova · NAACL 2019</div>
+          <a class="l" href="https://arxiv.org/abs/1905.10044" target="_blank" rel="noopener">Read the paper ↗</a> <a class="l" href="https://huggingface.co/datasets/aps/super_glue" target="_blank" rel="noopener">Hugging Face ↗</a></div>
+        </div>
+      </section>
+
+      <section class="card glass prose" id="what">
+        <div class="sec-head"><span class="sec-num">02</span><h2>What it tests</h2></div>
+        <p>People type a surprising number of yes/no questions into search engines (&#x27;is france the same timezone as the uk&#x27;). BoolQ collects those and pairs each with the Wikipedia paragraph a human used to answer it.</p><p>The questions look trivial but the answers require inference: the passage rarely says &#x27;yes&#x27; or &#x27;no&#x27; explicitly, so the model has to compare what is asked with what is stated, handle hedges, and sometimes do a bit of world knowledge.</p><p>Majority class (yes) is about 62%, which is why early models looked better than they were. GPT-3 few-shot reached 76.4%, well below fine-tuned models.</p>
+      </section>
+
+      <section class="card glass" id="examples">
+        <div class="sec-head"><span class="sec-num">03</span><h2>Examples</h2></div>
+        <p class="lede">Items from the dataset (or representative items where the originals are not freely redistributable).</p>
+        <div class="examples"><div class="ex"><div class="row"><div class="k">Question</div><div class="v">is france the same timezone as the uk</div></div><div class="row"><div class="k">Passage</div><div class="v">At present, daylight saving time (DST) is observed in the United Kingdom from the last Sunday in March to the last Sunday in October… France uses Central European Time (UTC+1)…</div></div><div class="ans"><b>Answer</b>no</div></div><div class="ex"><div class="row"><div class="k">Question</div><div class="v">does ethanol take more energy make that produces</div></div><div class="row"><div class="k">Passage</div><div class="v">All biomass goes through at least some of these steps… the energy balance of ethanol production from corn is positive, about 1.3 units of energy out per unit in…</div></div><div class="ans"><b>Answer</b>no</div></div></div>
+      </section>
+
+      <section class="card glass" id="gpt">
+        <div class="sec-head"><span class="sec-num">04</span><h2>In the GPT papers</h2></div>
+        <p class="lede">How each paper used this benchmark and what it reported. GPT-1 fine-tuned; GPT-2 evaluated zero-shot; GPT-3 evaluated zero-, one- and few-shot with examples in the prompt.</p>
+        <table class="res"><thead><tr><th>Paper</th><th>Setting</th><th>Reported</th><th>Context</th></tr></thead><tbody><tr><td><span class="chip" style="background:#0f766e">GPT-3</span></td><td>Few-shot (32 examples), SuperGLUE</td><td class="score">76.4 acc</td><td class="note">Zero-shot 60.5; fine-tuned SOTA then 91.0</td></tr></tbody></table>
+      </section>
+
+      <section class="card glass" id="sota">
+        <div class="sec-head"><span class="sec-num">05</span><h2>State of the art</h2></div>
+        <div class="sota-grid">
+          <div class="sota-box"><div class="k">Best known · SuperGLUE test accuracy</div><div class="big">92.4</div><span class="sat yes">✓ saturated · at or above human level</span></div>
+          <div class="sota-box"><div class="k">Model</div><div class="v">ST-MoE-32B</div><div class="s">2022</div></div>
+          <div class="sota-box"><div class="k">Human baseline</div><div class="v">89.0</div></div>
+        </div>
+        <p class="sota-note">PaLM 540B fine-tuned 91.9. Source: <a href="https://arxiv.org/abs/2212.01853" target="_blank" rel="noopener">arxiv.org ↗</a> · checked October 2026.</p>
+      </section>
+
+      <section class="card glass" id="quickstart">
+        <div class="sec-head"><span class="sec-num">06</span><h2>Quickstart</h2></div>
+        <p class="lede">Load the benchmark and score a Hugging Face causal LM on it in a few lines.</p>
+        <div class="step"><span class="no">1</span>Install</div>
+<div class="win"><div class="win-bar"><i></i><i></i><i></i><span>shell</span></div><pre>pip install -U datasets transformers evaluate lm-eval sacrebleu rouge-score scikit-learn</pre></div>
+<div class="step"><span class="no">2</span>Load the data</div>
+<p class="step-sub">question, passage, label (0 no · 1 yes). Also available as `google/boolq` with boolean `answer`.</p>
+<div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python · load</span></div><pre><span class="k">from</span> datasets <span class="k">import</span> load_dataset
+
+ds = load_dataset(<span class="s">&quot;aps/super_glue&quot;</span>, <span class="s">&quot;boolq&quot;</span>, split=<span class="s">&quot;validation&quot;</span>)
+<span class="k">print</span>(ds)            <span class="c"># columns: question, passage, label (0 no · 1 yes)</span>
+<span class="k">print</span>(ds[0])</pre></div>
+<div class="step"><span class="no">3</span>Score a model</div>
+<p class="step-sub">Two helpers cover every benchmark in this collection: <code>loglik</code> for anything multiple-choice (score each option, pick the highest) and <code>generate</code> for anything free-form. Swap <code>MODEL</code> for whatever you are evaluating.</p>
+<div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python · helpers</span></div><pre><span class="k">import</span> torch
+<span class="k">from</span> transformers <span class="k">import</span> AutoTokenizer, AutoModelForCausalLM
+
+MODEL = <span class="s">&quot;gpt2&quot;</span>                                   <span class="c"># <span class="k">or</span> <span class="s">&quot;Qwen/Qwen2.5-1.5B&quot;</span>, <span class="s">&quot;meta-llama/Llama-3.2-1B&quot;</span>, …</span>
+tok = AutoTokenizer.from_pretrained(MODEL); model = AutoModelForCausalLM.from_pretrained(MODEL, torch_dtype=torch.bfloat16).eval().to(<span class="s">&quot;cuda&quot;</span>)
+
+@torch.no_grad()
+<span class="k">def</span> loglik(context, continuation):
+    <span class="s">&quot;&quot;</span><span class="s">&quot;Sum of log-probs of `continuation` tokens given `context` — the standard multiple-choice scorer.&quot;</span><span class="s">&quot;&quot;</span>
+    ids = tok(context + continuation, return_tensors=<span class="s">&quot;pt&quot;</span>).input_ids.to(model.device)
+    n_ctx = len(tok(context).input_ids)
+    logp = model(ids).logits.log_softmax(-1)[0, :-1]
+    <span class="k">return</span> logp.gather(1, ids[0, 1:, <span class="k">None</span>])[n_ctx - 1:].sum().item()
+
+@torch.no_grad()
+<span class="k">def</span> generate(prompt, max_new_tokens=32, stop=<span class="k">None</span>):
+    ids = tok(prompt, return_tensors=<span class="s">&quot;pt&quot;</span>).input_ids.to(model.device)
+    out = model.generate(ids, max_new_tokens=max_new_tokens, do_sample=<span class="k">False</span>, pad_token_id=tok.eos_token_id)
+    text = tok.decode(out[0, ids.shape[1]:], skip_special_tokens=<span class="k">True</span>)
+    <span class="k">return</span> text.split(stop)[0] <span class="k">if</span> stop <span class="k">else</span> text</pre></div>
+<div class="win"><div class="win-bar"><i></i><i></i><i></i><span>python · evaluate</span></div><pre><span class="k">def</span> prompt(ex): <span class="k">return</span> f<span class="s">&quot;{ex[&<span class="c">#x27;passage&#x27;]}\nQuestion: {ex[&#x27;question&#x27;]}?\nAnswer:&quot;</span></span>
+acc = sum(int((loglik(prompt(ex), <span class="s">&quot; yes&quot;</span>) &gt; loglik(prompt(ex), <span class="s">&quot; no&quot;</span>)) == bool(ex[<span class="s">&quot;label&quot;</span>])) <span class="k">for</span> ex <span class="k">in</span> ds) / len(ds)
+<span class="k">print</span>(<span class="s">&quot;accuracy&quot;</span>, acc)</pre></div>
+<div class="step"><span class="no">4</span>Or use lm-evaluation-harness</div>
+<p class="step-sub">Task name(s): <code>boolq</code>. The harness reproduces the GPT-3 prompt formats and reports the standard metric.</p>
+<div class="win"><div class="win-bar"><i></i><i></i><i></i><span>shell</span></div><pre>lm_eval --model hf --model_args pretrained=gpt2,dtype=bfloat16 \
+        --tasks boolq --num_fewshot 0 --batch_size auto --output_path results/</pre></div>
+      </section>
+
+      <section class="card glass" id="pitfalls">
+        <div class="sec-head"><span class="sec-num">07</span><h2>Pitfalls</h2></div>
+        <ul class="plain"><li>Always compare to the 62% majority baseline.</li><li>Questions are lower-case and un-punctuated search queries; do not &#x27;clean&#x27; them, that is the task.</li><li>lm-eval scores log P(&#x27;yes&#x27;) vs log P(&#x27;no&#x27;) after the passage; a chat-style prompt can shift results by several points.</li></ul>
+      </section>
+
+      <section class="card glass" id="refs">
+        <div class="sec-head"><span class="sec-num">08</span><h2>References</h2></div>
+        <ul class="plain refs"><li><a href="https://arxiv.org/abs/1905.10044" target="_blank" rel="noopener">Paper (arXiv 1905.10044)</a><small>https://arxiv.org/abs/1905.10044</small></li><li><a href="https://github.com/google-research-datasets/boolean-questions" target="_blank" rel="noopener">GitHub</a><small>https://github.com/google-research-datasets/boolean-questions</small></li><li><a href="https://huggingface.co/datasets/aps/super_glue" target="_blank" rel="noopener">Hugging Face (super_glue/boolq)</a><small>https://huggingface.co/datasets/aps/super_glue</small></li></ul>
+      </section>
+
+      <nav class="pager">
+        <a class="glass prev" href="snli.html"><span>← Previous</span>SNLI</a>
+        <a class="glass all" href="index.html">All benchmarks</a>
+        <a class="glass next" href="coqa.html"><span>Next →</span>CoQA</a>
+      </nav>
+    </div>
+    <aside class="toc glass"><span class="flabel">On this page</span><a href="#glance"><span class="n">01</span>At a glance</a><a href="#what"><span class="n">02</span>What it tests</a><a href="#examples"><span class="n">03</span>Examples</a><a href="#gpt"><span class="n">04</span>In the GPT papers</a><a href="#sota"><span class="n">05</span>State of the art</a><a href="#quickstart"><span class="n">06</span>Quickstart</a><a href="#pitfalls"><span class="n">07</span>Pitfalls</a><a href="#refs"><span class="n">08</span>References</a></aside>
+  </div>
+</main>
+<footer class="site">
+  <span>Sumit Kant · GenAI Lab · LLM Benchmarks · last updated October 2026</span>
+  <span><a href="../../genai-lab.html">GenAI Lab</a> · <a href="../../blog.html">Blog</a></span>
+</footer>
+<script>
+(function() {
+  const links = Array.from(document.querySelectorAll('.toc a'));
+  const secs = links.map(a => document.querySelector(a.getAttribute('href')));
+  function update() {
+    const y = window.scrollY + 160; let idx = 0;
+    secs.forEach((s, i) => { if (s && s.offsetTop <= y) idx = i; });
+    links.forEach((l, j) => l.classList.toggle('active', idx === j));
+  }
+  window.addEventListener('scroll', update, { passive: true }); update();
+})();
+</script>
+</body>
+</html>
