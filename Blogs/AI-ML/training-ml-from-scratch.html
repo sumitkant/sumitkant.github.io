@@ -5,6 +5,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>If you were to train from scratch, Karpathy style (v2)</title>
+  <meta name="description" content="Train a model by hand: forward pass, loss, your own gradient computation, and the five-line training loop. It was simpler than it looked.">
+  <link rel="canonical" href="https://sumitkant.github.io/Blogs/AI-ML/training-ml-from-scratch.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sumit Kant">
+  <meta property="og:url" content="https://sumitkant.github.io/Blogs/AI-ML/training-ml-from-scratch.html">
+  <meta property="og:title" content="Training ML from scratch, Karpathy style">
+  <meta property="og:description" content="Train a model by hand: forward pass, loss, your own gradient computation, and the five-line training loop. It was simpler than it looked.">
+  <meta property="og:image" content="https://sumitkant.github.io/images/Blogs/20.TrainingMLFromScratch/training-og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Glass diagram of a training loop: inputs flow through neural network layers to an output, with a falling loss curve and an optimizer step feeding back, on a dark bronze background">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Training ML from scratch, Karpathy style">
+  <meta name="twitter:description" content="Train a model by hand: forward pass, loss, your own gradient computation, and the five-line training loop. It was simpler than it looked.">
+  <meta name="twitter:image" content="https://sumitkant.github.io/images/Blogs/20.TrainingMLFromScratch/training-og.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -139,14 +154,12 @@
       overflow: hidden;
       border: 1px solid var(--rule);
       padding: 96px 46px 88px;
-      /* Remote hero. Swap for a local copy (e.g. ../../images/hero.jpg) if you
-         would rather not depend on the Unsplash CDN. */
       background-color: var(--ink-2);
-      background-image: url("https://images.unsplash.com/photo-1769356814886-abdadde25ea7?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+      background-image: url("../../images/Blogs/20.TrainingMLFromScratch/training-banner.jpg");
       background-size: cover;
       /* --hero-x is the framing knob. LOWER slides the photo right, higher
          slides it left. 50% is dead centre. */
-      --hero-x: 32%;
+      --hero-x: 50%;
       background-position: var(--hero-x) center;
       background-repeat: no-repeat;
     }

@@ -5,6 +5,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Attention in Transformers</title>
+  <meta name="description" content="Behind-the-scenes math for attention in transformers: queries, keys and values, the attention matrix, and a PyTorch implementation checked by hand.">
+  <link rel="canonical" href="https://sumitkant.github.io/Blogs/AI-ML/attention-in-transformers.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sumit Kant">
+  <meta property="og:url" content="https://sumitkant.github.io/Blogs/AI-ML/attention-in-transformers.html">
+  <meta property="og:title" content="Attention in Transformers: From Equation to PyTorch, Checked by Hand">
+  <meta property="og:description" content="Behind-the-scenes math for attention in transformers: queries, keys and values, the attention matrix, and a PyTorch implementation checked by hand.">
+  <meta property="og:image" content="https://sumitkant.github.io/images/Blogs/21.AttentionInTransformers/attention-og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Glass diagram of attention: input tokens split into query, key and value cards that feed an attention matrix and produce output tokens, on a blue and orange background">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Attention in Transformers: From Equation to PyTorch, Checked by Hand">
+  <meta name="twitter:description" content="Behind-the-scenes math for attention in transformers: queries, keys and values, the attention matrix, and a PyTorch implementation checked by hand.">
+  <meta name="twitter:image" content="https://sumitkant.github.io/images/Blogs/21.AttentionInTransformers/attention-og.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -223,6 +238,8 @@
       width: 100%;
       height: 100%;
       display: block;
+      object-fit: cover;
+      object-position: center right;
     }
 
     .banner-scrim {
@@ -902,49 +919,8 @@
   <main class="page" id="top">
 
     <div class="post-banner">
-      <svg class="banner-bg" viewBox="0 0 1200 380" preserveAspectRatio="xMidYMid slice"
-        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="1200" height="380" fill="#EBF2FC" />
-        <g opacity=".6">
-          <!-- faint grid -->
-          <g fill="none" stroke="#C4D5F0" stroke-width="1">
-            <rect x="560" y="52" width="286" height="286" />
-            <path d="M586 52v286M612 52v286M638 52v286M664 52v286M690 52v286M716 52v286M742 52v286M768 52v286M794 52v286M820 52v286" />
-            <path d="M560 78h286M560 104h286M560 130h286M560 156h286M560 182h286M560 208h286M560 234h286M560 260h286M560 286h286M560 312h286" />
-          </g>
-          <!-- attention heat cells inside the grid -->
-          <g fill="#1D5BD6">
-            <rect x="586" y="78" width="26" height="26" opacity=".34" />
-            <rect x="612" y="104" width="26" height="26" opacity=".18" />
-            <rect x="664" y="130" width="26" height="26" opacity=".26" />
-            <rect x="690" y="182" width="26" height="26" opacity=".14" />
-            <rect x="742" y="156" width="26" height="26" opacity=".30" />
-            <rect x="768" y="234" width="26" height="26" opacity=".20" />
-            <rect x="716" y="286" width="26" height="26" opacity=".26" />
-          </g>
-          <rect x="638" y="182" width="26" height="26" fill="#DD6A12" opacity=".8" />
-          <rect x="638" y="182" width="26" height="26" fill="none" stroke="#DD6A12" stroke-width="2.5" />
-        </g>
-        <!-- token chips + attention arcs -->
-        <g>
-          <g font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="16">
-            <rect x="880" y="256" width="86" height="42" rx="10" fill="#FFFFFF" stroke="#1D5BD6" stroke-width="1.6" />
-            <text x="923" y="283" text-anchor="middle" fill="#16233A">draw</text>
-            <rect x="994" y="256" width="60" height="42" rx="10" fill="#FFFFFF" stroke="#1D5BD6" stroke-width="1.6" />
-            <text x="1024" y="283" text-anchor="middle" fill="#16233A">a</text>
-            <rect x="1082" y="256" width="88" height="42" rx="10" fill="#FFFFFF" stroke="#1D5BD6" stroke-width="1.6" />
-            <text x="1126" y="283" text-anchor="middle" fill="#16233A">map</text>
-          </g>
-          <g fill="none" stroke-linecap="round">
-            <path d="M923 252 Q 973 168 1024 252" stroke="#1D5BD6" stroke-width="5" opacity=".72" />
-            <path d="M923 246 Q 1024 108 1126 246" stroke="#1D5BD6" stroke-width="2.2" opacity=".38" />
-            <path d="M1024 252 Q 1075 184 1126 252" stroke="#DD6A12" stroke-width="4" opacity=".8" />
-          </g>
-          <circle cx="923" cy="252" r="4" fill="#1D5BD6" />
-          <circle cx="1024" cy="252" r="4" fill="#1D5BD6" />
-          <circle cx="1126" cy="252" r="4" fill="#DD6A12" />
-        </g>
-      </svg>
+      <img class="banner-bg" src="../../images/Blogs/21.AttentionInTransformers/attention-banner.jpg"
+        alt="" aria-hidden="true">
       <div class="banner-scrim"></div>
       <div class="banner-grid">
         <div class="banner-inner">
