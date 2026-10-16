@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="A close reading of the GPT-2 paper, Language Models are Unsupervised Multitask Learners: WebText, byte-level BPE, the model, the zero-shot experiments and the memorization analysis.">
+  <title>GPT-2: When Next-Token Prediction Becomes Multitask Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Fira+Code:wght@300..700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
+  <style>
+    /* ── GPT-2 palette (light · burgundy + black) ── */
+    :root {
+      --paper: #FFFFFF;
+      --card: #FFFFFF;
+      --card-2: #F9F5F6;
+      --ink: #141414;
+      --ink-dim: #5E5859;
+      --burg: #7A1530;
+      /* burgundy accent */
+      --burg-deep: #560E22;
+      --burg-soft: #F6E9ED;
+      --burg-line: #E8C9D2;
+      --burg-light: #E38AA3;
+      /* burgundy on black */
+      --black: #141414;
+      /* black accent */
+      --black-soft: #EFEDED;
+      --rule: #E9E1E3;
+      --code-bg: #161616;
+      --code-bar: #0C0C0C;
+      --code-text: #F1EEEE;
+      --code-dim: #A09A9A;
+
+      --font: "Google Sans Flex", system-ui, sans-serif;
+      --mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --nav-h: 72px;
+      --content-w: 1200px;
+      --prose-w: 800px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100%
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--font);
+      font-weight: 380;
+      font-optical-sizing: auto;
+      font-variation-settings: "slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 0;
+      font-size: 16px;
+      line-height: 1.72;
+      letter-spacing: -.003em;
+      /* ── static white dot paper ── */
+      background-color: var(--paper);
+      background-image: radial-gradient(circle, rgba(20, 20, 20, .20) 1px, transparent 1.2px);
+      background-size: 24px 24px;
+      background-position: 0 0;
+      background-attachment: fixed;
+      background-repeat: repeat;
+    }
+
+    a {
+      color: var(--burg)
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: var(--font)
+    }
+
+    h2 {
+      font-weight: 760;
+      font-size: clamp(23px, 3.4vw, 30px);
+      letter-spacing: -.022em;
+      line-height: 1.2;
+      margin: 0 0 10px
+    }
+
+    h3 {
+      font-weight: 720;
+      font-size: 16px;
+      letter-spacing: -.005em;
+      margin: 32px 0 8px;
+      color: var(--burg)
+    }
+
+    p {
+      margin: 0 0 18px
+    }
+
+    ul,
+    ol {
+      padding-left: 20px
+    }
+
+    li {
+      margin-bottom: 8px
+    }
+
+    b {
+      font-weight: 650;
+      color: var(--burg-deep)
+    }
+
+    code {
+      font-family: var(--font);
+      font-size: .9em;
+      font-weight: 520;
+      color: var(--burg-deep);
+      background: var(--burg-soft);
+      padding: 1px 6px;
+      border-radius: 5px;
+    }
+
+    /* ── nav ── */
+    #progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--black), var(--burg));
+      z-index: 200;
+      transition: width .08s linear
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--rule);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px)
+    }
+
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink)
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    .nav-links li {
+      margin: 0
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color 0.15s
+    }
+
+    .nav-links a:hover {
+      color: var(--burg)
+    }
+
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 5rem
+    }
+
+    /* ── banner ── */
+    .post-banner {
+      margin: 3rem 0 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background-color: #120507;
+      border: 1px solid #2A1015;
+      padding: 58px 46px 54px;
+      min-height: 360px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 18px 44px rgba(20, 20, 20, .18);
+      background-image: var(--banner-img);
+      background-size: cover;
+      background-position: 70% center
+    }
+
+    .banner-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(100deg,
+          rgba(12, 4, 6, .94) 0%,
+          rgba(12, 4, 6, .86) 34%,
+          rgba(12, 4, 6, .45) 58%,
+          rgba(12, 4, 6, 0) 80%)
+    }
+
+    .banner-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 58%
+    }
+
+    .banner-eyebrow {
+      font-weight: 650;
+      font-size: .78rem;
+      letter-spacing: .20em;
+      text-transform: uppercase;
+      color: #CDBFC2;
+      margin: 0 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .banner-eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--burg-light);
+      display: inline-block
+    }
+
+    .banner-title {
+      font-weight: 820;
+      font-size: clamp(2.1rem, 5vw, 3.1rem);
+      line-height: 1.06;
+      letter-spacing: -.03em;
+      margin: 0 0 20px;
+      color: #FFFFFF
+    }
+
+    .banner-title .accent {
+      color: var(--burg-light)
+    }
+
+    .banner-sub {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #DCD2D4;
+      max-width: 60ch;
+      margin: 0
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 1.25rem 0
+    }
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--rule);
+      font-size: 12px;
+      color: var(--ink-dim);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      background: var(--card)
+    }
+
+    .meta-tag.accent-tag {
+      background: var(--burg);
+      color: #fff;
+      border-color: transparent
+    }
+
+    .meta-tag.dark-tag {
+      background: var(--black);
+      color: #fff;
+      border-color: transparent
+    }
+
+    /* ── layout + TOC ── */
+    .post-layout {
+      display: grid;
+      grid-template-columns: var(--prose-w) minmax(0, 240px);
+      justify-content: space-between;
+      gap: 0 2.5rem;
+      align-items: start;
+      padding-top: .5rem
+    }
+
+    .post-prose {
+      min-width: 0
+    }
+
+    .post-toc {
+      position: sticky;
+      top: calc(var(--nav-h) + 1.5rem);
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      margin-top: 26px;
+      box-shadow: 0 10px 26px rgba(20, 20, 20, .07)
+    }
+
+    .toc-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      font-weight: 720;
+      margin-bottom: 12px
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin: 0;
+      padding: 0
+    }
+
+    .toc-list li {
+      margin: 0
+    }
+
+    .toc-list a {
+      font-size: 12.5px;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color 0.15s;
+      display: block;
+      line-height: 1.4
+    }
+
+    .toc-list a:hover,
+    .toc-list a.active {
+      color: var(--burg)
+    }
+
+    .toc-list a.active {
+      font-weight: 650
+    }
+
+    /* ── each section is a rounded rectangle floating over the dots ── */
+    section.card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px 30px;
+      margin: 26px 0;
+      scroll-margin-top: calc(var(--nav-h) + 1rem);
+      box-shadow: 0 18px 40px rgba(20, 20, 20, .08)
+    }
+
+    section.card>.sec-label,
+    section.card>h2 {
+      padding-right: 62px
+    }
+
+    .sec-label {
+      font-weight: 720;
+      font-size: 10.5px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      line-height: 1.7;
+      color: var(--ink-dim);
+      margin: 0 0 8px
+    }
+
+    .lede {
+      font-size: 18px;
+      color: var(--ink-dim);
+      margin-bottom: 22px
+    }
+
+    /* ── per-section glossary ── */
+    .sec-gloss {
+      margin: 26px 0 0;
+      padding-top: 14px;
+      border-top: 1px dashed var(--rule)
+    }
+
+    .gloss-label {
+      font-weight: 720;
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 8px
+    }
+
+    .sec-gloss dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 5px 16px;
+      margin: 0;
+      font-size: 12.5px;
+      line-height: 1.5
+    }
+
+    .sec-gloss dt {
+      font-weight: 700;
+      color: var(--burg)
+    }
+
+    .sec-gloss dd {
+      margin: 0;
+      color: #8E8789
+    }
+
+    /* ── code windows ── */
+    .win {
+      margin: 22px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid #2A2A2A;
+      background: var(--code-bg);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .28)
+    }
+
+    .win-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--code-bar);
+      border-bottom: 1px solid #000
+    }
+
+    .win-bar i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: block
+    }
+
+    .win-bar i:nth-child(1) {
+      background: #B3204A
+    }
+
+    .win-bar i:nth-child(2) {
+      background: #E3A6B7
+    }
+
+    .win-bar i:nth-child(3) {
+      background: #6E6A6A
+    }
+
+    .win-bar span {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--code-dim);
+      margin-left: 8px;
+      letter-spacing: .03em
+    }
+
+    .win pre {
+      margin: 0;
+      background: transparent;
+      border: 0;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.75;
+      padding: 16px 18px;
+      color: var(--code-text);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      overflow-x: hidden
+    }
+
+    pre .c {
+      color: #8C8585;
+      font-style: italic
+    }
+
+    pre .k {
+      color: #E77D98
+    }
+
+    pre .s {
+      color: #F2C3CF
+    }
+
+    .win.out {
+      background: var(--card-2);
+      border-color: var(--rule);
+      box-shadow: none
+    }
+
+    .win.out .win-bar {
+      background: #F1EBEC;
+      border-bottom: 1px solid var(--rule)
+    }
+
+    .win.out .win-bar span {
+      color: var(--ink-dim)
+    }
+
+    .win.out pre {
+      color: var(--ink)
+    }
+
+    /* ── tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-family: var(--font);
+      font-size: 13.5px;
+      margin: 22px 0
+    }
+
+    th,
+    td {
+      overflow-wrap: anywhere
+    }
+
+    th {
+      text-align: left;
+      font-weight: 700;
+      color: var(--burg);
+      border-bottom: 1px solid var(--rule);
+      padding: 8px 10px;
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #F1EAEC;
+      color: var(--ink-dim);
+      vertical-align: top
+    }
+
+    td:first-child {
+      color: var(--ink)
+    }
+
+    td.num {
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+      font-weight: 600
+    }
+
+    tr.hl td {
+      background: var(--burg-soft);
+      color: var(--burg-deep);
+      font-weight: 650
+    }
+
+    /* ── callouts ── */
+    .takeaway {
+      background: var(--burg-soft);
+      border: 1px solid var(--burg-line);
+      border-radius: var(--radius-md);
+      padding: 15px 18px;
+      margin: 24px 0;
+      font-size: 16px
+    }
+
+    .takeaway strong {
+      font-weight: 720;
+      color: var(--burg);
+      display: block;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 5px
+    }
+
+    .takeaway>:last-child {
+      margin-bottom: 0
+    }
+
+    .takeaway p {
+      margin-bottom: 10px
+    }
+
+    .takeaway.dark {
+      background: var(--black);
+      border-color: var(--black);
+      color: #EDEAEA
+    }
+
+    .takeaway.dark strong {
+      color: var(--burg-light)
+    }
+
+    .takeaway.dark b {
+      color: #fff
+    }
+
+    .takeaway.dark code {
+      background: #2A2223;
+      color: #F2C3CF
+    }
+
+    .takeaway.note {
+      background: var(--black-soft);
+      border-color: #DEDADA
+    }
+
+    .takeaway.note strong {
+      color: var(--ink)
+    }
+
+    .caption {
+      font-size: 13.5px;
+      color: var(--ink-dim);
+      line-height: 1.55;
+      margin: 12px 2px 26px
+    }
+
+    .caption b {
+      color: var(--burg);
+      font-weight: 650
+    }
+
+    .big-idea {
+      font-weight: 740;
+      font-size: clamp(17px, 2.4vw, 21px);
+      line-height: 1.35;
+      letter-spacing: -.015em;
+      text-align: center;
+      color: var(--ink);
+      border-top: 2px solid var(--black);
+      border-bottom: 2px solid var(--black);
+      padding: 18px 10px;
+      margin: 26px 0
+    }
+
+    .big-idea .r {
+      color: var(--burg)
+    }
+
+    /* ── figures ── */
+    .figwrap {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--card-2);
+      border: 1px solid var(--rule);
+      margin: 22px 0 0;
+      padding: 12px
+    }
+
+    .figwrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: var(--radius-sm)
+    }
+
+    .figwrap svg text {
+      font-family: var(--font)
+    }
+
+    /* ── formula (rendered by KaTeX) ── */
+    .formula {
+      text-align: center;
+      margin: 26px 0;
+      font-size: 18.5px;
+      color: var(--ink);
+      overflow-x: auto;
+      overflow-y: hidden
+    }
+
+    .takeaway .formula {
+      margin: 14px 0;
+      font-size: 17px
+    }
+
+    /* ── symbol legend ── */
+    .legend {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 6px 16px;
+      margin: 0 0 22px;
+      font-size: 15px
+    }
+
+    .legend dt {
+      color: var(--burg);
+      font-weight: 600
+    }
+
+    .legend dd {
+      margin: 0;
+      color: var(--ink-dim)
+    }
+
+    /* ── stage cards ── */
+    .stages {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 22px 0
+    }
+
+    .stages.three {
+      grid-template-columns: repeat(3, 1fr)
+    }
+
+    .stage {
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      border: 1px solid var(--rule);
+      background: var(--card-2)
+    }
+
+    .stage.s1 {
+      background: var(--black);
+      border-color: var(--black);
+      color: #E8E4E4
+    }
+
+    .stage.s2 {
+      background: var(--burg);
+      border-color: var(--burg);
+      color: #FBEFF2
+    }
+
+    .stage .tag {
+      font-weight: 720;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .75;
+      display: block;
+      margin-bottom: 6px
+    }
+
+    .stage h4 {
+      font-size: 18px;
+      font-weight: 740;
+      margin: 0 0 6px;
+      color: #fff;
+      letter-spacing: -.01em
+    }
+
+    .stage.s3 h4 {
+      color: var(--ink)
+    }
+
+    .stage.s3 .tag {
+      color: var(--ink-dim)
+    }
+
+    .stage p {
+      margin: 0;
+      font-size: 14.5px;
+      line-height: 1.55
+    }
+
+    .stage.s3 p {
+      color: var(--ink-dim)
+    }
+
+    .stage code {
+      background: rgba(255, 255, 255, .14);
+      color: #fff
+    }
+
+    .stage.s3 code {
+      background: var(--burg-soft);
+      color: var(--burg-deep)
+    }
+
+    /* ── token sequences (prompts) ── */
+    .task {
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      padding: 14px 16px;
+      margin: 12px 0
+    }
+
+    .task-name {
+      font-weight: 720;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 9px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .task-name em {
+      font-style: normal;
+      color: var(--burg);
+      letter-spacing: .06em
+    }
+
+    .seq {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 0
+    }
+
+    .tok {
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 7px;
+      border: 1.5px solid var(--ink);
+      background: #fff;
+      color: var(--ink);
+      white-space: nowrap
+    }
+
+    .tok.sp {
+      background: var(--black);
+      color: #fff;
+      border-color: var(--black)
+    }
+
+    .tok.ex {
+      background: var(--burg);
+      color: #fff;
+      border-color: var(--burg)
+    }
+
+    .tok.txt {
+      border-style: dashed;
+      color: var(--ink-dim)
+    }
+
+    .seq .to {
+      color: var(--ink-dim);
+      font-size: 13px;
+      white-space: nowrap
+    }
+
+    .seq .to b {
+      color: var(--burg)
+    }
+
+    /* ── bar chart ── */
+    .bars {
+      margin: 22px 0 6px
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(0, 210px) 1fr;
+      gap: 12px;
+      align-items: center;
+      margin: 10px 0
+    }
+
+    .bar-label {
+      font-size: 14px;
+      line-height: 1.35;
+      color: var(--ink)
+    }
+
+    .bar-track {
+      position: relative;
+      height: 28px;
+      background: var(--black-soft);
+      border-radius: 6px;
+      overflow: hidden
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--black);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 9px;
+      color: #fff;
+      font-weight: 720;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums
+    }
+
+    .bar-fill.burg {
+      background: var(--burg)
+    }
+
+    .bar-fill.grey {
+      background: #8A8484
+    }
+
+    /* ── pipeline flow with numbers ── */
+    .flow {
+      display: flex;
+      align-items: stretch;
+      margin: 22px 0 0;
+      padding: 14px;
+      background: var(--card-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md)
+    }
+
+    .flow-step {
+      flex: 1 1 0;
+      min-width: 0;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 12px 14px
+    }
+
+    .flow-step .v {
+      font-weight: 820;
+      font-size: 22px;
+      letter-spacing: -.02em;
+      line-height: 1.1;
+      color: var(--burg);
+      font-variant-numeric: tabular-nums
+    }
+
+    .flow-step .t {
+      font-weight: 700;
+      font-size: 13.5px;
+      line-height: 1.3;
+      color: var(--ink);
+      margin-top: 8px
+    }
+
+    .flow-step .d {
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: var(--ink-dim);
+      margin-top: 2px
+    }
+
+    .flow-step.end {
+      background: var(--black);
+      border-color: var(--black)
+    }
+
+    .flow-step.end .v {
+      color: var(--burg-light)
+    }
+
+    .flow-step.end .t {
+      color: #fff
+    }
+
+    .flow-step.end .d {
+      color: #CFC6C8
+    }
+
+    .flow-arrow {
+      flex: none;
+      width: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-dim)
+    }
+
+    /* ── stat strip ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 22px 0
+    }
+
+    .stat {
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      background: var(--card-2)
+    }
+
+    .stat .v {
+      font-weight: 820;
+      font-size: 24px;
+      letter-spacing: -.02em;
+      color: var(--burg);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums
+    }
+
+    .stat .l {
+      font-size: 12.5px;
+      color: var(--ink-dim);
+      line-height: 1.35;
+      margin-top: 4px
+    }
+
+    /* ── numbered recap ── */
+    .recap {
+      counter-reset: r;
+      list-style: none;
+      padding: 0;
+      margin: 18px 0
+    }
+
+    .recap li {
+      counter-increment: r;
+      position: relative;
+      padding: 12px 0 12px 46px;
+      border-bottom: 1px solid var(--rule);
+      margin: 0
+    }
+
+    .recap li:last-child {
+      border-bottom: 0
+    }
+
+    .recap li::before {
+      content: counter(r, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: 11px;
+      font-weight: 820;
+      font-size: 18px;
+      color: var(--burg)
+    }
+
+    /* ── related post tile ── */
+    .item.post-card {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      background: var(--card-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      margin: 20px 0 6px;
+      transition: transform .18s ease, box-shadow .18s ease
+    }
+
+    .item.post-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 42px rgba(20, 20, 20, .14)
+    }
+
+    .post-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    .post-body {
+      padding: 20px 24px
+    }
+
+    .post-tags {
+      font-weight: 650;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 8px
+    }
+
+    .post-tags .p {
+      color: var(--burg);
+      font-weight: 720
+    }
+
+    .post-title {
+      font-weight: 740;
+      font-size: 17px;
+      line-height: 1.28;
+      letter-spacing: -.015em;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 7px;
+      transition: color .15s
+    }
+
+    .item.post-card:hover .post-title {
+      color: var(--burg)
+    }
+
+    .post-desc {
+      font-size: 14px;
+      color: var(--ink-dim);
+      margin: 0;
+      line-height: 1.55
+    }
+
+    /* ── section number, top right ── */
+    .sec-num {
+      position: absolute;
+      top: 24px;
+      right: 30px;
+      font-weight: 820;
+      font-size: 30px;
+      letter-spacing: -.03em;
+      line-height: 1;
+      color: var(--burg);
+      opacity: .22;
+      pointer-events: none;
+      user-select: none
+    }
+
+    /* ── footer ── */
+    footer.card {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px;
+      margin: 26px 0 0;
+      color: var(--ink-dim);
+      font-size: 15px;
+      box-shadow: 0 18px 40px rgba(20, 20, 20, .08)
+    }
+
+    .credit {
+      margin: 0;
+      font-size: 14px
+    }
+
+    @media (max-width:900px) {
+      .post-layout {
+        grid-template-columns: 1fr
+      }
+
+      .post-toc {
+        display: none
+      }
+
+      .banner-inner {
+        max-width: 72%
+      }
+    }
+
+    @media (max-width:720px) {
+      .nav-links {
+        display: none
+      }
+
+      .page {
+        padding: 0 1rem 4rem
+      }
+
+      .nav-inner {
+        padding: 0 1rem
+      }
+
+      .post-banner {
+        padding: 34px 22px;
+        min-height: 260px
+      }
+
+      .banner-scrim {
+        background: rgba(12, 4, 6, .78)
+      }
+
+      .banner-inner {
+        max-width: 100%
+      }
+
+      .sec-num {
+        top: 18px;
+        right: 20px;
+        font-size: 24px
+      }
+
+      section.card,
+      footer.card {
+        padding: 26px 20px
+      }
+
+      .item.post-card {
+        grid-template-columns: 1fr
+      }
+
+      .post-thumb {
+        height: 160px
+      }
+
+      .stages,
+      .stages.three {
+        grid-template-columns: 1fr
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .flow {
+        flex-direction: column
+      }
+
+      .flow-arrow {
+        width: auto;
+        height: 22px
+      }
+
+      .flow-arrow svg {
+        transform: rotate(90deg)
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+        gap: 4px
+      }
+
+      .formula {
+        font-size: 16px
+      }
+
+      .legend {
+        font-size: 14px
+      }
+
+      .sec-gloss dl {
+        grid-template-columns: 1fr;
+        gap: 0
+      }
+
+      .sec-gloss dd {
+        margin-bottom: 7px
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        transition: none !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="progress"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60"
+          style="display:block;  pointer-events:none; filter:brightness(0) saturate(0);"></object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../../blog.html" class="active">Blog</a></li>
+        <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page" id="top">
+
+    <div class="post-banner"
+      style="--banner-img:url('../../images/Blogs/17.GPT2Paper/gpt2-banner.png')">
+      <div class="banner-scrim"></div>
+      <div class="banner-inner">
+        <p class="banner-eyebrow">Paper Notes · Radford et al., 2019</p>
+        <h1 class="banner-title">GPT-2: When Next-Token Prediction Becomes <span class="accent">Multitask
+            Learning</span></h1>
+        <p class="banner-sub">GPT-1 needed a fine-tuning run for every task. A year later, OpenAI asked a bolder
+          question: if a language model is big enough and reads enough of the web, does it still need the
+          fine-tuning at all?</p>
+      </div>
+    </div>
+
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">GPT-2</span>
+      <span class="meta-tag dark-tag">Paper Notes</span>
+      <span class="meta-tag">Transformers</span>
+      <span class="meta-tag">Zero-shot</span>
+      <span class="meta-tag">Language Modeling</span>
+    </div>
+
+    <div class="post-layout">
+      <div class="post-prose">
+
+        <!-- 01 ─────────────────────────────────────────── -->
+        <section class="card" id="big-idea">
+          <span class="sec-num" aria-hidden="true">01</span>
+          <p class="sec-label">The takeaway first</p>
+          <h2>TL;DR</h2>
+          <p class="lede">GPT-1 showed that pretraining (training on large number of books) a language model and then fine-tuning it works across many tasks. GPT-2 asks whether a much larger model, trained on a much broader corpus, can begin to do those
+            tasks <i>without any task-specific fine-tuning</i>.</p>
+
+          <div class="stages">
+            <div class="stage s1">
+              <span class="tag">GPT-1 · 2018</span>
+              <h4>Pretrain → fine-tune → High Performing Outcome</h4>
+              <p>Generative Pre Training of language model on diverse unlabeled text improves performance of fine-tuned models on task specific functions</p>
+            </div>
+            <div class="stage s2">
+              <span class="tag">GPT-2 · 2019</span>
+              <h4>Pretrain → High Performing Outcome</h4>
+              <p>Natural Langauge Processing tasks can be learned without any explicit supervision during the pre-training stage using large amount of data from web</p>
+            </div>
+          </div>
+
+          <div class="figwrap" role="img"
+            aria-label="Diagram showing WebText flowing into a decoder-only Transformer and emerging into multiple zero-shot tasks">
+            <svg viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#141414" />
+                  <stop offset="1" stop-color="#7A1530" />
+                </linearGradient>
+                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="12" stdDeviation="18" flood-opacity=".14" />
+                </filter>
+              </defs>
+              <rect x="0" y="0" width="1200" height="520" rx="20" fill="#FFFFFF" />
+              <g filter="url(#shadow)">
+                <rect x="70" y="150" width="260" height="210" rx="22" fill="#FFFFFF" stroke="#E9E1E3" />
+                <text x="200" y="205" text-anchor="middle" font-size="29" font-weight="760"
+                  fill="#141414">WebText</text>
+                <text x="200" y="245" text-anchor="middle" font-size="18" fill="#5E5859">8M+ documents</text>
+                <text x="200" y="278" text-anchor="middle" font-size="18" fill="#5E5859">~40 GB text</text>
+                <text x="200" y="311" text-anchor="middle" font-size="18" fill="#5E5859">Reddit-linked web
+                  pages</text>
+              </g>
+              <path d="M335 255 C390 255, 410 255, 455 255" fill="none" stroke="#141414" stroke-width="7"
+                stroke-linecap="round" />
+              <polygon points="452,244 475,255 452,266" fill="#141414" />
+              <g filter="url(#shadow)">
+                <rect x="480" y="105" width="265" height="300" rx="26" fill="url(#g1)" />
+                <text x="612" y="165" text-anchor="middle" font-size="31" font-weight="780"
+                  fill="#FFFFFF">GPT-2</text>
+                <text x="612" y="205" text-anchor="middle" font-size="18" fill="#F3E4E8">Decoder-only
+                  Transformer</text>
+                <g fill="none" stroke="#FFFFFF" stroke-opacity=".68" stroke-width="2">
+                  <rect x="530" y="235" width="165" height="30" rx="8" />
+                  <rect x="530" y="278" width="165" height="30" rx="8" />
+                  <rect x="530" y="321" width="165" height="30" rx="8" />
+                </g>
+                <text x="612" y="384" text-anchor="middle" font-size="16" fill="#F3E4E8">next-token
+                  prediction</text>
+              </g>
+              <path d="M750 255 C805 255, 820 255, 855 255" fill="none" stroke="#7A1530" stroke-width="7"
+                stroke-linecap="round" />
+              <polygon points="852,244 875,255 852,266" fill="#7A1530" />
+              <g>
+                <rect x="880" y="82" width="245" height="65" rx="16" fill="#FFFFFF" stroke="#E9E1E3" />
+                <rect x="880" y="166" width="245" height="65" rx="16" fill="#FFFFFF" stroke="#E9E1E3" />
+                <rect x="880" y="250" width="245" height="65" rx="16" fill="#FFFFFF" stroke="#E9E1E3" />
+                <rect x="880" y="334" width="245" height="65" rx="16" fill="#FFFFFF" stroke="#E9E1E3" />
+                <rect x="880" y="82" width="6" height="65" fill="#7A1530" />
+                <rect x="880" y="166" width="6" height="65" fill="#7A1530" />
+                <rect x="880" y="250" width="6" height="65" fill="#7A1530" />
+                <rect x="880" y="334" width="6" height="65" fill="#7A1530" />
+                <text x="1005" y="122" text-anchor="middle" font-size="20" font-weight="650"
+                  fill="#141414">Language modeling</text>
+                <text x="1005" y="206" text-anchor="middle" font-size="20" font-weight="650"
+                  fill="#141414">Question answering</text>
+                <text x="1005" y="290" text-anchor="middle" font-size="20" font-weight="650"
+                  fill="#141414">Summarization</text>
+                <text x="1005" y="374" text-anchor="middle" font-size="20" font-weight="650"
+                  fill="#141414">Translation</text>
+              </g>
+            </svg>
+          </div>
+          <p class="caption">The paper's central bet: <b>broad web text + next-token prediction + scale</b> can produce
+            useful zero-shot behavior on tasks the model was never trained for.</p>
+
+          <div class="big-idea">Don't train a model for each task.<br><span class="r">Train one model on enough text
+              that the tasks are already in it.</span></div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="v">1.5B</div>
+              <div class="l">parameters in the largest model</div>
+            </div>
+            <div class="stat">
+              <div class="v">7 / 8</div>
+              <div class="l">LM benchmarks at zero-shot state of the art</div>
+            </div>
+            <div class="stat">
+              <div class="v">~40 GB</div>
+              <div class="l">of web text in WebText</div>
+            </div>
+            <div class="stat">
+              <div class="v">0</div>
+              <div class="l">task-specific fine-tuning runs</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 02 ─────────────────────────────────────────── -->
+        <section class="card" id="introduction">
+          <span class="sec-num" aria-hidden="true">02</span>
+          <p class="sec-label">Motivation</p>
+          <h2>From narrow task models to one general language model</h2>
+          <p>NLP systems of the time were built around one labeled dataset and one objective. They did very well on
+            test sets drawn from the same distribution, and broke easily outside it. The authors call these systems
+            "narrow experts", and they are clear about where they think the brittleness comes from:</p>
+
+          <div class="takeaway note">
+            <quote>
+            "Our suspicion is that the prevalence of single task training on single domain datasets is a major
+              contributor to the lack of generalization observed in current systems."
+            </quote>
+          </div>
+
+          <p>If narrow training is what hurts generalization, the fix is to train broadly. GPT-2 starts from that ambition: one
+            model should learn enough about language that many tasks can be expressed directly through text, with no
+            dedicated finetuning.</p>
+          <p>The key observation is that the internet already contains natural demonstrations of many tasks:
+            translation pairs, questions and answers, summaries, definitions and explanations. A model trained only to
+            predict the next token still benefits from learning these patterns, because doing so lowers its loss. A
+            single-task system only learns to map an input to an output. A general system also has to know
+            <i>which task</i> it is being asked to do, and GPT-2's bet is that the task can simply be described in
+            text.</p>
+
+          <!-- <div class="takeaway">
+            <strong>GPT-2's wager</strong>
+            The task itself can be written in natural language. A translation request is just
+            <code>translate to french, english text, french text</code>. If the model has seen enough text shaped
+            like that, it should be able to continue it.
+          </div> -->
+
+          <h3>GLUE vs DecaNLP</h3>
+          <p>The paper positions itself against two multitask benchmarks of the time.</p>
+          <div class="stages">
+            <div class="stage s3">
+              <span class="tag">Benchmark suite</span>
+              <h4>GLUE</h4>
+              <p>A shared set of language-understanding tasks such as entailment, paraphrase detection, acceptability
+                and similarity. Each task keeps its own native format.</p>
+            </div>
+            <div class="stage s3">
+              <span class="tag">Unified format</span>
+              <h4>DecaNLP</h4>
+              <p>Goes further by casting ten different NLP tasks into one question-answering, text-to-text
+                interface.</p>
+            </div>
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Entailment</dt>
+              <dd>Does sentence A imply sentence B?</dd>
+              <dt>Paraphrase detection</dt>
+              <dd>Do two sentences mean the same thing?</dd>
+              <dt>Acceptability</dt>
+              <dd>Is this sentence grammatical?</dd>
+              <dt>Similarity</dt>
+              <dd>How close in meaning are two sentences?</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 03 ─────────────────────────────────────────── -->
+        <section class="card" id="webtext">
+          <span class="sec-num" aria-hidden="true">03</span>
+          <p class="sec-label">Training data</p>
+          <h2>WebText: a deliberately broad corpus</h2>
+          <p>GPT-1 read 7000 books. For GPT-2 the authors went ahead with web pages which contains long contiguous text across domains. They built <b>WebText</b>, a new corpus: the pages behind outbound
+            Reddit links that received at least <b>3 karma</b>. Reddit votes act as a rough human quality filter.
+            Links that people chose to share and upvote are more likely to hold useful or interesting text. Wikipedia was removed on purpose to avoid overlapping with evaluation datasets.</p>
+
+          <div class="flow" role="img" aria-label="WebText pipeline: Reddit outbound links collected until December 2017, about 45 million links with at least 3 karma, over 8 million cleaned documents, about 40 GB of WebText">
+            <div class="flow-step">
+              <div class="v">Dec 2017</div>
+              <div class="t">Reddit outbound links</div>
+              <div class="d">collected up to this cutoff</div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 14 10" width="14" height="10"><path d="M1 5H12M8 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="flow-step">
+              <div class="v">~45M</div>
+              <div class="t">Links with ≥ 3 karma</div>
+              <div class="d">a human quality filter</div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 14 10" width="14" height="10"><path d="M1 5H12M8 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="flow-step">
+              <div class="v">8M+</div>
+              <div class="t">Documents</div>
+              <div class="d">extracted, deduplicated, Wikipedia removed</div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 14 10" width="14" height="10"><path d="M1 5H12M8 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="flow-step end">
+              <div class="v">~40 GB</div>
+              <div class="t">WebText</div>
+              <div class="d">of cleaned text <br> (~ 5KB per document)</div>
+            </div>
+          </div>
+          <p class="caption">WebText uses <b>social curation as a filter</b>, then keeps the text behind those
+            links.</p>
+
+          <h3>Cleaning text with <code>Dragnet</code> and <code>Newspaper</code> </h3>
+          <p>They are web page content extractors. <a href="https://github.com/dragnet-org/dragnet">Dragnet</a> extracts article main content and <a href="https://github.com/codelucas/newspaper">Newspaper</a> also helps with article text along with metadata.</p>
+
+          <!-- <div class="takeaway note">
+            <strong>Back-of-the-envelope: average document size</strong>
+            <div class="formula">$$\frac{40\ \text{GB}}{8{,}000{,}000\ \text{docs}} \approx 5\ \text{KB per
+              document}$$</div>
+            This is only an average. Some pages are tiny and some are much longer, and the 40 GB refers to cleaned
+            text, not the original HTML.
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Karma</dt>
+              <dd>Reddit's net upvote score.</dd>
+            </dl>
+          </div> -->
+        </section>
+
+        <!-- 04 ─────────────────────────────────────────── -->
+        <section class="card" id="tokenization">
+          <span class="sec-num" aria-hidden="true">04</span>
+          <p class="sec-label">Input representation</p>
+          <h2>Why GPT-2 moved to byte-level BPE</h2>
+          <p>A general language model should be able to assign a probability to <i>any</i> string. And the NLP techniques often used preprocessing steps like lowercasing and stemming, restricting the space of modelable strings. Playing with UNICODE representation of characters was an elegant way to handle this as it contains ~150K characters and can represent any language. However, character level encoding is inefficient. Modeling raw bytes avoids the problem, since
+            every Unicode string can be encoded with only <b>256 possible byte values</b>, but byte sequences are long
+            and slow to model.</p>
+          <p>GPT-2 uses <b>byte-level BPE</b> to get both. It starts from bytes, then learns merges that combine
+            frequently co-occurring byte sequences into larger tokens. Every string can still be encoded, and common
+            words still end up as single tokens. The resulting vocabulary has <b>50,257 tokens</b>.</p>
+
+          <h3>Step 1 · characters → Unicode code points</h3>
+          <p>Take a small string with plain English, punctuation and an emoji, and look up each character's code
+            point with <code>ord</code>:</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>code points · python</span></div>
+            <pre>text = <span class="s">"Hello World!😀"</span>
+dict((c, ord(c)) <span class="k">for</span> c <span class="k">in</span> text)</pre>
+          </div>
+          <div class="win out">
+            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+            <pre>{'H': 72, 'e': 101, 'l': 108, 'o': 111, ' ': 32, 'W': 87,
+ 'r': 114, 'd': 100, '!': 33, '😀': 128512}</pre>
+          </div>
+          <p>English letters sit below 128, but the emoji is code point <b>128,512</b>. A model that used code points
+            directly would need a slot for every one of them, and Unicode is huge:</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>size of unicode · python 3.13</span></div>
+            <pre><span class="k">import</span> sys, unicodedata
+
+sys.maxunicode + <span class="k">1</span>   <span class="c"># every possible code point</span>
+
+<span class="c"># characters actually assigned (not unassigned, private-use or surrogates)</span>
+sum(unicodedata.category(chr(i)) <span class="k">not in</span> (<span class="s">"Cn"</span>, <span class="s">"Co"</span>, <span class="s">"Cs"</span>)
+    <span class="k">for</span> i <span class="k">in</span> range(sys.maxunicode + <span class="k">1</span>))</pre>
+          </div>
+          <div class="win out">
+            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+            <pre>1114112
+149878</pre>
+          </div>
+          <p>That is a base vocabulary of roughly <b>150,000</b> symbols before a single merge is learned, and most of
+            them appear so rarely that the model could never learn good embeddings for them.</p>
+
+          <h3>Step 2 · code points → UTF-8 bytes</h3>
+          <p>Now encode the same string as UTF-8 and look at the raw bytes:</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>bytes · python</span></div>
+            <pre>text.encode(<span class="s">'utf-8'</span>)
+text_bytes = list(text.encode(<span class="s">'utf-8'</span>))
+text_bytes
+dict((c, chr(c)) <span class="k">for</span> c <span class="k">in</span> text_bytes)</pre>
+          </div>
+          <div class="win out">
+            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+            <pre>b'Hello World!\xf0\x9f\x98\x80'
+
+[72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33, 240, 159, 152, 128]
+
+{72: 'H', 101: 'e', 108: 'l', 111: 'o', 32: ' ', 87: 'W', 114: 'r',
+ 100: 'd', 33: '!', 240: 'ð', 159: '\x9f', 152: '\x98', 128: '\x80'}</pre>
+          </div>
+          <p>Three things to notice:</p>
+          <ul>
+            <li>The English characters map to <b>one byte each</b>, with the same numbers as their code points.</li>
+            <li>The emoji becomes <b>four bytes</b>: <code>240 159 152 128</code>. So 13 characters turn into 16
+              bytes.</li>
+            <li>On their own, those four bytes are meaningless (<code>chr(240)</code> is <code>'ð'</code>). They only
+              mean 😀 when read together.</li>
+          </ul>
+
+          <div class="stages">
+            <div class="stage s1">
+              <span class="tag">Unicode code points</span>
+              <h4>1,114,112 slots</h4>
+              <p>~150K assigned characters. A huge base vocabulary, most of it rare.</p>
+            </div>
+            <div class="stage s2">
+              <span class="tag">UTF-8 bytes</span>
+              <h4>256 values</h4>
+              <p>Every value from 0 to 255. Any string in any language fits, so nothing is ever unknown.</p>
+            </div>
+          </div>
+
+          <h3>Step 3 · BPE merges bytes back into useful chunks</h3>
+          <p>Bytes solve coverage but make sequences longer. BPE fixes that. It counts every adjacent pair of symbols
+            in the training data, merges the most frequent pair into a new symbol with the next free ID (256, 257,
+            …), and repeats. Here are four merges applied to our example:</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>bpe merges · python</span></div>
+            <pre><span class="k">def</span> merge(ids, pair, new_id):
+    out, i = [], <span class="k">0</span>
+    <span class="k">while</span> i &lt; len(ids):
+        <span class="k">if</span> i &lt; len(ids) - <span class="k">1</span> <span class="k">and</span> (ids[i], ids[i+<span class="k">1</span>]) == pair:
+            out.append(new_id); i += <span class="k">2</span>
+        <span class="k">else</span>:
+            out.append(ids[i]); i += <span class="k">1</span>
+    <span class="k">return</span> out
+
+<span class="c"># pretend these were the most frequent pairs in a large corpus</span>
+merges = [(<span class="k">108</span>, <span class="k">108</span>), (<span class="k">240</span>, <span class="k">159</span>), (<span class="k">257</span>, <span class="k">152</span>), (<span class="k">258</span>, <span class="k">128</span>)]
+
+ids = text_bytes
+<span class="k">for</span> new_id, pair <span class="k">in</span> enumerate(merges, start=<span class="k">256</span>):
+    ids = merge(ids, pair, new_id)
+    print(new_id, pair, len(ids), ids)</pre>
+          </div>
+          <div class="win out">
+            <div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+            <pre>256 (108, 108) 15 [72, 101, 256, 111, 32, 87, 111, 114, 108, 100, 33, 240, 159, 152, 128]
+257 (240, 159) 14 [72, 101, 256, 111, 32, 87, 111, 114, 108, 100, 33, 257, 152, 128]
+258 (257, 152) 13 [72, 101, 256, 111, 32, 87, 111, 114, 108, 100, 33, 258, 128]
+259 (258, 128) 12 [72, 101, 256, 111, 32, 87, 111, 114, 108, 100, 33, 259]</pre>
+          </div>
+          <p>Merge 256 turns <code>"ll"</code> into one token. Merges 257 to 259 glue the four emoji bytes back
+            together, so 😀 is a single token again (ID 259). The sequence shrinks from 16 to 12 symbols, and the
+            vocabulary only grows by the merges we choose to keep.</p>
+          <p>In a 13-character string every pair appears once, so the merges above are picked by hand. On 40 GB of
+            WebText the counts are real, and the frequent pairs are things like common word pieces, spaces before
+            words, and popular emoji. GPT-2 keeps <b>50,000 merges</b>, which is where its vocabulary size comes
+            from:</p>
+          <div class="formula">$$256\ \text{bytes} + 50{,}000\ \text{merges} + 1\ \text{end-of-text token} =
+            50{,}257\ \text{tokens}$$</div>
+          <p>One tweak from the paper: BPE is <b>not allowed to merge across character categories</b>, so letters
+            don't fuse with punctuation. Without this, the vocabulary fills up with variants like <code>dog.</code>,
+            <code>dog!</code> and <code>dog?</code>. Spaces are the exception, which is why many GPT-2 tokens include a
+            leading space.</p>
+
+          <h3>How GPT-1 did it: spaCy, then character-level BPE</h3>
+          <p>GPT-1 took a more traditional route. It cleaned BooksCorpus with the <b>ftfy</b> library, then ran the
+            <b>spaCy tokenizer</b> to split the text into words and punctuation (for example
+            <code>Hello World!</code> → <code>Hello</code> · <code>World</code> · <code>!</code>). BPE with
+            <b>40,000 merges</b> was then learned on top of those words, starting from characters rather than
+            bytes.</p>
+          <p>That works well for clean English books, but the base alphabet is whatever characters showed up in
+            training. A character it never saw has no symbol at all. Starting from bytes removes that failure mode
+            and also drops the dependence on a language-specific pre-tokenizer like spaCy.</p>
+
+          <h3>GPT-1 vs GPT-2 encoding</h3>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:24%">Aspect</th>
+                <th style="width:34%">GPT-1</th>
+                <th>GPT-2</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tokenization</td>
+                <td><b>Standard BPE over text / Unicode characters</b></td>
+                <td><b>Byte-level BPE</b></td>
+              </tr>
+              <tr>
+                <td>Base symbols</td>
+                <td>characters / subwords</td>
+                <td><b>256 byte values</b></td>
+              </tr>
+              <tr>
+                <td>Unknown characters</td>
+                <td>can be problematic, depends on vocabulary coverage</td>
+                <td>essentially <b>no OOV problem</b></td>
+              </tr>
+              <tr>
+                <td>Vocabulary</td>
+                <td>~40K tokens</td>
+                <td><b>50,257 tokens</b></td>
+              </tr>
+              <tr>
+                <td>Unicode handling</td>
+                <td>less universal</td>
+                <td>robust to arbitrary Unicode text</td>
+              </tr>
+              <tr>
+                <td>Spaces</td>
+                <td>handled more conventionally</td>
+                <td>spaces become part of tokenization behavior, often visible as special byte-mapped symbols
+                  internally</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Unknown token</dt>
+              <dd>A catch-all placeholder that throws the real word away.</dd>
+              <dt>BPE</dt>
+              <dd>Byte Pair Encoding: repeatedly glue together the pair of symbols that appears most often, until common chunks become single units.</dd>
+              <dt>Unicode code point</dt>
+              <dd>The official number Unicode gives each character.</dd>
+              <dt>UTF-8</dt>
+              <dd>The most common way to write characters as bytes.</dd>
+              <dt>OOV</dt>
+              <dd>Out-of-vocabulary: text the tokenizer cannot represent.</dd>
+              <dt>Merge</dt>
+              <dd>One BPE step: replace every occurrence of a frequent pair of symbols with a single new symbol.</dd>
+              <dt>spaCy</dt>
+              <dd>A popular open-source NLP library. Its tokenizer splits text into words and punctuation.</dd>
+              <dt>ftfy</dt>
+              <dd>"Fixes text for you": a library that repairs broken Unicode and normalizes punctuation.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 05 ─────────────────────────────────────────── -->
+        <section class="card" id="model">
+          <span class="sec-num" aria-hidden="true">05</span>
+          <p class="sec-label">Architecture</p>
+          <h2>GPT-1's architecture, scaled and stabilized</h2>
+          <p>There is no new architecture here. GPT-2 keeps the decoder-only Transformer from GPT-1 and makes a few
+            changes:</p>
+          <ul>
+            <li><b>Layer norm</b> <b>moves</b> to the input of each sub-block, and one extra layer norm is added after the
+              final block.</li>
+            <li><b>Initialization changes</b> to stay stable as the stack gets deeper.</li>
+            <li><b>The context window doubles</b> from 512 to 1,024 tokens.</li>
+            <li><b>Batch size grows</b> to 512.</li>
+          </ul>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Layers</th>
+                <th>Heads</th>
+                <th>d<sub>model</sub></th>
+                <th>Released size</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GPT-2 Small</td>
+                <td class="num">12</td>
+                <td class="num">12</td>
+                <td class="num">768</td>
+                <td class="num">124M</td>
+              </tr>
+              <tr>
+                <td>GPT-2 Medium</td>
+                <td class="num">24</td>
+                <td class="num">16</td>
+                <td class="num">1024</td>
+                <td class="num">355M</td>
+              </tr>
+              <tr>
+                <td>GPT-2 Large</td>
+                <td class="num">36</td>
+                <td class="num">20</td>
+                <td class="num">1280</td>
+                <td class="num">774M</td>
+              </tr>
+              <tr class="hl">
+                <td>GPT-2 XL</td>
+                <td>48</td>
+                <td>25</td>
+                <td>1600</td>
+                <td>1.558B</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>Every size keeps the same head width:</p>
+          <div class="formula">$$d_{\text{head}} = \frac{d_{\text{model}}}{n_{\text{heads}}} = \frac{768}{12} =
+            \frac{1600}{25} = 64$$</div>
+
+          <div class="takeaway dark">
+            <strong>A correction to Table 2</strong>
+            The parameter counts printed in the paper, <b>117M, 345M, 762M and 1542M</b>, are not the sizes of the
+            released models. The layer, head and width columns are right. Only the parameter column is off, and the
+            table above uses the corrected numbers.
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Layer norm</dt>
+              <dd>A step that rescales the numbers inside the network to keep training stable.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 06 ─────────────────────────────────────────── -->
+        <section class="card" id="language-modeling">
+          <span class="sec-num" aria-hidden="true">06</span>
+          <p class="sec-label">BEFORE BENCHMARKING</p>
+          <h2>A nuance before benchmarking</h2>
+          <p>GPT-2 is still doing language modeling, just on
+            datasets it was never trained on. The difficulty is that each benchmark uses its own tokenizer and
+            reports results in its own units.</p>
+
+          <h3>What is a "canonical prediction unit"?</h3>
+          <p>Raw negative log-likelihood grows with the length of the dataset, so benchmarks normalize it by a
+            standard unit, usually a word, a character or a byte:</p>
+          <div class="formula">$$\text{average loss} = \frac{-\log p(\text{dataset})}{N}$$</div>
+          <dl class="legend">
+            <dt>\(N\)</dt>
+            <dd>the number of canonical units (words, characters or bytes) in the benchmark</dd>
+          </dl>
+          <p>Perplexity is then derived from this normalized loss. Because the denominator is fixed by the benchmark,
+            models with different internal tokenizers can be compared fairly.</p>
+
+          <h3>Why invertible de-tokenizers?</h3>
+          <p>Older benchmarks often ship with artificial preprocessing:</p>
+          <div class="task">
+            <div class="task-name">Tokenized benchmark <em>→ natural text</em></div>
+            <div class="seq">
+              <span class="tok txt">I</span><span class="tok txt">do</span><span class="tok txt">n't</span><span
+                class="tok txt">like</span><span class="tok txt">it</span><span class="tok txt">.</span>
+              <span class="to"><b>→</b></span>
+              <span class="tok ex">I don't like it.</span>
+            </div>
+          </div>
+          <p>GPT-2 was trained on natural web text, so that spacing looks strange to it. An invertible de-tokenizer
+            removes these artifacts while keeping a one-to-one mapping back to the benchmark's format, so likelihood
+            can still be computed correctly. The paper reports roughly <b>2.5 to 5 perplexity points</b> of
+            improvement from this step alone.</p>
+
+          <div class="takeaway">
+            <strong>Result</strong>
+            Without seeing a single training example from these datasets, the largest GPT-2 reaches state of the art
+            on <b>7 of 8</b> language-modeling benchmarks. The exception is One Billion Word, whose sentence-level
+            shuffling destroys the long-range structure GPT-2 is good at.
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Negative log-likelihood</dt>
+              <dd>How surprised the model is by the real text; lower is better.</dd>
+              <dt>Perplexity</dt>
+              <dd>Roughly, how many options the model is torn between at each step; lower is better.</dd>
+              <dt>Invertible de-tokenizer</dt>
+              <dd>A script that undoes this odd spacing in a way that can be reversed exactly.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 07 ─────────────────────────────────────────── -->
+        <section class="card" id="cbt-lambada">
+          <span class="sec-num" aria-hidden="true">07</span>
+          <p class="sec-label">Experiments · Cloze tasks</p>
+          <h2>CBT and LAMBADA: filling the blank, near and far</h2>
+
+          <h3>Children's Book Test</h3>
+          <p>CBT is a multiple-choice cloze task: one word is removed from a passage and the model picks it from ten
+            candidates. Results are reported by word type. The largest GPT-2 reaches about <b>93.3%</b> on common
+            nouns and <b>89.1%</b> on named entities.</p>
+          <p>Before scoring, the authors remove <b>PTB-style tokenization artifacts</b>. PTB is Penn Treebank
+            tokenization, which turns natural text such as <code>I don't know.</code> into <code>I do n't know
+              .</code>. The de-tokenizer restores the natural form before GPT-2 sees it.</p>
+
+          <h3>LAMBADA</h3>
+          <p>LAMBADA asks the model to predict the last word of a passage, where a human can only guess it after
+            reading the wider context. It tests long-range dependencies directly.</p>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="v">8.6</div>
+              <div class="l">perplexity on LAMBADA</div>
+            </div>
+            <div class="stat">
+              <div class="v">52.66%</div>
+              <div class="l">accuracy, unconstrained</div>
+            </div>
+            <div class="stat">
+              <div class="v">63.24%</div>
+              <div class="l">with a stop-word filter</div>
+            </div>
+            <div class="stat">
+              <div class="v">~19%</div>
+              <div class="l">of correct answers not in the context</div>
+            </div>
+          </div>
+
+          <p>The last number matters. Forcing the model to pick a word that already appears in the passage would
+            throw away valid predictions, so the authors only filter out stop words.</p>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Cloze task</dt>
+              <dd>Fill in the blank.</dd>
+              <dt>Penn Treebank</dt>
+              <dd>A classic, widely used annotated English dataset.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 08 ─────────────────────────────────────────── -->
+        <section class="card" id="reasoning-qa">
+          <span class="sec-num" aria-hidden="true">08</span>
+          <p class="sec-label">Experiments · Reasoning &amp; reading</p>
+          <h2>Winograd and reading comprehension</h2>
+          <p>On the <b>Winograd Schema Challenge</b>, a test of commonsense pronoun resolution, GPT-2 reaches
+            <b>70.70%</b> accuracy, about seven points above the previous state of the art reported in the paper. The
+            benchmark has only 273 examples, so take the margin with some caution.</p>
+
+          <p>On <b>CoQA</b>, conversational question answering, GPT-2 gets the document, the dialogue history and a
+            final <code>A:</code> as a cue to start answering:</p>
+          <div class="task">
+            <div class="task-name">CoQA prompt <em>zero-shot</em></div>
+            <div class="seq">
+              <span class="tok txt">document</span>
+              <span class="tok txt">Q: … A: …</span>
+              <span class="tok txt">Q: new question</span>
+              <span class="tok sp">A:</span>
+              <span class="to"><b>→</b> generated answer</span>
+            </div>
+          </div>
+          <p>It reaches <b>55 F1</b> without using any of the 127,000+ supervised training examples. That matches or
+            beats 3 of the 4 baseline systems, but it is still far below humans and strong supervised models.</p>
+
+          <h3>What is an extractive, pointer-network style answer?</h3>
+          <p>Instead of generating an answer freely, an extractive QA model predicts where the answer starts and ends
+            inside the passage, like a pointer network:</p>
+          <div class="formula">$$P(\text{start} = i), \qquad P(\text{end} = j)$$</div>
+          <p>For "Marie Curie was born in Warsaw", it can point straight at <code>Warsaw</code>. GPT-2 is generative.
+            It writes the answer token by token and is not limited to copying a span, which is both more flexible and
+            easier to get wrong.</p>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Pronoun resolution</dt>
+              <dd>Working out who or what words like “it” or “they” refer to.</dd>
+              <dt>Extractive QA</dt>
+              <dd>One that can only copy its answer out of the passage.</dd>
+              <dt>Pointer network</dt>
+              <dd>A model that answers by pointing at positions in its input.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 09 ─────────────────────────────────────────── -->
+        <section class="card" id="summarization">
+          <span class="sec-num" aria-hidden="true">09</span>
+          <p class="sec-label">Experiments · Summarization</p>
+          <h2>A task induced by "TL;DR:"</h2>
+          <p>This is my favorite experiment in the paper. To summarize an article from CNN/Daily Mail, the authors append
+            the string <code>TL;DR:</code>, the internet's own shorthand for "here's the summary".</p>
+
+          <div class="task">
+            <div class="task-name">Summarization prompt <em>top-k sampling, k = 2</em></div>
+            <div class="seq">
+              <span class="tok txt">news article …</span>
+              <span class="tok ex">TL;DR:</span>
+              <span class="to"><b>→</b> 100 generated tokens</span>
+              <span class="to"><b>→</b> first 3 sentences = summary</span>
+            </div>
+          </div>
+
+          <p>Top-k sampling keeps the output focused. The output clearly reads like a summary, but it often focuses on the most recent part of the article or
+            gets details wrong. On ROUGE it only just beats picking three random sentences from the article.</p>
+
+          <div class="bars" role="img"
+            aria-label="Average ROUGE F1: Bottom-Up 32.75, Lead-3 31.55, Seq2Seq + Attention 23.99, GPT-2 with TL;DR 21.40, Random-3 20.98, GPT-2 without hint 15.03">
+            <div class="bar-row">
+              <span class="bar-label">Bottom-Up Summarization</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:93.6%">32.75</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Lead-3</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:90.1%">31.55</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Seq2Seq + Attention</span>
+              <div class="bar-track">
+                <div class="bar-fill grey" style="width:68.5%">23.99</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label"><b>GPT-2 + TL;DR:</b></span>
+              <div class="bar-track">
+                <div class="bar-fill burg" style="width:61.1%">21.40</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Random-3</span>
+              <div class="bar-track">
+                <div class="bar-fill grey" style="width:60%">20.98</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">GPT-2, no hint</span>
+              <div class="bar-track">
+                <div class="bar-fill grey" style="width:42.9%">15.03</div>
+              </div>
+            </div>
+          </div>
+          <p class="caption">Average of ROUGE-1, ROUGE-2 and ROUGE-L F1 on CNN/Daily Mail. Lead-3 and Random-3 are simple baselines. Removing the
+            <b>TL;DR:</b> cue costs about 6.4 points, so the model really is reading the prompt as a task.</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>System</th>
+                <th>R-1</th>
+                <th>R-2</th>
+                <th>R-L</th>
+                <th>Avg</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Bottom-Up Summarization</td>
+                <td class="num">41.22</td>
+                <td class="num">18.68</td>
+                <td class="num">38.34</td>
+                <td class="num">32.75</td>
+              </tr>
+              <tr>
+                <td>Lead-3</td>
+                <td class="num">40.38</td>
+                <td class="num">17.66</td>
+                <td class="num">36.62</td>
+                <td class="num">31.55</td>
+              </tr>
+              <tr class="hl">
+                <td>GPT-2 + TL;DR:</td>
+                <td>29.34</td>
+                <td>8.27</td>
+                <td>26.58</td>
+                <td>21.40</td>
+              </tr>
+              <tr>
+                <td>GPT-2, no hint</td>
+                <td class="num">21.58</td>
+                <td class="num">4.03</td>
+                <td class="num">19.47</td>
+                <td class="num">15.03</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>What is ROUGE F1?</h3>
+          <p><b>ROUGE-1</b> measures unigram overlap with a reference summary, <b>ROUGE-2</b> bigram overlap, and
+            <b>ROUGE-L</b> the longest common subsequence. F1 balances precision and recall:</p>
+          <div class="formula">$$F_1 = \frac{2PR}{P + R}$$</div>
+          <div class="takeaway note">
+            <strong>Caveat</strong>
+            ROUGE measures word overlap. It does not check whether a summary is factually correct or means the same
+            thing as the reference.
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>CNN/Daily Mail</dt>
+              <dd>A standard dataset of news stories paired with human-written summaries.</dd>
+              <dt>Top-k sampling</dt>
+              <dd>At each step, pick randomly among only the k most likely next tokens; here just the top 2.</dd>
+              <dt>ROUGE</dt>
+              <dd>A score of word overlap with a human-written summary.</dd>
+              <dt>Lead-3</dt>
+              <dd>Copy the first three sentences.</dd>
+              <dt>Random-3</dt>
+              <dd>Copy three random sentences.</dd>
+              <dt>Longest common subsequence</dt>
+              <dd>The longest run of words appearing in the same order in both, gaps allowed.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 10 ─────────────────────────────────────────── -->
+        <section class="card" id="translation">
+          <span class="sec-num" aria-hidden="true">10</span>
+          <p class="sec-label">Experiments · Translation</p>
+          <h2>Translation from almost no French</h2>
+          <p>To get GPT-2 to translate, the authors condition it on example pairs in the form <code>english sentence =
+              french sentence</code>, then give it a new English sentence followed by <code>=</code>. Quality is measured with BLEU.</p>
+          <div class="task">
+            <div class="task-name">Translation prompt <em>few example pairs</em></div>
+            <div class="seq">
+              <span class="tok txt">english</span><span class="tok sp">=</span><span class="tok txt">french</span>
+              <span class="tok txt">english</span><span class="tok sp">=</span><span class="tok txt">french</span>
+              <span class="tok">new english</span><span class="tok ex">=</span>
+              <span class="to"><b>→</b> french</span>
+            </div>
+          </div>
+
+          <div class="stages">
+            <div class="stage s1">
+              <span class="tag">English → French</span>
+              <h4>~5 BLEU</h4>
+              <p>Weak. Producing fluent French is hard for a model that has seen very little of it.</p>
+            </div>
+            <div class="stage s2">
+              <span class="tag">French → English</span>
+              <h4>~11.5 BLEU</h4>
+              <p>Much stronger, because GPT-2 is a far better English language model.</p>
+            </div>
+          </div>
+
+          <h3>How little French was there?</h3>
+          <p>A footnote points to <b>CLD2</b> (Compact Language Detector 2), an existing open-source language
+            identifier that uses lightweight statistics over byte and character sequences. The authors used it to
+            estimate that only about <b>10 MB</b> of WebText was French:</p>
+          <div class="formula">$$\frac{10\ \text{MB}}{40{,}000\ \text{MB}} \approx 0.025\%$$</div>
+          <p>So explicit French was a tiny sliver of the corpus, and the model still picked up enough to translate a
+            little.</p>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>BLEU</dt>
+              <dd>A 0 to 100 score of how closely the output matches human translations.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 11 ─────────────────────────────────────────── -->
+        <section class="card" id="qa">
+          <span class="sec-num" aria-hidden="true">11</span>
+          <p class="sec-label">Experiments · Question answering</p>
+          <h2>Knowledge stored in the parameters</h2>
+          <p>On <b>Natural Questions</b>, GPT-2 is seeded with example question and answer pairs and then asked new
+            factual questions, with no passage to read from. Whatever it answers has to come from its weights.</p>
+          <p>The largest model gets roughly <b>4.1% exact match</b>. That is poor next to dedicated open-domain QA
+            systems, but it is real evidence that facts learned during language modeling can sometimes be pulled
+            straight out of the parameters.</p>
+
+          <div class="takeaway">
+            <strong>The pattern that keeps repeating</strong>
+            The smallest GPT-2 does not even beat a trivial baseline that answers based on question type. The
+            largest one does. Across the paper, capabilities that smaller models barely show start to appear as the
+            model grows.
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Natural Questions</dt>
+              <dd>Real questions people typed into Google.</dd>
+              <dt>Open-domain QA</dt>
+              <dd>Answering questions on any topic, usually by searching documents first.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 12 ─────────────────────────────────────────── -->
+        <section class="card" id="contamination">
+          <span class="sec-num" aria-hidden="true">12</span>
+          <p class="sec-label">Generalization vs memorization</p>
+          <h2>Did GPT-2 just see the test set?</h2>
+          <p>A zero-shot result means little if the test examples were already in the training data. With 40 GB of
+            web text, that is a fair worry. The authors check overlap between WebText and public benchmarks using a
+            <b>Bloom filter</b> over normalized <b>8-grams</b>.</p>
+
+          <div class="figwrap" role="img" aria-label="Bloom filter contamination detection diagram">
+            <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg">
+              <rect width="1000" height="340" rx="14" fill="#FFFFFF" />
+              <text x="80" y="46" font-size="22" font-weight="740" fill="#141414">WebText 8-grams</text>
+              <text x="690" y="46" font-size="22" font-weight="740" fill="#141414">Evaluation 8-gram</text>
+              <g fill="#FFFFFF" stroke="#E9E1E3">
+                <rect x="40" y="75" width="360" height="90" rx="16" />
+                <rect x="645" y="75" width="310" height="90" rx="16" />
+              </g>
+              <text x="220" y="125" text-anchor="middle" font-size="18" fill="#5E5859">hash into several
+                positions</text>
+              <text x="800" y="125" text-anchor="middle" font-size="18" fill="#5E5859">query the same
+                positions</text>
+              <g transform="translate(80,210)" stroke="#C9BFC2">
+                <rect x="0" y="0" width="56" height="56" fill="#FFFFFF" />
+                <rect x="56" y="0" width="56" height="56" fill="#7A1530" />
+                <rect x="112" y="0" width="56" height="56" fill="#FFFFFF" />
+                <rect x="168" y="0" width="56" height="56" fill="#7A1530" />
+                <rect x="224" y="0" width="56" height="56" fill="#FFFFFF" />
+                <rect x="280" y="0" width="56" height="56" fill="#7A1530" />
+              </g>
+              <text x="248" y="300" text-anchor="middle" font-size="17" fill="#5E5859">Bloom-filter bit array</text>
+              <path d="M405 120 C500 120 525 120 640 120" fill="none" stroke="#141414" stroke-width="4"
+                stroke-dasharray="9 9" />
+              <text x="522" y="105" text-anchor="middle" font-size="16" fill="#141414">membership check</text>
+              <rect x="650" y="220" width="300" height="70" rx="16" fill="#141414" />
+              <text x="800" y="252" text-anchor="middle" font-size="18" font-weight="720" fill="#FFFFFF">all bits = 1 →
+                probably present</text>
+              <text x="800" y="278" text-anchor="middle" font-size="16" fill="#E38AA3">any bit = 0 → definitely
+                absent</text>
+            </svg>
+          </div>
+          <p class="caption">Bloom filters trade exact storage for <b>compact, probabilistic lookup</b>. They can
+            give false positives, never false negatives.</p>
+
+          <h3>How would you build one?</h3>
+          <p>Normalize the training text, cut it into 8-word shingles, hash each shingle into the filter, then query
+            the evaluation shingles with the same normalization.</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>minimal concept · python</span></div>
+            <pre><span class="k">from</span> pybloom_live <span class="k">import</span> BloomFilter
+
+bf = BloomFilter(capacity=<span class="k">10_000_000</span>, error_rate=<span class="k">0.001</span>)
+
+<span class="k">def</span> ngrams(text, n=<span class="k">8</span>):
+    words = text.lower().split()
+    <span class="k">return</span> [<span class="s">" "</span>.join(words[i:i+n])
+            <span class="k">for</span> i <span class="k">in</span> range(len(words)-n+<span class="k">1</span>)]
+
+<span class="k">for</span> gram <span class="k">in</span> ngrams(training_text):
+    bf.add(gram)</pre>
+          </div>
+
+          <h3>"We generated 1M strings, of which zero were found by the filter"</h3>
+          <p>This is a sanity check for false positives. Query the filter with a million strings that should not be
+            in it. Any hit would be a false positive, and they saw none. That does not prove the true rate is zero,
+            only that it is very low.</p>
+
+          <div class="takeaway note">
+            <strong>Why 8-grams? My reading</strong>
+            The paper states the choice of 8-grams but gives no ablation or explicit reason for it. A reasonable
+            interpretation is that eight words are long enough to avoid accidental matches on common phrases, and
+            short enough to still catch copied passages.
+          </div>
+
+          <h3>Why are there two rows in Table 6?</h3>
+          <p>They set up two overlap baselines for each benchmark's test set:</p>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:32%">Row</th>
+                <th>Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dataset train</td>
+                <td>% of test 8-grams also found in that benchmark's own training split</td>
+              </tr>
+              <tr>
+                <td>WebText train</td>
+                <td>% of test 8-grams also found in GPT-2's WebText training set</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="bars" role="img" aria-label="Average 8-gram overlap: 5.9% with own training split, 3.2% with WebText">
+            <div class="bar-row">
+              <span class="bar-label">Benchmark's own train split</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:73.8%">5.9%</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label"><b>WebText train</b></span>
+              <div class="bar-track">
+                <div class="bar-fill burg" style="width:40%">3.2%</div>
+              </div>
+            </div>
+          </div>
+          <p class="caption">Average overlap with test sets. <b>WebText overlap exists</b>, but it is smaller than the
+            overlap already present inside the benchmarks themselves.</p>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Bloom filter</dt>
+              <dd>A compact data structure that quickly answers “have I seen this before?”, occasionally saying yes by mistake.</dd>
+              <dt>8-gram</dt>
+              <dd>Runs of eight consecutive words.</dd>
+              <dt>Shingles</dt>
+              <dd>Overlapping chunks: words 1 to 8, 2 to 9, and so on.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 13 ─────────────────────────────────────────── -->
+        <section class="card" id="discussion">
+          <span class="sec-num" aria-hidden="true">13</span>
+          <p class="sec-label">Discussion</p>
+          <h2>What GPT-2 changes conceptually</h2>
+          <p>The paper treats unsupervised task learning as something worth studying in its own right. Pretraining
+            may do more than produce reusable representations: at enough scale, the language-modeling objective can
+            itself produce useful task behavior.</p>
+          <p>The strongest evidence is the scaling trend. Small models often sit near trivial baselines, and larger
+            ones cross into visibly useful behavior. Yet even the largest model still <b>underfits WebText</b>, so the
+            paper does not claim that 1.5B parameters is anywhere near the ceiling.</p>
+
+          <div class="takeaway">
+            <strong>Why mention "the prior success of fine-tuning GPT"?</strong>
+            That is a reference to <b>GPT-1</b>, which established <code>pretrain → supervised fine-tune</code>.
+            GPT-2 deliberately tests <code>pretrain → prompt → zero-shot</code>. The discussion suggests combining
+            the two: GPT-2-scale pretraining followed by fine-tuning on multitask benchmarks such as DecaNLP and GLUE.
+          </div>
+
+          <h3>A quick refresher: GPT-1 in one table</h3>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:45%">Property</th>
+                <th>GPT-1</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Parameters</td>
+                <td class="num">~117M</td>
+              </tr>
+              <tr>
+                <td>Layers</td>
+                <td class="num">12</td>
+              </tr>
+              <tr>
+                <td>Hidden size</td>
+                <td class="num">768</td>
+              </tr>
+              <tr>
+                <td>Attention heads</td>
+                <td class="num">12</td>
+              </tr>
+              <tr>
+                <td>Head dimension</td>
+                <td class="num">64</td>
+              </tr>
+              <tr>
+                <td>Context length</td>
+                <td class="num">512</td>
+              </tr>
+              <tr>
+                <td>Pretraining corpus</td>
+                <td>BooksCorpus (~800M words)</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>GPT-1's fine-tuning updates the whole Transformer, not just a small classifier head, and it can keep the
+            language-modeling loss as an auxiliary objective during supervised training:</p>
+          <div class="formula">$$L = L_{\text{supervised}} + \lambda\, L_{\text{LM}}$$</div>
+        </section>
+
+        <!-- 14 ─────────────────────────────────────────── -->
+        <section class="card" id="lessons">
+          <span class="sec-num" aria-hidden="true">14</span>
+          <p class="sec-label">Wrapping up</p>
+          <h2>My Learnings</h2>
+          <p>GPT-2's lasting contribution is not just that a 1.5B-parameter Transformer wrote better text. It is the
+            argument that language modeling, given diverse enough data and enough capacity, becomes a general
+            task-learning mechanism.</p>
+
+          <div class="task">
+            <div class="task-name">The recipe in one line</div>
+            <div class="seq">
+              <span class="tok">diverse text</span><span class="to"><b>+</b></span>
+              <span class="tok">next-token prediction</span><span class="to"><b>+</b></span>
+              <span class="tok sp">large Transformer</span><span class="to"><b>→</b></span>
+              <span class="tok ex">implicit multitask learning</span>
+            </div>
+          </div>
+
+          <ol class="recap">
+            <li><b>Data quality can be crowdsourced.</b> A 3-karma threshold on Reddit links was enough to build a
+              broad, reasonably clean 40 GB corpus.</li>
+            <li><b>Tokenization is part of generality.</b> Byte-level BPE means the model can assign a probability to
+              any string, with no unknown tokens.</li>
+            <li><b>A prompt can define the task.</b> <code>TL;DR:</code>, <code>A:</code> and
+              <code>english = french</code> turned a language model into a summarizer, a reader and a translator.
+            </li>
+            <li><b>Scale unlocks behavior.</b> On most tasks the smallest model is near baseline and the largest is
+              not, and it still underfits its data.</li>
+            <li><b>Always check for leakage.</b> The Bloom-filter analysis is a habit worth copying for any model
+              trained on web data.</li>
+          </ol>
+
+          <div class="stages three">
+            <div class="stage s3">
+              <span class="tag">2018</span>
+              <h4>GPT-1</h4>
+              <p><code>pretrain → fine-tune</code></p>
+            </div>
+            <div class="stage s1">
+              <span class="tag">2019</span>
+              <h4>GPT-2</h4>
+              <p><code>pretrain → prompt → zero-shot</code></p>
+            </div>
+            <div class="stage s2">
+              <span class="tag">Later LLMs</span>
+              <h4>What came next</h4>
+              <p>zero-shot → few-shot → instruction following</p>
+            </div>
+          </div>
+
+          <div class="takeaway dark">
+            <strong>The key lesson</strong>
+            GPT-2 is still a weak zero-shot model on most tasks. What it proved is the <b>direction</b>: every curve
+            in the paper goes up with size, and none of them had flattened yet. GPT-3 is what happened when OpenAI
+            followed those curves.
+          </div>
+
+          <h3>Related reading</h3>
+          <a class="item post-card" href="learnings-from-gpt1-paper.html">
+            <img class="post-thumb" src="../../images/Blogs/15.GPT1Paper/gpt1-card.jpg" alt="" loading="lazy">
+            <div class="post-body">
+              <div class="post-tags"><span class="p">GPT-1</span> · Paper Notes</div>
+              <span class="post-title">GPT-1: The Beginning of ChatGPT Revolution</span>
+              <p class="post-desc">The pretrain-then-fine-tune recipe that GPT-2 set out to simplify.</p>
+            </div>
+          </a>
+        </section>
+
+        <footer class="card" id="colophon">
+          <p class="credit">These are my reading notes on <a
+              href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf"><b>Language
+                Models are Unsupervised Multitask Learners</b></a> by Alec Radford, Jeffrey Wu, Rewon Child, David
+            Luan, Dario Amodei and Ilya Sutskever (OpenAI, 2019)</p>
+          <p class="credit" style="margin-top:14px">References:</p>
+          <ul class="credit">
+            <li>Radford et al. (2018), <a
+                href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf">Improving
+                Language Understanding by Generative Pre-Training</a> (GPT-1)</li>
+            <li>Vaswani et al. (2017), <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></li>
+            <li>Sennrich et al. (2016), <a href="https://arxiv.org/abs/1508.07909">Neural Machine Translation of Rare
+                Words with Subword Units</a> (BPE)</li>
+          </ul>
+        </footer>
+
+      </div>
+
+      <aside class="post-toc">
+        <div class="toc-label">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#big-idea">1 · TL;DR</a></li>
+          <li><a href="#introduction">2 · From narrow models to one general model</a></li>
+          <li><a href="#webtext">3 · WebText</a></li>
+          <li><a href="#tokenization">4 · Byte-level BPE</a></li>
+          <li><a href="#model">5 · The model</a></li>
+          <li><a href="#language-modeling">6 · Zero-shot language modeling</a></li>
+          <li><a href="#cbt-lambada">7 · CBT &amp; LAMBADA</a></li>
+          <li><a href="#reasoning-qa">8 · Winograd &amp; CoQA</a></li>
+          <li><a href="#summarization">9 · Summarization</a></li>
+          <li><a href="#translation">10 · Translation</a></li>
+          <li><a href="#qa">11 · Question answering</a></li>
+          <li><a href="#contamination">12 · Generalization vs memorization</a></li>
+          <li><a href="#discussion">13 · Discussion</a></li>
+          <li><a href="#lessons">14 · My Learnings</a></li>
+        </ul>
+      </aside>
+    </div>
+
+  </main>
+
+  <script>
+    // scroll progress + active TOC link
+    const prog = document.getElementById('progress');
+    const links = [...document.querySelectorAll('.toc-list a')];
+
+    function onScroll() {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+
+      let active = 0;
+      const y = h.scrollTop + 140;
+      document.querySelectorAll('section.card').forEach((s, i) => { if (s.offsetTop <= y) active = i });
+      links.forEach((a, i) => a.classList.toggle('active', i === active));
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Building your own GPT-2 tokenizer from scratch</title>
+  <meta name="description" content="Why a language model needs a tokenizer, why it is built on Unicode and UTF-8 bytes, how byte-pair encoding is trained and used, and which familiar LLM failures are tokenizer failures.">
+  <meta property="og:title" content="Building your own GPT-2 tokenizer from scratch">
+  <meta property="og:description" content="Unicode, UTF-8, byte-pair encoding trained on Shakespeare, encode/decode, and the model behaviours this explains.">
+  <meta property="og:type" content="article">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Fira+Code:wght@300..700&display=swap">
+  <style>
+    /* ── palette (light · blue + yellow) ── */
+    :root {
+      --paper: #FFFFFF;
+      --card: #FFFFFF;
+      --card-2: #F6F8FC;
+      --ink: #121A2B;
+      --ink-dim: #58627A;
+      --blue: #1450B8;
+      --blue-deep: #0D3A8A;
+      --blue-soft: #E6EEFB;
+      --yellow: #F2B705;
+      --yellow-deep: #9A6E00;
+      --yellow-soft: #FFF4CC;
+      --rule: #E3E8F1;
+      --code-bg: #0F1829;
+      --code-bar: #0A1120;
+      --code-text: #E9EEF7;
+      --code-dim: #8A97B0;
+
+      --nav-h: 72px;
+      --content-w: 1200px;
+      --prose-w: 800px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * { box-sizing: border-box }
+    html, body { overflow-x: hidden; max-width: 100% }
+    html { scroll-behavior: smooth }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Google Sans Flex", system-ui, sans-serif;
+      font-weight: 380;
+      font-optical-sizing: auto;
+      font-variation-settings: "slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 0;
+      font-size: 15.5px;
+      line-height: 1.72;
+      letter-spacing: -.003em;
+      /* ── static dot paper ── */
+      background-color: var(--paper);
+      background-image: radial-gradient(circle, rgba(18, 26, 43, .20) 1px, transparent 1.2px);
+      background-size: 24px 24px;
+      background-position: 0 0;
+      background-attachment: fixed;
+      background-repeat: repeat;
+    }
+
+    a { color: var(--blue) }
+
+    h1, h2, h3, .banner-title, .nav-logo {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+    h2 {
+      font-weight: 700;
+      font-size: clamp(23px, 3.4vw, 30px);
+      letter-spacing: -.022em;
+      line-height: 1.2;
+      margin: 0 0 10px
+    }
+    h3 {
+      font-weight: 700;
+      font-size: 15.5px;
+      letter-spacing: -.005em;
+      margin: 30px 0 8px;
+      color: var(--blue)
+    }
+    p { margin: 0 0 16px }
+    ul, ol { padding-left: 20px }
+    li { margin-bottom: 7px }
+    b { font-weight: 650; color: var(--blue-deep) }
+    code {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .85em;
+      color: var(--blue-deep);
+      background: var(--blue-soft);
+      padding: 1px 5px;
+      border-radius: 5px;
+    }
+
+    /* ── nav ── */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--yellow));
+      z-index: 200; transition: width .08s linear
+    }
+    nav {
+      position: sticky; top: 0; z-index: 100; height: var(--nav-h);
+      border-bottom: 1px solid var(--rule);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px)
+    }
+    .nav-inner {
+      max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%;
+      display: flex; align-items: center; justify-content: space-between
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; letter-spacing: .01em; color: var(--ink); text-decoration: none }
+    .nav-links { display: flex; align-items: center; gap: 26px; list-style: none; margin: 0; padding: 0 }
+    .nav-links li { margin: 0 }
+    .nav-links a { font-size: 13.5px; color: var(--ink-dim); text-decoration: none; transition: color .15s }
+    .nav-links a:hover, .nav-links a.active { color: var(--blue) }
+
+    .page { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem }
+
+    /* ── banner ── */
+    .post-banner {
+      margin: 3rem 0 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden; position: relative;
+      background: var(--card-2);
+      border: 1px solid var(--rule);
+      padding: 58px 46px 54px;
+      min-height: 320px;
+      display: flex; align-items: center;
+      box-shadow: 0 18px 44px rgba(18, 26, 43, .10);
+    }
+    .banner-art { position: absolute; inset: 0; z-index: 0 }
+    .banner-art img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: right center }
+    .banner-scrim {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(100deg,
+          rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 36%,
+          rgba(255, 255, 255, .9) 58%, rgba(255, 255, 255, .1) 82%, rgba(255, 255, 255, 0) 96%)
+    }
+    .banner-grid { position: relative; z-index: 2; width: 100% }
+    .banner-inner { position: relative; max-width: 62% }
+    .banner-eyebrow {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif; font-weight: 600;
+      font-size: .78rem; letter-spacing: .20em; text-transform: uppercase; color: var(--ink-dim);
+      margin: 0 0 20px; display: flex; align-items: center; gap: 12px
+    }
+    .banner-eyebrow::before { content: ""; width: 34px; height: 2px; background: var(--yellow); display: inline-block }
+    .banner-title {
+      font-weight: 800; font-size: clamp(2.1rem, 5vw, 3.1rem); line-height: 1.06;
+      letter-spacing: -.028em; margin: 0 0 20px; color: var(--ink)
+    }
+    .banner-title .accent { color: var(--blue) }
+    .banner-sub { font-size: 1.02rem; line-height: 1.6; color: var(--ink-dim); max-width: 60ch; margin: 0 }
+
+    .post-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 1.25rem 0 }
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 999px;
+      border: 1px solid var(--rule); font-size: 12px; color: var(--ink-dim);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif; font-weight: 600; letter-spacing: .03em; background: var(--card)
+    }
+    .meta-tag.accent-tag { background: var(--blue); color: #fff; border-color: transparent }
+    .meta-tag.dark-tag { background: var(--yellow); color: var(--ink); border-color: transparent }
+
+    /* ── layout + TOC ── */
+    .post-layout {
+      display: grid; grid-template-columns: minmax(0, 1fr) 240px;
+      gap: 0 1.5rem; align-items: start; padding-top: .5rem
+    }
+    .post-prose { min-width: 0 }
+    .post-toc {
+      position: sticky; top: calc(var(--nav-h) + 1.5rem);
+      background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius-md);
+      padding: 20px 22px; margin-top: 26px; box-shadow: 0 10px 26px rgba(18, 26, 43, .07)
+    }
+    .toc-label {
+      font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-dim);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif; font-weight: 700; margin-bottom: 12px
+    }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin: 0; padding: 0 }
+    .toc-list li { margin: 0 }
+    .toc-list a { font-size: 12.5px; color: var(--ink-dim); text-decoration: none; transition: color .15s; display: block; line-height: 1.4 }
+    .toc-list a:hover, .toc-list a.active { color: var(--blue) }
+    .toc-list a.active { font-weight: 600 }
+
+    /* ── section cards ── */
+    section.card, footer.card {
+      position: relative; background: var(--card); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 34px 38px 30px; margin: 26px 0;
+      scroll-margin-top: calc(var(--nav-h) + 1rem);
+      box-shadow: 0 18px 40px rgba(18, 26, 43, .08)
+    }
+    section.card > .sec-label, section.card > h2 { padding-right: 62px }
+    .sec-num {
+      position: absolute; top: 24px; right: 30px;
+      font-family: "Plus Jakarta Sans", sans-serif; font-weight: 800; font-size: 30px;
+      letter-spacing: -.03em; line-height: 1; color: var(--blue); opacity: .18;
+      pointer-events: none; user-select: none
+    }
+    .sec-label {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif; font-weight: 700; font-size: 10.5px;
+      letter-spacing: .12em; text-transform: uppercase; line-height: 1.7; color: var(--ink-dim); margin: 0 0 8px
+    }
+    .lede { font-size: 17px; color: var(--ink-dim); margin-bottom: 20px }
+
+    /* ── code windows ── */
+    .win {
+      margin: 20px 0; border-radius: var(--radius-md); overflow: hidden;
+      border: 1px solid #1C2740; background: var(--code-bg); box-shadow: 0 14px 30px rgba(0, 0, 0, .22)
+    }
+    .win-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--code-bar); border-bottom: 1px solid #000 }
+    .win-bar i { width: 11px; height: 11px; border-radius: 50%; display: block }
+    .win-bar i:nth-child(1) { background: var(--blue) }
+    .win-bar i:nth-child(2) { background: var(--yellow) }
+    .win-bar i:nth-child(3) { background: #44506A }
+    .win-bar span { font-family: "Fira Code", ui-monospace, monospace; font-size: 11.5px; color: var(--code-dim); margin-left: 8px; letter-spacing: .03em }
+    .win pre {
+      margin: 0; background: transparent; border: 0;
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px; line-height: 1.75; padding: 16px 18px; color: var(--code-text);
+      white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: hidden
+    }
+    .win pre code { background: none; color: inherit; padding: 0; font-size: inherit; border-radius: 0 }
+    pre .c { color: #7F8CA5; font-style: italic }
+    pre .k { color: #8FB4FF }
+    pre .s { color: #FFD866 }
+    pre .n { color: #FFD866 }
+    pre .f { color: #C9D8FF }
+    .win.out { background: var(--card-2); border-color: var(--rule); box-shadow: none }
+    .win.out .win-bar { background: #EDF1F8; border-bottom: 1px solid var(--rule) }
+    .win.out .win-bar span { color: var(--ink-dim) }
+    .win.out pre.output { color: var(--ink); font-size: 12.5px }
+
+    /* ── tables ── */
+    table {
+      width: 100%; border-collapse: collapse; table-layout: fixed;
+      font-family: "Google Sans Flex", system-ui, sans-serif; font-size: 13px; margin: 20px 0
+    }
+    th, td { overflow-wrap: anywhere }
+    th {
+      text-align: left; font-weight: 640; color: var(--blue); border-bottom: 1px solid var(--rule);
+      padding: 8px 10px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif
+    }
+    td { padding: 8px 10px; border-bottom: 1px solid #EEF1F7; color: var(--ink-dim); vertical-align: top }
+    td:first-child { color: var(--ink) }
+    td.num { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600 }
+    td.mono, .mono { font-family: "Fira Code", ui-monospace, monospace; font-size: 12px }
+
+    /* ── callouts ── */
+    .takeaway {
+      background: var(--yellow-soft); border: 1px solid #F3DD8A; border-radius: var(--radius-md);
+      padding: 15px 18px; margin: 22px 0; font-size: 15px
+    }
+    .takeaway strong {
+      font-family: "Plus Jakarta Sans", sans-serif; font-weight: 700; color: var(--yellow-deep);
+      display: block; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 5px
+    }
+    .takeaway > :last-child { margin-bottom: 0 }
+    .takeaway.note { background: var(--blue-soft); border-color: #C9D9F5 }
+    .takeaway.note strong { color: var(--blue) }
+    .takeaway.dark { background: var(--blue-deep); border-color: var(--blue-deep); color: #E9EEF7 }
+    .takeaway.dark strong { color: var(--yellow) }
+    .takeaway.dark b { color: #fff }
+    .takeaway.dark code { background: rgba(255, 255, 255, .12); color: #fff }
+
+    .caption { font-size: 13px; color: var(--ink-dim); line-height: 1.55; margin: 12px 2px 24px }
+    .caption b { color: var(--blue); font-weight: 650 }
+
+    .big-idea {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif; font-weight: 700;
+      font-size: clamp(17px, 2.4vw, 21px); line-height: 1.35; letter-spacing: -.015em; text-align: center;
+      color: var(--ink); border-top: 2px solid var(--blue); border-bottom: 2px solid var(--blue);
+      padding: 18px 10px; margin: 26px 0
+    }
+    .big-idea .r { color: var(--blue) }
+
+    /* ── figures ── */
+    .figwrap {
+      border-radius: var(--radius-md); overflow: hidden; background: var(--card-2);
+      border: 1px solid var(--rule); margin: 20px 0 0; padding: 12px
+    }
+    .figwrap svg { width: 100%; height: auto; display: block; border-radius: var(--radius-sm) }
+    .figwrap.narrow svg { max-width: 560px; margin: 0 auto }
+
+    /* ── token sequences ── */
+    .task { border: 1px solid var(--rule); border-radius: var(--radius-md); background: var(--card); padding: 14px 16px; margin: 12px 0 }
+    .task-name {
+      font-family: "Plus Jakarta Sans", sans-serif; font-weight: 700; font-size: 11px; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--ink-dim); margin-bottom: 9px;
+      display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap
+    }
+    .task-name em { font-style: normal; color: var(--blue); letter-spacing: .06em }
+    .seq { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 }
+    .tok {
+      font-family: "Fira Code", ui-monospace, monospace; font-size: 12px; padding: 4px 9px; border-radius: 7px;
+      border: 1.5px solid var(--ink); background: #fff; color: var(--ink); white-space: pre
+    }
+    .tok.sp { background: var(--blue); color: #fff; border-color: var(--blue) }
+    .tok.ex { background: var(--yellow); color: var(--ink); border-color: var(--yellow) }
+    .tok.txt { border-style: dashed; color: var(--ink-dim) }
+    .seq .to { color: var(--ink-dim); font-size: 13px; white-space: nowrap }
+
+    /* ── stat strip ── */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0 }
+    .stat { border: 1px solid var(--rule); border-radius: var(--radius-md); padding: 12px 14px; background: var(--card-2) }
+    .stat .v {
+      font-family: "Plus Jakarta Sans", sans-serif; font-weight: 800; font-size: 23px; letter-spacing: -.02em;
+      color: var(--blue); line-height: 1.1; font-variant-numeric: tabular-nums
+    }
+    .stat .l { font-size: 12.5px; color: var(--ink-dim); line-height: 1.35; margin-top: 4px }
+
+    /* ── numbered recap ── */
+    .recap { counter-reset: r; list-style: none; padding: 0; margin: 18px 0 }
+    .recap li { counter-increment: r; position: relative; padding: 12px 0 12px 46px; border-bottom: 1px solid var(--rule); margin: 0 }
+    .recap li:last-child { border-bottom: 0 }
+    .recap li::before {
+      content: counter(r, decimal-leading-zero); position: absolute; left: 0; top: 11px;
+      font-family: "Plus Jakarta Sans", sans-serif; font-weight: 800; font-size: 18px; color: var(--blue)
+    }
+    .recap li .q { font-family: "Plus Jakarta Sans", sans-serif; font-weight: 700; display: block; margin-bottom: 3px }
+
+    /* ── footer ── */
+    footer.card { font-size: 13.5px; color: var(--ink-dim) }
+    footer.card h2 { font-size: 18px; margin-bottom: 12px }
+    footer.card ul { margin: 0; padding-left: 18px }
+    footer.card li { margin-bottom: 6px }
+
+    @media (max-width: 1000px) {
+      .post-layout { grid-template-columns: 1fr }
+      .post-toc { display: none }
+      .banner-inner { max-width: 100% }
+      .banner-scrim { background: rgba(255, 255, 255, .92) }
+    }
+    @media (max-width: 640px) {
+      .sec-num { top: 18px; right: 20px; font-size: 24px }
+      section.card, footer.card { padding: 26px 20px }
+      .post-banner { padding: 40px 24px }
+      .stats { grid-template-columns: repeat(2, 1fr) }
+      .nav-links { display: none }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress"></div>
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60"
+          style="display:block;  pointer-events:none; filter:brightness(0) saturate(0);"></object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../../blog.html" class="active">Blog</a></li>
+        <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="../../genai-lab.html">GenAI Lab</a></li>
+        <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page" id="top">
+    <div class="post-banner">
+      <div class="banner-art" aria-hidden="true">
+        <img src="../../images/Blogs/18.GPT2Tokenizer/tokenizer-banner.png" alt="">
+      </div>
+      <div class="banner-scrim"></div>
+      <div class="banner-grid">
+        <div class="banner-inner">
+          <p class="banner-eyebrow">Transformers from scratch · Tokenization</p>
+          <h1 class="banner-title">Building your own <span class="accent">GPT-2 tokenizer</span> from scratch</h1>
+          <p class="banner-sub">What tokenization is, why so many strange LLM behaviours trace back to it, and how to build the GPT-2 tokenizer yourself — byte-pair encoding over UTF-8, trained on Shakespeare.</p>
+        </div>
+      </div>
+    </div>
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">Tokenization</span>
+      <span class="meta-tag">Byte-pair encoding</span>
+      <span class="meta-tag">GPT-2</span>
+    </div>
+
+    <div class="post-layout">
+      <div class="post-prose">
+
+        <!-- 01 ─────────────────────────────────────────── -->
+        <section class="card" id="what">
+          <span class="sec-num" aria-hidden="true">01</span>
+          <p class="sec-label">Orientation</p>
+          <h2>What is a tokenizer?</h2>
+          <p class="lede">Tokens are the atoms of a language model. Everything it reads and writes is counted in tokens, and the tokenizer is the piece that turns text into tokens and back again.</p>
+          <p>Tokenization is probably the least fun part of working with LLMs, but it's worth understanding in some detail. A surprising amount of weird model behaviour traces straight back to it. And you may probably learn 1 or 2 things about breaking the model or exploiting its quirks ;)</p>
+          <p>The idea is simple. You give the tokenizer a sentence. It chops the sentence into chunks which can be sometimes a whole word, sometimes a piece of a word (called sub-word level), or sometimes a single character (called character-level) — and gives each chunk a number. This list of numbers are what the model is going to see:</p>
+          <div class="task">
+            <div class="task-name"><span>GPT-2 · "hello world"</span><em>2 tokens</em></div>
+            <div class="seq"><span class="tok txt">hello world</span><span class="to">→</span><span class="tok">hello</span><span class="tok sp"> world</span><span class="to">→</span><span class="tok ex">31373</span><span class="tok ex">995</span></div>
+          </div>
+         
+          <p>If you use tokenizer by itself, you will end up creating a sparse matrix of one hot encoded values of a single token. However in practice, the tokenizer is used in conjunction with the embedding table. Inside the model, each number picks out one row of a big table called the <i>embedding table</i>. That row is a list of learned values, and it's what actually goes into the Transformer.</p>
+          <p>GPT-2 knows 50,257 different chunks (also called the VOCAB SIZE or Vocabulary) and reads up to 1,024 of them at a time. So when people say GPT-2 has a context of 1,024 tokens, they mean 1,024 of these chunks, not 1,024 words or characters.</p>
+          <div class="figwrap narrow">
+            <svg viewBox="0 0 560 90" xmlns="http://www.w3.org/2000/svg" font-family="Google Sans Flex, sans-serif" font-size="12.5">
+              <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5 0 7z" fill="#58627A"/></marker></defs>
+              <g fill="#121A2B">
+                <rect x="6" y="28" width="96" height="36" rx="8" fill="#fff" stroke="#1450B8" stroke-width="1.5"/><text x="54" y="50" text-anchor="middle">text</text>
+                <path d="M104 46h30" stroke="#58627A" stroke-width="1.3" marker-end="url(#ar)"/>
+                <rect x="138" y="28" width="96" height="36" rx="8" fill="#1450B8"/><text x="186" y="50" text-anchor="middle" fill="#fff" font-weight="600">tokenizer</text>
+                <path d="M236 46h30" stroke="#58627A" stroke-width="1.3" marker-end="url(#ar)"/>
+                <rect x="270" y="28" width="96" height="36" rx="8" fill="#fff" stroke="#1450B8" stroke-width="1.5"/><text x="318" y="50" text-anchor="middle">token IDs</text>
+                <path d="M368 46h30" stroke="#58627A" stroke-width="1.3" marker-end="url(#ar)"/>
+                <rect x="402" y="28" width="60" height="36" rx="8" fill="#fff" stroke="#F2B705" stroke-width="1.5"/><text x="432" y="50" text-anchor="middle">rows</text>
+                <path d="M464 46h30" stroke="#58627A" stroke-width="1.3" marker-end="url(#ar)"/>
+                <rect x="498" y="28" width="56" height="36" rx="8" fill="#121A2B"/><text x="526" y="50" text-anchor="middle" fill="#fff">model</text>
+                <text x="432" y="80" text-anchor="middle" fill="#58627A" font-size="11">embedding table</text>
+              </g>
+            </svg>
+          </div>
+          <p></p>
+          <p>In the rest of blog, we will build our own GPT-2 tokenizer from scratch and explore how it works in detail.</p>
+          <!-- <p class="caption"><b>The only way into the model.</b> The tokenizer is a separate thing from the LLM. It's trained first, often on different text, and then used once to turn all the training data into numbers. Whatever choices it makes, the model is stuck with them.</p> -->
+        </section>
+
+        <!-- 02 ─────────────────────────────────────────── -->
+        <section class="card" id="symptoms">
+          <span class="sec-num" aria-hidden="true">02</span>
+          <p class="sec-label">Motivation</p>
+          <h2>Failures that look like model failures</h2>
+          <p class="lede">A lot of problems that look like the model being bad at something are really the tokenizer's fault. Here's the list to keep in mind. We'll come back and explain every one in <a href="#explained">section 10</a>, once we've built a tokenizer ourselves. As of today most of these problems have been patched by state of the art models providers, however it is still worth looking if you end up building a model of your own.</p>
+          <ol class="recap">
+            <li><span class="q">Spelling and reversal</span>Why can a model that writes fluent prose not count the letters in a word or reverse a string?</li>
+            <li><span class="q">Non-English text</span>Why is the same model noticeably worse in Korean or Japanese?</li>
+            <li><span class="q">Arithmetic</span>Why is simple addition unreliable? <code>127</code> is one token, <code>677</code> is two, and four-digit numbers split in arbitrary places.</li>
+            <li><span class="q">Python under GPT-2</span>Why was GPT-2 so poor at Python compared with GPT-4, beyond the model being smaller?</li>
+            <li><span class="q">The trailing space</span>Why does the API warn when a prompt ends with a space?</li>
+            <li><span class="q">The special-token string</span>Why does a model stall or refuse when asked to print <code>&lt;|endoftext|&gt;</code>?</li>
+            <li><span class="q">SolidGoldMagikarp</span>Why did that string make GPT-3 evasive, insulting or incoherent?</li>
+            <li><span class="q">YAML vs JSON</span>Why is YAML cheaper than JSON for the same data?</li>
+          </ol>
+          <p>You can already see the root cause by playing with a single word in <a href="https://tiktokenizer.vercel.app">tiktokenizer</a>. Depending on whether <i>egg</i> starts a sentence, has a space in front, or is in capitals, GPT-2 turns it into completely different tokens. To the model these are unrelated numbers, and it has to learn from data that they all mean the same thing:</p>
+          <div class="task">
+            <div class="task-name"><span>GPT-2 · one word, four encodings</span><em>tiktokenizer</em></div>
+            <div class="seq"><span class="tok txt">Egg</span><span class="to">→</span><span class="tok">E</span><span class="tok">gg</span><span class="to">&nbsp;&nbsp;·&nbsp;&nbsp;</span><span class="tok txt"> egg</span><span class="to">→</span><span class="tok sp"> egg</span><span class="to">&nbsp;&nbsp;·&nbsp;&nbsp;</span><span class="tok txt">egg</span><span class="to">→</span><span class="tok ex">egg</span><span class="to">&nbsp;&nbsp;·&nbsp;&nbsp;</span><span class="tok txt">EGG</span><span class="to">→</span><span class="tok">E</span><span class="tok">GG</span></div>
+          </div>
+          <p>Notice also that the space is part of the token: <code>" egg"</code> and <code>"egg"</code> are different IDs.</p>
+          <p>The tokenizer also decides how much text fits in the model's context. Higher vocabulary size means same information can be fit into fewer tokens leading to increased context length. For example 300 tokens with GPT-2's tokenizer and worth 185 in GPT-4's. But GPT-4's vocabulary is about twice as big (~100k vs ~50k), and it groups runs of spaces in Python code into one token instead of one token per space. Denser tokens mean the model can look at nearly twice as much text before predicting the next token. A good part of GPT-4's improvement at coding comes from this tokenizer change, not just from the model.</p>
+        </section>
+
+        <!-- 03 ─────────────────────────────────────────── -->
+        <section class="card" id="chars">
+          <span class="sec-num" aria-hidden="true">03</span>
+          <p class="sec-label">Baseline</p>
+          <h2>The character-level tokenizer</h2>
+          <p class="lede">The simplest tokenizer gives every distinct character its own number. It's what you'd build for your first small language model.</p>
+          <p>Tiny Shakespeare uses 65 different characters, so we make a lookup table from each character to a number from 0 to 64. The embedding table then has 65 rows, one per character.</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>character level</span></div>
+<pre><code>chars = <span class="f">sorted</span>(<span class="f">set</span>(text))                   <span class="c"># 65 distinct characters</span>
+stoi  = {ch: i <span class="k">for</span> i, ch <span class="k">in</span> <span class="f">enumerate</span>(chars)}
+itos  = {i: ch <span class="k">for</span> ch, i <span class="k">in</span> stoi.items()}
+
+encode = <span class="k">lambda</span> s: [stoi[c] <span class="k">for</span> c <span class="k">in</span> s]
+decode = <span class="k">lambda</span> l: <span class="s">''</span>.join(itos[i] <span class="k">for</span> i <span class="k">in</span> l)
+
+encode(<span class="s">"hii there"</span>)                       <span class="c"># [46, 47, 47, 1, 58, 46, 43, 56, 43]</span></code></pre></div>
+          <p>It works, and you get back exactly what you put in. But it has two problems:</p>
+          <ul>
+            <li><b>It can't handle new characters.</b> Anything outside those 65 — an accented letter, Korean, an emoji — has no number at all.</li>
+            <li><b>Sequences get long.</b> One token per character means a 1,000-character paragraph takes up 1,000 slots in the context. The context is limited, so the model gets to see very little text at once.</li>
+          </ul>
+          <p>Real models work on chunks, not characters. So we need two things: a way to represent <i>any</i> text, and tokens that hold more than one character. Unicode and UTF-8 solve the first; byte-pair encoding solves the second.</p>
+        </section>
+
+        <!-- 04 ─────────────────────────────────────────── -->
+        <section class="card" id="unicode">
+          <span class="sec-num" aria-hidden="true">04</span>
+          <p class="sec-label">Representation</p>
+          <h2>Why Unicode</h2>
+          <p class="lede">In Python, a string is a sequence of Unicode code points. A code point is just the number that the Unicode standard gives to a character.</p>
+          <p>Unicode covers roughly 150,000 characters across 161 scripts, and it keeps growing with every new version. <code>ord</code> gives you the code point of a character, and <code>chr</code> goes the other way.</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>code points</span></div>
+<pre><code><span class="f">ord</span>(<span class="s">'H'</span>)                              <span class="c"># 104</span>
+<span class="f">ord</span>(<span class="s">'안'</span>)                             <span class="c"># 50504</span>
+<span class="f">ord</span>(<span class="s">'👋'</span>)                             <span class="c"># 128075</span>
+[<span class="f">ord</span>(c) <span class="k">for</span> c <span class="k">in</span> <span class="s">'안녕 👋'</span>]            <span class="c"># [50504, 45397, 32, 128075]</span></code></pre></div>
+          <p>So we already have a number for any text in any language. Why not just use code points as our tokens? Two reasons:</p>
+          <ul>
+            <li><b>The vocabulary would be huge</b> — about 150,000 entries, most of them for characters that almost never show up. Those rows of the embedding table would barely get trained.</li>
+            <li><b>It keeps changing.</b> Unicode is a living standard and adds new characters regularly. A model tied directly to it would have a moving target.</li>
+          </ul>
+          <p>We want something small and fixed that can still represent every character. That's what an encoding gives us.</p>
+        </section>
+
+        <!-- 05 ─────────────────────────────────────────── -->
+        <section class="card" id="utf8">
+          <span class="sec-num" aria-hidden="true">05</span>
+          <p class="sec-label">Representation</p>
+          <h2>Why UTF-8</h2>
+          <p class="lede">An encoding turns code points into bytes. There are three of them — UTF-8, UTF-16 and UTF-32 — and UTF-8 is by far the most common.</p>
+          <p>UTF-8 turns each character into one to four bytes. Simple English letters take one byte; Korean takes three; emoji take four. The first bits of each byte tell you where a character starts and how many bytes it uses:</p>
+          <table>
+            <thead><tr><th style="width:28%">Code point range</th><th style="width:10%">Bytes</th><th>Bit pattern</th><th style="width:22%">Example</th></tr></thead>
+            <tbody>
+              <tr><td>U+0000 – U+007F</td><td class="num">1</td><td class="mono">0xxxxxxx</td><td><code>'H'</code> → <code>48</code></td></tr>
+              <tr><td>U+0080 – U+07FF</td><td class="num">2</td><td class="mono">110xxxxx 10xxxxxx</td><td><code>'é'</code> → <code>C3 A9</code></td></tr>
+              <tr><td>U+0800 – U+FFFF</td><td class="num">3</td><td class="mono">1110xxxx 10xxxxxx 10xxxxxx</td><td><code>'안'</code> → <code>EC 95 88</code></td></tr>
+              <tr><td>U+10000 – U+10FFFF</td><td class="num">4</td><td class="mono">11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</td><td><code>'👋'</code> → <code>F0 9F 91 8B</code></td></tr>
+            </tbody>
+          </table>
+          <p>Why UTF-8 and not the other two?</p>
+          <ul>
+            <li><b>It's backwards compatible with ASCII.</b> Plain English text looks exactly the same in ASCII and UTF-8. UTF-16 and UTF-32 don't have this.</li>
+            <li><b>It doesn't waste space.</b> UTF-16 writes <code>"hello"</code> as <code>68 00 65 00 6C 00 6C 00 6F 00</code> — lots of zeros. UTF-32 uses four bytes per letter, three of them zero. UTF-8 uses just five bytes.</li>
+            <li><b>There are only 256 possible bytes.</b> Any text in any language becomes a list of numbers between 0 and 255. That's a small, fixed starting vocabulary that never needs to change, no matter what Unicode adds.</li>
+          </ul>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>encodings</span></div>
+<pre><code><span class="f">list</span>(<span class="s">"hello"</span>.encode(<span class="s">"utf-8"</span>))        <span class="c"># [104, 101, 108, 108, 111]</span>
+<span class="f">list</span>(<span class="s">"hello"</span>.encode(<span class="s">"utf-16-le"</span>))     <span class="c"># [104, 0, 101, 0, 108, 0, 108, 0, 111, 0]</span>
+<span class="f">list</span>(<span class="s">"안녕 👋"</span>.encode(<span class="s">"utf-8"</span>))        <span class="c"># [236, 149, 136, 235, 133, 149, 32, 240, 159, 145, 139]</span></code></pre></div>
+          <p>So now we can represent any text with just 256 tokens. The catch: sequences get even <i>longer</i> than with characters, because a Korean syllable now takes three slots and an emoji takes four. The embedding table is tiny, but the context fills up with bytes very quickly.</p>
+          <p>(There is research on feeding raw bytes straight into a model, using a modified Transformer so very long sequences stay affordable. The paper Karpathy points to is <a href="https://arxiv.org/abs/2305.07185">MEGABYTE</a> (Meta, 2023), which groups bytes into fixed-size patches: a small model works inside each patch and a big model works across patches. Since then, Meta's <a href="https://arxiv.org/abs/2412.09871">Byte Latent Transformer</a> (2024) matched Llama 3's tokenizer-based training up to 8B parameters by making patches bigger where the next byte is easy to predict. <a href="https://arxiv.org/abs/2507.07955">H-Net</a> (2025) learns where to draw chunk boundaries itself, and a byte-level H-Net beat a BPE Transformer trained with the same compute. Most production LLMs still use tokenizers, though.)</p>
+          <div class="takeaway">
+            <strong>Where this leaves us</strong>
+            We keep UTF-8 bytes as the starting point, but we want a bigger vocabulary — one whose size we can pick. The trick is to take byte combinations that show up a lot and turn each into a single new token. That's byte-pair encoding.
+          </div>
+        </section>
+
+        <!-- 06 ─────────────────────────────────────────── -->
+        <section class="card" id="bpe">
+          <span class="sec-num" aria-hidden="true">06</span>
+          <p class="sec-label">Algorithm</p>
+          <h2>Byte-pair encoding in one example</h2>
+          <p class="lede">Byte-pair encoding (BPE) is an old compression trick, and the whole idea fits in one sentence: find the pair of neighbouring symbols that shows up most often, replace it everywhere with one new symbol, and repeat.</p>
+          <p>Here's the example from Wikipedia. We have the sequence <code>aaabdaaabac</code>, made from just four letters <code>{a, b, c, d}</code>. It's too long, and we'd like to shorten it:</p>
+          <table>
+            <thead><tr><th style="width:9%">Round</th><th>Sequence</th><th style="width:20%">Top pair</th><th style="width:14%">New symbol</th><th style="width:11%">Length</th><th style="width:10%">Vocab</th></tr></thead>
+            <tbody>
+              <tr><td class="num">0</td><td class="mono">a a a b d a a a b a c</td><td class="mono">aa (×4)</td><td>—</td><td class="num">11</td><td class="num">4</td></tr>
+              <tr><td class="num">1</td><td class="mono">Z a b d Z a b a c</td><td class="mono">ab (×2)</td><td class="mono">Z = aa</td><td class="num">9</td><td class="num">5</td></tr>
+              <tr><td class="num">2</td><td class="mono">Z Y d Z Y a c</td><td class="mono">ZY (×2)</td><td class="mono">Y = ab</td><td class="num">7</td><td class="num">6</td></tr>
+              <tr><td class="num">3</td><td class="mono">X d X a c</td><td>—</td><td class="mono">X = ZY</td><td class="num">5</td><td class="num">7</td></tr>
+            </tbody>
+          </table>
+          <ul>
+            <li>Each round makes the sequence shorter and adds exactly one new symbol to the vocabulary.</li>
+            <li>New symbols can be merged again. <code>X</code> is made from <code>Z</code> and <code>Y</code>, which were themselves made from the original letters.</li>
+            <li>We choose how many rounds to run. Fewer rounds: small vocabulary, long sequences. More rounds: big vocabulary, short sequences.</li>
+          </ul>
+          <div class="big-idea">Replace <span class="r">{a, b, c, d}</span> with the 256 byte values and the toy sequence with a corpus of UTF-8 bytes,<br>and this is the GPT-2 tokenizer — and GPT-4's, and GPT-5's.</div>
+          <p>The algorithm hasn't changed since GPT-2. What changed is how many merges are run, what text they're learned from, and the regex that splits text before merging:</p>
+          <table>
+            <thead><tr><th style="width:22%">Model</th><th style="width:22%">Encoding</th><th style="width:14%">Vocab</th><th>What's different</th></tr></thead>
+            <tbody>
+              <tr><td>GPT-2, GPT-3</td><td class="mono">gpt2 / r50k_base</td><td class="num">~50k</td><td>The baseline we build here. Runs of spaces never merge.</td></tr>
+              <tr><td>GPT-3.5, GPT-4</td><td class="mono">cl100k_base</td><td class="num">~100k</td><td>Case-insensitive contractions, numbers split into chunks of up to three digits, runs of spaces can merge.</td></tr>
+              <tr><td>GPT-4o, o-series, GPT-5</td><td class="mono">o200k_base</td><td class="num">~200k</td><td>Twice the vocabulary again, with many more merges for non-English text. The regex also splits on case changes inside words (so <code>CamelCase</code> → <code>Camel</code> + <code>Case</code>).</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- 07 ─────────────────────────────────────────── -->
+        <section class="card" id="train">
+          <span class="sec-num" aria-hidden="true">07</span>
+          <p class="sec-label">Implementation</p>
+          <h2>Training a tokenizer on Shakespeare</h2>
+          <p class="lede">Our training text is Tiny Shakespeare: 1,115,394 characters, all plain ASCII, so also 1,115,394 bytes. We'll do 256 merges, which grows the vocabulary from 256 to 512.</p>
+
+          <h3>Pre-tokenization: split before merging</h3>
+          <p>If we run BPE on the raw text, it will happily merge across word boundaries. A common word like <code>dog</code> appears next to all kinds of punctuation, so we'd end up with <code>dog.</code>, <code>dog!</code> and <code>dog?</code> as three separate tokens — mixing the meaning of the word with punctuation. GPT-2 avoids this by first cutting the text into chunks with a regular expression, and only merging <i>inside</i> each chunk. Two chunks are never merged together.</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>chunking</span></div>
+<pre><code><span class="k">import</span> regex <span class="k">as</span> re        <span class="c"># pip install regex — the stdlib re lacks \p{L} and \p{N}</span>
+
+gpt2_pattern = re.compile(
+    <span class="s">r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""</span>
+)
+
+<span class="k">with</span> <span class="f">open</span>(<span class="s">'input.txt'</span>, encoding=<span class="s">'utf-8'</span>) <span class="k">as</span> f:
+    text = f.read()
+
+chunks = re.findall(gpt2_pattern, text)
+ids = [<span class="f">list</span>(chunk.encode(<span class="s">'utf-8'</span>)) <span class="k">for</span> chunk <span class="k">in</span> chunks]</code></pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+<pre class="output">chunks[:12]  →  ['First', ' Citizen', ':', '\n', 'Before', ' we', ' proceed', ' any', ' further', ',', ' hear', ' me']
+len(chunks)  →  297,833</pre></div>
+          <p>The pattern looks scary, but it's just a list of options separated by <code>|</code>. Going left to right through the text, it grabs the first option that matches:</p>
+          <table>
+            <thead><tr><th style="width:34%">Alternative</th><th>Matches</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">'s|'t|'re|'ve|'m|'ll|'d</td><td>Common English contractions, split from the word they attach to.</td></tr>
+              <tr><td class="mono">&nbsp;?\p{L}+</td><td>Optional space, then one or more letters in any script. This is why the space belongs to the <i>following</i> word.</td></tr>
+              <tr><td class="mono">&nbsp;?\p{N}+</td><td>Optional space, then digits. Letters and digits never share a chunk.</td></tr>
+              <tr><td class="mono">&nbsp;?[^\s\p{L}\p{N}]+</td><td>Optional space, then anything that is not whitespace, letter or digit — punctuation.</td></tr>
+              <tr><td class="mono">\s+(?!\S)</td><td>A run of whitespace up to, but not including, its last character, so the last space can attach to the next word.</td></tr>
+              <tr><td class="mono">\s+</td><td>Any remaining whitespace, typically trailing.</td></tr>
+            </tbody>
+          </table>
+          <div class="task">
+            <div class="task-name"><span>"Hello've world123 how are&nbsp;&nbsp;&nbsp;&nbsp;you!!!?"</span><em>9 chunks</em></div>
+            <div class="seq"><span class="tok">Hello</span><span class="tok ex">'ve</span><span class="tok sp"> world</span><span class="tok">123</span><span class="tok sp"> how</span><span class="tok sp"> are</span><span class="tok txt">   </span><span class="tok sp"> you</span><span class="tok ex">!!!?</span></div>
+          </div>
+          <p>Note that <code>ids</code> is now a list of lists — one list of bytes per chunk — not one long list. All the functions below work chunk by chunk.</p>
+          <div class="takeaway note">
+            <strong>A known quirk</strong>
+            The contraction rules only work for lowercase and the plain ASCII apostrophe. <code>HOUSE'S</code> and <code>house’s</code> (curly apostrophe) get split differently from <code>house's</code>. There's even a comment in the GPT-2 code saying they should have used <code>re.IGNORECASE</code>. GPT-4's pattern fixes this.
+          </div>
+
+          <h3>Counting adjacent pairs</h3>
+          <p><code>get_stats</code> goes through each chunk and counts how often each pair of neighbouring bytes appears. Pairs are never counted across two chunks.</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>get_stats</span></div>
+<pre><code><span class="k">def</span> <span class="f">get_stats</span>(ids):
+    count_byte_pairs = {}
+    <span class="k">for</span> b <span class="k">in</span> ids:                                        <span class="c"># one chunk at a time</span>
+        byte_pairs = [(a, b) <span class="k">for</span> a, b <span class="k">in</span> <span class="f">zip</span>(b[:-<span class="n">1</span>], b[<span class="n">1</span>:])]
+        <span class="k">for</span> pair <span class="k">in</span> byte_pairs:
+            <span class="k">if</span> pair <span class="k">in</span> count_byte_pairs:
+                count_byte_pairs[pair] += <span class="n">1</span>
+            <span class="k">else</span>:
+                count_byte_pairs[pair] = <span class="n">1</span>
+    <span class="k">return</span> count_byte_pairs</code></pre></div>
+
+          <h3>Replacing a pair</h3>
+          <p><code>merge</code> walks through a chunk from left to right and replaces every occurrence of <code>pair</code> with the new ID. The <code>i &lt; len(lst) - 1</code> check makes sure we don't run off the end of the list at the last element.</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>merge</span></div>
+<pre><code><span class="k">def</span> <span class="f">merge</span>(lst, pair, idx):
+    new_list = []
+    i = <span class="n">0</span>
+    <span class="k">while</span> i &lt; <span class="f">len</span>(lst):
+        <span class="k">if</span> i &lt; <span class="f">len</span>(lst) - <span class="n">1</span> <span class="k">and</span> lst[i] == pair[<span class="n">0</span>] <span class="k">and</span> lst[i+<span class="n">1</span>] == pair[<span class="n">1</span>]:
+            new_list.append(idx)
+            i += <span class="n">2</span>                                       <span class="c"># skip both halves</span>
+        <span class="k">else</span>:
+            new_list.append(lst[i])
+            i += <span class="n">1</span>
+    <span class="k">return</span> new_list
+
+merge([<span class="n">5</span>, <span class="n">6</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">9</span>, <span class="n">1</span>], (<span class="n">6</span>, <span class="n">7</span>), <span class="n">99</span>)            <span class="c"># [5, 6, 99, 9, 1]</span></code></pre></div>
+
+          <h3>The training loop</h3>
+          <p>Now we just repeat: count the pairs, pick the most common one, give it a new ID, and replace it everywhere. We keep two dictionaries. <code>merges</code> remembers which pair became which new ID — that's what we'll need for encoding later. <code>vocab</code> remembers which bytes each ID stands for — that's what we'll need for decoding. <code>vocab_pretty</code> is only there so we can print something readable.</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>train</span></div>
+<pre><code>VOCAB_SIZE = <span class="n">512</span>
+MERGES = VOCAB_SIZE - <span class="n">256</span>
+
+vocab        = {i: <span class="f">bytes</span>([i]) <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(<span class="n">256</span>)}       <span class="c"># id → bytes</span>
+vocab_pretty = {i: <span class="f">chr</span>(i)    <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(<span class="n">256</span>)}       <span class="c"># id → printable (ASCII only)</span>
+merges       = {}                                        <span class="c"># (id, id) → new id</span>
+
+<span class="k">for</span> k <span class="k">in</span> <span class="f">range</span>(MERGES):
+    counts   = get_stats(ids)
+    max_pair = <span class="f">max</span>(counts, key=counts.get)
+    new_id   = <span class="n">256</span> + k
+
+    merges[max_pair]     = new_id
+    vocab[new_id]        = vocab[max_pair[<span class="n">0</span>]] + vocab[max_pair[<span class="n">1</span>]]
+    vocab_pretty[new_id] = vocab_pretty[max_pair[<span class="n">0</span>]] + vocab_pretty[max_pair[<span class="n">1</span>]]
+    <span class="f">print</span>(<span class="s">f"{new_id} : [{vocab_pretty[max_pair[0]]}][{vocab_pretty[max_pair[1]]}] -> [{vocab_pretty[new_id]}]"</span>)
+
+    ids = [merge(chunk, max_pair, new_id) <span class="k">for</span> chunk <span class="k">in</span> ids]</code></pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>merge log</span></div>
+<pre class="output">256 : [ ][t]    -> [ t]        23,837 occurrences
+257 : [h][e]    -> [he]        18,203
+258 : [ ][a]    -> [ a]
+259 : [o][u]    -> [ou]
+260 : [ ][s]    -> [ s]
+261 : [ ][m]    -> [ m]
+262 : [i][n]    -> [in]
+263 : [ ][w]    -> [ w]
+264 : [r][e]    -> [re]
+265 : [h][a]    -> [ha]
+266 : [n][d]    -> [nd]
+267 : [ t][he]  -> [ the]       8,684   ← built from two earlier merges
+  …
+288 : [ y][ou]  -> [ you]
+296 : [ a][nd]  -> [ and]
+323 : [ t][hat] -> [ that]
+414 : [ sha][ll]-> [ shall]
+511 : [at][her] -> [ather]</pre></div>
+          <p>The merge log shows what the tokenizer picked up from Shakespeare:</p>
+          <ul>
+            <li><b>Lots of tokens start with a space.</b> The regex sticks the space onto the next word, so "space + first letter of a common word" is the most frequent pair. The tokenizer learns the starts of words before the middles.</li>
+            <li><b>Merges build on each other.</b> <code>267</code> is <code>" t"</code> + <code>"he"</code>, both made earlier. By 414 we have <code>" shall"</code>, and by 511 pieces like <code>"ather"</code> that finish <i>father</i>, <i>rather</i> and <i>gather</i>.</li>
+            <li><b>It depends on the training text.</b> <code>" thou"</code>, <code>" thy"</code> and <code>" thee"</code> each get their own token because this is Shakespeare. Trained on Python code, those slots would have gone to runs of spaces instead. The same goes for languages: the more Japanese in the tokenizer's training text, the more Japanese merges, and the shorter Japanese text becomes.</li>
+          </ul>
+          <div class="figwrap narrow">
+            <svg viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg" font-family="Fira Code, monospace" font-size="12">
+              <g stroke="#58627A" stroke-width="1.2" fill="none">
+                <path d="M60 112v-12h50M110 112v-12h-50"/><path d="M200 112v-12h50M250 112v-12h-50"/><path d="M340 112v-12h50M390 112v-12h-50"/><path d="M480 112v-12h40M520 112v-12h-40"/>
+                <path d="M85 66v-12h70M155 66v-12h-70"/>
+              </g>
+              <g fill="#fff" stroke="#1450B8" stroke-width="1.4">
+                <rect x="40" y="112" width="40" height="26" rx="6"/><rect x="90" y="112" width="40" height="26" rx="6"/>
+                <rect x="180" y="112" width="40" height="26" rx="6"/><rect x="230" y="112" width="40" height="26" rx="6"/>
+                <rect x="320" y="112" width="40" height="26" rx="6"/><rect x="370" y="112" width="40" height="26" rx="6"/>
+                <rect x="460" y="112" width="40" height="26" rx="6"/><rect x="500" y="112" width="40" height="26" rx="6"/>
+              </g>
+              <g fill="#121A2B" text-anchor="middle">
+                <text x="60" y="129">" "</text><text x="110" y="129">t</text><text x="200" y="129">h</text><text x="250" y="129">e</text>
+                <text x="340" y="129">" "</text><text x="390" y="129">a</text><text x="480" y="129">o</text><text x="520" y="129">u</text>
+              </g>
+              <g fill="#1450B8">
+                <rect x="55" y="66" width="60" height="26" rx="6"/><rect x="195" y="66" width="60" height="26" rx="6"/><rect x="335" y="66" width="60" height="26" rx="6"/><rect x="470" y="66" width="60" height="26" rx="6"/>
+              </g>
+              <g fill="#fff" text-anchor="middle">
+                <text x="85" y="83">256 " t"</text><text x="225" y="83">257 he</text><text x="365" y="83">258 " a"</text><text x="500" y="83">259 ou</text>
+              </g>
+              <rect x="110" y="20" width="90" height="26" rx="6" fill="#F2B705"/><text x="155" y="37" text-anchor="middle" fill="#121A2B" font-weight="600">267 " the"</text>
+            </svg>
+          </div>
+          <p class="caption"><b>A merge forest.</b> The bottom row is raw bytes. Each merge joins two items into a new one above them, and new tokens can be merged again — 256 and 257 are both children of 267. It's a forest rather than a single tree, because there's no one token at the top that everything merges into.</p>
+          <div class="stats">
+            <div class="stat"><div class="v">1,115,394</div><div class="l">bytes in the corpus</div></div>
+            <div class="stat"><div class="v">575,345</div><div class="l">tokens after 256 merges</div></div>
+            <div class="stat"><div class="v">1.94×</div><div class="l">compression ratio</div></div>
+            <div class="stat"><div class="v">512</div><div class="l">vocabulary size</div></div>
+          </div>
+          <div class="takeaway note">
+            <strong>Why <code>vocab</code> stores <code>bytes</code>, not <code>chr</code></strong>
+            <code>chr(i)</code> is fine for printing IDs below 128, which is why <code>vocab_pretty</code> works on our all-ASCII Shakespeare. But bytes 128–255 aren't characters on their own — they're pieces of multi-byte UTF-8 characters. <code>chr(236)</code> prints <code>ì</code>, but in real text byte 236 is most likely the first third of a Korean syllable. So the real table maps IDs to <code>bytes</code>, and decoding joins those bytes and decodes them all at once.
+          </div>
+          <div class="takeaway dark">
+            <strong>What was learned</strong>
+            The whole trained tokenizer is just the <code>merges</code> dictionary: 256 pairs, in order. Everything else — <code>vocab</code>, the printable names, the compression ratio — can be rebuilt from it. There's nothing else to learn.
+          </div>
+        </section>
+
+        <!-- 08 ─────────────────────────────────────────── -->
+        <section class="card" id="codec">
+          <span class="sec-num" aria-hidden="true">08</span>
+          <p class="sec-label">Implementation</p>
+          <h2>Encoding and decoding</h2>
+          <p class="lede">Training gave us a merge table. Now we use it both ways: text to numbers, and numbers back to text. Each direction has one small gotcha.</p>
+
+          <h3>Decode: IDs → text</h3>
+          <p>For each ID, look up its bytes, join them all together, and decode the result as UTF-8. If we only saved <code>merges</code>, we can rebuild <code>vocab</code> by replaying the merges in the order they were made. (Python dictionaries keep insertion order from 3.7 onwards, so this just works.)</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>decode</span></div>
+<pre><code>vocab = {i: <span class="f">bytes</span>([i]) <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(<span class="n">256</span>)}
+<span class="k">for</span> (p0, p1), new_id <span class="k">in</span> merges.items():               <span class="c"># insertion order matters</span>
+    vocab[new_id] = vocab[p0] + vocab[p1]
+
+<span class="k">def</span> <span class="f">decode</span>(ids):
+    raw = <span class="s">b""</span>.join(vocab[i] <span class="k">for</span> i <span class="k">in</span> ids)
+    <span class="k">return</span> raw.decode(<span class="s">"utf-8"</span>, errors=<span class="s">"replace"</span>)</code></pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+<pre class="output">decode([97])    →  'a'
+decode([128])   →  '�'      # with errors="strict": UnicodeDecodeError, invalid start byte</pre></div>
+          <p>The gotcha is <code>errors="replace"</code>. Not every list of bytes is valid UTF-8. Byte 128 is <code>10000000</code> in binary, which doesn't fit any of the patterns in the table in <a href="#utf8">section 5</a>. A model can output any IDs it likes, so it can produce sequences like this. By default Python would crash; with <code>"replace"</code> it puts in a <code>�</code> instead, which is also what OpenAI's code does. If you ever see <code>�</code> in a model's output, it means the model produced tokens that don't spell valid text.</p>
+
+          <h3>Encode: text → IDs</h3>
+          <p>Split the text into chunks with the same regex, turn each chunk into bytes, then keep merging until nothing more can be merged. The order matters here. Some merges depend on earlier ones (<code>267</code> needs <code>256</code> and <code>257</code> to exist first), so at each step we apply the merge that was learned <i>earliest</i>, not the most frequent pair.</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>encode</span></div>
+<pre><code><span class="k">def</span> <span class="f">encode</span>(text):
+    out = []
+    <span class="k">for</span> chunk <span class="k">in</span> re.findall(gpt2_pattern, text):
+        toks = <span class="f">list</span>(chunk.encode(<span class="s">"utf-8"</span>))
+        <span class="k">while</span> <span class="f">len</span>(toks) &gt;= <span class="n">2</span>:                              <span class="c"># nothing to merge in 0 or 1 tokens</span>
+            stats = get_stats([toks])
+            pair  = <span class="f">min</span>(stats, key=<span class="k">lambda</span> p: merges.get(p, <span class="f">float</span>(<span class="s">"inf"</span>)))
+            <span class="k">if</span> pair <span class="k">not</span> <span class="k">in</span> merges:                           <span class="c"># every candidate scored inf</span>
+                <span class="k">break</span>
+            toks = merge(toks, pair, merges[pair])
+        out.extend(toks)
+    <span class="k">return</span> out</code></pre></div>
+          <div class="win out"><div class="win-bar"><i></i><i></i><i></i><span>output</span></div>
+<pre class="output">encode("What is up dog? How you doin?")
+→ [462, 324, 442, 383, 103, 63, 32, 72, 297, 288, 383, 262, 63]
+→ ['What', ' is', ' up', ' do', 'g', '?', ' ', 'H', 'ow', ' you', ' do', 'in', '?']</pre></div>
+          <p>The trick is in the <code>min</code> line. <code>merges.get(p, float("inf"))</code> gives each pair its merge number, and pairs that were never merged get infinity, so they're never picked. <code>min</code> then picks the earliest merge that applies. When nothing can be merged, every pair scores infinity and <code>min</code> just returns some pair that isn't in <code>merges</code> — that's our signal to stop. The <code>len(toks) &gt;= 2</code> check handles chunks with a single byte, where there are no pairs at all.</p>
+          <p>The output tells us something too. <code>" dog"</code> isn't a single token, because 256 merges on Shakespeare never got that far, so it falls back to <code>" do"</code> + <code>"g"</code>. <code>"How"</code> at the start of the sentence, with no space in front, becomes <code>"H"</code> + <code>"ow"</code>, while <code>" you"</code> in the middle is one token. That's the same <i>egg</i> effect from <a href="#symptoms">section 2</a>, showing up in our own little tokenizer.</p>
+
+          <h3>Round trip</h3>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>tests</span></div>
+<pre><code>decode(encode(text)) == text                        <span class="c"># True — the full training corpus</span>
+
+val = <span class="s">"The quick brown fox jumps over the lazy dog. 안녕 👋"</span>
+decode(encode(val)) == val                          <span class="c"># True — unseen text, unseen script</span>
+<span class="f">len</span>(val.encode(<span class="s">"utf-8"</span>)), <span class="f">len</span>(encode(val))            <span class="c"># (56, 39)</span></code></pre></div>
+          <p>The Korean and the emoji never appeared in Shakespeare, so there are no merges for them and they go through as raw bytes — six tokens for the two Korean syllables, four for the emoji. But they still come back out perfectly. That's the nice thing about starting from bytes: there's no "unknown" token, and nothing ever gets lost.</p>
+          <p>Encoding then decoding always gives back the original string. The other way round doesn't always work: not every list of IDs is valid UTF-8, so some can't be decoded at all.</p>
+        </section>
+
+        <!-- 09 ─────────────────────────────────────────── -->
+        <section class="card" id="gpt2">
+          <span class="sec-num" aria-hidden="true">09</span>
+          <p class="sec-label">Reference</p>
+          <h2>How GPT-2's tokenizer differs from ours</h2>
+          <p class="lede">OpenAI's <code>encoder.py</code> is messy code, but it's the same algorithm we just built, with a much bigger vocabulary. Most of the confusion goes away once you match up the names.</p>
+          <table>
+            <thead><tr><th style="width:26%">In these notes</th><th style="width:30%">In <code>encoder.py</code></th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>vocab</code> (id → bytes)</td><td><code>encoder.json</code>, loaded as <code>encoder</code></td><td>Same table, stored string → id. 50,257 entries.</td></tr>
+              <tr><td><code>merges</code> (pair → id)</td><td><code>vocab.bpe</code>, loaded as <code>bpe_ranks</code></td><td>Same table; the file's line number is the rank. 50,000 merges.</td></tr>
+              <tr><td><code>gpt2_pattern</code></td><td><code>self.pat</code></td><td>Identical regex.</td></tr>
+              <tr><td>training loop, section 7</td><td>—</td><td>Never released. Only inference code is public.</td></tr>
+              <tr><td>—</td><td><code>byte_encoder</code> / <code>byte_decoder</code></td><td>Maps each byte to a printable character so the merge file can be plain text. No algorithmic content.</td></tr>
+              <tr><td>—</td><td><code>&lt;|endoftext|&gt;</code>, id 50256</td><td>One special token appended after 256 + 50,000. Handled outside BPE.</td></tr>
+            </tbody>
+          </table>
+          <p>A few things the released code doesn't tell you. OpenAI only released the code for <i>using</i> the tokenizer, not for training it. And runs of spaces are never merged in GPT-2 — every indentation space in Python is its own token 220 — so they must have used some extra rule during training that isn't documented anywhere.</p>
+          <p>GPT-4's tokenizer (<code>cl100k_base</code>, available in OpenAI's <code>tiktoken</code> library) changes the regex: contractions now work in any case, numbers are split into chunks of at most three digits (<code>\p{N}{1,3}</code>), runs of spaces are allowed to merge, and the vocabulary roughly doubles to about 100,000.</p>
+          <h3>Special tokens</h3>
+          <p>On top of the bytes and the merges, you can add <i>special tokens</i> to mark structure in the data. GPT-2 has exactly one: <code>&lt;|endoftext|&gt;</code>, ID 50256. That's why its vocabulary is 50,257 — 256 bytes + 50,000 merges + 1. It goes between documents in the training data, and the model learns that it means "what comes next has nothing to do with what came before".</p>
+          <p>Special tokens skip BPE entirely: the library looks for the exact string and swaps in the ID. Chat models use lots of them — GPT-3.5-turbo uses <code>&lt;|im_start|&gt;</code> and <code>&lt;|im_end|&gt;</code> to mark where each message starts and ends — and GPT-4 adds a few "fill in the middle" tokens for code.</p>
+        </section>
+
+        <!-- 10 ─────────────────────────────────────────── -->
+        <section class="card" id="explained">
+          <span class="sec-num" aria-hidden="true">10</span>
+          <p class="sec-label">Motivation, resolved</p>
+          <h2>The failures, explained</h2>
+          <p class="lede">Now we can answer every question from <a href="#symptoms">section 2</a>. It's really the same answer each time: the model only sees tokens, and the tokens are whatever chunks happened to be common in the tokenizer's training text.</p>
+          <ol class="recap">
+            <li><span class="q">Spelling and reversal</span>Long tokens hide their letters. In GPT-4, <code>.DefaultCellStyle</code> is a single token. Ask how many <code>l</code>s it has and the model sees one number, not letters — it answered three (there are four). Ask it to reverse the string and you get a jumble. But ask it to first write the letters out with spaces between them (so each letter becomes its own token) and then reverse that, and it gets it right.</li>
+            <li><span class="q">Non-English text</span>The tokenizer was trained mostly on English, so most of its merges are English chunks. "Hello how are you" is 5 tokens; the same sentence in Korean is 15. Everything takes three times as much room in the context. This is about the tokenizer's training text, not just the model's.</li>
+            <li><span class="q">Arithmetic</span>To add numbers you work digit by digit. But in GPT-2 a four-digit number might be one token, or two tokens split in any of several ways, depending on what happened to get merged. The model has to learn maths on top of this random chunking. GPT-4 limits number chunks to three digits; Llama 2 splits every digit on its own.</li>
+            <li><span class="q">Python under GPT-2</span>Every indentation space is a separate token 220. Code ends up being mostly spaces, so the model can fit very little actual code in its context. GPT-4's tokenizer lets runs of spaces merge, which helps a lot before you even touch the model.</li>
+            <li><span class="q">The trailing space</span>In training text, the space comes at the <i>start</i> of the next word: <code>" Oh"</code> is one token, 8840. If your prompt ends with a space, that space becomes token 220 on its own — something the model has rarely seen. The natural next token <code>" Oh"</code> doesn't fit anymore, because its space has already been used. The model is now in unfamiliar territory, and the output gets worse.</li>
+            <li><span class="q">The special-token string</span>Special tokens skip BPE: the library spots the exact string and swaps in its ID. If an app does that on user input, typing <code>&lt;|endoftext|&gt;</code> really does insert an end-of-document marker, and the model reacts the way it learned to — by treating everything before it as unrelated. That's also why special tokens are a possible attack surface.</li>
+            <li><span class="q">SolidGoldMagikarp</span>This is a Reddit username. The tokenizer was trained on text with a lot of Reddit in it, where this name showed up so often it got its own token. But the model was trained on different text where it barely appeared. So that token's row in the embedding table started out random and was never trained — like unallocated memory in a C program. When you use the word, the model gets a random vector and behaves unpredictably: dodging the question, making things up, even insulting you.</li>
+            <li><span class="q">YAML vs JSON</span>Braces, quotes and commas each cost tokens. The same data is 116 tokens in JSON and 99 in YAML with GPT-4's tokenizer. You pay per token, both in context space and in money, so YAML is simply cheaper.</li>
+          </ol>
+          <div class="big-idea">A language model never sees letters, words, digits or spaces —<br><span class="r">only the chunks its tokenizer decided were common.</span></div>
+        </section>
+
+        <!-- 11 ─────────────────────────────────────────── -->
+        <section class="card" id="vocab">
+          <span class="sec-num" aria-hidden="true">11</span>
+          <p class="sec-label">Design</p>
+          <h2>Vocabulary size</h2>
+          <p class="lede">How many merges to do is the one setting we get to choose. In the model, the vocabulary size shows up in only two places.</p>
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>where vocab_size lives</span></div>
+<pre><code><span class="k">class</span> <span class="f">GPT</span>(nn.Module):
+    <span class="k">def</span> <span class="f">__init__</span>(self):
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)   <span class="c"># vocab_size rows</span>
+        ...
+        self.lm_head = nn.Linear(n_embd, vocab_size)                    <span class="c"># vocab_size logits</span></code></pre></div>
+          <p>A bigger vocabulary means shorter sequences, so the model sees more text at once. So why not make it huge? Three reasons:</p>
+          <ul>
+            <li><b>It costs more.</b> Every extra token adds a row to the embedding table and one more output to the last layer, which runs at every position.</li>
+            <li><b>Rare tokens don't get trained.</b> With a million tokens, each one shows up rarely in the training data, so its row barely gets updated — a milder version of SolidGoldMagikarp.</li>
+            <li><b>Too much gets squished into one token.</b> If a single token holds lots of characters, the model gets only one step to make sense of all of them.</li>
+          </ul>
+          <p>In practice, people land somewhere between the high tens of thousands and about 100,000, found by trial and error. Adding tokens to an already-trained model is common too — for example, special tokens for chat or tool use. You just add rows to the embedding table and the last layer, start them off with small random values, and usually train only those new parts while freezing the rest.</p>
+          <div class="takeaway">
+            <strong>What to use in practice</strong>
+            If you can reuse GPT-4's vocabulary, just use <code>tiktoken</code> — it's fast and the byte-level BPE it uses is clean. If you need to train your own vocabulary, SentencePiece (used by Llama and Mistral) can do both training and inference, but it has a lot of settings that are easy to get wrong, so copy a known-good setup like Meta's. What we'd really like is tiktoken with training code — Karpathy's <a href="https://github.com/karpathy/minbpe">minbpe</a> is a Python version of exactly that.
+          </div>
+        </section>
+
+        <footer class="card">
+          <h2>Sources</h2>
+          <ul>
+            <li>Andrej Karpathy, <a href="https://www.youtube.com/watch?v=zduSFxRajkE">Let's build the GPT Tokenizer</a> (2024) and the companion repository <a href="https://github.com/karpathy/minbpe">minbpe</a>. These notes follow the lecture's argument; the code is our own reimplementation on Tiny Shakespeare.</li>
+            <li>Radford et al., <a href="https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf">Language Models are Unsupervised Multitask Learners</a> (GPT-2, 2019), §2.2; and <a href="https://github.com/openai/gpt-2/blob/master/src/encoder.py">openai/gpt-2 · encoder.py</a>.</li>
+            <li>Sennrich, Haddow &amp; Birch, <a href="https://arxiv.org/abs/1508.07909">Neural Machine Translation of Rare Words with Subword Units</a> (2015).</li>
+            <li><a href="https://github.com/openai/tiktoken">openai/tiktoken</a>, in particular <code>tiktoken_ext/openai_public.py</code> for the GPT-2 and cl100k_base patterns.</li>
+            <li>Yu et al., <a href="https://arxiv.org/abs/2305.07185">MEGABYTE: Predicting Million-byte Sequences with Multiscale Transformers</a> (2023); Pagnoni et al., <a href="https://arxiv.org/abs/2412.09871">Byte Latent Transformer: Patches Scale Better Than Tokens</a> (2024); Hwang, Wang &amp; Gu, <a href="https://arxiv.org/abs/2507.07955">Dynamic Chunking for End-to-End Hierarchical Sequence Modeling</a> (H-Net, 2025).</li>
+            <li>Rumbelow &amp; Watkins, <a href="https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation">SolidGoldMagikarp (plus, prompt generation)</a> (2023).</li>
+            <li>Beren Millidge, <a href="https://www.beren.io/2023-02-04-Integer-tokenization-is-insane/">Integer tokenization is insane</a> (2023).</li>
+            <li>Nathan Reed, <a href="https://www.reedbeta.com/blog/programmers-intro-to-unicode/">A Programmer's Introduction to Unicode</a>; <a href="https://utf8everywhere.org/">UTF-8 Everywhere</a>.</li>
+            <li>Token counts for GPT-2 and GPT-4 were read from <a href="https://tiktokenizer.vercel.app">tiktokenizer</a>.</li>
+          </ul>
+        </footer>
+      </div>
+
+      <aside class="post-toc">
+        <div class="toc-label">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#what">1 · What a tokenizer is</a></li>
+          <li><a href="#symptoms">2 · Failures that look like model failures</a></li>
+          <li><a href="#chars">3 · The character-level tokenizer</a></li>
+          <li><a href="#unicode">4 · Why Unicode</a></li>
+          <li><a href="#utf8">5 · Why UTF-8</a></li>
+          <li><a href="#bpe">6 · BPE in one example</a></li>
+          <li><a href="#train">7 · Training on Shakespeare</a></li>
+          <li><a href="#codec">8 · Encoding and decoding</a></li>
+          <li><a href="#gpt2">9 · GPT-2's tokenizer vs ours</a></li>
+          <li><a href="#explained">10 · The failures, explained</a></li>
+          <li><a href="#vocab">11 · Vocabulary size</a></li>
+        </ul>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const prog = document.getElementById('progress');
+    const links = [...document.querySelectorAll('.toc-list a')];
+    function onScroll() {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+      let active = 0;
+      const y = h.scrollTop + 140;
+      document.querySelectorAll('section.card').forEach((s, i) => { if (s.offsetTop <= y) active = i });
+      links.forEach((a, i) => a.classList.toggle('active', i === active));
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  </script>
+</body>
+</html>
