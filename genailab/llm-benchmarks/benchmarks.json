@@ -9,19 +9,19 @@
     ],
     "sota": "74.7",
     "sota_model": "ST-MoE-32B",
-    "desc": "Three rounds of human-written NLI examples that fooled the strongest model of the previous round; still unsaturated."
+    "desc": "Tests whether a model can judge if one sentence follows from another, using examples deliberately written to trick strong models."
   },
   {
     "slug": "commitmentbank",
     "name": "CommitmentBank (CB)",
     "category": "NLI",
-    "released": "2019 (SuperGLUE)",
+    "released": "2019",
     "papers": [
       "GPT-3"
     ],
     "sota": "98.6 F1 / 99.2 acc",
     "sota_model": "Vega v2",
-    "desc": "Tiny 3-way entailment set about embedded clauses — how committed is the speaker to the clause being true?"
+    "desc": "Tests whether a model can tell how strongly a speaker believes a clause embedded in their sentence — for example, after 'I doubt that…'."
   },
   {
     "slug": "multinli",
@@ -33,7 +33,7 @@
     ],
     "sota": "92.6",
     "sota_model": "Turing NLR v5 (Microsoft)",
-    "desc": "433k NLI pairs across ten genres (fiction, government, telephone speech, …) with matched and mismatched test sets."
+    "desc": "Tests whether a model can judge if one sentence follows from another across many kinds of writing — fiction, phone calls, government reports and more."
   },
   {
     "slug": "qnli",
@@ -45,20 +45,20 @@
     ],
     "sota": "99.2",
     "sota_model": "DeBERTa / Turing NLR v4",
-    "desc": "SQuAD recast as a binary task: does this Wikipedia sentence contain the answer to this question?"
+    "desc": "Tests whether a model can tell if a given sentence from Wikipedia actually contains the answer to a question."
   },
   {
     "slug": "rte",
     "name": "RTE",
     "category": "NLI",
-    "released": "2005–2009 (RTE1–5), bundled 2018",
+    "released": "2005–2018",
     "papers": [
       "GPT-1",
       "GPT-3"
     ],
     "sota": "96.0",
     "sota_model": "Vega v2 (JD Explore Academy)",
-    "desc": "The small, hard, classic entailment set from the PASCAL/TAC challenges; in both GLUE and SuperGLUE."
+    "desc": "Tests whether a model can decide if a short news passage implies a hand-written statement; a small, old and surprisingly hard set."
   },
   {
     "slug": "scitail",
@@ -70,7 +70,7 @@
     ],
     "sota": "97.7",
     "sota_model": "DeBERTa (Microsoft)",
-    "desc": "27k entailment pairs built from science-exam questions and web sentences; no neutral class."
+    "desc": "Tests whether a model can decide if a sentence found on the web supports a statement taken from a school science exam."
   },
   {
     "slug": "snli",
@@ -82,7 +82,7 @@
     ],
     "sota": "93.1",
     "sota_model": "EFL (entailment as few-shot learner, RoBERTa-large)",
-    "desc": "570k human-written sentence pairs labelled entailment, contradiction or neutral; the first large-scale NLI corpus."
+    "desc": "Tests whether a model can tell if one sentence logically follows from, contradicts, or is unrelated to another, using short sentences about everyday photos."
   },
   {
     "slug": "boolq",
@@ -94,7 +94,7 @@
     ],
     "sota": "92.4",
     "sota_model": "ST-MoE-32B",
-    "desc": "16k naturally occurring yes/no questions from Google search, each paired with a Wikipedia passage."
+    "desc": "Tests whether a model can answer real yes/no questions people typed into Google, given a Wikipedia passage."
   },
   {
     "slug": "coqa",
@@ -107,7 +107,7 @@
     ],
     "sota": "90.7",
     "sota_model": "RoBERTa + AT + KD ensemble (Zhuiyi) / TR-MT (WeChat AI)",
-    "desc": "127k questions in 8k multi-turn conversations about a passage; each question depends on the ones before it."
+    "desc": "Tests whether a model can answer a chain of questions about a passage, where each question depends on the earlier ones."
   },
   {
     "slug": "drop",
@@ -119,7 +119,7 @@
     ],
     "sota": "91.6",
     "sota_model": "DeepSeek-V3",
-    "desc": "96k questions that need counting, sorting, dates or arithmetic over a Wikipedia paragraph; answers are numbers, dates or spans."
+    "desc": "Tests whether a model can read a paragraph and do simple arithmetic, counting or date comparison to answer a question."
   },
   {
     "slug": "multirc",
@@ -131,7 +131,7 @@
     ],
     "sota": "89.6 F1a / 65.8 EM",
     "sota_model": "ST-MoE-32B",
-    "desc": "Questions with several candidate answers, any number of which can be correct; answering needs more than one sentence."
+    "desc": "Tests whether a model can answer questions that need information from several sentences, where more than one option can be correct."
   },
   {
     "slug": "quac",
@@ -143,7 +143,7 @@
     ],
     "sota": "76.3",
     "sota_model": "CKT-QA ensemble (Ant Group)",
-    "desc": "Teacher–student dialogues about a hidden Wikipedia section; 100k questions, many unanswerable, still below human level."
+    "desc": "Tests whether a model can answer a student's questions about a Wikipedia article turn by turn, including saying when there is no answer."
   },
   {
     "slug": "race",
@@ -156,7 +156,7 @@
     ],
     "sota": "92.9 (RACE-H)",
     "sota_model": "Claude 3 Opus (5-shot)",
-    "desc": "100k multiple-choice questions from Chinese middle- and high-school English exams; answers often need reasoning over the whole passage."
+    "desc": "Tests reading comprehension using multiple-choice questions from English exams given to Chinese school students."
   },
   {
     "slug": "record",
@@ -168,7 +168,7 @@
     ],
     "sota": "96.4 F1 / 95.9 EM",
     "sota_model": "Turing NLR v5",
-    "desc": "120k cloze-style queries over CNN/Daily Mail articles; fill the masked entity in a sentence that needs commonsense."
+    "desc": "Tests whether a model can fill a missing name or place in a sentence about a news article, which needs some common sense."
   },
   {
     "slug": "squad2",
@@ -180,7 +180,7 @@
     ],
     "sota": "93.2 F1 / 90.9 EM",
     "sota_model": "IE-Net ensemble (RICOH)",
-    "desc": "SQuAD plus 50k unanswerable questions written to look answerable; the model must extract a span or abstain."
+    "desc": "Tests whether a model can find the answer to a question in a Wikipedia paragraph, or recognise when the paragraph does not contain it."
   },
   {
     "slug": "natural-questions",
@@ -193,7 +193,7 @@
     ],
     "sota": "60.4",
     "sota_model": "Atlas (Izacard et al.)",
-    "desc": "300k real Google queries with Wikipedia answers; the closed-book 'NQ-Open' variant asks the model to answer from memory."
+    "desc": "Tests whether a model can answer real Google search questions from memory, without being shown any document."
   },
   {
     "slug": "triviaqa",
@@ -205,7 +205,7 @@
     ],
     "sota": "91.8",
     "sota_model": "Llama 3.1 405B (base)",
-    "desc": "95k trivia questions written by enthusiasts, with Wikipedia and web evidence; the standard closed-book knowledge probe."
+    "desc": "Tests how many trivia-quiz questions a model can answer from the facts it memorised during training."
   },
   {
     "slug": "webquestions",
@@ -217,7 +217,7 @@
     ],
     "sota": "56.0",
     "sota_model": "GRG 7B (generate-retrieve-generate)",
-    "desc": "6k questions from the Google Suggest API answered against Freebase; the oldest open-domain QA set still in use."
+    "desc": "Tests whether a model can answer short factual questions mined from Google search suggestions, from memory alone."
   },
   {
     "slug": "arc",
@@ -229,7 +229,7 @@
     ],
     "sota": "96.9 (Challenge) · 98.9 (Easy)",
     "sota_model": "Llama 3.1 405B (Challenge) · DeepSeek-V3 base (Easy)",
-    "desc": "7.8k grade-school science questions; the Challenge split holds the ones retrieval and co-occurrence methods got wrong."
+    "desc": "Tests whether a model can answer grade-school science exam questions; the Challenge split contains the ones simple word-matching cannot solve."
   },
   {
     "slug": "copa",
@@ -241,7 +241,7 @@
     ],
     "sota": "99.4",
     "sota_model": "Vega v2",
-    "desc": "1,000 tiny causal puzzles: given a premise, which of two alternatives is the more plausible cause or effect?"
+    "desc": "Tests causal common sense: given a short statement, which of two alternatives is the more likely cause or effect."
   },
   {
     "slug": "hellaswag",
@@ -253,7 +253,7 @@
     ],
     "sota": "95.4",
     "sota_model": "Claude 3 Opus",
-    "desc": "Pick the most plausible continuation of a scene from four options; wrong options were machine-generated to fool BERT."
+    "desc": "Tests whether a model can pick the most sensible continuation of an everyday scene from four options written to fool it."
   },
   {
     "slug": "openbookqa",
@@ -265,7 +265,7 @@
     ],
     "sota": "95.2",
     "sota_model": "X-Reasoner (AI2 leaderboard)",
-    "desc": "6k science questions that need one 'open book' fact plus commonsense the book does not contain."
+    "desc": "Tests whether a model can combine a given science fact with everyday knowledge to answer a question."
   },
   {
     "slug": "piqa",
@@ -277,7 +277,7 @@
     ],
     "sota": "90.1",
     "sota_model": "UNICORN (T5-11B multitask)",
-    "desc": "Choose the sensible way to accomplish an everyday physical goal — 'to separate egg whites…' — from two solutions."
+    "desc": "Tests physical common sense: given an everyday goal, which of two near-identical instructions actually works in the real world."
   },
   {
     "slug": "story-cloze",
@@ -290,20 +290,20 @@
     ],
     "sota": "91.8",
     "sota_model": "Li et al. 2019 (as cited in GPT-3)",
-    "desc": "Given four sentences of a five-sentence story, choose the right fifth sentence from two candidates."
+    "desc": "Tests whether a model can choose the right ending for a short five-sentence story about everyday life."
   },
   {
     "slug": "winograd-schema",
     "name": "Winograd Schema Challenge",
     "category": "Commonsense Reasoning",
-    "released": "2012 (WSC273); 2019 SuperGLUE version",
+    "released": "2012",
     "papers": [
       "GPT-2",
       "GPT-3"
     ],
     "sota": "~91.6 (WSC273)",
     "sota_model": "OK-Transformer (RoBERTa-based) / RoBERTa fine-tuned on WinoGrande 90.1",
-    "desc": "273 hand-crafted pronoun-resolution puzzles where one word flips the answer; the classic test of commonsense."
+    "desc": "Tests whether a model can work out who a pronoun refers to in sentences where only common sense decides — 'it' in 'the trophy does not fit in the suitcase because it is too big'."
   },
   {
     "slug": "winogrande",
@@ -315,7 +315,7 @@
     ],
     "sota": "96.1",
     "sota_model": "ST-MoE-32B",
-    "desc": "44k Winograd-style fill-in-the-blank items, crowd-sourced then adversarially filtered; still a standard LLM metric."
+    "desc": "Tests whether a model can fill a blank in a sentence with the right of two people or objects, using common sense about the situation."
   },
   {
     "slug": "childrens-book-test",
@@ -327,7 +327,7 @@
     ],
     "sota": "93.3 (CN) · 89.1 (NE)",
     "sota_model": "GPT-2 1.5B (zero-shot)",
-    "desc": "Twenty sentences of a children's book, then a 21st with a word missing; choose it from ten candidates. Scored on common nouns and named entities."
+    "desc": "Tests whether a model can fill a missing word in a sentence from a children's book after reading the twenty sentences before it."
   },
   {
     "slug": "enwik8",
@@ -339,7 +339,7 @@
     ],
     "sota": "0.94",
     "sota_model": "Transformer-XL 24L + dynamic evaluation",
-    "desc": "The first 100 MB of a raw Wikipedia XML dump, scored in bits per byte; the character-level compression benchmark."
+    "desc": "Measures how well a model predicts raw Wikipedia text one character at a time, scored as bits per character; lower is better."
   },
   {
     "slug": "lambada",
@@ -352,7 +352,7 @@
     ],
     "sota": "89.7",
     "sota_model": "PaLM 540B",
-    "desc": "Predict the last word of a passage that humans can guess only with the full context, never from the last sentence alone."
+    "desc": "Tests whether a model can guess the last word of a passage from a novel when that word can only be predicted from the whole passage."
   },
   {
     "slug": "one-billion-word",
@@ -364,20 +364,20 @@
     ],
     "sota": "21.8",
     "sota_model": "Transformer-XL Large (0.8B)",
-    "desc": "800M words of shuffled news sentences with an 800k vocabulary; the big sentence-level LM benchmark of 2014–2019."
+    "desc": "Measures how well a model predicts the next word in a billion words of shuffled news sentences, with no context between sentences."
   },
   {
     "slug": "penn-treebank",
     "name": "Penn Treebank",
     "category": "Language Modeling",
-    "released": "1993 (corpus); 2011 LM split",
+    "released": "1993",
     "papers": [
       "GPT-2",
       "GPT-3"
     ],
     "sota": "20.5",
     "sota_model": "GPT-3 175B",
-    "desc": "1M words of Wall Street Journal text with a 10k vocabulary and no punctuation; the oldest LM benchmark still reported."
+    "desc": "Measures how well a model predicts the next word in Wall Street Journal text that has been simplified to a 10,000-word vocabulary."
   },
   {
     "slug": "text8",
@@ -389,7 +389,7 @@
     ],
     "sota": "1.038",
     "sota_model": "Transformer-XL 24L + dynamic evaluation",
-    "desc": "enwik8 stripped to lower-case letters and spaces only — 27 symbols, 100M characters."
+    "desc": "Measures how well a model predicts cleaned-up Wikipedia text (lower-case letters and spaces only) one character at a time."
   },
   {
     "slug": "wikitext-103",
@@ -401,7 +401,7 @@
     ],
     "sota": "10.81",
     "sota_model": "Megatron-LM 8.3B",
-    "desc": "103M words of Wikipedia articles with a 267k vocabulary; the standard large word-level perplexity benchmark of the Transformer-XL era."
+    "desc": "Measures how well a model predicts the next word in Wikipedia articles (large version with long articles); lower perplexity is better."
   },
   {
     "slug": "wikitext-2",
@@ -413,7 +413,7 @@
     ],
     "sota": "18.34 (word-level, zero-shot)",
     "sota_model": "GPT-2 1.5B",
-    "desc": "2M words of Good/Featured Wikipedia articles with punctuation, case and numbers preserved; the small word-level LM benchmark."
+    "desc": "Measures how well a model predicts the next word in Wikipedia articles (small version); lower perplexity means better prediction."
   },
   {
     "slug": "cola",
@@ -425,7 +425,7 @@
     ],
     "sota": "73.8",
     "sota_model": "Vega v1",
-    "desc": "10k sentences from linguistics textbooks marked grammatical or not; scored by Matthews correlation."
+    "desc": "Tests whether a model can tell if a sentence is grammatically acceptable English, using examples from linguistics textbooks."
   },
   {
     "slug": "mrpc",
@@ -437,7 +437,7 @@
     ],
     "sota": "94.5 F1 / 92.6 acc",
     "sota_model": "Vega v1",
-    "desc": "5.8k news sentence pairs labelled as paraphrases or not; small, imbalanced, part of GLUE."
+    "desc": "Tests whether a model can tell if two news sentences say the same thing in different words."
   },
   {
     "slug": "qqp",
@@ -449,7 +449,7 @@
     ],
     "sota": "76.7 F1 / 91.1 acc",
     "sota_model": "Vega v1",
-    "desc": "400k pairs of Quora questions labelled duplicate or not; the big paraphrase task in GLUE."
+    "desc": "Tests whether a model can tell if two questions asked on Quora are asking the same thing."
   },
   {
     "slug": "sst2",
@@ -461,7 +461,7 @@
     ],
     "sota": "97.9",
     "sota_model": "Vega v1",
-    "desc": "67k movie-review phrases labelled positive or negative; the standard sentiment benchmark."
+    "desc": "Tests whether a model can tell if a movie-review sentence is positive or negative."
   },
   {
     "slug": "stsb",
@@ -473,7 +473,7 @@
     ],
     "sota": "93.7 Pearson / 93.3 Spearman",
     "sota_model": "Turing NLR v5",
-    "desc": "8.6k sentence pairs rated 0–5 for similarity; the one regression task in GLUE."
+    "desc": "Tests whether a model can rate how similar two sentences are in meaning, on a scale from 0 (unrelated) to 5 (identical)."
   },
   {
     "slug": "wic",
@@ -485,7 +485,7 @@
     ],
     "sota": "77.7",
     "sota_model": "ST-MoE-32B",
-    "desc": "Does the same word mean the same thing in these two sentences? 7.5k pairs; still below human level."
+    "desc": "Tests whether a model can tell if the same word means the same thing in two different sentences — 'bed' of a river versus 'bed' you sleep in."
   },
   {
     "slug": "glue",
@@ -497,7 +497,7 @@
     ],
     "sota": "91.3",
     "sota_model": "Vega v1 (JD Explore) · Turing ULR v6 (Microsoft)",
-    "desc": "Nine sentence-level tasks and one leaderboard score; the benchmark GPT-1 and BERT were measured on."
+    "desc": "A collection of nine sentence-understanding tests (grammar, sentiment, paraphrase, similarity and inference) combined into one overall score."
   },
   {
     "slug": "superglue",
@@ -509,32 +509,32 @@
     ],
     "sota": "91.3",
     "sota_model": "Vega v2 (JD Explore)",
-    "desc": "GLUE's harder successor: eight tasks (BoolQ, CB, COPA, MultiRC, ReCoRD, RTE, WiC, WSC) chosen because BERT still failed them."
+    "desc": "A harder collection of eight language-understanding tests (yes/no questions, cause and effect, word sense, coreference and more) with one overall score."
   },
   {
     "slug": "cnn-dailymail",
     "name": "CNN / Daily Mail",
     "category": "Generation",
-    "released": "Jun 2015 (QA); 2016 as summarization",
+    "released": "2015",
     "papers": [
       "GPT-2"
     ],
     "sota": "47.78 / 23.55 / 44.57",
     "sota_model": "BRIO (Liu et al., ACL 2022)",
-    "desc": "300k news articles paired with their bullet-point highlights; the default abstractive summarisation benchmark."
+    "desc": "Tests whether a model can summarise a news article into a few bullet points, scored by overlap with the editor's own summary."
   },
   {
     "slug": "wmt-translation",
     "name": "WMT Translation",
     "category": "Generation",
-    "released": "2014 / 2016",
+    "released": "2014–2016",
     "papers": [
       "GPT-2",
       "GPT-3"
     ],
     "sota": "Fr→En 39.2 (GPT-3) · En→Fr 45.6 (Edunov 2018) · De→En 40.6 (GPT-3) · En→De 41.2 (Wang 2018) · Ro→En 39.9 (mBART) · En→Ro 38.5 (mBART)",
     "sota_model": "see per-direction",
-    "desc": "Shared-task test sets for French, German and Romanian ↔ English; scored in BLEU. GPT-2 tried Fr–En, GPT-3 all three pairs."
+    "desc": "Tests how well a model translates news sentences between English and French, German or Romanian, scored by overlap with human translations."
   },
   {
     "slug": "gpt3-synthetic-tasks",
@@ -546,6 +546,6 @@
     ],
     "sota": "n/a",
     "sota_model": "—",
-    "desc": "Tasks the GPT-3 authors invented to probe in-context learning: 2–5 digit arithmetic, unscrambling words, SAT analogies, and human detection of generated news."
+    "desc": "A set of made-up probe tasks — multi-digit arithmetic, unscrambling letters, SAT-style word analogies and spotting machine-written news — used to test learning from examples in the prompt."
   }
 ]

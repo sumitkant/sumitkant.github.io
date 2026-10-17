@@ -4,7 +4,7 @@ NLI = [
 {
  "slug": "snli", "name": "SNLI", "full": "Stanford Natural Language Inference",
  "category": "nli", "released": "2015", "released_label": "Sep 2015",
- "desc": "570k human-written sentence pairs labelled entailment, contradiction or neutral; the first large-scale NLI corpus.",
+ "desc": "Tests whether a model can tell if one sentence logically follows from, contradicts, or is unrelated to another, using short sentences about everyday photos.",
  "paper": {"title": "A large annotated corpus for learning natural language inference",
            "authors": "Bowman, Angeli, Potts, Manning", "venue": "EMNLP 2015", "url": "https://arxiv.org/abs/1508.05326"},
  "facts": [("Task", "3-way sentence-pair classification"), ("Size", "550k train / 10k dev / 10k test"),
@@ -31,7 +31,7 @@ NLI = [
 {
  "slug": "multinli", "name": "MultiNLI", "full": "Multi-Genre Natural Language Inference",
  "category": "nli", "released": "2017", "released_label": "Apr 2017",
- "desc": "433k NLI pairs across ten genres (fiction, government, telephone speech, …) with matched and mismatched test sets.",
+ "desc": "Tests whether a model can judge if one sentence follows from another across many kinds of writing — fiction, phone calls, government reports and more.",
  "paper": {"title": "A Broad-Coverage Challenge Corpus for Sentence Understanding through Inference",
            "authors": "Williams, Nangia, Bowman", "venue": "NAACL 2018", "url": "https://arxiv.org/abs/1704.05426"},
  "facts": [("Task", "3-way sentence-pair classification"), ("Size", "393k train / 20k dev / 20k test"),
@@ -59,7 +59,7 @@ NLI = [
 {
  "slug": "qnli", "name": "QNLI", "full": "Question-answering NLI",
  "category": "nli", "released": "2018", "released_label": "Apr 2018",
- "desc": "SQuAD recast as a binary task: does this Wikipedia sentence contain the answer to this question?",
+ "desc": "Tests whether a model can tell if a given sentence from Wikipedia actually contains the answer to a question.",
  "paper": {"title": "GLUE: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding",
            "authors": "Wang, Singh, Michael, Hill, Levy, Bowman", "venue": "ICLR 2019 (workshop version EMNLP 2018)", "url": "https://arxiv.org/abs/1804.07461"},
  "facts": [("Task", "Binary sentence-pair classification (entailment / not entailment)"), ("Size", "105k train / 5.5k dev / 5.5k test"),
@@ -82,8 +82,8 @@ NLI = [
 },
 {
  "slug": "rte", "name": "RTE", "full": "Recognizing Textual Entailment",
- "category": "nli", "released": "2005", "released_label": "2005–2009 (RTE1–5), bundled 2018",
- "desc": "The small, hard, classic entailment set from the PASCAL/TAC challenges; in both GLUE and SuperGLUE.",
+ "category": "nli", "released": "2005", "released_label": "2005–2018",
+ "desc": "Tests whether a model can decide if a short news passage implies a hand-written statement; a small, old and surprisingly hard set.",
  "paper": {"title": "The PASCAL Recognising Textual Entailment Challenge",
            "authors": "Dagan, Glickman, Magnini (RTE1); later RTE2/3/5 overviews", "venue": "PASCAL 2005 / TAC", "url": "https://link.springer.com/chapter/10.1007/11736790_9"},
  "facts": [("Task", "Binary (entailment / not entailment)"), ("Size", "2.5k train / 277 dev / 3k test"),
@@ -108,7 +108,7 @@ NLI = [
 {
  "slug": "scitail", "name": "SciTail", "full": "Science Entailment",
  "category": "nli", "released": "2018", "released_label": "Feb 2018",
- "desc": "27k entailment pairs built from science-exam questions and web sentences; no neutral class.",
+ "desc": "Tests whether a model can decide if a sentence found on the web supports a statement taken from a school science exam.",
  "paper": {"title": "SciTail: A Textual Entailment Dataset from Science Question Answering",
            "authors": "Khot, Sabharwal, Clark", "venue": "AAAI 2018", "url": "https://ojs.aaai.org/index.php/AAAI/article/view/12022"},
  "facts": [("Task", "Binary (entails / neutral)"), ("Size", "23.6k train / 1.3k dev / 2.1k test"),
@@ -134,7 +134,7 @@ NLI = [
 {
  "slug": "anli", "name": "ANLI", "full": "Adversarial NLI",
  "category": "nli", "released": "2019", "released_label": "Oct 2019",
- "desc": "Three rounds of human-written NLI examples that fooled the strongest model of the previous round; still unsaturated.",
+ "desc": "Tests whether a model can judge if one sentence follows from another, using examples deliberately written to trick strong models.",
  "paper": {"title": "Adversarial NLI: A New Benchmark for Natural Language Understanding",
            "authors": "Nie, Williams, Dinan, Bansal, Weston, Kiela", "venue": "ACL 2020", "url": "https://arxiv.org/abs/1910.14599"},
  "facts": [("Task", "3-way NLI"), ("Size", "R1 17k / R2 45k / R3 100k train; 1k dev and 1k test per round (R3 1.2k)"),
@@ -160,8 +160,8 @@ NLI = [
 },
 {
  "slug": "commitmentbank", "name": "CommitmentBank (CB)", "full": "CommitmentBank",
- "category": "nli", "released": "2019", "released_label": "2019 (SuperGLUE)",
- "desc": "Tiny 3-way entailment set about embedded clauses — how committed is the speaker to the clause being true?",
+ "category": "nli", "released": "2019", "released_label": "2019",
+ "desc": "Tests whether a model can tell how strongly a speaker believes a clause embedded in their sentence — for example, after 'I doubt that…'.",
  "paper": {"title": "The CommitmentBank: Investigating projection in naturally occurring discourse",
            "authors": "de Marneffe, Simons, Tonhauser", "venue": "Sinn und Bedeutung 23, 2019", "url": "https://ojs.ub.uni-konstanz.de/sub/index.php/sub/article/view/601"},
  "facts": [("Task", "3-way (entailment / contradiction / neutral)"), ("Size", "250 train / 56 dev / 250 test"),

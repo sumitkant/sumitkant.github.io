@@ -7,6 +7,20 @@
   <meta name="description"
     content="Notes from the Agent Skills with Anthropic course by DeepLearning.ai — what skills are, how they work, and when to use them." />
   <title>Agent Skills with Anthropic — Sumit Kant</title>
+  <link rel="canonical" href="https://sumitkant.github.io/Blogs/AI-ML/agent-skills-anthropic.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Sumit Kant" />
+  <meta property="og:url" content="https://sumitkant.github.io/Blogs/AI-ML/agent-skills-anthropic.html" />
+  <meta property="og:title" content="Agent Skills with Anthropic" />
+  <meta property="og:description" content="Notes from the Agent Skills with Anthropic course by DeepLearning.ai — what skills are, how they work, and when to use them." />
+  <meta property="og:image" content="https://sumitkant.github.io/images/Blogs/23.AgentSkillsAnthropic/agent-skills-og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Glass diagram of an agent hub connected to skill tiles for documents, reasoning, data, settings, code and apps, on an orange background" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Agent Skills with Anthropic" />
+  <meta name="twitter:description" content="Notes from the Agent Skills with Anthropic course by DeepLearning.ai — what skills are, how they work, and when to use them." />
+  <meta name="twitter:image" content="https://sumitkant.github.io/images/Blogs/23.AgentSkillsAnthropic/agent-skills-og.jpg" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -156,69 +170,13 @@
       overflow: hidden;
       position: relative;
       background: #c85c2a;
-      min-height: 260px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      aspect-ratio: 21 / 9;
     }
 
     .banner-bg {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, #c85c2a 0%, #a84520 50%, #8c3515 100%);
-    }
-
-    .banner-grid {
-      position: absolute;
-      inset: 0;
-      opacity: 0.12;
-      background-image: repeating-linear-gradient(0deg, #fff 0, #fff 1px, transparent 1px, transparent 40px),
-        repeating-linear-gradient(90deg, #fff 0, #fff 1px, transparent 1px, transparent 40px);
-    }
-
-    .banner-content {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 2rem;
-      text-align: center;
-      width: 100%;
-    }
-
-    .banner-eyebrow {
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.6);
-      font-family: var(--font-mono);
-      margin-bottom: 12px;
-    }
-
-    .banner-wordmark {
-      font-size: clamp(2.8rem, 8vw, 5rem);
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      color: #fff;
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-
-    .banner-sub {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.65);
-      letter-spacing: 0.04em;
-    }
-
-    /* Network SVG decoration */
-    .banner-network {
-      position: absolute;
-      right: 4%;
-      bottom: 0;
-      opacity: 0.18;
-      pointer-events: none;
+      background: url("../../images/Blogs/23.AgentSkillsAnthropic/agent-skills-banner.jpg") center / cover no-repeat;
     }
 
     /* ─── Article hero ───────────────────────────────── */
@@ -1013,30 +971,7 @@
 
     <!-- ─── Course Banner ───────────────────────────── -->
     <div class="course-banner">
-      <div class="banner-bg"></div>
-      <div class="banner-grid"></div>
-      <!-- Network illustration -->
-      <svg class="banner-network" width="340" height="260" viewBox="0 0 340 260" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <circle cx="170" cy="130" r="18" fill="#fff" />
-        <line x1="170" y1="112" x2="80" y2="60" stroke="#fff" stroke-width="2" />
-        <line x1="170" y1="112" x2="260" y2="60" stroke="#fff" stroke-width="2" />
-        <line x1="170" y1="148" x2="80" y2="200" stroke="#fff" stroke-width="2" />
-        <line x1="170" y1="148" x2="260" y2="200" stroke="#fff" stroke-width="2" />
-        <line x1="152" y1="130" x2="40" y2="130" stroke="#fff" stroke-width="2" />
-        <line x1="188" y1="130" x2="300" y2="130" stroke="#fff" stroke-width="2" />
-        <circle cx="80" cy="60" r="10" fill="#fff" />
-        <circle cx="260" cy="60" r="10" fill="#fff" />
-        <circle cx="80" cy="200" r="10" fill="#fff" />
-        <circle cx="260" cy="200" r="10" fill="#fff" />
-        <circle cx="40" cy="130" r="10" fill="#fff" />
-        <circle cx="300" cy="130" r="10" fill="#fff" />
-      </svg>
-      <div class="banner-content">
-        <p class="banner-eyebrow">DeepLearning.ai · May 2026</p>
-        <div class="banner-wordmark">ANTHROPIC</div>
-        <p class="banner-sub">Agent Skills with Anthropic — Course Notes</p>
-      </div>
+      <div class="banner-bg" role="img" aria-label="Agent hub connected to skill tiles for documents, reasoning, data, settings, code and apps"></div>
     </div>
 
     <!-- ─── Post Hero ────────────────────────────────── -->

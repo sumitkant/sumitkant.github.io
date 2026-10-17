@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="QNLI — SQuAD recast as a binary task: does this Wikipedia sentence contain the answer to this question?"/>
+  <meta name="description" content="QNLI — Tests whether a model can tell if a given sentence from Wikipedia actually contains the answer to a question."/>
   <title>QNLI — LLM Benchmarks — GenAI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Google+Sans+Flex:opsz,wght@6..144,300..800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
       --bg: #f2efe9; --border: rgba(0,0,0,.08);
       --text-primary: #1a1a18; --text-secondary: #6b6b65; --text-tertiary: #a8a8a0;
-      --accent: #c85c2a; --font: 'Plus Jakarta Sans', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+      --accent: #c85c2a; --font: 'Google Sans Flex', system-ui, sans-serif; --font-head: 'Plus Jakarta Sans', 'Google Sans Flex', system-ui, sans-serif; --mono: 'Fira Code', ui-monospace, monospace;
       --radius: 18px; --nav-h: 72px; --content-w: 1100px;
     }
 
@@ -19,23 +19,24 @@
     html { font-size: 16px; scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text-primary); font-family: var(--font); -webkit-font-smoothing: antialiased; line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
     a { color: inherit; text-decoration: none; }
-    /* ambient blobs for the glass to refract */
-    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .ambient span { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; mix-blend-mode: multiply; animation: drift 28s ease-in-out infinite alternate; }
-    .ambient .b1 { width: 560px; height: 560px; left: -140px; top: -120px; background: #c7d2fe; }
-    .ambient .b2 { width: 520px; height: 520px; right: -160px; top: 120px; background: #fde68a; animation-delay: -9s; }
-    .ambient .b3 { width: 480px; height: 480px; left: 30%; top: 55%; background: #bae6fd; animation-delay: -17s; }
-    .ambient .b4 { width: 420px; height: 420px; right: 18%; bottom: -160px; background: #fbcfe8; animation-delay: -4s; }
-    @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(40px,30px,0) scale(1.08); } }
-    @media (prefers-reduced-motion: reduce) { .ambient span { animation: none; } }
+    h1, h2, h3, .hero-title, .tile h3, .sec-head h2, .stat b, .sota-box .big, .pager a { font-family: var(--font-head); }
+    /* static ambient wash — cheap to paint (no filter: blur, no animation) */
+    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(640px 640px at 8% 0%, rgba(199,210,254,.75), transparent 70%),
+        radial-gradient(600px 600px at 100% 18%, rgba(253,230,138,.7), transparent 70%),
+        radial-gradient(560px 560px at 38% 70%, rgba(186,230,253,.65), transparent 70%),
+        radial-gradient(500px 500px at 85% 100%, rgba(251,207,232,.6), transparent 70%); }
+    .ambient span { display: none; }
     .grain { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-    nav { position: sticky; top: 0; z-index: 200; height: var(--nav-h); background: rgba(242,239,233,.72); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border-bottom: 1px solid var(--border); }
+    nav { position: sticky; top: 0; z-index: 200; height: var(--nav-h); background: rgba(242,239,233,.9); border-bottom: 1px solid var(--border); }
     .nav-inner { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
     .nav-back { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text-secondary); transition: color .15s; }
     .nav-back:hover { color: var(--text-primary); }
     .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
     .page { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
-    .glass { background: rgba(255,255,255,.52); border: 1px solid rgba(255,255,255,.75); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 10px 30px -12px rgba(26,26,24,.18); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); border-radius: var(--radius); }
+    .glass { background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.8); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 10px 30px -12px rgba(26,26,24,.16); border-radius: var(--radius); }
+    .tile.glass, .filters.glass { backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); background: rgba(255,255,255,.5); }
     .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1.3; white-space: nowrap; }
     .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
     .chip { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 700; font-family: var(--mono); letter-spacing: .02em; color: #fff; white-space: nowrap; }
@@ -90,10 +91,13 @@
     .ex .ans { margin-top: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(var(--crgb), .12); font-size: 13px; }
     .ex .ans b { color: var(--c); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; margin-right: 8px; }
 
-    table.res { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    .tablewrap { overflow-x: auto; }
+    table.res { width: 100%; border-collapse: collapse; font-size: 13.5px; table-layout: fixed; }
+    table.res col.c-paper { width: 70px; } table.res col.c-setting { width: 30%; } table.res col.c-score { width: 24%; }
     table.res th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); padding: 8px 10px 8px 0; border-bottom: 1px solid rgba(0,0,0,.12); }
-    table.res td { padding: 11px 10px 11px 0; border-bottom: 1px dashed rgba(0,0,0,.1); vertical-align: top; line-height: 1.5; }
-    table.res td.score { font-weight: 700; font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+    table.res td { padding: 11px 10px 11px 0; border-bottom: 1px dashed rgba(0,0,0,.1); vertical-align: top; line-height: 1.5; overflow-wrap: anywhere; }
+    table.res td.score { font-weight: 700; font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+    table.res td.score span { display: block; }
     table.res td.note { color: var(--text-secondary); font-size: 12.5px; }
 
     .sota-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px; }
@@ -136,7 +140,7 @@
     @media (max-width: 600px) { section.card { padding: 20px 16px; } .ex .row { grid-template-columns: 1fr; gap: 2px; } .pager { flex-direction: column; } .pager a.next { align-items: flex-start; text-align: left; } }
 
     :root { --c: #6366f1; --crgb: 99,102,241; }
-    .ambient .b1 { background: #6366f1; opacity: .22; }
+    .ambient { background: radial-gradient(640px 640px at 8% 0%, rgba(99,102,241,.28), transparent 70%), radial-gradient(600px 600px at 100% 18%, rgba(253,230,138,.6), transparent 70%), radial-gradient(560px 560px at 38% 70%, rgba(186,230,253,.55), transparent 70%); }
   </style>
 </head>
 <body>
@@ -147,16 +151,16 @@
     <a href="https://sumitkant.github.io/" class="nav-logo">
       <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;"></object>
     </a>
-    <a href="index.html" class="nav-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>LLM Benchmarks</a>
+    <a href="llmbenchmarks.html" class="nav-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>LLM Benchmarks</a>
   </div>
 </nav>
 <main class="page">
   <header class="hero">
     <div>
-      <div class="hero-eyebrow"><a class="pill" href="index.html?cat=nli">NLI</a><span class="chip" style="background:#1a1a18">GPT-1</span></div>
+      <div class="hero-eyebrow"><a class="pill" href="llmbenchmarks.html?cat=nli">NLI</a><span class="chip" style="background:#1a1a18">GPT-1</span></div>
       <h1 class="hero-title">QNLI</h1>
       <div class="hero-full">Question-answering NLI</div>
-      <p class="hero-sub">SQuAD recast as a binary task: does this Wikipedia sentence contain the answer to this question?</p>
+      <p class="hero-sub">Tests whether a model can tell if a given sentence from Wikipedia actually contains the answer to a question.</p>
       <div class="hero-meta">
         <span class="badge glass"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Released <b>Apr 2018</b></span>
         <span class="badge glass"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Metric <b>test accuracy (GLUE)</b></span>
@@ -189,9 +193,9 @@
       </section>
 
       <section class="card glass" id="gpt">
-        <div class="sec-head"><span class="sec-num">04</span><h2>In the GPT papers</h2></div>
-        <p class="lede">How each paper used this benchmark and what it reported. GPT-1 fine-tuned; GPT-2 evaluated zero-shot; GPT-3 evaluated zero-, one- and few-shot with examples in the prompt.</p>
-        <table class="res"><thead><tr><th>Paper</th><th>Setting</th><th>Reported</th><th>Context</th></tr></thead><tbody><tr><td><span class="chip" style="background:#1a1a18">GPT-1</span></td><td>Fine-tuned</td><td class="score">88.1 acc</td><td class="note">Prior best 82.3 (CAFE)</td></tr></tbody></table>
+        <div class="sec-head"><span class="sec-num">04</span><h2>Reported results</h2></div>
+        <p class="lede">Scores reported on this benchmark, with the evaluation setting each one used.</p>
+        <div class="tablewrap"><table class="res"><colgroup><col class="c-paper"/><col class="c-setting"/><col class="c-score"/><col/></colgroup><thead><tr><th>Paper</th><th>Setting</th><th>Reported</th><th>Context</th></tr></thead><tbody><tr><td><span class="chip" style="background:#1a1a18">GPT-1</span></td><td>Fine-tuned</td><td class="score"><span>88.1 acc</span></td><td class="note">Prior best 82.3 (CAFE)</td></tr></tbody></table></div>
       </section>
 
       <section class="card glass" id="sota">
@@ -262,15 +266,15 @@ acc = sum(int(max(range(2), key=<span class="k">lambda</span> i: loglik(prompt(e
 
       <nav class="pager">
         <a class="glass prev" href="multinli.html"><span>← Previous</span>MultiNLI</a>
-        <a class="glass all" href="index.html">All benchmarks</a>
+        <a class="glass all" href="llmbenchmarks.html">All benchmarks</a>
         <a class="glass next" href="rte.html"><span>Next →</span>RTE</a>
       </nav>
     </div>
-    <aside class="toc glass"><span class="flabel">On this page</span><a href="#glance"><span class="n">01</span>At a glance</a><a href="#what"><span class="n">02</span>What it tests</a><a href="#examples"><span class="n">03</span>Examples</a><a href="#gpt"><span class="n">04</span>In the GPT papers</a><a href="#sota"><span class="n">05</span>State of the art</a><a href="#quickstart"><span class="n">06</span>Quickstart</a><a href="#pitfalls"><span class="n">07</span>Pitfalls</a><a href="#refs"><span class="n">08</span>References</a></aside>
+    <aside class="toc glass"><span class="flabel">On this page</span><a href="#glance"><span class="n">01</span>At a glance</a><a href="#what"><span class="n">02</span>What it tests</a><a href="#examples"><span class="n">03</span>Examples</a><a href="#gpt"><span class="n">04</span>Reported results</a><a href="#sota"><span class="n">05</span>State of the art</a><a href="#quickstart"><span class="n">06</span>Quickstart</a><a href="#pitfalls"><span class="n">07</span>Pitfalls</a><a href="#refs"><span class="n">08</span>References</a></aside>
   </div>
 </main>
 <footer class="site">
-  <span>Sumit Kant · GenAI Lab · LLM Benchmarks · last updated October 2026</span>
+  <span>Sumit Kant · GenAI Lab · LLM Benchmarks · updated October 2026</span>
   <span><a href="../../genai-lab.html">GenAI Lab</a> · <a href="../../blog.html">Blog</a></span>
 </footer>
 <script>

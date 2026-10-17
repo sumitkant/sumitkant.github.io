@@ -4,7 +4,7 @@ RC = [
 {
  "slug": "race", "name": "RACE", "full": "ReAding Comprehension from Examinations",
  "category": "rc", "released": "2017", "released_label": "Apr 2017",
- "desc": "100k multiple-choice questions from Chinese middle- and high-school English exams; answers often need reasoning over the whole passage.",
+ "desc": "Tests reading comprehension using multiple-choice questions from English exams given to Chinese school students.",
  "paper": {"title": "RACE: Large-scale ReAding Comprehension Dataset From Examinations",
            "authors": "Lai, Xie, Liu, Yang, Hovy", "venue": "EMNLP 2017", "url": "https://arxiv.org/abs/1704.04683"},
  "facts": [("Task", "4-way multiple choice over a passage"), ("Size", "28k passages, 98k questions; RACE-M (middle school) 25k Q, RACE-H (high school) 70k Q"),
@@ -33,7 +33,7 @@ RC = [
 {
  "slug": "coqa", "name": "CoQA", "full": "Conversational Question Answering",
  "category": "rc", "released": "2018", "released_label": "Aug 2018",
- "desc": "127k questions in 8k multi-turn conversations about a passage; each question depends on the ones before it.",
+ "desc": "Tests whether a model can answer a chain of questions about a passage, where each question depends on the earlier ones.",
  "paper": {"title": "CoQA: A Conversational Question Answering Challenge",
            "authors": "Reddy, Chen, Manning", "venue": "TACL 2019", "url": "https://arxiv.org/abs/1808.07042"},
  "facts": [("Task", "Free-form answer + supporting span, in a dialogue"), ("Size", "8k conversations, 127k Q/A pairs; 7 domains (children's stories, literature, school exams, news, Wikipedia, Reddit, science)"),
@@ -60,7 +60,7 @@ RC = [
 {
  "slug": "drop", "name": "DROP", "full": "Discrete Reasoning Over Paragraphs",
  "category": "rc", "released": "2019", "released_label": "Mar 2019",
- "desc": "96k questions that need counting, sorting, dates or arithmetic over a Wikipedia paragraph; answers are numbers, dates or spans.",
+ "desc": "Tests whether a model can read a paragraph and do simple arithmetic, counting or date comparison to answer a question.",
  "paper": {"title": "DROP: A Reading Comprehension Benchmark Requiring Discrete Reasoning Over Paragraphs",
            "authors": "Dua, Wang, Dasigi, Stanovsky, Singh, Gardner", "venue": "NAACL 2019", "url": "https://arxiv.org/abs/1903.00161"},
  "facts": [("Task", "Generate a number, date or one-or-more spans"), ("Size", "77k train / 9.5k dev / 9.6k test (hidden)"),
@@ -87,7 +87,7 @@ RC = [
 {
  "slug": "quac", "name": "QuAC", "full": "Question Answering in Context",
  "category": "rc", "released": "2018", "released_label": "Aug 2018",
- "desc": "Teacher–student dialogues about a hidden Wikipedia section; 100k questions, many unanswerable, still below human level.",
+ "desc": "Tests whether a model can answer a student's questions about a Wikipedia article turn by turn, including saying when there is no answer.",
  "paper": {"title": "QuAC: Question Answering in Context",
            "authors": "Choi, He, Iyyer, Yatskar, Yih, Choi, Liang, Zettlemoyer", "venue": "EMNLP 2018", "url": "https://arxiv.org/abs/1808.07036"},
  "facts": [("Task", "Extractive span (or 'no answer') in a dialogue"), ("Size", "14k dialogues, 100k questions"),
@@ -116,7 +116,7 @@ RC = [
 {
  "slug": "squad2", "name": "SQuAD 2.0", "full": "Stanford Question Answering Dataset v2",
  "category": "rc", "released": "2018", "released_label": "Jun 2018",
- "desc": "SQuAD plus 50k unanswerable questions written to look answerable; the model must extract a span or abstain.",
+ "desc": "Tests whether a model can find the answer to a question in a Wikipedia paragraph, or recognise when the paragraph does not contain it.",
  "paper": {"title": "Know What You Don't Know: Unanswerable Questions for SQuAD",
            "authors": "Rajpurkar, Jia, Liang", "venue": "ACL 2018", "url": "https://arxiv.org/abs/1806.03822"},
  "facts": [("Task", "Extractive span or no-answer"), ("Size", "130k train / 12k dev / 9k test (hidden); ~33% unanswerable in dev"),
@@ -142,7 +142,7 @@ RC = [
 {
  "slug": "boolq", "name": "BoolQ", "full": "Boolean Questions",
  "category": "rc", "released": "2019", "released_label": "May 2019",
- "desc": "16k naturally occurring yes/no questions from Google search, each paired with a Wikipedia passage.",
+ "desc": "Tests whether a model can answer real yes/no questions people typed into Google, given a Wikipedia passage.",
  "paper": {"title": "BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions",
            "authors": "Clark, Lee, Chang, Kwiatkowski, Collins, Toutanova", "venue": "NAACL 2019", "url": "https://arxiv.org/abs/1905.10044"},
  "facts": [("Task", "Binary (yes / no) given a passage"), ("Size", "9.4k train / 3.3k dev / 3.2k test"),
@@ -167,7 +167,7 @@ RC = [
 {
  "slug": "multirc", "name": "MultiRC", "full": "Multi-Sentence Reading Comprehension",
  "category": "rc", "released": "2018", "released_label": "Jun 2018",
- "desc": "Questions with several candidate answers, any number of which can be correct; answering needs more than one sentence.",
+ "desc": "Tests whether a model can answer questions that need information from several sentences, where more than one option can be correct.",
  "paper": {"title": "Looking Beyond the Surface: A Challenge Set for Reading Comprehension over Multiple Sentences",
            "authors": "Khashabi, Chaturvedi, Roth, Upadhyay, Roth", "venue": "NAACL 2018", "url": "https://aclanthology.org/N18-1023/"},
  "facts": [("Task", "Label each (question, candidate answer) pair true/false"), ("Size", "~10k questions, ~27k answer options, 871 paragraphs"),
@@ -193,7 +193,7 @@ RC = [
 {
  "slug": "record", "name": "ReCoRD", "full": "Reading Comprehension with Commonsense Reasoning Dataset",
  "category": "rc", "released": "2018", "released_label": "Oct 2018",
- "desc": "120k cloze-style queries over CNN/Daily Mail articles; fill the masked entity in a sentence that needs commonsense.",
+ "desc": "Tests whether a model can fill a missing name or place in a sentence about a news article, which needs some common sense.",
  "paper": {"title": "ReCoRD: Bridging the Gap between Human and Machine Commonsense Reading Comprehension",
            "authors": "Zhang, Liu, Liu, Gao, Duh, Van Durme", "venue": "arXiv 2018", "url": "https://arxiv.org/abs/1810.12885"},
  "facts": [("Task", "Cloze: pick the entity from the passage that fills @placeholder"), ("Size", "101k train / 10k dev / 10k test"),

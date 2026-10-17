@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="45 classic LLM benchmarks across 9 categories — what each one tests, release dates, state-of-the-art scores and a dedicated page for each."/>
+  <title>LLM Benchmarks — GenAI Lab — Sumit Kant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Google+Sans+Flex:opsz,wght@6..144,300..800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f2efe9; --border: rgba(0,0,0,.08);
+      --text-primary: #1a1a18; --text-secondary: #6b6b65; --text-tertiary: #a8a8a0;
+      --accent: #c85c2a; --font: 'Google Sans Flex', system-ui, sans-serif; --font-head: 'Plus Jakarta Sans', 'Google Sans Flex', system-ui, sans-serif; --mono: 'Fira Code', ui-monospace, monospace;
+      --radius: 18px; --nav-h: 72px; --content-w: 1100px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-primary); font-family: var(--font); -webkit-font-smoothing: antialiased; line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, .hero-title, .tile h3, .sec-head h2, .stat b, .sota-box .big, .pager a { font-family: var(--font-head); }
+    /* static ambient wash — cheap to paint (no filter: blur, no animation) */
+    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(640px 640px at 8% 0%, rgba(199,210,254,.75), transparent 70%),
+        radial-gradient(600px 600px at 100% 18%, rgba(253,230,138,.7), transparent 70%),
+        radial-gradient(560px 560px at 38% 70%, rgba(186,230,253,.65), transparent 70%),
+        radial-gradient(500px 500px at 85% 100%, rgba(251,207,232,.6), transparent 70%); }
+    .ambient span { display: none; }
+    .grain { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    nav { position: sticky; top: 0; z-index: 200; height: var(--nav-h); background: rgba(242,239,233,.9); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-back { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text-secondary); transition: color .15s; }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .page { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
+    .glass { background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.8); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 10px 30px -12px rgba(26,26,24,.16); border-radius: var(--radius); }
+    .tile.glass, .filters.glass { backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); background: rgba(255,255,255,.5); }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1.3; white-space: nowrap; }
+    .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .chip { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 700; font-family: var(--mono); letter-spacing: .02em; color: #fff; white-space: nowrap; }
+    footer.site { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 1.5rem 2rem 3rem; font-size: 12.5px; color: var(--text-tertiary); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    footer.site a { color: var(--text-secondary); }
+    @media (max-width: 640px) { .page { padding: 0 1rem 4rem; } .nav-inner { padding: 0 1rem; } footer.site { padding: 1.5rem 1rem 3rem; } }
+
+    .hero { padding: 3.25rem 0 2rem; }
+    .hero-eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; margin-bottom: 10px; }
+    .hero-title { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 800; line-height: 1.08; letter-spacing: -.03em; margin-bottom: 12px; }
+    .hero-title strong { color: var(--accent); font-weight: 800; }
+    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 760px; }
+    .hero-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .stat { padding: 10px 16px; border-radius: 14px; display: flex; flex-direction: column; min-width: 110px; }
+    .stat b { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+    .stat span { font-size: 11px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+    .filters { position: sticky; top: calc(var(--nav-h) + 10px); z-index: 50; padding: 14px 16px; margin: 0 0 22px; display: flex; flex-direction: column; gap: 10px; }
+    .filters-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .search { flex: 1 1 240px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(255,255,255,.6); border: 1px solid rgba(0,0,0,.06); }
+    .search svg { width: 15px; height: 15px; stroke: var(--text-tertiary); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .search input { flex: 1; border: 0; background: transparent; font: inherit; font-size: 13.5px; color: var(--text-primary); outline: none; min-width: 0; }
+    .search input::placeholder { color: var(--text-tertiary); }
+    .fbtn { font: inherit; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(0,0,0,.08); background: rgba(255,255,255,.5); color: var(--text-secondary); cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 7px; }
+    .fbtn:hover { background: rgba(255,255,255,.85); color: var(--text-primary); }
+    .fbtn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--text-tertiary)); box-shadow: 0 0 0 3px rgba(var(--crgb, 0,0,0), .15); }
+    .fbtn.active { background: var(--c, var(--text-primary)); border-color: transparent; color: #fff; }
+    .fbtn.active .dot { background: #fff; box-shadow: none; }
+    .fbtn.paper.active { background: var(--c); }
+    .flabel { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); margin-right: 2px; }
+    .fsep { width: 1px; height: 18px; background: rgba(0,0,0,.1); margin: 0 4px; }
+    .count { margin-left: auto; font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+    select.sort { font: inherit; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(0,0,0,.08); background: rgba(255,255,255,.5); color: var(--text-secondary); cursor: pointer; }
+
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .tile { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 16px 16px 14px; min-height: 230px; overflow: hidden; transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s, border-color .22s; --c: #999; }
+    .tile::before { content: ''; position: absolute; inset: auto -55% -45% auto; width: 110%; height: 130%; background: radial-gradient(closest-side, rgba(var(--crgb), .34), transparent 72%); pointer-events: none; }
+    .tile:hover { transform: translateY(-4px); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 24px 40px -18px rgba(var(--crgb), .45); border-color: rgba(255,255,255,.95); }
+    .tile.hidden { display: none; }
+    .tile-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; position: relative; }
+    .tile .pill { color: var(--c); background: rgba(var(--crgb), .12); flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 10px; }
+    .tile .pill::before { flex-shrink: 0; }
+    .tile-papers { display: flex; gap: 4px; }
+    .tile h3 { font-size: 17px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; position: relative; }
+    .tile .full { font-size: 11.5px; color: var(--text-tertiary); margin-top: -6px; font-weight: 500; }
+    .tile p { font-size: 12.5px; color: #3d3d39; line-height: 1.5; flex: 1; position: relative; }
+    .tile-foot { display: block; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,.1); font-size: 11.5px; color: var(--text-secondary); position: relative; }
+    .tile-foot .lbl { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 1px; }
+    .tile-foot b { font-size: 13px; color: var(--text-primary); font-weight: 700; }
+    .tile-foot .sat { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; align-items: center; }
+    .tile-foot .sat .dot { width: 9px; height: 9px; border-radius: 50%; grid-row: span 2; }
+    .tile-foot .sat.yes .dot { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,.18); }
+    .tile-foot .sat.no .dot { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.2); }
+    .tile-foot .sat b { font-size: 12.5px; color: var(--text-primary); }
+    .tile-foot .sat small { font-size: 11px; color: var(--text-secondary); }
+    .tile-top .released { flex-shrink: 0; font-size: 11.5px; font-weight: 500; color: var(--text-tertiary); white-space: nowrap; }
+    .tile-foot .sota .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tile-foot .sota small { display: block; font-size: 10.5px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .empty { display: none; padding: 40px; text-align: center; color: var(--text-secondary); font-size: 14px; }
+    .empty.show { display: block; }
+    .legend { margin-top: 36px; padding: 18px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: var(--text-secondary); }
+    .legend .pill { color: var(--c); background: rgba(var(--crgb), .12); }
+    .legend .chip { margin-right: 2px; }
+    @media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .filters { position: static; } .count { margin-left: 0; width: 100%; } .tile { min-height: 0; } }
+</style>
+</head>
+<body>
+<div class="ambient"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span></div>
+<div class="grain"></div>
+<nav>
+  <div class="nav-inner">
+    <a href="https://sumitkant.github.io/" class="nav-logo">
+      <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60" style="display:block; pointer-events:none;"></object>
+    </a>
+    <a href="../../genai-lab.html" class="nav-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>GenAI Lab</a>
+  </div>
+</nav>
+<main class="page">
+  <header class="hero">
+    <p class="hero-eyebrow">GenAI Lab · Evaluation</p>
+    <h1 class="hero-title">LLM <strong>Benchmarks</strong></h1>
+    <p class="hero-sub">The classic language-understanding and language-modelling benchmarks — what each one tests, examples, state of the art, and how to run it.</p>
+  </header>
+
+  <section class="filters glass" aria-label="Filters">
+    <div class="filters-row">
+      <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="q" type="search" placeholder="Search benchmarks and categories" autocomplete="off"/></label>
+      <select class="sort" id="sort" aria-label="Sort"><option value="cat">Sort: category</option><option value="name">Sort: name</option><option value="year">Sort: year ↑</option><option value="year-desc">Sort: year ↓</option></select>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="filters-row">
+      <span class="flabel">Category</span>
+      <button class="fbtn cat active" data-cat="all" style="--c:#1a1a18;--crgb:26,26,24"><span class="dot"></span>All</button><button class="fbtn cat" data-cat="nli" style="--c:#6366f1;--crgb:99,102,241"><span class="dot"></span>NLI</button><button class="fbtn cat" data-cat="rc" style="--c:#0ea5e9;--crgb:14,165,233"><span class="dot"></span>Reading Comprehension</button><button class="fbtn cat" data-cat="qa" style="--c:#10b981;--crgb:16,185,129"><span class="dot"></span>Question Answering</button><button class="fbtn cat" data-cat="commonsense" style="--c:#f59e0b;--crgb:245,158,11"><span class="dot"></span>Commonsense Reasoning</button><button class="fbtn cat" data-cat="lm" style="--c:#f43f5e;--crgb:244,63,94"><span class="dot"></span>Language Modeling</button><button class="fbtn cat" data-cat="cls" style="--c:#8b5cf6;--crgb:139,92,246"><span class="dot"></span>Similarity &amp; Classification</button><button class="fbtn cat" data-cat="suite" style="--c:#14b8a6;--crgb:20,184,166"><span class="dot"></span>Benchmark Suites</button><button class="fbtn cat" data-cat="gen" style="--c:#ec4899;--crgb:236,72,153"><span class="dot"></span>Generation</button><button class="fbtn cat" data-cat="synthetic" style="--c:#64748b;--crgb:100,116,139"><span class="dot"></span>Synthetic / Probing</button>
+    </div>
+  </section>
+
+  <section class="grid" id="grid">
+<a class="tile glass" href="anli.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-3" data-year="2019" data-name="anli" data-search="anli adversarial nli tests whether a model can judge if one sentence follows from another, using examples deliberately written to trick strong models. nli gpt-3">
+  <div class="tile-top"><span class="pill" title="NLI">NLI</span><span class="released" title="Released">Oct&#x27;19</span></div>
+  <h3>ANLI</h3>
+  <div class="full">Adversarial NLI</div>
+  <p>Tests whether a model can judge if one sentence follows from another, using examples deliberately written to trick strong models.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="commitmentbank.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-3" data-year="2019" data-name="commitmentbank (cb)" data-search="commitmentbank (cb) commitmentbank tests whether a model can tell how strongly a speaker believes a clause embedded in their sentence — for example, after &#x27;i doubt that…&#x27;. nli gpt-3">
+  <div class="tile-top"><span class="pill" title="NLI">NLI</span><span class="released" title="Released">2019</span></div>
+  <h3>CommitmentBank (CB)</h3>
+  <div class="full">CommitmentBank</div>
+  <p>Tests whether a model can tell how strongly a speaker believes a clause embedded in their sentence — for example, after &#x27;I doubt that…&#x27;.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="multinli.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1" data-year="2017" data-name="multinli" data-search="multinli multi-genre natural language inference tests whether a model can judge if one sentence follows from another across many kinds of writing — fiction, phone calls, government reports and more. nli gpt-1">
+  <div class="tile-top"><span class="pill" title="NLI">NLI</span><span class="released" title="Released">Apr&#x27;17</span></div>
+  <h3>MultiNLI</h3>
+  <div class="full">Multi-Genre Natural Language Inference</div>
+  <p>Tests whether a model can judge if one sentence follows from another across many kinds of writing — fiction, phone calls, government reports and more.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="qnli.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1" data-year="2018" data-name="qnli" data-search="qnli question-answering nli tests whether a model can tell if a given sentence from wikipedia actually contains the answer to a question. nli gpt-1">
+  <div class="tile-top"><span class="pill" title="NLI">NLI</span><span class="released" title="Released">Apr&#x27;18</span></div>
+  <h3>QNLI</h3>
+  <div class="full">Question-answering NLI</div>
+  <p>Tests whether a model can tell if a given sentence from Wikipedia actually contains the answer to a question.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="rte.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1 GPT-3" data-year="2005" data-name="rte" data-search="rte recognizing textual entailment tests whether a model can decide if a short news passage implies a hand-written statement; a small, old and surprisingly hard set. nli gpt-1 gpt-3">
+  <div class="tile-top"><span class="pill" title="NLI">NLI</span><span class="released" title="Released">2005–2018</span></div>
+  <h3>RTE</h3>
+  <div class="full">Recognizing Textual Entailment</div>
+  <p>Tests whether a model can decide if a short news passage implies a hand-written statement; a small, old and surprisingly hard set.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="scitail.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1" data-year="2018" data-name="scitail" data-search="scitail science entailment tests whether a model can decide if a sentence found on the web supports a statement taken from a school science exam. nli gpt-1">
+  <div class="tile-top"><span class="pill" title="NLI">NLI</span><span class="released" title="Released">Feb&#x27;18</span></div>
+  <h3>SciTail</h3>
+  <div class="full">Science Entailment</div>
+  <p>Tests whether a model can decide if a sentence found on the web supports a statement taken from a school science exam.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="snli.html" style="--c:#6366f1;--crgb:99,102,241" data-cat="nli" data-papers="GPT-1" data-year="2015" data-name="snli" data-search="snli stanford natural language inference tests whether a model can tell if one sentence logically follows from, contradicts, or is unrelated to another, using short sentences about everyday photos. nli gpt-1">
+  <div class="tile-top"><span class="pill" title="NLI">NLI</span><span class="released" title="Released">Sep&#x27;15</span></div>
+  <h3>SNLI</h3>
+  <div class="full">Stanford Natural Language Inference</div>
+  <p>Tests whether a model can tell if one sentence logically follows from, contradicts, or is unrelated to another, using short sentences about everyday photos.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="boolq.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2019" data-name="boolq" data-search="boolq boolean questions tests whether a model can answer real yes/no questions people typed into google, given a wikipedia passage. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill" title="Reading Comprehension">Reading Comp.</span><span class="released" title="Released">May&#x27;19</span></div>
+  <h3>BoolQ</h3>
+  <div class="full">Boolean Questions</div>
+  <p>Tests whether a model can answer real yes/no questions people typed into Google, given a Wikipedia passage.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="coqa.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-2 GPT-3" data-year="2018" data-name="coqa" data-search="coqa conversational question answering tests whether a model can answer a chain of questions about a passage, where each question depends on the earlier ones. reading comprehension gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill" title="Reading Comprehension">Reading Comp.</span><span class="released" title="Released">Aug&#x27;18</span></div>
+  <h3>CoQA</h3>
+  <div class="full">Conversational Question Answering</div>
+  <p>Tests whether a model can answer a chain of questions about a passage, where each question depends on the earlier ones.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="drop.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2019" data-name="drop" data-search="drop discrete reasoning over paragraphs tests whether a model can read a paragraph and do simple arithmetic, counting or date comparison to answer a question. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill" title="Reading Comprehension">Reading Comp.</span><span class="released" title="Released">Mar&#x27;19</span></div>
+  <h3>DROP</h3>
+  <div class="full">Discrete Reasoning Over Paragraphs</div>
+  <p>Tests whether a model can read a paragraph and do simple arithmetic, counting or date comparison to answer a question.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="multirc.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2018" data-name="multirc" data-search="multirc multi-sentence reading comprehension tests whether a model can answer questions that need information from several sentences, where more than one option can be correct. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill" title="Reading Comprehension">Reading Comp.</span><span class="released" title="Released">Jun&#x27;18</span></div>
+  <h3>MultiRC</h3>
+  <div class="full">Multi-Sentence Reading Comprehension</div>
+  <p>Tests whether a model can answer questions that need information from several sentences, where more than one option can be correct.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="quac.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2018" data-name="quac" data-search="quac question answering in context tests whether a model can answer a student&#x27;s questions about a wikipedia article turn by turn, including saying when there is no answer. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill" title="Reading Comprehension">Reading Comp.</span><span class="released" title="Released">Aug&#x27;18</span></div>
+  <h3>QuAC</h3>
+  <div class="full">Question Answering in Context</div>
+  <p>Tests whether a model can answer a student&#x27;s questions about a Wikipedia article turn by turn, including saying when there is no answer.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="race.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-1 GPT-3" data-year="2017" data-name="race" data-search="race reading comprehension from examinations tests reading comprehension using multiple-choice questions from english exams given to chinese school students. reading comprehension gpt-1 gpt-3">
+  <div class="tile-top"><span class="pill" title="Reading Comprehension">Reading Comp.</span><span class="released" title="Released">Apr&#x27;17</span></div>
+  <h3>RACE</h3>
+  <div class="full">ReAding Comprehension from Examinations</div>
+  <p>Tests reading comprehension using multiple-choice questions from English exams given to Chinese school students.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="record.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2018" data-name="record" data-search="record reading comprehension with commonsense reasoning dataset tests whether a model can fill a missing name or place in a sentence about a news article, which needs some common sense. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill" title="Reading Comprehension">Reading Comp.</span><span class="released" title="Released">Oct&#x27;18</span></div>
+  <h3>ReCoRD</h3>
+  <div class="full">Reading Comprehension with Commonsense Reasoning Dataset</div>
+  <p>Tests whether a model can fill a missing name or place in a sentence about a news article, which needs some common sense.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="squad2.html" style="--c:#0ea5e9;--crgb:14,165,233" data-cat="rc" data-papers="GPT-3" data-year="2018" data-name="squad 2.0" data-search="squad 2.0 stanford question answering dataset v2 tests whether a model can find the answer to a question in a wikipedia paragraph, or recognise when the paragraph does not contain it. reading comprehension gpt-3">
+  <div class="tile-top"><span class="pill" title="Reading Comprehension">Reading Comp.</span><span class="released" title="Released">Jun&#x27;18</span></div>
+  <h3>SQuAD 2.0</h3>
+  <div class="full">Stanford Question Answering Dataset v2</div>
+  <p>Tests whether a model can find the answer to a question in a Wikipedia paragraph, or recognise when the paragraph does not contain it.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="natural-questions.html" style="--c:#10b981;--crgb:16,185,129" data-cat="qa" data-papers="GPT-2 GPT-3" data-year="2019" data-name="natural questions" data-search="natural questions natural questions (nq / nq-open) tests whether a model can answer real google search questions from memory, without being shown any document. question answering gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill" title="Question Answering">QA</span><span class="released" title="Released">Jan&#x27;19</span></div>
+  <h3>Natural Questions</h3>
+  <div class="full">Natural Questions (NQ / NQ-Open)</div>
+  <p>Tests whether a model can answer real Google search questions from memory, without being shown any document.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="triviaqa.html" style="--c:#10b981;--crgb:16,185,129" data-cat="qa" data-papers="GPT-3" data-year="2017" data-name="triviaqa" data-search="triviaqa triviaqa tests how many trivia-quiz questions a model can answer from the facts it memorised during training. question answering gpt-3">
+  <div class="tile-top"><span class="pill" title="Question Answering">QA</span><span class="released" title="Released">May&#x27;17</span></div>
+  <h3>TriviaQA</h3>
+  <div class="full">TriviaQA</div>
+  <p>Tests how many trivia-quiz questions a model can answer from the facts it memorised during training.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="webquestions.html" style="--c:#10b981;--crgb:16,185,129" data-cat="qa" data-papers="GPT-3" data-year="2013" data-name="webquestions" data-search="webquestions webquestions tests whether a model can answer short factual questions mined from google search suggestions, from memory alone. question answering gpt-3">
+  <div class="tile-top"><span class="pill" title="Question Answering">QA</span><span class="released" title="Released">Oct&#x27;13</span></div>
+  <h3>WebQuestions</h3>
+  <div class="full">WebQuestions</div>
+  <p>Tests whether a model can answer short factual questions mined from Google search suggestions, from memory alone.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="arc.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2018" data-name="arc" data-search="arc ai2 reasoning challenge (arc-easy / arc-challenge) tests whether a model can answer grade-school science exam questions; the challenge split contains the ones simple word-matching cannot solve. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill" title="Commonsense Reasoning">Commonsense</span><span class="released" title="Released">Mar&#x27;18</span></div>
+  <h3>ARC</h3>
+  <div class="full">AI2 Reasoning Challenge (ARC-Easy / ARC-Challenge)</div>
+  <p>Tests whether a model can answer grade-school science exam questions; the Challenge split contains the ones simple word-matching cannot solve.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="copa.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2011" data-name="copa" data-search="copa choice of plausible alternatives tests causal common sense: given a short statement, which of two alternatives is the more likely cause or effect. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill" title="Commonsense Reasoning">Commonsense</span><span class="released" title="Released">2011</span></div>
+  <h3>COPA</h3>
+  <div class="full">Choice of Plausible Alternatives</div>
+  <p>Tests causal common sense: given a short statement, which of two alternatives is the more likely cause or effect.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="hellaswag.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2019" data-name="hellaswag" data-search="hellaswag hellaswag (harder endings, longer contexts, low-shot activities for situations with adversarial generations) tests whether a model can pick the most sensible continuation of an everyday scene from four options written to fool it. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill" title="Commonsense Reasoning">Commonsense</span><span class="released" title="Released">May&#x27;19</span></div>
+  <h3>HellaSwag</h3>
+  <div class="full">HellaSwag (Harder Endings, Longer contexts, Low-shot Activities for Situations With Adversarial Generations)</div>
+  <p>Tests whether a model can pick the most sensible continuation of an everyday scene from four options written to fool it.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="openbookqa.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2018" data-name="openbookqa" data-search="openbookqa openbookqa tests whether a model can combine a given science fact with everyday knowledge to answer a question. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill" title="Commonsense Reasoning">Commonsense</span><span class="released" title="Released">Sep&#x27;18</span></div>
+  <h3>OpenBookQA</h3>
+  <div class="full">OpenBookQA</div>
+  <p>Tests whether a model can combine a given science fact with everyday knowledge to answer a question.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="piqa.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2019" data-name="piqa" data-search="piqa physical interaction: question answering tests physical common sense: given an everyday goal, which of two near-identical instructions actually works in the real world. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill" title="Commonsense Reasoning">Commonsense</span><span class="released" title="Released">Nov&#x27;19</span></div>
+  <h3>PIQA</h3>
+  <div class="full">Physical Interaction: Question Answering</div>
+  <p>Tests physical common sense: given an everyday goal, which of two near-identical instructions actually works in the real world.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="story-cloze.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-1 GPT-3" data-year="2016" data-name="story cloze" data-search="story cloze story cloze test (rocstories) tests whether a model can choose the right ending for a short five-sentence story about everyday life. commonsense reasoning gpt-1 gpt-3">
+  <div class="tile-top"><span class="pill" title="Commonsense Reasoning">Commonsense</span><span class="released" title="Released">Apr&#x27;16</span></div>
+  <h3>Story Cloze</h3>
+  <div class="full">Story Cloze Test (ROCStories)</div>
+  <p>Tests whether a model can choose the right ending for a short five-sentence story about everyday life.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="winograd-schema.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-2 GPT-3" data-year="2012" data-name="winograd schema challenge" data-search="winograd schema challenge winograd schema challenge (wsc273 / superglue wsc) tests whether a model can work out who a pronoun refers to in sentences where only common sense decides — &#x27;it&#x27; in &#x27;the trophy does not fit in the suitcase because it is too big&#x27;. commonsense reasoning gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill" title="Commonsense Reasoning">Commonsense</span><span class="released" title="Released">2012</span></div>
+  <h3>Winograd Schema Challenge</h3>
+  <div class="full">Winograd Schema Challenge (WSC273 / SuperGLUE WSC)</div>
+  <p>Tests whether a model can work out who a pronoun refers to in sentences where only common sense decides — &#x27;it&#x27; in &#x27;the trophy does not fit in the suitcase because it is too big&#x27;.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="winogrande.html" style="--c:#f59e0b;--crgb:245,158,11" data-cat="commonsense" data-papers="GPT-3" data-year="2019" data-name="winogrande" data-search="winogrande winogrande tests whether a model can fill a blank in a sentence with the right of two people or objects, using common sense about the situation. commonsense reasoning gpt-3">
+  <div class="tile-top"><span class="pill" title="Commonsense Reasoning">Commonsense</span><span class="released" title="Released">Jul&#x27;19</span></div>
+  <h3>WinoGrande</h3>
+  <div class="full">WinoGrande</div>
+  <p>Tests whether a model can fill a blank in a sentence with the right of two people or objects, using common sense about the situation.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="childrens-book-test.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2015" data-name="children&#x27;s book test" data-search="children&#x27;s book test children&#x27;s book test (cbt-cn / cbt-ne) tests whether a model can fill a missing word in a sentence from a children&#x27;s book after reading the twenty sentences before it. language modeling gpt-2">
+  <div class="tile-top"><span class="pill" title="Language Modeling">Language Modeling</span><span class="released" title="Released">Nov&#x27;15</span></div>
+  <h3>Children&#x27;s Book Test</h3>
+  <div class="full">Children&#x27;s Book Test (CBT-CN / CBT-NE)</div>
+  <p>Tests whether a model can fill a missing word in a sentence from a children&#x27;s book after reading the twenty sentences before it.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="enwik8.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2006" data-name="enwik8" data-search="enwik8 enwik8 (hutter prize) measures how well a model predicts raw wikipedia text one character at a time, scored as bits per character; lower is better. language modeling gpt-2">
+  <div class="tile-top"><span class="pill" title="Language Modeling">Language Modeling</span><span class="released" title="Released">2006</span></div>
+  <h3>enwik8</h3>
+  <div class="full">enwik8 (Hutter Prize)</div>
+  <p>Measures how well a model predicts raw Wikipedia text one character at a time, scored as bits per character; lower is better.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="lambada.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2 GPT-3" data-year="2016" data-name="lambada" data-search="lambada language modeling broadened to account for discourse aspects tests whether a model can guess the last word of a passage from a novel when that word can only be predicted from the whole passage. language modeling gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill" title="Language Modeling">Language Modeling</span><span class="released" title="Released">Jun&#x27;16</span></div>
+  <h3>LAMBADA</h3>
+  <div class="full">LAnguage Modeling Broadened to Account for Discourse Aspects</div>
+  <p>Tests whether a model can guess the last word of a passage from a novel when that word can only be predicted from the whole passage.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="one-billion-word.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2013" data-name="one billion word" data-search="one billion word one billion word benchmark (1bw / lm1b) measures how well a model predicts the next word in a billion words of shuffled news sentences, with no context between sentences. language modeling gpt-2">
+  <div class="tile-top"><span class="pill" title="Language Modeling">Language Modeling</span><span class="released" title="Released">Dec&#x27;13</span></div>
+  <h3>One Billion Word</h3>
+  <div class="full">One Billion Word Benchmark (1BW / LM1B)</div>
+  <p>Measures how well a model predicts the next word in a billion words of shuffled news sentences, with no context between sentences.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="penn-treebank.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2 GPT-3" data-year="1993" data-name="penn treebank" data-search="penn treebank penn treebank (ptb, mikolov version) measures how well a model predicts the next word in wall street journal text that has been simplified to a 10,000-word vocabulary. language modeling gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill" title="Language Modeling">Language Modeling</span><span class="released" title="Released">1993</span></div>
+  <h3>Penn Treebank</h3>
+  <div class="full">Penn Treebank (PTB, Mikolov version)</div>
+  <p>Measures how well a model predicts the next word in Wall Street Journal text that has been simplified to a 10,000-word vocabulary.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="text8.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2006" data-name="text8" data-search="text8 text8 measures how well a model predicts cleaned-up wikipedia text (lower-case letters and spaces only) one character at a time. language modeling gpt-2">
+  <div class="tile-top"><span class="pill" title="Language Modeling">Language Modeling</span><span class="released" title="Released">2006</span></div>
+  <h3>text8</h3>
+  <div class="full">text8</div>
+  <p>Measures how well a model predicts cleaned-up Wikipedia text (lower-case letters and spaces only) one character at a time.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="wikitext-103.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2016" data-name="wikitext-103" data-search="wikitext-103 wikitext-103 measures how well a model predicts the next word in wikipedia articles (large version with long articles); lower perplexity is better. language modeling gpt-2">
+  <div class="tile-top"><span class="pill" title="Language Modeling">Language Modeling</span><span class="released" title="Released">Sep&#x27;16</span></div>
+  <h3>WikiText-103</h3>
+  <div class="full">WikiText-103</div>
+  <p>Measures how well a model predicts the next word in Wikipedia articles (large version with long articles); lower perplexity is better.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="wikitext-2.html" style="--c:#f43f5e;--crgb:244,63,94" data-cat="lm" data-papers="GPT-2" data-year="2016" data-name="wikitext-2" data-search="wikitext-2 wikitext-2 measures how well a model predicts the next word in wikipedia articles (small version); lower perplexity means better prediction. language modeling gpt-2">
+  <div class="tile-top"><span class="pill" title="Language Modeling">Language Modeling</span><span class="released" title="Released">Sep&#x27;16</span></div>
+  <h3>WikiText-2</h3>
+  <div class="full">WikiText-2</div>
+  <p>Measures how well a model predicts the next word in Wikipedia articles (small version); lower perplexity means better prediction.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="cola.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2018" data-name="cola" data-search="cola corpus of linguistic acceptability tests whether a model can tell if a sentence is grammatically acceptable english, using examples from linguistics textbooks. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill" title="Similarity &amp; Classification">Similarity &amp; Cls.</span><span class="released" title="Released">May&#x27;18</span></div>
+  <h3>CoLA</h3>
+  <div class="full">Corpus of Linguistic Acceptability</div>
+  <p>Tests whether a model can tell if a sentence is grammatically acceptable English, using examples from linguistics textbooks.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="mrpc.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2005" data-name="mrpc" data-search="mrpc microsoft research paraphrase corpus tests whether a model can tell if two news sentences say the same thing in different words. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill" title="Similarity &amp; Classification">Similarity &amp; Cls.</span><span class="released" title="Released">2005</span></div>
+  <h3>MRPC</h3>
+  <div class="full">Microsoft Research Paraphrase Corpus</div>
+  <p>Tests whether a model can tell if two news sentences say the same thing in different words.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="qqp.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2017" data-name="qqp" data-search="qqp quora question pairs tests whether a model can tell if two questions asked on quora are asking the same thing. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill" title="Similarity &amp; Classification">Similarity &amp; Cls.</span><span class="released" title="Released">Jan&#x27;17</span></div>
+  <h3>QQP</h3>
+  <div class="full">Quora Question Pairs</div>
+  <p>Tests whether a model can tell if two questions asked on Quora are asking the same thing.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="sst2.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2013" data-name="sst-2" data-search="sst-2 stanford sentiment treebank (binary) tests whether a model can tell if a movie-review sentence is positive or negative. similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill" title="Similarity &amp; Classification">Similarity &amp; Cls.</span><span class="released" title="Released">Oct&#x27;13</span></div>
+  <h3>SST-2</h3>
+  <div class="full">Stanford Sentiment Treebank (binary)</div>
+  <p>Tests whether a model can tell if a movie-review sentence is positive or negative.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="stsb.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-1" data-year="2017" data-name="sts-b" data-search="sts-b semantic textual similarity benchmark tests whether a model can rate how similar two sentences are in meaning, on a scale from 0 (unrelated) to 5 (identical). similarity &amp; classification gpt-1">
+  <div class="tile-top"><span class="pill" title="Similarity &amp; Classification">Similarity &amp; Cls.</span><span class="released" title="Released">Aug&#x27;17</span></div>
+  <h3>STS-B</h3>
+  <div class="full">Semantic Textual Similarity Benchmark</div>
+  <p>Tests whether a model can rate how similar two sentences are in meaning, on a scale from 0 (unrelated) to 5 (identical).</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="wic.html" style="--c:#8b5cf6;--crgb:139,92,246" data-cat="cls" data-papers="GPT-3" data-year="2018" data-name="wic" data-search="wic word-in-context tests whether a model can tell if the same word means the same thing in two different sentences — &#x27;bed&#x27; of a river versus &#x27;bed&#x27; you sleep in. similarity &amp; classification gpt-3">
+  <div class="tile-top"><span class="pill" title="Similarity &amp; Classification">Similarity &amp; Cls.</span><span class="released" title="Released">Aug&#x27;18</span></div>
+  <h3>WiC</h3>
+  <div class="full">Word-in-Context</div>
+  <p>Tests whether a model can tell if the same word means the same thing in two different sentences — &#x27;bed&#x27; of a river versus &#x27;bed&#x27; you sleep in.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="glue.html" style="--c:#14b8a6;--crgb:20,184,166" data-cat="suite" data-papers="GPT-1" data-year="2018" data-name="glue" data-search="glue general language understanding evaluation a collection of nine sentence-understanding tests (grammar, sentiment, paraphrase, similarity and inference) combined into one overall score. benchmark suites gpt-1">
+  <div class="tile-top"><span class="pill" title="Benchmark Suites">Suite</span><span class="released" title="Released">Apr&#x27;18</span></div>
+  <h3>GLUE</h3>
+  <div class="full">General Language Understanding Evaluation</div>
+  <p>A collection of nine sentence-understanding tests (grammar, sentiment, paraphrase, similarity and inference) combined into one overall score.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="superglue.html" style="--c:#14b8a6;--crgb:20,184,166" data-cat="suite" data-papers="GPT-3" data-year="2019" data-name="superglue" data-search="superglue superglue a harder collection of eight language-understanding tests (yes/no questions, cause and effect, word sense, coreference and more) with one overall score. benchmark suites gpt-3">
+  <div class="tile-top"><span class="pill" title="Benchmark Suites">Suite</span><span class="released" title="Released">May&#x27;19</span></div>
+  <h3>SuperGLUE</h3>
+  <div class="full">SuperGLUE</div>
+  <p>A harder collection of eight language-understanding tests (yes/no questions, cause and effect, word sense, coreference and more) with one overall score.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="cnn-dailymail.html" style="--c:#ec4899;--crgb:236,72,153" data-cat="gen" data-papers="GPT-2" data-year="2015" data-name="cnn / daily mail" data-search="cnn / daily mail cnn / daily mail summarization tests whether a model can summarise a news article into a few bullet points, scored by overlap with the editor&#x27;s own summary. generation gpt-2">
+  <div class="tile-top"><span class="pill" title="Generation">Generation</span><span class="released" title="Released">2015</span></div>
+  <h3>CNN / Daily Mail</h3>
+  <div class="full">CNN / Daily Mail summarization</div>
+  <p>Tests whether a model can summarise a news article into a few bullet points, scored by overlap with the editor&#x27;s own summary.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="wmt-translation.html" style="--c:#ec4899;--crgb:236,72,153" data-cat="gen" data-papers="GPT-2 GPT-3" data-year="2014" data-name="wmt translation" data-search="wmt translation wmt14 en↔fr, wmt16 en↔de, wmt16 en↔ro tests how well a model translates news sentences between english and french, german or romanian, scored by overlap with human translations. generation gpt-2 gpt-3">
+  <div class="tile-top"><span class="pill" title="Generation">Generation</span><span class="released" title="Released">2014–2016</span></div>
+  <h3>WMT Translation</h3>
+  <div class="full">WMT14 En↔Fr, WMT16 En↔De, WMT16 En↔Ro</div>
+  <p>Tests how well a model translates news sentences between English and French, German or Romanian, scored by overlap with human translations.</p>
+  <div class="tile-foot">
+    <div class="sat no"><span class="dot"></span><b>Not saturated</b><small>models still below human level</small></div>
+  </div>
+</a>
+<a class="tile glass" href="gpt3-synthetic-tasks.html" style="--c:#64748b;--crgb:100,116,139" data-cat="synthetic" data-papers="GPT-3" data-year="2020" data-name="gpt-3 synthetic tasks" data-search="gpt-3 synthetic tasks arithmetic, word scrambling, sat analogies, news generation, novel words, grammar correction a set of made-up probe tasks — multi-digit arithmetic, unscrambling letters, sat-style word analogies and spotting machine-written news — used to test learning from examples in the prompt. synthetic / probing gpt-3">
+  <div class="tile-top"><span class="pill" title="Synthetic / Probing">Synthetic</span><span class="released" title="Released">May&#x27;20</span></div>
+  <h3>GPT-3 synthetic tasks</h3>
+  <div class="full">Arithmetic, word scrambling, SAT analogies, news generation, novel words, grammar correction</div>
+  <p>A set of made-up probe tasks — multi-digit arithmetic, unscrambling letters, SAT-style word analogies and spotting machine-written news — used to test learning from examples in the prompt.</p>
+  <div class="tile-foot">
+    <div class="sat yes"><span class="dot"></span><b>Saturated</b><small>models at or beyond human level</small></div>
+  </div>
+</a>
+  </section>
+  <div class="empty" id="empty">Nothing matches that filter. Try clearing the search or picking another category.</div>
+
+</main>
+<footer class="site">
+  <span>Sumit Kant · GenAI Lab · LLM Benchmarks · updated October 2026</span>
+  <span><a href="../../genai-lab.html">GenAI Lab</a> · <a href="../../blog.html">Blog</a></span>
+</footer>
+<script>
+(function() {
+  const grid = document.getElementById('grid');
+  const tiles = Array.from(grid.querySelectorAll('.tile'));
+  const q = document.getElementById('q'), count = document.getElementById('count'), empty = document.getElementById('empty'), sort = document.getElementById('sort');
+  const catBtns = Array.from(document.querySelectorAll('.fbtn.cat'));
+  const paperBtns = Array.from(document.querySelectorAll('.fbtn.paper'));
+  const catOrder = ["nli", "rc", "qa", "commonsense", "lm", "cls", "suite", "gen", "synthetic"];
+  let cat = 'all', papers = new Set();
+
+  function apply() {
+    const needle = q.value.trim().toLowerCase();
+    let shown = 0;
+    tiles.forEach(t => {
+      const okCat = cat === 'all' || t.dataset.cat === cat;
+      const tp = t.dataset.papers.split(' ');
+      const okPaper = papers.size === 0 || [...papers].every(p => tp.includes(p));
+      const okQ = !needle || t.dataset.search.includes(needle);
+      const show = okCat && okPaper && okQ;
+      t.classList.toggle('hidden', !show); if (show) shown++;
+    });
+    count.textContent = shown + ' of ' + tiles.length;
+    empty.classList.toggle('show', shown === 0);
+    try { localStorage.setItem('llmb-filter', JSON.stringify({cat, papers:[...papers], q:q.value, sort:sort.value})); } catch(e) {}
+  }
+  function resort() {
+    const v = sort.value;
+    const sorted = tiles.slice().sort((a,b) => {
+      if (v === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+      if (v === 'year') return (+a.dataset.year - +b.dataset.year) || a.dataset.name.localeCompare(b.dataset.name);
+      if (v === 'year-desc') return (+b.dataset.year - +a.dataset.year) || a.dataset.name.localeCompare(b.dataset.name);
+      return (catOrder.indexOf(a.dataset.cat) - catOrder.indexOf(b.dataset.cat)) || a.dataset.name.localeCompare(b.dataset.name);
+    });
+    sorted.forEach(t => grid.appendChild(t));
+  }
+  catBtns.forEach(b => b.addEventListener('click', () => { cat = b.dataset.cat; catBtns.forEach(x => x.classList.toggle('active', x === b)); apply(); }));
+  paperBtns.forEach(b => b.addEventListener('click', () => { const p = b.dataset.paper; if (papers.has(p)) papers.delete(p); else papers.add(p); b.classList.toggle('active', papers.has(p)); apply(); }));
+  q.addEventListener('input', apply);
+  sort.addEventListener('change', () => { resort(); apply(); });
+  // deep-link: ?cat=nli&paper=GPT-2
+  const u = new URLSearchParams(location.search);
+  if (u.get('cat') && catOrder.includes(u.get('cat'))) { cat = u.get('cat'); catBtns.forEach(x => x.classList.toggle('active', x.dataset.cat === cat)); }
+  (u.get('paper') || '').split(',').filter(Boolean).forEach(p => { papers.add(p); const b = paperBtns.find(x => x.dataset.paper === p); if (b) b.classList.add('active'); });
+  if (!u.toString()) { try { const s = JSON.parse(localStorage.getItem('llmb-filter') || 'null'); if (s) { cat = s.cat || 'all'; catBtns.forEach(x => x.classList.toggle('active', x.dataset.cat === cat)); (s.papers||[]).forEach(p => { papers.add(p); const b = paperBtns.find(x => x.dataset.paper === p); if (b) b.classList.add('active'); }); q.value = s.q || ''; sort.value = s.sort || 'cat'; resort(); } } catch(e) {} }
+  apply();
+})();
+</script>
+</body>
+</html>

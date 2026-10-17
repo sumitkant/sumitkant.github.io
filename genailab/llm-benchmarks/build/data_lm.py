@@ -4,7 +4,7 @@ LM = [
 {
  "slug": "lambada", "name": "LAMBADA", "full": "LAnguage Modeling Broadened to Account for Discourse Aspects",
  "category": "lm", "released": "2016", "released_label": "Jun 2016",
- "desc": "Predict the last word of a passage that humans can guess only with the full context, never from the last sentence alone.",
+ "desc": "Tests whether a model can guess the last word of a passage from a novel when that word can only be predicted from the whole passage.",
  "paper": {"title": "The LAMBADA dataset: Word prediction requiring a broad discourse context",
            "authors": "Paperno et al.", "venue": "ACL 2016", "url": "https://arxiv.org/abs/1606.06031"},
  "facts": [("Task", "Last-word prediction"), ("Size", "5,153 test passages (plus 4,869 dev); ~2.6M-passage training set from BookCorpus novels"),
@@ -31,7 +31,7 @@ LM = [
 {
  "slug": "childrens-book-test", "name": "Children's Book Test", "full": "Children's Book Test (CBT-CN / CBT-NE)",
  "category": "lm", "released": "2015", "released_label": "Nov 2015",
- "desc": "Twenty sentences of a children's book, then a 21st with a word missing; choose it from ten candidates. Scored on common nouns and named entities.",
+ "desc": "Tests whether a model can fill a missing word in a sentence from a children's book after reading the twenty sentences before it.",
  "paper": {"title": "The Goldilocks Principle: Reading Children's Books with Explicit Memory Representations",
            "authors": "Hill, Bordes, Chopra, Weston", "venue": "ICLR 2016", "url": "https://arxiv.org/abs/1511.02301"},
  "facts": [("Task", "10-way cloze"), ("Size", "~670k train questions; 2,000 validation and 2,500 test per word type"),
@@ -57,7 +57,7 @@ LM = [
 {
  "slug": "wikitext-2", "name": "WikiText-2", "full": "WikiText-2",
  "category": "lm", "released": "2016", "released_label": "Sep 2016",
- "desc": "2M words of Good/Featured Wikipedia articles with punctuation, case and numbers preserved; the small word-level LM benchmark.",
+ "desc": "Measures how well a model predicts the next word in Wikipedia articles (small version); lower perplexity means better prediction.",
  "paper": {"title": "Pointer Sentinel Mixture Models",
            "authors": "Merity, Xiong, Bradbury, Socher", "venue": "ICLR 2017", "url": "https://arxiv.org/abs/1609.07843"},
  "facts": [("Task", "Word-level language modelling (perplexity)"), ("Size", "2.1M train / 218k valid / 246k test tokens; 33k vocabulary"),
@@ -82,7 +82,7 @@ LM = [
 {
  "slug": "wikitext-103", "name": "WikiText-103", "full": "WikiText-103",
  "category": "lm", "released": "2016", "released_label": "Sep 2016",
- "desc": "103M words of Wikipedia articles with a 267k vocabulary; the standard large word-level perplexity benchmark of the Transformer-XL era.",
+ "desc": "Measures how well a model predicts the next word in Wikipedia articles (large version with long articles); lower perplexity is better.",
  "paper": {"title": "Pointer Sentinel Mixture Models",
            "authors": "Merity, Xiong, Bradbury, Socher", "venue": "ICLR 2017", "url": "https://arxiv.org/abs/1609.07843"},
  "facts": [("Task", "Word-level language modelling"), ("Size", "103M train / 218k valid / 246k test tokens; 267k vocabulary"),
@@ -105,8 +105,8 @@ LM = [
 },
 {
  "slug": "penn-treebank", "name": "Penn Treebank", "full": "Penn Treebank (PTB, Mikolov version)",
- "category": "lm", "released": "1993", "released_label": "1993 (corpus); 2011 LM split",
- "desc": "1M words of Wall Street Journal text with a 10k vocabulary and no punctuation; the oldest LM benchmark still reported.",
+ "category": "lm", "released": "1993", "released_label": "1993",
+ "desc": "Measures how well a model predicts the next word in Wall Street Journal text that has been simplified to a 10,000-word vocabulary.",
  "paper": {"title": "Building a Large Annotated Corpus of English: The Penn Treebank",
            "authors": "Marcus, Santorini, Marcinkiewicz (corpus); Mikolov et al. 2011 (LM split)", "venue": "Computational Linguistics 1993", "url": "https://aclanthology.org/J93-2004/"},
  "facts": [("Task", "Word-level language modelling"), ("Size", "930k train / 74k valid / 82k test words; 10k vocabulary"),
@@ -131,7 +131,7 @@ LM = [
 {
  "slug": "enwik8", "name": "enwik8", "full": "enwik8 (Hutter Prize)",
  "category": "lm", "released": "2006", "released_label": "2006",
- "desc": "The first 100 MB of a raw Wikipedia XML dump, scored in bits per byte; the character-level compression benchmark.",
+ "desc": "Measures how well a model predicts raw Wikipedia text one character at a time, scored as bits per character; lower is better.",
  "paper": {"title": "The Hutter Prize for Lossless Compression of Human Knowledge",
            "authors": "Marcus Hutter", "venue": "prize.hutter1.net, 2006", "url": "http://prize.hutter1.net/"},
  "facts": [("Task", "Byte-level language modelling / compression"), ("Size", "100M bytes; standard split 90M train / 5M valid / 5M test"),
@@ -155,7 +155,7 @@ LM = [
 {
  "slug": "text8", "name": "text8", "full": "text8",
  "category": "lm", "released": "2006", "released_label": "2006",
- "desc": "enwik8 stripped to lower-case letters and spaces only — 27 symbols, 100M characters.",
+ "desc": "Measures how well a model predicts cleaned-up Wikipedia text (lower-case letters and spaces only) one character at a time.",
  "paper": {"title": "Large Text Compression Benchmark",
            "authors": "Matt Mahoney", "venue": "mattmahoney.net, 2006–", "url": "http://mattmahoney.net/dc/textdata.html"},
  "facts": [("Task", "Character-level language modelling"), ("Size", "100M characters; 90M / 5M / 5M split"),
@@ -179,7 +179,7 @@ LM = [
 {
  "slug": "one-billion-word", "name": "One Billion Word", "full": "One Billion Word Benchmark (1BW / LM1B)",
  "category": "lm", "released": "2013", "released_label": "Dec 2013",
- "desc": "800M words of shuffled news sentences with an 800k vocabulary; the big sentence-level LM benchmark of 2014–2019.",
+ "desc": "Measures how well a model predicts the next word in a billion words of shuffled news sentences, with no context between sentences.",
  "paper": {"title": "One Billion Word Benchmark for Measuring Progress in Statistical Language Modeling",
            "authors": "Chelba, Mikolov, Schuster, Ge, Brants, Koehn, Robinson", "venue": "arXiv 2013 / Interspeech 2014", "url": "https://arxiv.org/abs/1312.3005"},
  "facts": [("Task", "Word-level language modelling"), ("Size", "~830M training words, 30M sentences; held-out test of ~160k words"),

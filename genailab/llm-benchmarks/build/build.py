@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate genailab/llm-benchmarks/index.html and one page per benchmark.
+"""Generate genailab/llm-benchmarks/llmbenchmarks.html and one page per benchmark.
 
 Usage:  python build.py [output_dir]
 Edit the data_*.py files to change content; re-run to regenerate.
@@ -25,6 +25,7 @@ CATS = {
     "gen":         ("Generation",                 "#ec4899"),
     "synthetic":   ("Synthetic / Probing",        "#64748b"),
 }
+CATS_SHORT = {"nli": "NLI", "rc": "Reading Comp.", "qa": "QA", "commonsense": "Commonsense", "lm": "Language Modeling", "cls": "Similarity & Cls.", "suite": "Suite", "gen": "Generation", "synthetic": "Synthetic"}
 PAPERS = {"GPT-1": "#1a1a18", "GPT-2": "#c85c2a", "GPT-3": "#0f766e"}
 
 ALL = NLI + RC + QA + CS + LM + CLS + SUITES + GEN + SYN
@@ -36,6 +37,12 @@ E = html.escape
 def hex_rgb(h):
     h = h.lstrip("#"); return ",".join(str(int(h[i:i+2], 16)) for i in (0, 2, 4))
 
+MONTHS = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+def short_date(label):
+    """'Oct 2019' -> "Oct'19"; a bare year or a range is left as is."""
+    m = re.fullmatch(r"(%s) (\d{4})" % "|".join(MONTHS), label.strip())
+    return f"{m.group(1)}'{m.group(2)[2:]}" if m else label
+
 def papers_used(b):
     seen = []
     for g in b["gpt"]:
@@ -45,7 +52,7 @@ def papers_used(b):
 # ──────────────────────────────────────────────────────────────────────────
 # Shared chrome
 # ──────────────────────────────────────────────────────────────────────────
-FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>\n  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>'
+FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>\n  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Google+Sans+Flex:opsz,wght@6..144,300..800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet"/>'
 
 def nav(back_href, back_label, depth):
     logo = "../" * depth + "images/Main_Logo.svg"
@@ -63,23 +70,24 @@ BASE_CSS = """
     html { font-size: 16px; scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text-primary); font-family: var(--font); -webkit-font-smoothing: antialiased; line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
     a { color: inherit; text-decoration: none; }
-    /* ambient blobs for the glass to refract */
-    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .ambient span { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; mix-blend-mode: multiply; animation: drift 28s ease-in-out infinite alternate; }
-    .ambient .b1 { width: 560px; height: 560px; left: -140px; top: -120px; background: #c7d2fe; }
-    .ambient .b2 { width: 520px; height: 520px; right: -160px; top: 120px; background: #fde68a; animation-delay: -9s; }
-    .ambient .b3 { width: 480px; height: 480px; left: 30%; top: 55%; background: #bae6fd; animation-delay: -17s; }
-    .ambient .b4 { width: 420px; height: 420px; right: 18%; bottom: -160px; background: #fbcfe8; animation-delay: -4s; }
-    @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(40px,30px,0) scale(1.08); } }
-    @media (prefers-reduced-motion: reduce) { .ambient span { animation: none; } }
+    h1, h2, h3, .hero-title, .tile h3, .sec-head h2, .stat b, .sota-box .big, .pager a { font-family: var(--font-head); }
+    /* static ambient wash — cheap to paint (no filter: blur, no animation) */
+    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(640px 640px at 8% 0%, rgba(199,210,254,.75), transparent 70%),
+        radial-gradient(600px 600px at 100% 18%, rgba(253,230,138,.7), transparent 70%),
+        radial-gradient(560px 560px at 38% 70%, rgba(186,230,253,.65), transparent 70%),
+        radial-gradient(500px 500px at 85% 100%, rgba(251,207,232,.6), transparent 70%); }
+    .ambient span { display: none; }
     .grain { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-    nav { position: sticky; top: 0; z-index: 200; height: var(--nav-h); background: rgba(242,239,233,.72); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border-bottom: 1px solid var(--border); }
+    nav { position: sticky; top: 0; z-index: 200; height: var(--nav-h); background: rgba(242,239,233,.9); border-bottom: 1px solid var(--border); }
     .nav-inner { max-width: var(--content-w); margin: 0 auto; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
     .nav-back { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text-secondary); transition: color .15s; }
     .nav-back:hover { color: var(--text-primary); }
     .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
     .page { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 0 2rem 5rem; }
-    .glass { background: rgba(255,255,255,.52); border: 1px solid rgba(255,255,255,.75); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 10px 30px -12px rgba(26,26,24,.18); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); border-radius: var(--radius); }
+    .glass { background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.8); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 10px 30px -12px rgba(26,26,24,.16); border-radius: var(--radius); }
+    .tile.glass, .filters.glass { backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); background: rgba(255,255,255,.5); }
     .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1.3; white-space: nowrap; }
     .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
     .chip { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 700; font-family: var(--mono); letter-spacing: .02em; color: #fff; white-space: nowrap; }
@@ -92,14 +100,14 @@ VARS = """
     :root {
       --bg: #f2efe9; --border: rgba(0,0,0,.08);
       --text-primary: #1a1a18; --text-secondary: #6b6b65; --text-tertiary: #a8a8a0;
-      --accent: #c85c2a; --font: 'Plus Jakarta Sans', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+      --accent: #c85c2a; --font: 'Google Sans Flex', system-ui, sans-serif; --font-head: 'Plus Jakarta Sans', 'Google Sans Flex', system-ui, sans-serif; --mono: 'Fira Code', ui-monospace, monospace;
       --radius: 18px; --nav-h: 72px; --content-w: 1100px;
     }
 """
 
 def footer(depth):
     return f'''<footer class="site">
-  <span>Sumit Kant · GenAI Lab · LLM Benchmarks · last updated {UPDATED}</span>
+  <span>Sumit Kant · GenAI Lab · LLM Benchmarks · updated {UPDATED}</span>
   <span><a href="{'../' * depth}genai-lab.html">GenAI Lab</a> · <a href="{'../' * depth}blog.html">Blog</a></span>
 </footer>'''
 
@@ -111,7 +119,7 @@ INDEX_CSS = """
     .hero-eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; margin-bottom: 10px; }
     .hero-title { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 800; line-height: 1.08; letter-spacing: -.03em; margin-bottom: 12px; }
     .hero-title strong { color: var(--accent); font-weight: 800; }
-    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 640px; }
+    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 760px; }
     .hero-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
     .stat { padding: 10px 16px; border-radius: 14px; display: flex; flex-direction: column; min-width: 110px; }
     .stat b { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
@@ -134,29 +142,37 @@ INDEX_CSS = """
     .count { margin-left: auto; font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
     select.sort { font: inherit; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(0,0,0,.08); background: rgba(255,255,255,.5); color: var(--text-secondary); cursor: pointer; }
 
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .tile { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 18px 18px 16px; min-height: 236px; overflow: hidden; transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s, border-color .22s; --c: #999; }
-    .tile::before { content: ''; position: absolute; inset: -40% auto auto -20%; width: 70%; height: 90%; background: radial-gradient(closest-side, rgba(var(--crgb), .32), transparent 70%); pointer-events: none; }
-    .tile::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--c), transparent 80%); opacity: .9; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .tile { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 16px 16px 14px; min-height: 230px; overflow: hidden; transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s, border-color .22s; --c: #999; }
+    .tile::before { content: ''; position: absolute; inset: auto -55% -45% auto; width: 110%; height: 130%; background: radial-gradient(closest-side, rgba(var(--crgb), .34), transparent 72%); pointer-events: none; }
     .tile:hover { transform: translateY(-4px); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 24px 40px -18px rgba(var(--crgb), .45); border-color: rgba(255,255,255,.95); }
     .tile.hidden { display: none; }
     .tile-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; position: relative; }
-    .tile .pill { color: var(--c); background: rgba(var(--crgb), .12); }
+    .tile .pill { color: var(--c); background: rgba(var(--crgb), .12); flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 10px; }
+    .tile .pill::before { flex-shrink: 0; }
     .tile-papers { display: flex; gap: 4px; }
-    .tile h3 { font-size: 19px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; position: relative; }
+    .tile h3 { font-size: 17px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; position: relative; }
     .tile .full { font-size: 11.5px; color: var(--text-tertiary); margin-top: -6px; font-weight: 500; }
-    .tile p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; flex: 1; position: relative; }
-    .tile-foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,.1); font-size: 11.5px; color: var(--text-secondary); position: relative; }
+    .tile p { font-size: 12.5px; color: #3d3d39; line-height: 1.5; flex: 1; position: relative; }
+    .tile-foot { display: block; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,.1); font-size: 11.5px; color: var(--text-secondary); position: relative; }
     .tile-foot .lbl { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 1px; }
     .tile-foot b { font-size: 13px; color: var(--text-primary); font-weight: 700; }
-    .tile-foot .sota { text-align: right; max-width: 60%; }
+    .tile-foot .sat { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; align-items: center; }
+    .tile-foot .sat .dot { width: 9px; height: 9px; border-radius: 50%; grid-row: span 2; }
+    .tile-foot .sat.yes .dot { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,.18); }
+    .tile-foot .sat.no .dot { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.2); }
+    .tile-foot .sat b { font-size: 12.5px; color: var(--text-primary); }
+    .tile-foot .sat small { font-size: 11px; color: var(--text-secondary); }
+    .tile-top .released { flex-shrink: 0; font-size: 11.5px; font-weight: 500; color: var(--text-tertiary); white-space: nowrap; }
+    .tile-foot .sota .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .tile-foot .sota small { display: block; font-size: 10.5px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .empty { display: none; padding: 40px; text-align: center; color: var(--text-secondary); font-size: 14px; }
     .empty.show { display: block; }
     .legend { margin-top: 36px; padding: 18px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: var(--text-secondary); }
     .legend .pill { color: var(--c); background: rgba(var(--crgb), .12); }
     .legend .chip { margin-right: 2px; }
-    @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .filters { position: static; } .count { margin-left: 0; width: 100%; } .tile { min-height: 0; } }
 """
 
@@ -169,13 +185,12 @@ def tile(b):
     if b["slug"] == "gpt3-synthetic-tasks": sota_score, sota_model = "n/a", "no shared leaderboard"
     search = E(" ".join([b["name"], b["full"], b["desc"], name] + papers_used(b)).lower())
     return f'''<a class="tile glass" href="{b['slug']}.html" style="--c:{color};--crgb:{hex_rgb(color)}" data-cat="{b['category']}" data-papers="{' '.join(papers_used(b))}" data-year="{b['released']}" data-name="{E(b['name']).lower()}" data-search="{search}">
-  <div class="tile-top"><span class="pill">{E(name)}</span><span class="tile-papers">{chips}</span></div>
+  <div class="tile-top"><span class="pill" title="{E(name)}">{E(CATS_SHORT[b['category']])}</span><span class="released" title="Released">{E(short_date(b['released_label']))}</span></div>
   <h3>{E(b['name'])}</h3>
   <div class="full">{E(b['full'])}</div>
   <p>{E(b['desc'])}</p>
   <div class="tile-foot">
-    <div><span class="lbl">Released</span><b>{E(b['released_label'])}</b></div>
-    <div class="sota"><span class="lbl">SOTA · {E(sota['metric'].split('(')[0].strip()[:28])}</span><b>{sota_score}</b><small>{sota_model} · {sota['year']}</small></div>
+    <div class="sat {'yes' if sota['saturated'] else 'no'}"><span class="dot"></span><b>{'Saturated' if sota['saturated'] else 'Not saturated'}</b><small>{'models at or beyond human level' if sota['saturated'] else 'models still below human level'}</small></div>
   </div>
 </a>'''
 
@@ -190,7 +205,7 @@ def build_index():
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Every benchmark used in the GPT-1, GPT-2 and GPT-3 papers — {len(ALL)} datasets across {len(CATS)} categories, with release dates, state-of-the-art scores and a dedicated page for each."/>
+  <meta name="description" content="{len(ALL)} classic LLM benchmarks across {len(CATS)} categories — what each one tests, release dates, state-of-the-art scores and a dedicated page for each."/>
   <title>LLM Benchmarks — GenAI Lab — Sumit Kant</title>
   {FONTS}
   <style>{VARS}{BASE_CSS}{INDEX_CSS}</style>
@@ -203,19 +218,12 @@ def build_index():
   <header class="hero">
     <p class="hero-eyebrow">GenAI Lab · Evaluation</p>
     <h1 class="hero-title">LLM <strong>Benchmarks</strong></h1>
-    <p class="hero-sub">Every benchmark the GPT-1, GPT-2 and GPT-3 papers were evaluated on, consolidated in one place. Each tile opens a page with the original paper, what the task actually tests, worked examples, the GPT-era scores, today's state of the art, and a quickstart for running it yourself.</p>
-    <div class="hero-stats">
-      <div class="stat glass"><b>{len(ALL)}</b><span>benchmarks</span></div>
-      <div class="stat glass"><b>{len(CATS)}</b><span>categories</span></div>
-      <div class="stat glass"><b>{n_g1} · {n_g2} · {n_g3}</b><span>GPT-1 · GPT-2 · GPT-3</span></div>
-    </div>
+    <p class="hero-sub">The classic language-understanding and language-modelling benchmarks — what each one tests, examples, state of the art, and how to run it.</p>
   </header>
 
   <section class="filters glass" aria-label="Filters">
     <div class="filters-row">
-      <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="q" type="search" placeholder="Search benchmarks — e.g. entailment, perplexity, SuperGLUE" autocomplete="off"/></label>
-      <span class="flabel">Used in</span>{paper_btns}
-      <span class="fsep"></span>
+      <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="q" type="search" placeholder="Search benchmarks and categories" autocomplete="off"/></label>
       <select class="sort" id="sort" aria-label="Sort"><option value="cat">Sort: category</option><option value="name">Sort: name</option><option value="year">Sort: year ↑</option><option value="year-desc">Sort: year ↓</option></select>
       <span class="count" id="count"></span>
     </div>
@@ -230,13 +238,6 @@ def build_index():
   </section>
   <div class="empty" id="empty">Nothing matches that filter. Try clearing the search or picking another category.</div>
 
-  <aside class="legend glass">
-    <span class="flabel">Legend</span>{legend}
-    <span style="flex-basis:100%"></span>
-    <span><span class="chip" style="background:{PAPERS['GPT-1']}">GPT-1</span> Radford et al., 2018 · fine-tuned</span>
-    <span><span class="chip" style="background:{PAPERS['GPT-2']}">GPT-2</span> Radford et al., 2019 · zero-shot</span>
-    <span><span class="chip" style="background:{PAPERS['GPT-3']}">GPT-3</span> Brown et al., 2020 · few-shot</span>
-  </aside>
 </main>
 {footer(2)}
 <script>
@@ -341,10 +342,13 @@ DETAIL_CSS = """
     .ex .ans { margin-top: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(var(--crgb), .12); font-size: 13px; }
     .ex .ans b { color: var(--c); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; margin-right: 8px; }
 
-    table.res { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    .tablewrap { overflow-x: auto; }
+    table.res { width: 100%; border-collapse: collapse; font-size: 13.5px; table-layout: fixed; }
+    table.res col.c-paper { width: 70px; } table.res col.c-setting { width: 30%; } table.res col.c-score { width: 24%; }
     table.res th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); padding: 8px 10px 8px 0; border-bottom: 1px solid rgba(0,0,0,.12); }
-    table.res td { padding: 11px 10px 11px 0; border-bottom: 1px dashed rgba(0,0,0,.1); vertical-align: top; line-height: 1.5; }
-    table.res td.score { font-weight: 700; font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+    table.res td { padding: 11px 10px 11px 0; border-bottom: 1px dashed rgba(0,0,0,.1); vertical-align: top; line-height: 1.5; overflow-wrap: anywhere; }
+    table.res td.score { font-weight: 700; font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+    table.res td.score span { display: block; }
     table.res td.note { color: var(--text-secondary); font-size: 12.5px; }
 
     .sota-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px; }
@@ -672,7 +676,7 @@ def build_detail(i, b):
         t = f'<div class="t">{E(ex["title"])}</div>' if ex["title"] else ""
         ans = f'<div class="ans"><b>Answer</b>{E(ex["answer"])}</div>' if ex["answer"] and ex["answer"] != "—" else ""
         exs += f'<div class="ex">{t}{rows}{ans}</div>'
-    gpt_rows = "".join(f'<tr><td><span class="chip" style="background:{PAPERS[g["paper"]]}">{g["paper"]}</span></td><td>{E(g["setting"])}</td><td class="score">{E(g["score"])}</td><td class="note">{E(g["note"])}</td></tr>' for g in b["gpt"])
+    gpt_rows = "".join(f'<tr><td><span class="chip" style="background:{PAPERS[g["paper"]]}">{g["paper"]}</span></td><td>{E(g["setting"])}</td><td class="score">{"".join(f"<span>{E(x.strip())}</span>" for x in g["score"].split(" · "))}</td><td class="note">{E(g["note"])}</td></tr>' for g in b["gpt"])
     s = b["sota"]
     big_cls = "big sm" if len(str(s["score"])) > 14 else "big"
     sat = '<span class="sat yes">✓ saturated · at or above human level</span>' if s["saturated"] else '<span class="sat no">open · below human level</span>'
@@ -680,9 +684,9 @@ def build_detail(i, b):
     pit = "".join(f"<li>{E(p)}</li>" for p in b["pitfalls"])
     refs = "".join(f'<li><a href="{E(u)}" target="_blank" rel="noopener">{E(l)}</a><small>{E(u)}</small></li>' for l, u in b["refs"])
     hf_link = f'<a class="l" href="https://huggingface.co/datasets/{b["quick"]["hf"]}" target="_blank" rel="noopener">Hugging Face ↗</a>' if b["quick"]["hf"] else ""
-    sections = [("glance", "At a glance"), ("what", "What it tests"), ("examples", "Examples"), ("gpt", "In the GPT papers"), ("sota", "State of the art"), ("quickstart", "Quickstart"), ("pitfalls", "Pitfalls"), ("refs", "References")]
+    sections = [("glance", "At a glance"), ("what", "What it tests"), ("examples", "Examples"), ("gpt", "Reported results"), ("sota", "State of the art"), ("quickstart", "Quickstart"), ("pitfalls", "Pitfalls"), ("refs", "References")]
     toc = "".join(f'<a href="#{sid}"><span class="n">{n:02d}</span>{E(t)}</a>' for n, (sid, t) in enumerate(sections, 1))
-    cat_link = f'index.html?cat={b["category"]}'
+    cat_link = f'llmbenchmarks.html?cat={b["category"]}'
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -693,13 +697,13 @@ def build_detail(i, b):
   {FONTS}
   <style>{VARS}{BASE_CSS}{DETAIL_CSS}
     :root {{ --c: {color}; --crgb: {hex_rgb(color)}; }}
-    .ambient .b1 {{ background: {color}; opacity: .22; }}
+    .ambient {{ background: radial-gradient(640px 640px at 8% 0%, rgba({hex_rgb(color)},.28), transparent 70%), radial-gradient(600px 600px at 100% 18%, rgba(253,230,138,.6), transparent 70%), radial-gradient(560px 560px at 38% 70%, rgba(186,230,253,.55), transparent 70%); }}
   </style>
 </head>
 <body>
 <div class="ambient"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span></div>
 <div class="grain"></div>
-{nav("index.html", "LLM Benchmarks", 2)}
+{nav("llmbenchmarks.html", "LLM Benchmarks", 2)}
 <main class="page">
   <header class="hero">
     <div>
@@ -739,9 +743,9 @@ def build_detail(i, b):
       </section>
 
       <section class="card glass" id="gpt">
-        <div class="sec-head"><span class="sec-num">04</span><h2>In the GPT papers</h2></div>
-        <p class="lede">How each paper used this benchmark and what it reported. GPT-1 fine-tuned; GPT-2 evaluated zero-shot; GPT-3 evaluated zero-, one- and few-shot with examples in the prompt.</p>
-        <table class="res"><thead><tr><th>Paper</th><th>Setting</th><th>Reported</th><th>Context</th></tr></thead><tbody>{gpt_rows}</tbody></table>
+        <div class="sec-head"><span class="sec-num">04</span><h2>Reported results</h2></div>
+        <p class="lede">Scores reported on this benchmark, with the evaluation setting each one used.</p>
+        <div class="tablewrap"><table class="res"><colgroup><col class="c-paper"/><col class="c-setting"/><col class="c-score"/><col/></colgroup><thead><tr><th>Paper</th><th>Setting</th><th>Reported</th><th>Context</th></tr></thead><tbody>{gpt_rows}</tbody></table></div>
       </section>
 
       <section class="card glass" id="sota">
@@ -772,7 +776,7 @@ def build_detail(i, b):
 
       <nav class="pager">
         <a class="glass prev" href="{prev_b['slug']}.html"><span>← Previous</span>{E(prev_b['name'])}</a>
-        <a class="glass all" href="index.html">All benchmarks</a>
+        <a class="glass all" href="llmbenchmarks.html">All benchmarks</a>
         <a class="glass next" href="{next_b['slug']}.html"><span>Next →</span>{E(next_b['name'])}</a>
       </nav>
     </div>
@@ -798,7 +802,7 @@ def build_detail(i, b):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f: f.write(build_index())
+    with open(os.path.join(OUT, "llmbenchmarks.html"), "w", encoding="utf-8") as f: f.write(build_index())
     for i, b in enumerate(ALL):
         with open(os.path.join(OUT, f"{b['slug']}.html"), "w", encoding="utf-8") as f: f.write(build_detail(i, b))
     # machine-readable manifest for the GenAI Lab page / future use

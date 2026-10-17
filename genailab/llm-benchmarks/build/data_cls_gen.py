@@ -4,7 +4,7 @@ CLS = [
 {
  "slug": "mrpc", "name": "MRPC", "full": "Microsoft Research Paraphrase Corpus",
  "category": "cls", "released": "2005", "released_label": "2005",
- "desc": "5.8k news sentence pairs labelled as paraphrases or not; small, imbalanced, part of GLUE.",
+ "desc": "Tests whether a model can tell if two news sentences say the same thing in different words.",
  "paper": {"title": "Automatically Constructing a Corpus of Sentential Paraphrases",
            "authors": "Dolan, Brockett", "venue": "IWP 2005", "url": "https://aclanthology.org/I05-5002/"},
  "facts": [("Task", "Binary paraphrase detection"), ("Size", "3.7k train / 408 dev / 1.7k test; ~68% positive"),
@@ -29,7 +29,7 @@ CLS = [
 {
  "slug": "qqp", "name": "QQP", "full": "Quora Question Pairs",
  "category": "cls", "released": "2017", "released_label": "Jan 2017",
- "desc": "400k pairs of Quora questions labelled duplicate or not; the big paraphrase task in GLUE.",
+ "desc": "Tests whether a model can tell if two questions asked on Quora are asking the same thing.",
  "paper": {"title": "First Quora Dataset Release: Question Pairs",
            "authors": "Iyer, Dandekar, Csernai (Quora)", "venue": "Quora blog / Kaggle, 2017", "url": "https://quoradata.quora.com/First-Quora-Dataset-Release-Question-Pairs"},
  "facts": [("Task", "Binary duplicate-question detection"), ("Size", "364k train / 40k dev / 391k test; ~37% positive"),
@@ -54,7 +54,7 @@ CLS = [
 {
  "slug": "stsb", "name": "STS-B", "full": "Semantic Textual Similarity Benchmark",
  "category": "cls", "released": "2017", "released_label": "Aug 2017",
- "desc": "8.6k sentence pairs rated 0–5 for similarity; the one regression task in GLUE.",
+ "desc": "Tests whether a model can rate how similar two sentences are in meaning, on a scale from 0 (unrelated) to 5 (identical).",
  "paper": {"title": "SemEval-2017 Task 1: Semantic Textual Similarity Multilingual and Crosslingual Focused Evaluation",
            "authors": "Cer, Diab, Agirre, Lopez-Gazpio, Specia", "venue": "SemEval 2017", "url": "https://arxiv.org/abs/1708.00055"},
  "facts": [("Task", "Regression: predict a 0–5 similarity score"), ("Size", "5.7k train / 1.5k dev / 1.4k test"),
@@ -81,7 +81,7 @@ CLS = [
 {
  "slug": "sst2", "name": "SST-2", "full": "Stanford Sentiment Treebank (binary)",
  "category": "cls", "released": "2013", "released_label": "Oct 2013",
- "desc": "67k movie-review phrases labelled positive or negative; the standard sentiment benchmark.",
+ "desc": "Tests whether a model can tell if a movie-review sentence is positive or negative.",
  "paper": {"title": "Recursive Deep Models for Semantic Compositionality Over a Sentiment Treebank",
            "authors": "Socher, Perelygin, Wu, Chuang, Manning, Ng, Potts", "venue": "EMNLP 2013", "url": "https://aclanthology.org/D13-1170/"},
  "facts": [("Task", "Binary sentence classification"), ("Size", "67k train (includes sub-phrases) / 872 dev / 1.8k test"),
@@ -107,7 +107,7 @@ CLS = [
 {
  "slug": "cola", "name": "CoLA", "full": "Corpus of Linguistic Acceptability",
  "category": "cls", "released": "2018", "released_label": "May 2018",
- "desc": "10k sentences from linguistics textbooks marked grammatical or not; scored by Matthews correlation.",
+ "desc": "Tests whether a model can tell if a sentence is grammatically acceptable English, using examples from linguistics textbooks.",
  "paper": {"title": "Neural Network Acceptability Judgments",
            "authors": "Warstadt, Singh, Bowman", "venue": "TACL 2019", "url": "https://arxiv.org/abs/1805.12471"},
  "facts": [("Task", "Binary acceptability judgement"), ("Size", "8.5k train / 1k dev / 1k test; ~70% acceptable"),
@@ -134,7 +134,7 @@ CLS = [
 {
  "slug": "wic", "name": "WiC", "full": "Word-in-Context",
  "category": "cls", "released": "2018", "released_label": "Aug 2018",
- "desc": "Does the same word mean the same thing in these two sentences? 7.5k pairs; still below human level.",
+ "desc": "Tests whether a model can tell if the same word means the same thing in two different sentences — 'bed' of a river versus 'bed' you sleep in.",
  "paper": {"title": "WiC: the Word-in-Context Dataset for Evaluating Context-Sensitive Meaning Representations",
            "authors": "Pilehvar, Camacho-Collados", "venue": "NAACL 2019", "url": "https://arxiv.org/abs/1808.09121"},
  "facts": [("Task", "Binary word-sense comparison"), ("Size", "5.4k train / 638 dev / 1.4k test; balanced"),
@@ -164,7 +164,7 @@ SUITES = [
 {
  "slug": "glue", "name": "GLUE", "full": "General Language Understanding Evaluation",
  "category": "suite", "released": "2018", "released_label": "Apr 2018",
- "desc": "Nine sentence-level tasks and one leaderboard score; the benchmark GPT-1 and BERT were measured on.",
+ "desc": "A collection of nine sentence-understanding tests (grammar, sentiment, paraphrase, similarity and inference) combined into one overall score.",
  "paper": {"title": "GLUE: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding",
            "authors": "Wang, Singh, Michael, Hill, Levy, Bowman", "venue": "ICLR 2019", "url": "https://arxiv.org/abs/1804.07461"},
  "facts": [("Tasks", "CoLA, SST-2, MRPC, STS-B, QQP, MNLI (m/mm), QNLI, RTE, WNLI, plus a diagnostic NLI set"),
@@ -189,7 +189,7 @@ SUITES = [
 {
  "slug": "superglue", "name": "SuperGLUE", "full": "SuperGLUE",
  "category": "suite", "released": "2019", "released_label": "May 2019",
- "desc": "GLUE's harder successor: eight tasks (BoolQ, CB, COPA, MultiRC, ReCoRD, RTE, WiC, WSC) chosen because BERT still failed them.",
+ "desc": "A harder collection of eight language-understanding tests (yes/no questions, cause and effect, word sense, coreference and more) with one overall score.",
  "paper": {"title": "SuperGLUE: A Stickier Benchmark for General-Purpose Language Understanding Systems",
            "authors": "Wang, Pruksachatkun, Nangia, Singh, Michael, Hill, Levy, Bowman", "venue": "NeurIPS 2019", "url": "https://arxiv.org/abs/1905.00537"},
  "facts": [("Tasks", "BoolQ, CB, COPA, MultiRC, ReCoRD, RTE, WiC, WSC (+ diagnostic sets AX-b, AX-g)"),
@@ -217,8 +217,8 @@ SUITES = [
 GEN = [
 {
  "slug": "cnn-dailymail", "name": "CNN / Daily Mail", "full": "CNN / Daily Mail summarization",
- "category": "gen", "released": "2015", "released_label": "Jun 2015 (QA); 2016 as summarization",
- "desc": "300k news articles paired with their bullet-point highlights; the default abstractive summarisation benchmark.",
+ "category": "gen", "released": "2015", "released_label": "2015",
+ "desc": "Tests whether a model can summarise a news article into a few bullet points, scored by overlap with the editor's own summary.",
  "paper": {"title": "Teaching Machines to Read and Comprehend (QA version); Abstractive Text Summarization using Sequence-to-sequence RNNs and Beyond (summarization version)",
            "authors": "Hermann et al. 2015; Nallapati et al. 2016", "venue": "NeurIPS 2015 / CoNLL 2016", "url": "https://arxiv.org/abs/1602.06023"},
  "facts": [("Task", "Abstractive summarisation (article → 3–4 highlight sentences)"), ("Size", "287k train / 13k valid / 11.5k test"),
@@ -242,8 +242,8 @@ GEN = [
 },
 {
  "slug": "wmt-translation", "name": "WMT Translation", "full": "WMT14 En↔Fr, WMT16 En↔De, WMT16 En↔Ro",
- "category": "gen", "released": "2014", "released_label": "2014 / 2016",
- "desc": "Shared-task test sets for French, German and Romanian ↔ English; scored in BLEU. GPT-2 tried Fr–En, GPT-3 all three pairs.",
+ "category": "gen", "released": "2014", "released_label": "2014–2016",
+ "desc": "Tests how well a model translates news sentences between English and French, German or Romanian, scored by overlap with human translations.",
  "paper": {"title": "Findings of the 2014 / 2016 Workshop on Statistical Machine Translation",
            "authors": "Bojar et al.", "venue": "WMT 2014, WMT 2016", "url": "https://aclanthology.org/W16-2301/"},
  "facts": [("Task", "Sentence-level translation"), ("Test sets", "newstest2014 (Fr–En, 3,003 sentences), newstest2016 (De–En 2,999; Ro–En 1,999)"),
@@ -273,7 +273,7 @@ SYN = [
 {
  "slug": "gpt3-synthetic-tasks", "name": "GPT-3 synthetic tasks", "full": "Arithmetic, word scrambling, SAT analogies, news generation, novel words, grammar correction",
  "category": "synthetic", "released": "2020", "released_label": "May 2020",
- "desc": "Tasks the GPT-3 authors invented to probe in-context learning: 2–5 digit arithmetic, unscrambling words, SAT analogies, and human detection of generated news.",
+ "desc": "A set of made-up probe tasks — multi-digit arithmetic, unscrambling letters, SAT-style word analogies and spotting machine-written news — used to test learning from examples in the prompt.",
  "paper": {"title": "Language Models are Few-Shot Learners (Section 3.9)",
            "authors": "Brown et al. (OpenAI)", "venue": "NeurIPS 2020", "url": "https://arxiv.org/abs/2005.14165"},
  "facts": [("Arithmetic", "10 sub-tasks: 2/3/4/5-digit addition and subtraction, 2-digit multiplication, 1-digit composite; 2,000 random problems each"),

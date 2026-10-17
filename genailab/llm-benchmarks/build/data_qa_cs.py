@@ -4,7 +4,7 @@ QA = [
 {
  "slug": "natural-questions", "name": "Natural Questions", "full": "Natural Questions (NQ / NQ-Open)",
  "category": "qa", "released": "2019", "released_label": "Jan 2019",
- "desc": "300k real Google queries with Wikipedia answers; the closed-book 'NQ-Open' variant asks the model to answer from memory.",
+ "desc": "Tests whether a model can answer real Google search questions from memory, without being shown any document.",
  "paper": {"title": "Natural Questions: A Benchmark for Question Answering Research",
            "authors": "Kwiatkowski et al. (Google)", "venue": "TACL 2019", "url": "https://aclanthology.org/Q19-1026/"},
  "facts": [("Task", "Original: long answer (paragraph) + short answer (span) from a Wikipedia page. NQ-Open: short answer with no page given"),
@@ -33,7 +33,7 @@ QA = [
 {
  "slug": "webquestions", "name": "WebQuestions", "full": "WebQuestions",
  "category": "qa", "released": "2013", "released_label": "Oct 2013",
- "desc": "6k questions from the Google Suggest API answered against Freebase; the oldest open-domain QA set still in use.",
+ "desc": "Tests whether a model can answer short factual questions mined from Google search suggestions, from memory alone.",
  "paper": {"title": "Semantic Parsing on Freebase from Question-Answer Pairs",
            "authors": "Berant, Chou, Frostig, Liang", "venue": "EMNLP 2013", "url": "https://aclanthology.org/D13-1160/"},
  "facts": [("Task", "Open-domain factoid QA (originally semantic parsing to Freebase)"), ("Size", "3,778 train / 2,032 test"),
@@ -59,7 +59,7 @@ QA = [
 {
  "slug": "triviaqa", "name": "TriviaQA", "full": "TriviaQA",
  "category": "qa", "released": "2017", "released_label": "May 2017",
- "desc": "95k trivia questions written by enthusiasts, with Wikipedia and web evidence; the standard closed-book knowledge probe.",
+ "desc": "Tests how many trivia-quiz questions a model can answer from the facts it memorised during training.",
  "paper": {"title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
            "authors": "Joshi, Choi, Weld, Zettlemoyer", "venue": "ACL 2017", "url": "https://arxiv.org/abs/1705.03551"},
  "facts": [("Task", "Factoid QA; evaluated with or without evidence documents"), ("Size", "95k Q/A pairs, 650k evidence documents; 'rc' (Wikipedia/web) and 'unfiltered' settings"),
@@ -88,7 +88,7 @@ CS = [
 {
  "slug": "hellaswag", "name": "HellaSwag", "full": "HellaSwag (Harder Endings, Longer contexts, Low-shot Activities for Situations With Adversarial Generations)",
  "category": "commonsense", "released": "2019", "released_label": "May 2019",
- "desc": "Pick the most plausible continuation of a scene from four options; wrong options were machine-generated to fool BERT.",
+ "desc": "Tests whether a model can pick the most sensible continuation of an everyday scene from four options written to fool it.",
  "paper": {"title": "HellaSwag: Can a Machine Really Finish Your Sentence?",
            "authors": "Zellers, Holtzman, Bisk, Farhadi, Choi", "venue": "ACL 2019", "url": "https://arxiv.org/abs/1905.07830"},
  "facts": [("Task", "4-way multiple choice sentence completion"), ("Size", "40k train / 10k dev / 10k test"),
@@ -116,7 +116,7 @@ CS = [
 {
  "slug": "story-cloze", "name": "Story Cloze", "full": "Story Cloze Test (ROCStories)",
  "category": "commonsense", "released": "2016", "released_label": "Apr 2016",
- "desc": "Given four sentences of a five-sentence story, choose the right fifth sentence from two candidates.",
+ "desc": "Tests whether a model can choose the right ending for a short five-sentence story about everyday life.",
  "paper": {"title": "A Corpus and Cloze Evaluation for Deeper Understanding of Commonsense Stories",
            "authors": "Mostafazadeh et al.", "venue": "NAACL 2016", "url": "https://aclanthology.org/N16-1098/"},
  "facts": [("Task", "Binary choice of story ending"), ("Size", "ROCStories: 98k five-sentence stories for training; Story Cloze: 1,871 validation + 1,871 test items (2016), 1,571 each (2018 release)"),
@@ -143,8 +143,8 @@ CS = [
 },
 {
  "slug": "winograd-schema", "name": "Winograd Schema Challenge", "full": "Winograd Schema Challenge (WSC273 / SuperGLUE WSC)",
- "category": "commonsense", "released": "2012", "released_label": "2012 (WSC273); 2019 SuperGLUE version",
- "desc": "273 hand-crafted pronoun-resolution puzzles where one word flips the answer; the classic test of commonsense.",
+ "category": "commonsense", "released": "2012", "released_label": "2012",
+ "desc": "Tests whether a model can work out who a pronoun refers to in sentences where only common sense decides — 'it' in 'the trophy does not fit in the suitcase because it is too big'.",
  "paper": {"title": "The Winograd Schema Challenge",
            "authors": "Levesque, Davis, Morgenstern", "venue": "KR 2012", "url": "https://cdn.aaai.org/ocs/4492/4492-21843-1-PB.pdf"},
  "facts": [("Task", "Resolve an ambiguous pronoun to one of two noun phrases"), ("Size", "WSC273: 273 items (no training set). SuperGLUE WSC: 554 train / 104 dev / 146 test"),
@@ -171,7 +171,7 @@ CS = [
 {
  "slug": "winogrande", "name": "WinoGrande", "full": "WinoGrande",
  "category": "commonsense", "released": "2019", "released_label": "Jul 2019",
- "desc": "44k Winograd-style fill-in-the-blank items, crowd-sourced then adversarially filtered; still a standard LLM metric.",
+ "desc": "Tests whether a model can fill a blank in a sentence with the right of two people or objects, using common sense about the situation.",
  "paper": {"title": "WinoGrande: An Adversarial Winograd Schema Challenge at Scale",
            "authors": "Sakaguchi, Le Bras, Bhagavatula, Choi", "venue": "AAAI 2020", "url": "https://arxiv.org/abs/1907.10641"},
  "facts": [("Task", "Binary fill-in-the-blank (which of two options fills '_')"), ("Size", "40k train (sizes XS–XL), 1.3k dev, 1.8k test (hidden)"),
@@ -198,7 +198,7 @@ CS = [
 {
  "slug": "piqa", "name": "PIQA", "full": "Physical Interaction: Question Answering",
  "category": "commonsense", "released": "2019", "released_label": "Nov 2019",
- "desc": "Choose the sensible way to accomplish an everyday physical goal — 'to separate egg whites…' — from two solutions.",
+ "desc": "Tests physical common sense: given an everyday goal, which of two near-identical instructions actually works in the real world.",
  "paper": {"title": "PIQA: Reasoning about Physical Commonsense in Natural Language",
            "authors": "Bisk, Zellers, Le Bras, Gao, Choi", "venue": "AAAI 2020", "url": "https://arxiv.org/abs/1911.11641"},
  "facts": [("Task", "Binary choice of solution for a goal"), ("Size", "16k train / 1.8k dev / 3k test (hidden)"),
@@ -227,7 +227,7 @@ CS = [
 {
  "slug": "arc", "name": "ARC", "full": "AI2 Reasoning Challenge (ARC-Easy / ARC-Challenge)",
  "category": "commonsense", "released": "2018", "released_label": "Mar 2018",
- "desc": "7.8k grade-school science questions; the Challenge split holds the ones retrieval and co-occurrence methods got wrong.",
+ "desc": "Tests whether a model can answer grade-school science exam questions; the Challenge split contains the ones simple word-matching cannot solve.",
  "paper": {"title": "Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge",
            "authors": "Clark, Cowhey, Etzioni, Khot, Sabharwal, Schoenick, Tafjord", "venue": "arXiv 2018", "url": "https://arxiv.org/abs/1803.05457"},
  "facts": [("Task", "Multiple choice (usually 4 options)"), ("Size", "ARC-Easy 5.2k / ARC-Challenge 2.6k questions (train/dev/test each)"),
@@ -253,7 +253,7 @@ CS = [
 {
  "slug": "openbookqa", "name": "OpenBookQA", "full": "OpenBookQA",
  "category": "commonsense", "released": "2018", "released_label": "Sep 2018",
- "desc": "6k science questions that need one 'open book' fact plus commonsense the book does not contain.",
+ "desc": "Tests whether a model can combine a given science fact with everyday knowledge to answer a question.",
  "paper": {"title": "Can a Suit of Armor Conduct Electricity? A New Dataset for Open Book Question Answering",
            "authors": "Mihaylov, Clark, Khot, Sabharwal", "venue": "EMNLP 2018", "url": "https://arxiv.org/abs/1809.02789"},
  "facts": [("Task", "4-way multiple choice"), ("Size", "4,957 train / 500 dev / 500 test; 'book' of 1,326 science facts"),
@@ -280,7 +280,7 @@ CS = [
 {
  "slug": "copa", "name": "COPA", "full": "Choice of Plausible Alternatives",
  "category": "commonsense", "released": "2011", "released_label": "2011",
- "desc": "1,000 tiny causal puzzles: given a premise, which of two alternatives is the more plausible cause or effect?",
+ "desc": "Tests causal common sense: given a short statement, which of two alternatives is the more likely cause or effect.",
  "paper": {"title": "Choice of Plausible Alternatives: An Evaluation of Commonsense Causal Reasoning",
            "authors": "Roemmele, Bejan, Gordon", "venue": "AAAI Spring Symposium 2011", "url": "https://people.ict.usc.edu/~gordon/publications/AAAI-SPRING11A.PDF"},
  "facts": [("Task", "Binary choice; question is either 'cause' or 'effect'"), ("Size", "400 train / 100 dev / 500 test"),
