@@ -1877,8 +1877,8 @@ y = F.scaled_dot_product_attention(q, k, v, is_causal=<span class="k">True</span
         <!-- 08 ─────────────────────────────────────────── -->
         <section class="card" id="vocab">
           <span class="sec-num" aria-hidden="true">07</span>
-          <p class="sec-label">Optimization 5 · Memory traffic</p>
-          <h2>Pad the vocabulary: nice numbers for CUDA</h2>
+          <p class="sec-label">Optimization 5 · Nice Numbers</p>
+          <h2>Padding the vocabulary: Nice numbers for CUDA</h2>
           <p class="lede">GPU kernels cut matrices into <b>tiles whose sides are powers of two</b>: 16, 32, 64, 128.
             When a dimension doesn't divide evenly, the leftover goes through a separate, slower pass. The cheapest
             remaining speedup is to stop handing the GPU awkward numbers.</p>
@@ -2103,13 +2103,13 @@ y = F.scaled_dot_product_attention(q, k, v, is_causal=<span class="k">True</span
         <ul class="toc-list">
           <li><a href="#big-idea">1 · TL;DR</a></li>
           <li><a href="#setup">2 · Setup</a></li>
-          <li><a href="#tf32">3 · TF32 matmuls</a></li>
+          <li><a href="#tf32">3 · TF32</a></li>
           <li><a href="#bf16">4 · bfloat16 autocast</a></li>
           <li><a href="#compile">5 · torch.compile</a></li>
           <li><a href="#flash">6 · Flash attention</a></li>
-          <li><a href="#vocab">7 · Pad the vocabulary</a></li>
+          <li><a href="#vocab">7 · Nice Numbers</a></li>
           <li><a href="#results">8 · Where the 250 ms went</a></li>
-          <li><a href="#wrap">9 · Before your next training loop</a></li>
+          <li><a href="#wrap">9 · Conclusions</a></li>
         </ul>
       </aside>
     </div>
