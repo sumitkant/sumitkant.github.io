@@ -115,11 +115,19 @@ def footer(depth):
 # Index page
 # ──────────────────────────────────────────────────────────────────────────
 INDEX_CSS = """
-    .hero { padding: 3.25rem 0 2rem; }
+    body.index nav { background: transparent; border-bottom-color: transparent; transition: background .25s, border-color .25s; }
+    body.index nav.solid { background: rgba(242,239,233,.9); border-bottom-color: var(--border); }
+    .hero-band { position: relative; z-index: 1; margin-top: calc(-1 * var(--nav-h)); padding-top: var(--nav-h); margin-bottom: 22px; width: 100%; background: var(--bg) url('llmbenchmarks-hero.jpg') no-repeat; background-size: 100% auto; background-position: center 50%; }
+    .hero-band::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(242,239,233,.55) 0%, rgba(242,239,233,.35) 22%, rgba(242,239,233,0) 42%); }
+    .hero-band::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 70px; background: linear-gradient(180deg, rgba(242,239,233,0), var(--bg)); }
+    .hero { position: relative; z-index: 1; max-width: var(--content-w); margin: 0 auto; padding: 2.2rem 2rem 3rem; height: clamp(300px, 27.5vw, 540px); display: flex; flex-direction: column; justify-content: center; }
+    @media (max-width: 900px) { .hero-band { background-size: cover; background-position: 70% 50%; } .hero-band::before { background: linear-gradient(90deg, rgba(242,239,233,.9) 0%, rgba(242,239,233,.7) 55%, rgba(242,239,233,.5) 100%); } .hero { height: auto; min-height: 280px; padding: 2.4rem 1rem 3rem; } }
+    .hero-sub { max-width: 400px; }
+    @media (max-width: 760px) { .hero-band { background-position: 70% 45%; } .hero-band::before { background: linear-gradient(90deg, rgba(242,239,233,.94) 0%, rgba(242,239,233,.8) 60%, rgba(242,239,233,.55) 100%); } .hero { min-height: 300px; padding: 2.6rem 1rem 3.4rem; } }
     .hero-eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; margin-bottom: 10px; }
     .hero-title { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 800; line-height: 1.08; letter-spacing: -.03em; margin-bottom: 12px; }
     .hero-title strong { color: var(--accent); font-weight: 800; }
-    .hero-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 760px; }
+    .hero-sub { font-size: 15.5px; color: #3d3d39; line-height: 1.65; }
     .hero-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
     .stat { padding: 10px 16px; border-radius: 14px; display: flex; flex-direction: column; min-width: 110px; }
     .stat b { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
@@ -207,19 +215,31 @@ def build_index():
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="{len(ALL)} classic LLM benchmarks across {len(CATS)} categories — what each one tests, release dates, state-of-the-art scores and a dedicated page for each."/>
   <title>LLM Benchmarks — GenAI Lab — Sumit Kant</title>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="LLM Benchmarks — GenAI Lab"/>
+  <meta property="og:description" content="The exams every language model had to sit before it was allowed to call itself intelligent."/>
+  <meta property="og:url" content="https://sumitkant.github.io/genailab/llm-benchmarks/llmbenchmarks.html"/>
+  <meta property="og:image" content="https://sumitkant.github.io/genailab/llm-benchmarks/llmbenchmarks-og.jpg"/>
+  <meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="LLM Benchmarks — GenAI Lab"/>
+  <meta name="twitter:description" content="The exams every language model had to sit before it was allowed to call itself intelligent."/>
+  <meta name="twitter:image" content="https://sumitkant.github.io/genailab/llm-benchmarks/llmbenchmarks-og.jpg"/>
   {FONTS}
   <style>{VARS}{BASE_CSS}{INDEX_CSS}</style>
 </head>
-<body>
+<body class="index">
 <div class="ambient"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span></div>
 <div class="grain"></div>
 {nav("../../genai-lab.html", "GenAI Lab", 2)}
-<main class="page">
+<div class="hero-band">
   <header class="hero">
-    <p class="hero-eyebrow">GenAI Lab · Evaluation</p>
+    <p class="hero-eyebrow">GenAI Lab</p>
     <h1 class="hero-title">LLM <strong>Benchmarks</strong></h1>
-    <p class="hero-sub">The classic language-understanding and language-modelling benchmarks — what each one tests, examples, state of the art, and how to run it.</p>
+    <p class="hero-sub">The exams every language model had to sit before it was allowed to call itself intelligent.</p>
   </header>
+</div>
+<main class="page">
 
   <section class="filters glass" aria-label="Filters">
     <div class="filters-row">
@@ -242,6 +262,9 @@ def build_index():
 {footer(2)}
 <script>
 (function() {{
+  const navEl = document.querySelector('nav'), band = document.querySelector('.hero-band');
+  function navState() {{ navEl.classList.toggle('solid', window.scrollY > band.offsetHeight - navEl.offsetHeight - 10); }}
+  window.addEventListener('scroll', navState, {{ passive: true }}); navState();
   const grid = document.getElementById('grid');
   const tiles = Array.from(grid.querySelectorAll('.tile'));
   const q = document.getElementById('q'), count = document.getElementById('count'), empty = document.getElementById('empty'), sort = document.getElementById('sort');
