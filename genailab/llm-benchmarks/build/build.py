@@ -333,7 +333,6 @@ DETAIL_CSS = """
     .layout { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 32px; align-items: start; }
     .layout > div { min-width: 0; }
     .win { max-width: 100%; }
-    .win pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .sota-note, .prose p, .ex .row .v, .fact .v, .hero-full { overflow-wrap: anywhere; }
     .toc { position: sticky; top: calc(var(--nav-h) + 20px); padding: 14px 6px 14px 14px; font-size: 12.5px; }
     .toc .flabel { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
@@ -396,7 +395,7 @@ DETAIL_CSS = """
     .win-bar i { width: 10px; height: 10px; border-radius: 50%; background: #3a3a44; display: inline-block; }
     .win-bar i:nth-child(1) { background: #ff5f57; } .win-bar i:nth-child(2) { background: #febc2e; } .win-bar i:nth-child(3) { background: #28c840; }
     .win-bar span { margin-left: auto; font-family: var(--mono); font-size: 11px; color: #8a8a96; }
-    .win pre { margin: 0; padding: 16px 18px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: #e6e6ea; tab-size: 4; }
+    .win pre { margin: 0; padding: 16px 18px; overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: #e6e6ea; tab-size: 4; }
     .win pre .c { color: #7c7c8a; } .win pre .s { color: #a5d6a7; } .win pre .k { color: #c792ea; } .win pre .f { color: #82aaff; } .win pre .n { color: #f78c6c; }
     .step { font-size: 13.5px; font-weight: 700; margin: 18px 0 2px; display: flex; align-items: center; gap: 8px; }
     .step .no { width: 20px; height: 20px; border-radius: 6px; background: var(--c); color: #fff; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); }
@@ -421,7 +420,7 @@ DETAIL_CSS = """
 def code(src, lang="python", title="python"):
     s = E(src)
     # light syntax tint
-    s = re.sub(r"(#[^\n]*)", r'<span class="c">\1</span>', s)
+    s = re.sub(r"((?<![&\w])#[^\n]*)", r'<span class="c">\1</span>', s)
     s = re.sub(r"(&quot;[^\n]*?&quot;|&#x27;[^\n]*?&#x27;)", r'<span class="s">\1</span>', s)
     s = re.sub(r"\b(import|from|for|in|def|return|if|else|with|as|print|lambda|not|and|or|None|True|False)\b", r'<span class="k">\1</span>', s)
     return f'<div class="win"><div class="win-bar"><i></i><i></i><i></i><span>{E(title)}</span></div><pre>{s}</pre></div>'

@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>5 Lines of Code to Make Your LLM Train 3x Faster on GPU</title>
+  <meta name="description" content="5 must-use single-line exploits that made the smallest GPT-2 (124M parameter model) train 3x faster on a consumer-grade RTX 5070 GPU.">
+  <link rel="canonical" href="https://sumitkant.github.io/Blogs/AI-ML/training-gpt2-faster-single-gpu.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sumit Kant">
+  <meta property="og:url" content="https://sumitkant.github.io/Blogs/AI-ML/training-gpt2-faster-single-gpu.html">
+  <meta property="og:title" content="5 Lines of Code to Make Your LLM Train 3x Faster on GPU">
+  <meta property="og:description" content="5 must-use single-line exploits that made the smallest GPT-2 (124M parameter model) train 3x faster on a consumer-grade RTX 5070 GPU.">
+  <meta property="og:image" content="https://sumitkant.github.io/images/Blogs/24.TrainingGPT2Faster/gpt2-faster-og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A glowing GPU taking in documents and feeding a stack of model layers, with a speed gauge and rising bar chart, on a black and green background">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="5 Lines of Code to Make Your LLM Train 3x Faster on GPU">
+  <meta name="twitter:description" content="5 must-use single-line exploits that made the smallest GPT-2 (124M parameter model) train 3x faster on a consumer-grade RTX 5070 GPU.">
+  <meta name="twitter:image" content="https://sumitkant.github.io/images/Blogs/24.TrainingGPT2Faster/gpt2-faster-og.jpg">
+  <meta name="twitter:image:alt" content="A glowing GPU taking in documents and feeding a stack of model layers, with a speed gauge and rising bar chart, on a black and green background">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Fira+Code:wght@300..700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ── GPU-optimization palette (glass · NVIDIA green + black) ── */
+    :root {
+      --paper: #F4F7F1;
+      --card: rgba(255, 255, 255, .62);
+      --card-2: rgba(255, 255, 255, .46);
+      --card-solid: #FFFFFF;
+      --ink: #0F140E;
+      --ink-dim: #566051;
+      --green: #5E9400;
+      /* NVIDIA green, darkened for text */
+      --green-brand: #76B900;
+      --green-deep: #3F6600;
+      --green-soft: rgba(118, 185, 0, .13);
+      --green-line: rgba(118, 185, 0, .38);
+      --green-light: #A8E63D;
+      /* green on black */
+      --black: #0B0F0A;
+      --black-soft: rgba(11, 15, 10, .06);
+      --rule: rgba(15, 20, 14, .10);
+      --glass-edge: rgba(255, 255, 255, .72);
+      --code-bg: #0E120D;
+      --code-bar: #060805;
+      --code-text: #EEF3E8;
+      --code-dim: #8E9A87;
+
+      --font: "Google Sans Flex", system-ui, sans-serif;
+      --mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --nav-h: 72px;
+      --content-w: 1200px;
+      --prose-w: 800px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100%
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--font);
+      font-weight: 380;
+      font-optical-sizing: auto;
+      font-variation-settings: "slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 0;
+      font-size: 16px;
+      line-height: 1.72;
+      letter-spacing: -.003em;
+      /* ── glass backdrop: green and black blooms over dotted paper ── */
+      background-color: var(--paper);
+      background-image:
+        radial-gradient(circle, rgba(15, 20, 14, .18) 1px, transparent 1.2px),
+        radial-gradient(900px 600px at 8% 10%, rgba(118, 185, 0, .30), transparent 65%),
+        radial-gradient(700px 500px at 92% 28%, rgba(11, 15, 10, .20), transparent 65%),
+        radial-gradient(800px 700px at 70% 90%, rgba(118, 185, 0, .22), transparent 65%),
+        radial-gradient(600px 500px at 15% 80%, rgba(11, 15, 10, .14), transparent 65%);
+      background-size: 24px 24px, auto, auto, auto, auto;
+      background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+      background-attachment: fixed;
+      background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+    }
+
+    a {
+      color: var(--green)
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: var(--font)
+    }
+
+    h2 {
+      font-weight: 760;
+      font-size: clamp(23px, 3.4vw, 30px);
+      letter-spacing: -.022em;
+      line-height: 1.2;
+      margin: 0 0 10px
+    }
+
+    h3 {
+      font-weight: 720;
+      font-size: 16px;
+      letter-spacing: -.005em;
+      margin: 32px 0 8px;
+      color: var(--green)
+    }
+
+    p {
+      margin: 0 0 18px
+    }
+
+    ul,
+    ol {
+      padding-left: 20px
+    }
+
+    li {
+      margin-bottom: 8px
+    }
+
+    b {
+      font-weight: 650;
+      color: var(--green-deep)
+    }
+
+    code {
+      font-family: var(--font);
+      font-size: .9em;
+      font-weight: 520;
+      color: var(--green-deep);
+      background: var(--green-soft);
+      padding: 1px 6px;
+      border-radius: 5px;
+    }
+
+    /* ── nav ── */
+    #progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--black), var(--green-brand));
+      z-index: 200;
+      transition: width .08s linear
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--rule);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px)
+    }
+
+    .nav-inner {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink)
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    .nav-links li {
+      margin: 0
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color 0.15s
+    }
+
+    .nav-links a:hover {
+      color: var(--green)
+    }
+
+    .page {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      padding: 0 2rem 5rem
+    }
+
+    /* ── banner ── */
+    .post-banner {
+      margin: 3rem 0 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background-color: #070A06;
+      border: 1px solid #1B2616;
+      padding: 58px 46px 54px;
+      min-height: 360px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 18px 44px rgba(11, 15, 10, .22);
+      background-image: var(--banner-img);
+      background-size: cover;
+      background-position: 70% center
+    }
+
+    /* glass bars drawn into the banner */
+    .banner-bars {
+      position: absolute;
+      right: 48px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      pointer-events: none
+    }
+
+    .banner-bars div {
+      height: 24px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .14);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #C9D9B8;
+      white-space: nowrap
+    }
+
+    .banner-bars div.last {
+      background: rgba(118, 185, 0, .45);
+      border-color: rgba(168, 230, 61, .7);
+      color: #fff;
+      font-weight: 600
+    }
+
+    .banner-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(100deg,
+          rgba(6, 8, 5, .94) 0%,
+          rgba(6, 8, 5, .86) 34%,
+          rgba(6, 8, 5, .45) 58%,
+          rgba(6, 8, 5, 0) 80%)
+    }
+
+    .banner-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 58%
+    }
+
+    .banner-eyebrow {
+      font-weight: 650;
+      font-size: .78rem;
+      letter-spacing: .20em;
+      text-transform: uppercase;
+      color: #C3CFB7;
+      margin: 0 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .banner-eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--green-light);
+      display: inline-block
+    }
+
+    .banner-title {
+      font-weight: 820;
+      font-size: clamp(2.1rem, 5vw, 3.1rem);
+      line-height: 1.06;
+      letter-spacing: -.03em;
+      margin: 0 0 20px;
+      color: #FFFFFF
+    }
+
+    .banner-title .accent {
+      color: var(--green-light)
+    }
+
+    .banner-sub {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #D6DECF;
+      max-width: 60ch;
+      margin: 0
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 1.25rem 0
+    }
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-edge);
+      font-size: 12px;
+      color: var(--ink-dim);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px)
+    }
+
+    .meta-tag.accent-tag {
+      background: var(--green-brand);
+      color: #0B0F0A;
+      border-color: transparent
+    }
+
+    .meta-tag.dark-tag {
+      background: var(--black);
+      color: #fff;
+      border-color: transparent
+    }
+
+    /* ── layout + TOC ── */
+    .post-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 0 28px;
+      align-items: start;
+      padding-top: .5rem
+    }
+
+    .post-prose {
+      min-width: 0
+    }
+
+    .post-toc {
+      position: sticky;
+      top: calc(var(--nav-h) + 1.5rem);
+      background: var(--card);
+      border: 1px solid var(--glass-edge);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      margin-top: 26px;
+      box-shadow: 0 10px 26px rgba(11, 15, 10, .07), inset 0 1px 0 rgba(255, 255, 255, .8);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%)
+    }
+
+    .toc-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      font-weight: 720;
+      margin-bottom: 12px
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin: 0;
+      padding: 0
+    }
+
+    .toc-list li {
+      margin: 0
+    }
+
+    .toc-list a {
+      font-size: 12.5px;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color 0.15s;
+      display: block;
+      line-height: 1.4
+    }
+
+    .toc-list a:hover,
+    .toc-list a.active {
+      color: var(--green)
+    }
+
+    .toc-list a.active {
+      font-weight: 650
+    }
+
+    /* ── each section is a glass rectangle floating over the blooms ── */
+    section.card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--glass-edge);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px 30px;
+      margin: 26px 0;
+      scroll-margin-top: calc(var(--nav-h) + 1rem);
+      box-shadow: 0 18px 40px rgba(11, 15, 10, .10), inset 0 1px 0 rgba(255, 255, 255, .85);
+      backdrop-filter: blur(22px) saturate(140%);
+      -webkit-backdrop-filter: blur(22px) saturate(140%)
+    }
+
+    section.card>.sec-label,
+    section.card>h2 {
+      padding-right: 62px
+    }
+
+    .sec-label {
+      font-weight: 720;
+      font-size: 10.5px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      line-height: 1.7;
+      color: var(--ink-dim);
+      margin: 0 0 8px
+    }
+
+    .lede {
+      font-size: 18px;
+      color: var(--ink-dim);
+      margin-bottom: 22px
+    }
+
+    /* ── per-section glossary ── */
+    .sec-gloss {
+      margin: 26px 0 0;
+      padding-top: 14px;
+      border-top: 1px dashed var(--rule)
+    }
+
+    .gloss-label {
+      font-weight: 720;
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 8px
+    }
+
+    .sec-gloss dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 5px 16px;
+      margin: 0;
+      font-size: 12.5px;
+      line-height: 1.5
+    }
+
+    .sec-gloss dt {
+      font-weight: 700;
+      color: var(--green)
+    }
+
+    .sec-gloss dd {
+      margin: 0;
+      color: #7E8878
+    }
+
+    /* ── code windows ── */
+    .win {
+      margin: 22px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid #1F2A1A;
+      background: var(--code-bg);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .28)
+    }
+
+    .win-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--code-bar);
+      border-bottom: 1px solid #000
+    }
+
+    .win-bar i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: block
+    }
+
+    .win-bar i:nth-child(1) {
+      background: #76B900
+    }
+
+    .win-bar i:nth-child(2) {
+      background: #A8E63D
+    }
+
+    .win-bar i:nth-child(3) {
+      background: #5E6A58
+    }
+
+    .win-bar span {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--code-dim);
+      margin-left: 8px;
+      letter-spacing: .03em
+    }
+
+    .win pre {
+      margin: 0;
+      background: transparent;
+      border: 0;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.75;
+      padding: 16px 18px;
+      color: var(--code-text);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      overflow-x: hidden
+    }
+
+    pre .c {
+      color: #7F8A78;
+      font-style: italic
+    }
+
+    pre .k {
+      color: #A8E63D
+    }
+
+    pre .s {
+      color: #D7F2A4
+    }
+
+    .win.out {
+      background: var(--card-2);
+      border-color: var(--glass-edge);
+      box-shadow: none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px)
+    }
+
+    .win.out .win-bar {
+      background: rgba(255, 255, 255, .55);
+      border-bottom: 1px solid var(--rule)
+    }
+
+    .win.out .win-bar span {
+      color: var(--ink-dim)
+    }
+
+    .win.out pre {
+      color: var(--ink)
+    }
+
+    /* ── tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-family: var(--font);
+      font-size: 13.5px;
+      margin: 22px 0
+    }
+
+    th,
+    td {
+      overflow-wrap: anywhere
+    }
+
+    th {
+      text-align: left;
+      font-weight: 700;
+      color: var(--green);
+      border-bottom: 1px solid var(--rule);
+      padding: 8px 10px;
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(15, 20, 14, .07);
+      color: var(--ink-dim);
+      vertical-align: top
+    }
+
+    td:first-child {
+      color: var(--ink)
+    }
+
+    td.num {
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+      font-weight: 600
+    }
+
+    tr.hl td {
+      background: var(--green-soft);
+      color: var(--green-deep);
+      font-weight: 650
+    }
+
+    /* ── callouts ── */
+    .takeaway {
+      background: var(--green-soft);
+      border: 1px solid var(--green-line);
+      border-radius: var(--radius-md);
+      padding: 15px 18px;
+      margin: 24px 0;
+      font-size: 16px
+    }
+
+    .takeaway strong {
+      font-weight: 720;
+      color: var(--green);
+      display: block;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 5px
+    }
+
+    .takeaway>:last-child {
+      margin-bottom: 0
+    }
+
+    .takeaway p {
+      margin-bottom: 10px
+    }
+
+    .takeaway.dark {
+      background: var(--black);
+      border-color: var(--black);
+      color: #E6EBE0
+    }
+
+    .takeaway.dark strong {
+      color: var(--green-light)
+    }
+
+    .takeaway.dark b {
+      color: #fff
+    }
+
+    .takeaway.dark code {
+      background: #1E2719;
+      color: #D7F2A4
+    }
+
+    .takeaway.note {
+      background: var(--black-soft);
+      border-color: rgba(15, 20, 14, .14)
+    }
+
+    .takeaway.note strong {
+      color: var(--ink)
+    }
+
+    /* ── measured result strip ── */
+    .result {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 18px;
+      align-items: center;
+      background: var(--black);
+      border: 1px solid var(--black);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin: 22px 0;
+      color: #E6EBE0
+    }
+
+    .result .v {
+      font-weight: 820;
+      font-size: 26px;
+      letter-spacing: -.025em;
+      line-height: 1.1;
+      color: var(--green-light);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap
+    }
+
+    .result .v small {
+      display: block;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-weight: 720;
+      color: #8E9A87;
+      margin-bottom: 2px
+    }
+
+    .result p {
+      margin: 0;
+      font-size: 14.5px;
+      line-height: 1.55;
+      color: #CFD8C6
+    }
+
+    .result p b {
+      color: #fff
+    }
+
+    .caption {
+      font-size: 13.5px;
+      color: var(--ink-dim);
+      line-height: 1.55;
+      margin: 12px 2px 26px
+    }
+
+    .caption b {
+      color: var(--green);
+      font-weight: 650
+    }
+
+    .big-idea {
+      font-weight: 740;
+      font-size: clamp(17px, 2.4vw, 21px);
+      line-height: 1.35;
+      letter-spacing: -.015em;
+      text-align: center;
+      color: var(--ink);
+      border-top: 2px solid var(--black);
+      border-bottom: 2px solid var(--black);
+      padding: 18px 10px;
+      margin: 26px 0
+    }
+
+    .big-idea .r {
+      color: var(--green)
+    }
+
+    /* ── figures ── */
+    .figwrap {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--card-2);
+      border: 1px solid var(--glass-edge);
+      margin: 22px 0 0;
+      padding: 12px
+    }
+
+    .figwrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: var(--radius-sm)
+    }
+
+    .figwrap svg text {
+      font-family: var(--font)
+    }
+
+    /* ── stage cards (use it when / limitations) ── */
+    .stages {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 22px 0
+    }
+
+    .stages.three {
+      grid-template-columns: repeat(3, 1fr)
+    }
+
+    .stage {
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      border: 1px solid var(--glass-edge);
+      background: var(--card-2)
+    }
+
+    .stage.s1 {
+      background: var(--black);
+      border-color: var(--black);
+      color: #E6EBE0
+    }
+
+    .stage.s2 {
+      background: var(--green-brand);
+      border-color: var(--green-brand);
+      color: #0B0F0A
+    }
+
+    .stage .tag {
+      font-weight: 720;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .75;
+      display: block;
+      margin-bottom: 6px
+    }
+
+    .stage h4 {
+      font-size: 18px;
+      font-weight: 740;
+      margin: 0 0 6px;
+      color: #fff;
+      letter-spacing: -.01em
+    }
+
+    .stage.s2 h4 {
+      color: #0B0F0A
+    }
+
+    .stage.s3 h4 {
+      color: var(--ink)
+    }
+
+    .stage.s3 .tag {
+      color: var(--ink-dim)
+    }
+
+    .stage p {
+      margin: 0;
+      font-size: 14.5px;
+      line-height: 1.55
+    }
+
+    .stage ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14.5px;
+      line-height: 1.55
+    }
+
+    .stage li {
+      margin-bottom: 5px
+    }
+
+    .stage.s3 p,
+    .stage.s3 ul {
+      color: var(--ink-dim)
+    }
+
+    .stage.s3.use .tag {
+      color: var(--green)
+    }
+
+    .stage.s3.lim .tag {
+      color: #9A3B1E
+    }
+
+    .stage code {
+      background: rgba(255, 255, 255, .14);
+      color: #fff
+    }
+
+    .stage.s3 code {
+      background: var(--green-soft);
+      color: var(--green-deep)
+    }
+
+
+    /* ── TL;DR thin bars: change + one-liner above each bar ── */
+    .opt-rows {
+      margin: 22px 0 6px
+    }
+
+    .opt-row {
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--rule)
+    }
+
+    .opt-row:last-child {
+      border-bottom: 0
+    }
+
+    .opt-name {
+      font-weight: 720;
+      font-size: 14.5px;
+      color: var(--ink);
+      letter-spacing: -.01em
+    }
+
+    .opt-desc {
+      font-size: 14px;
+      color: var(--ink-dim);
+      line-height: 1.5;
+      margin: 2px 0 6px
+    }
+
+    .opt-code {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--green-deep);
+      background: var(--green-soft);
+      border: 1px solid var(--green-line);
+      border-radius: 6px;
+      padding: 2px 8px;
+      margin-bottom: 8px;
+      max-width: 100%;
+      overflow-wrap: anywhere
+    }
+
+    .opt-bar {
+      display: grid;
+      grid-template-columns: 1fr 64px;
+      gap: 10px;
+      align-items: center
+    }
+
+    .opt-track {
+      height: 10px;
+      background: var(--black-soft);
+      border-radius: 999px;
+      overflow: hidden
+    }
+
+    .opt-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--green-brand)
+    }
+
+    .opt-ms {
+      font-size: 13px;
+      font-weight: 740;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      text-align: right
+    }
+
+    /* ── bar chart ── */
+    .bars {
+      margin: 22px 0 6px
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(0, 210px) 1fr;
+      gap: 12px;
+      align-items: center;
+      margin: 10px 0
+    }
+
+    .bar-label {
+      font-size: 14px;
+      line-height: 1.35;
+      color: var(--ink)
+    }
+
+    .bar-label small {
+      display: block;
+      font-size: 11.5px;
+      color: var(--ink-dim);
+      font-variant-numeric: tabular-nums
+    }
+
+    .bar-track {
+      position: relative;
+      height: 28px;
+      background: var(--black-soft);
+      border-radius: 6px;
+      overflow: hidden
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--black);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 9px;
+      color: #fff;
+      font-weight: 720;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums
+    }
+
+    .bar-fill.green {
+      background: var(--green-brand);
+      color: #0B0F0A
+    }
+
+    .bar-fill.grey {
+      background: #7E8878
+    }
+
+    /* ── pipeline flow with numbers ── */
+    .flow {
+      display: flex;
+      align-items: stretch;
+      margin: 22px 0 0;
+      padding: 14px;
+      background: var(--card-2);
+      border: 1px solid var(--glass-edge);
+      border-radius: var(--radius-md)
+    }
+
+    .flow-step {
+      flex: 1 1 0;
+      min-width: 0;
+      background: var(--card-solid);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 12px 14px
+    }
+
+    .flow-step .v {
+      font-weight: 820;
+      font-size: 22px;
+      letter-spacing: -.02em;
+      line-height: 1.1;
+      color: var(--green);
+      font-variant-numeric: tabular-nums
+    }
+
+    .flow-step .t {
+      font-weight: 700;
+      font-size: 13.5px;
+      line-height: 1.3;
+      color: var(--ink);
+      margin-top: 8px
+    }
+
+    .flow-step .d {
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: var(--ink-dim);
+      margin-top: 2px
+    }
+
+    .flow-step.end {
+      background: var(--black);
+      border-color: var(--black)
+    }
+
+    .flow-step.end .v {
+      color: var(--green-light)
+    }
+
+    .flow-step.end .t {
+      color: #fff
+    }
+
+    .flow-step.end .d {
+      color: #C3CDBB
+    }
+
+    .flow-arrow {
+      flex: none;
+      width: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-dim)
+    }
+
+    /* ── stat strip ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 22px 0
+    }
+
+    .stat {
+      border: 1px solid var(--glass-edge);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      background: var(--card-2)
+    }
+
+    .stat .v {
+      font-weight: 820;
+      font-size: 24px;
+      letter-spacing: -.02em;
+      color: var(--green);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums
+    }
+
+    .stat .l {
+      font-size: 12.5px;
+      color: var(--ink-dim);
+      line-height: 1.35;
+      margin-top: 4px
+    }
+
+    /* ── numbered recap ── */
+    .recap {
+      counter-reset: r;
+      list-style: none;
+      padding: 0;
+      margin: 18px 0
+    }
+
+    .recap li {
+      counter-increment: r;
+      position: relative;
+      padding: 12px 0 12px 46px;
+      border-bottom: 1px solid var(--rule);
+      margin: 0
+    }
+
+    .recap li:last-child {
+      border-bottom: 0
+    }
+
+    .recap li::before {
+      content: counter(r, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: 11px;
+      font-weight: 820;
+      font-size: 18px;
+      color: var(--green)
+    }
+
+    /* ── related post tile ── */
+    .item.post-card {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      background: var(--card-2);
+      border: 1px solid var(--glass-edge);
+      border-radius: var(--radius-lg);
+      margin: 20px 0 6px;
+      transition: transform .18s ease, box-shadow .18s ease
+    }
+
+    .item.post-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 42px rgba(11, 15, 10, .14)
+    }
+
+    .post-thumb {
+      width: 100%;
+      height: 100%;
+      min-height: 140px;
+      object-fit: cover;
+      display: block;
+      background: linear-gradient(135deg, #0B0F0A, #2E4A00)
+    }
+
+    .post-body {
+      padding: 20px 24px
+    }
+
+    .post-tags {
+      font-weight: 650;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 8px
+    }
+
+    .post-tags .p {
+      color: var(--green);
+      font-weight: 720
+    }
+
+    .post-title {
+      font-weight: 740;
+      font-size: 17px;
+      line-height: 1.28;
+      letter-spacing: -.015em;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 7px;
+      transition: color .15s
+    }
+
+    .item.post-card:hover .post-title {
+      color: var(--green)
+    }
+
+    .post-desc {
+      font-size: 14px;
+      color: var(--ink-dim);
+      margin: 0;
+      line-height: 1.55
+    }
+
+    /* ── section number, top right ── */
+    .sec-num {
+      position: absolute;
+      top: 24px;
+      right: 30px;
+      font-weight: 820;
+      font-size: 30px;
+      letter-spacing: -.03em;
+      line-height: 1;
+      color: var(--green);
+      opacity: .28;
+      pointer-events: none;
+      user-select: none
+    }
+
+    /* ── footer ── */
+    footer.card {
+      background: var(--card);
+      border: 1px solid var(--glass-edge);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px;
+      margin: 26px 0 0;
+      color: var(--ink-dim);
+      font-size: 15px;
+      box-shadow: 0 18px 40px rgba(11, 15, 10, .10), inset 0 1px 0 rgba(255, 255, 255, .85);
+      backdrop-filter: blur(22px) saturate(140%);
+      -webkit-backdrop-filter: blur(22px) saturate(140%)
+    }
+
+    .credit {
+      margin: 0;
+      font-size: 14px
+    }
+
+    @media (max-width:900px) {
+      .post-layout {
+        grid-template-columns: 1fr
+      }
+
+      .post-toc {
+        display: none
+      }
+
+      .banner-inner {
+        max-width: 72%
+      }
+
+      .banner-bars {
+        display: none
+      }
+    }
+
+    @media (max-width:720px) {
+      .nav-links {
+        display: none
+      }
+
+      .page {
+        padding: 0 1rem 4rem
+      }
+
+      .nav-inner {
+        padding: 0 1rem
+      }
+
+      .post-banner {
+        padding: 34px 22px;
+        min-height: 260px
+      }
+
+      .banner-scrim {
+        background: rgba(6, 8, 5, .78)
+      }
+
+      .banner-inner {
+        max-width: 100%
+      }
+
+      .sec-num {
+        top: 18px;
+        right: 20px;
+        font-size: 24px
+      }
+
+      section.card,
+      footer.card {
+        padding: 26px 20px
+      }
+
+      .item.post-card {
+        grid-template-columns: 1fr
+      }
+
+      .post-thumb {
+        height: 160px
+      }
+
+      .stages,
+      .stages.three {
+        grid-template-columns: 1fr
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .flow {
+        flex-direction: column
+      }
+
+      .flow-arrow {
+        width: auto;
+        height: 22px
+      }
+
+      .flow-arrow svg {
+        transform: rotate(90deg)
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+        gap: 4px
+      }
+
+      .result {
+        grid-template-columns: 1fr;
+        gap: 8px
+      }
+
+      .sec-gloss dl {
+        grid-template-columns: 1fr;
+        gap: 0
+      }
+
+      .sec-gloss dd {
+        margin-bottom: 7px
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        transition: none !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="progress"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="https://sumitkant.github.io/" class="nav-logo">
+        <object type="image/svg+xml" data="../../images/Main_Logo.svg" height="60"
+          style="display:block;  pointer-events:none; filter:brightness(0) saturate(0);"></object>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../../blog.html" class="active">Blog</a></li>
+        <li><a href="../../bookshelf.html">Books &amp; Reading</a></li>
+        <li><a href="../../johnnysmusiclab.html">Music Lab</a></li>
+        <li><a href="../../genai-lab.html" class="active">GenAI Lab</a></li>
+        <li><a href="../../neuralnotework.html">My Second Brain</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page" id="top">
+
+    <div class="post-banner"
+      style="--banner-img:url('../../images/Blogs/24.TrainingGPT2Faster/gpt2-faster-banner.jpg')">
+      <div class="banner-scrim"></div>
+      <div class="banner-inner">
+        <p class="banner-eyebrow">Transformers from scratch · GPU optimization</p>
+        <h1 class="banner-title">5 Lines of Code to Make Your LLM Train <span class="accent">3x Faster</span> on GPU</h1>
+        <p class="banner-sub">5 must-use single-line exploits that made the smallest GPT-2 (124M parameter model) train 3x
+          faster on a consumer-grade RTX 5070 GPU.</p>
+      </div>
+    </div>
+
+    <div class="post-meta">
+      <span class="meta-tag accent-tag">GPU Optimization</span>
+      <span class="meta-tag dark-tag">PyTorch</span>
+      <span class="meta-tag">GPT-2</span>
+    </div>
+
+    <div class="post-layout">
+      <div class="post-prose">
+
+        <!-- 01 ─────────────────────────────────────────── -->
+        <section class="card" id="big-idea">
+          <span class="sec-num" aria-hidden="true">01</span>
+          <p class="sec-label">The takeaway first</p>
+          <h2>TL;DR</h2>
+                    <p>LLMs are hard to train, primarily due to the compute involved. However we can use some tactics to achieve on-par performance with same compute budget with a few modifications.</p>
+          <p>These modfications and simple yet powerful exploits to fully utilize the capabilities of modern GPUs can significantly reduce training time. Most of it comes down to learning how GPU works.</p>
+
+          <p class="lede">We apply five one-line changes to a 124M parameter GPT-2 Model's training loop and reduce training time per step from <b>250 ms to 80 ms</b> on a single RTX 5070 making training 3x faster</p>
+          </p>
+
+          <div class="opt-rows" role="img"
+            aria-label="Per-step latency after each change: float32 250 ms, TF32 175, bfloat16 autocast 165, torch.compile 95, flash attention 85, vocab 50304 80">
+            <div class="opt-row">
+              <div class="opt-name">Baseline</div>
+              <div class="opt-desc">The default state: activations, parameters and weights are all represented in float32.</div>
+              <div class="opt-code">logits, loss = model(x, y)</div>
+              <div class="opt-bar">
+                <div class="opt-track"><div class="opt-fill" style="width:100%"></div></div>
+                <span class="opt-ms">250 ms</span>
+              </div>
+            </div>
+            <div class="opt-row">
+              <div class="opt-name">1 · TF32</div>
+              <div class="opt-desc">Reduces precision only while the matrix multiplication is being computed.</div>
+              <div class="opt-code">torch.set_float32_matmul_precision('high')</div>
+              <div class="opt-bar">
+                <div class="opt-track"><div class="opt-fill" style="width:70%"></div></div>
+                <span class="opt-ms">175 ms</span>
+              </div>
+            </div>
+            <div class="opt-row">
+              <div class="opt-name">2 · bfloat16 autocast</div>
+              <div class="opt-desc">Matmul operations are downcast to 16-bit floating point to reduce data movement.</div>
+              <div class="opt-code">with torch.autocast(device_type=device, dtype=torch.bfloat16):</div>
+              <div class="opt-bar">
+                <div class="opt-track"><div class="opt-fill" style="width:66%"></div></div>
+                <span class="opt-ms">165 ms</span>
+              </div>
+            </div>
+            <div class="opt-row">
+              <div class="opt-name">3 · torch.compile</div>
+              <div class="opt-desc">Lets PyTorch see the whole network ahead of time and merge small operations into big ones.</div>
+              <div class="opt-code">model = torch.compile(model)</div>
+              <div class="opt-bar">
+                <div class="opt-track"><div class="opt-fill" style="width:38%"></div></div>
+                <span class="opt-ms">95 ms</span>
+              </div>
+            </div>
+            <div class="opt-row">
+              <div class="opt-name">4 · Flash attention</div>
+              <div class="opt-desc">Computes attention without ever writing the full attention matrix to memory.</div>
+              <div class="opt-code">y = F.scaled_dot_product_attention(q, k, v, is_causal=True)</div>
+              <div class="opt-bar">
+                <div class="opt-track"><div class="opt-fill" style="width:34%"></div></div>
+                <span class="opt-ms">85 ms</span>
+              </div>
+            </div>
+            <div class="opt-row">
+              <div class="opt-name">5 · Pad the vocabulary</div>
+              <div class="opt-desc">Rounds the vocabulary up to a number the GPU can split into even blocks.</div>
+              <div class="opt-code">vocab_size: int = 50304  # was 50257</div>
+              <div class="opt-bar">
+                <div class="opt-track"><div class="opt-fill" style="width:32%"></div></div>
+                <span class="opt-ms">80 ms</span>
+              </div>
+            </div>
+          </div>
+          <p class="caption" style="margin-bottom:0">Milliseconds per training step on an RTX 5070, measured after
+            each change</p>
+        </section>
+
+        <!-- 02 ─────────────────────────────────────────── -->
+        <!-- <section class="card" id="introduction">
+          <span class="sec-num" aria-hidden="true">02</span>
+          <p class="sec-label">Overview</p>
+          <h2>Training LLMs Faster</h2>
+
+
+          <div class="stages">
+            <div class="stage s1">
+              <span class="tag">Precision · changes 1 and 2</span>
+              <h4>Fewer bits per number</h4>
+              <p>TF32 narrows the multiply inside the tensor core. bfloat16 autocast halves the bytes that activations
+                occupy. The arithmetic is cheaper and the memory bus carries less.</p>
+            </div>
+            <div class="stage s2">
+              <span class="tag">Memory traffic · changes 3, 4 and 5</span>
+              <h4>Fewer trips to memory</h4>
+              <p><code>torch.compile</code> fuses kernels, flash attention never writes the attention matrix, and a
+                padded vocabulary keeps every matmul on the fast tiled path.</p>
+            </div>
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>HBM</dt>
+              <dd>High-bandwidth memory: the GPU's main memory, tens of gigabytes, off the compute chip.</dd>
+              <dt>Tensor core</dt>
+              <dd>A hardware instruction that multiplies small matrices. Most of a Transformer's work runs on it.</dd>
+              <dt>Memory bound</dt>
+              <dd>When the compute units wait on data arriving from memory more than they wait on arithmetic.</dd>
+            </dl>
+          </div>
+        </section> -->
+
+        <!-- 03 ─────────────────────────────────────────── -->
+        <section class="card" id="setup">
+          <span class="sec-num" aria-hidden="true">02</span>
+          <p class="sec-label">Baseline</p>
+          <h2>Setup</h2>
+          <ul>
+            <li><b>Model</b>: GPT-2 124M with 12 layers, 12 heads, 768 embedding size and GPT-2 initialization.</li>
+            <li><b>Data</b>: Tiny Shakespeare (1M characters), ~338k tokens</li>
+            <li><b>Hardware</b>: one RTX 5070 (8 GB). Windows, PyTorch 2.x. Windows needs triton ->
+               <code>pip install -U "triton-windows&gt;=3.8,&lt;3.9"</code>.</li>
+            <li><b>Metric</b>: wall-clock milliseconds per training step
+            </li>
+          </ul>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>timing one step honestly · python</span></div>
+            <pre>t0 = time.time()
+optimizer.zero_grad()
+logits, loss = model(x.to(device), y.to(device))
+loss.backward()
+optimizer.step()
+torch.cuda.synchronize()  <span class="c"># wait for the GPU, not just the CPU's queue</span>
+t1 = time.time()
+print(f"{(t1 - t0) * 1000:.2f} ms")</pre>
+          </div>
+          <div class="result">
+            <div class="v"><small>BASELINE</small>~250 ms</div>
+            <p>Every tensor in this loop i.e. weights, activations,
+              gradients — is float32. Thirty-two bits per number is far more precision than training needs, and it is
+              also four bytes that have to travel across the memory bus every time a number is read or written.</p>
+          </div>
+        </section>
+
+        <!-- 04 ─────────────────────────────────────────── -->
+        <section class="card" id="tf32">
+          <span class="sec-num" aria-hidden="true">03</span>
+          <p class="sec-label">Optimization 1 · Precision</p>
+          <h2>TF32: a cheaper multiply, same float32 tensors</h2>
+          <p class="lede">Most of a training step is matrix multiplication, and on Ampere and newer GPUs <b>that
+              multiply can run at lower precision without our code ever seeing a lower-precision number</b>.</p>
+          <p>TF32 is a mode of the tensor core, the hardware unit that multiplies small blocks of matrices. Inside each
+            multiply it keeps float32's sign and 8 exponent bits but cuts the mantissa from 23 bits to 10. The inputs
+            arrive as float32, the running sum stays float32, and the output is float32. The precision is dropped only
+            inside the instruction.</p>
+          <ul>
+            <li>Nothing in our code changes type. <code>logits.dtype</code> still prints <code>torch.float32</code>.
+            </li>
+            <li>Only matrix multiplications get faster, and in GPT-2 they are most of the work. The largest is the
+              classifier that turns 768 channels into 50,257 vocabulary scores.</li>
+            <li>The results are slightly less exact, but the training loss looks no different.</li>
+          </ul>
+          <p>On paper the payoff is big. The <a
+              href="https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf">A100
+              datasheet</a> lists 19.5 TFLOPS for float32 and 156 for TF32, an 8× ceiling.</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>one line · python</span></div>
+            <pre><span class="c"># 'highest' = float32, 'high' = TF32, 'medium' = bfloat16</span>
+torch.set_float32_matmul_precision(<span class="s">'high'</span>)</pre>
+          </div>
+          <div class="result">
+            <div class="v"><small>Measured</small>250 → 175 ms</div>
+            <p><b>1.43×, not 8×. That gap is the most useful number in this post.</b> The multiply got cheaper, but
+              every number is still a 4-byte float32 that has to travel from GPU memory to the compute units and back.
+              So the cores spend their time waiting for data, not doing arithmetic: the loop is memory bound. Even
+              well-tuned training code rarely keeps the tensor cores busy more than about 60% of the time.</p>
+          </div>
+          <div class="stages">
+            <div class="stage s3 use">
+              <span class="tag">Use it when</span>
+              <ul>
+                <li>The GPU is Ampere or newer (RTX 30-series, A100, and later).</li>
+                <li>Always on those cards. It is one line and costs no accuracy we can measure.</li>
+              </ul>
+            </div>
+            <div class="stage s3 lim">
+              <span class="tag">Limitations</span>
+              <ul>
+                <li>Matmuls only. Layer norms, softmax, GELU and the optimizer are untouched.</li>
+                <li>Capped by memory bandwidth, so expect 1.5–3× on a real training loop, not 8×.</li>
+                <li>No gain on older cards.</li>
+              </ul>
+            </div>
+          </div>
+          <p>If moving bytes is the bottleneck, the next step is to move fewer of them.</p>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Mantissa</dt>
+              <dd>The bits of a float that hold its significant digits. Fewer bits means coarser values.</dd>
+              <dt>Exponent</dt>
+              <dd>The bits that set how large or small a float can be. TF32 keeps all eight.</dd>
+              <dt>Memory bound</dt>
+              <dd>The compute units sit idle waiting for data to arrive from memory, so faster arithmetic barely helps.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 05 ─────────────────────────────────────────── -->
+        <section class="card" id="bf16">
+          <span class="sec-num" aria-hidden="true">04</span>
+          <p class="sec-label">Optimization 2 · Precision</p>
+          <h2>bfloat16 autocast: half the bytes per activation</h2>
+          <p class="lede">Mixed precision goes after the bottleneck TF32 exposed. <b>The forward pass stores activations
+              in 16 bits instead of 32</b>, so every matmul input is half as much data to move. The weights stay
+            float32 so the optimizer updates them at full precision.</p>
+          <p>bfloat16 and float16 both use 16 bits, but they spend them differently:</p>
+          <ul>
+            <li><b>bfloat16</b> keeps all 8 exponent bits, so it covers the same range of values as float32 and gives up
+              precision instead (7 mantissa bits). Values don't overflow or round to zero, so nothing extra is
+              needed.</li>
+            <li><b>float16</b> keeps more precision but shrinks the range, so small gradients round to zero. Training
+              in float16 needs a <code>GradScaler</code>, one more piece of state to manage. bfloat16 avoids it.</li>
+            <li><code>torch.autocast</code> chooses op by op. Matrix multiplies run in bfloat16. Softmax, layer norm and
+              the loss stay in float32 because small errors there distort the result.</li>
+          </ul>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>only the forward pass and loss go inside autocast ·
+                python</span></div>
+            <pre><span class="k">with</span> torch.autocast(device_type=device, dtype=torch.bfloat16):
+    logits, loss = model(x.to(device), y.to(device))
+loss.backward()      <span class="c"># outside</span>
+optimizer.step()     <span class="c"># outside</span></pre>
+          </div>
+          <p>Inside the block, <code>logits.dtype</code> is <code>torch.bfloat16</code> while
+            <code>model.transformer.wte.weight.dtype</code> is still <code>torch.float32</code>. Activations in low
+            precision and weights in full precision is what "mixed" refers to.</p>
+          <div class="result">
+            <div class="v"><small>Measured</small>175 → 165 ms</div>
+            <p><b>Only 6%.</b> Halving the activations should have helped more, but by now a different cost dominates.
+              Eager PyTorch launches each small element-wise operation as its own GPU program, and each one reads its
+              input from memory and writes its output back. Lowering precision doesn't reduce the number of those
+              trips.</p>
+          </div>
+          <div class="stages">
+            <div class="stage s3 use">
+              <span class="tag">Use it when</span>
+              <ul>
+                <li>On Ampere or newer.</li>
+                <li>Let autocast decide. Don't call <code>.bfloat16()</code> on the model or tensors yourself.</li>
+              </ul>
+            </div>
+            <div class="stage s3 lim">
+              <span class="tag">Limitations</span>
+              <ul>
+                <li>Less precise than float32. We accept that for the speed and, if needed, train a little longer.</li>
+                <li>PyTorch doesn't document clearly which ops autocast converts.</li>
+                <li>The gain is small here because the bottleneck is now the number of memory round trips.</li>
+              </ul>
+            </div>
+          </div>
+          <p>Precision is now as low as it can safely go. What's left is how many times the data travels.</p>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Autocast</dt>
+              <dd>A PyTorch context that runs each operation at a lower precision when it is safe to do so.</dd>
+              <dt>Gradient scaler</dt>
+              <dd>Extra machinery float16 training needs to keep small gradients from rounding to zero.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 06 ─────────────────────────────────────────── -->
+        <section class="card" id="compile">
+          <span class="sec-num" aria-hidden="true">05</span>
+          <p class="sec-label">Optimization 3 · Memory traffic</p>
+          <h2>torch.compile: remove the interpreter, fuse the kernels</h2>
+          <p class="lede"><code>torch.compile</code> <b>reads the whole network before running it and rewrites it into
+              fewer, larger GPU programs</b>, so data is read from memory once and used many times.</p>
+          <p>It is a compiler for neural networks, much as GCC is a compiler for C. It removes two costs:</p>
+          <ol>
+            <li><b>The Python interpreter.</b> In eager mode Python walks the model line by line and launches each
+              operation without knowing what comes next. Compiled, the network runs as a single unit with no Python in
+              between.</li>
+            <li><b>Repeated trips to memory.</b> The GELU, <code>0.5·x·(1 + tanh(√(2/π)·(x + 0.044715·x³)))</code>, is
+              about eight small operations. Eager PyTorch launches eight kernels, and each one reads from GPU memory and
+              writes its result back. The compiled version reads <code>x</code> once, does all eight operations while
+              the data is on the chip, and writes once. This is called kernel fusion.</li>
+          </ol>
+
+          <div class="figwrap" role="img"
+            aria-label="Eager execution makes one round trip to HBM per operation; a compiled fused kernel reads once and writes once">
+            <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                  <path d="M0 0L10 5L0 10z" fill="#566051" />
+                </marker>
+                <marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                  <path d="M0 0L10 5L0 10z" fill="#5E9400" />
+                </marker>
+              </defs>
+              <rect x="0" y="0" width="1200" height="420" rx="20" fill="#FFFFFF" fill-opacity=".6" />
+              <!-- eager -->
+              <text x="40" y="46" font-size="22" font-weight="740" fill="#0F140E">Eager: one round trip to HBM per op</text>
+              <rect x="40" y="72" width="150" height="120" rx="16" fill="#0B0F0A" />
+              <text x="115" y="140" text-anchor="middle" font-size="20" font-weight="700" fill="#FFFFFF">HBM</text>
+              <g fill="#FFFFFF" stroke="#0F140E" stroke-width="1.6">
+                <rect x="270" y="96" width="110" height="52" rx="10" />
+                <rect x="420" y="96" width="110" height="52" rx="10" />
+                <rect x="570" y="96" width="110" height="52" rx="10" />
+                <rect x="720" y="96" width="110" height="52" rx="10" />
+              </g>
+              <g text-anchor="middle" font-size="17" font-weight="600" fill="#0F140E">
+                <text x="325" y="129">x³</text>
+                <text x="475" y="129">· 0.044</text>
+                <text x="625" y="129">+ x</text>
+                <text x="775" y="129">tanh</text>
+              </g>
+              <g stroke="#566051" stroke-width="2.4" fill="none" marker-end="url(#ar)">
+                <path d="M190 112 L266 112" />
+                <path d="M380 136 Q 300 215 190 150" />
+                <path d="M190 100 Q 320 10 418 110" />
+                <path d="M530 136 Q 380 260 190 160" />
+                <path d="M190 92 Q 420 -20 568 108" />
+                <path d="M680 136 Q 450 300 190 170" />
+                <path d="M190 84 Q 520 -50 718 106" />
+                <path d="M830 136 Q 540 340 190 180" />
+              </g>
+              <text x="870" y="118" font-size="16" fill="#566051">… 8 reads + 8 writes</text>
+              <!-- compiled -->
+              <text x="40" y="268" font-size="22" font-weight="740" fill="#0F140E">Compiled: fused kernel, one read and one write</text>
+              <rect x="40" y="294" width="150" height="90" rx="16" fill="#0B0F0A" />
+              <text x="115" y="347" text-anchor="middle" font-size="20" font-weight="700" fill="#FFFFFF">HBM</text>
+              <rect x="270" y="294" width="640" height="90" rx="16" fill="#76B900" fill-opacity=".18" stroke="#5E9400" stroke-width="2" />
+              <text x="590" y="347" text-anchor="middle" font-size="17" font-weight="600" fill="#3F6600">x³ → · 0.044 → + x → tanh → … stays on-chip</text>
+              <g stroke="#5E9400" stroke-width="3" fill="none" marker-end="url(#arg)">
+                <path d="M190 326 L266 326" />
+                <path d="M910 360 Q 560 440 190 352" />
+              </g>
+              <text x="940" y="332" font-size="16" fill="#3F6600" font-weight="650">1 read + 1 write</text>
+            </svg>
+          </div>
+          <p class="caption">Kernel fusion keeps the data on the chip. <b>The arithmetic is the same; what disappears
+              is the round trips to memory.</b></p>
+
+          <p>Fusion matters this much because of where the data lives. HBM, the GPU's main memory, holds tens of
+            gigabytes but sits off the compute chip, so every read and write is slow. On-chip memory (caches and
+            registers) holds only tens of megabytes but is very fast. A step that goes back to HBM after every
+            operation spends most of its time moving data.</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>one line; pays compilation time on the first step ·
+                python</span></div>
+            <pre>model = GPT(config).to(device)
+model = torch.compile(model)</pre>
+          </div>
+          <div class="result">
+            <div class="v"><small>Measured</small>165 → 95 ms</div>
+            <p><b>1.74× from one line, the largest single gain in the loop.</b> This is the cost autocast couldn't
+              reach. The first step takes tens of seconds because that's when compilation happens, so start timing
+              from the second step.</p>
+          </div>
+          <div class="stages">
+            <div class="stage s3 use">
+              <span class="tag">Use it when</span>
+              <ul>
+                <li>Always, unless debugging. Karpathy's view is that the only price is compile time.</li>
+              </ul>
+            </div>
+            <div class="stage s3 lim">
+              <span class="tag">Limitations</span>
+              <ul>
+                <li>Compilation takes time, and it happens again whenever input shapes change.</li>
+                <li>On Windows it needs the <code>triton-windows</code> package.</li>
+                <li>In Karpathy's run, compile broke text generation and the HellaSwag eval with an unclear error, so
+                  those ran uncompiled.</li>
+                <li>It only fuses operations as written. The next speedup needs the algorithm itself rewritten.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Eager mode</dt>
+              <dd>PyTorch's default: each line of Python launches its GPU operation as soon as it runs.</dd>
+              <dt>Kernel</dt>
+              <dd>One program launched on the GPU. Each launch has fixed overhead and does its own memory reads and writes.</dd>
+              <dt>Kernel fusion</dt>
+              <dd>Combining several operations into one kernel so the data stays on the chip between them.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 07 ─────────────────────────────────────────── -->
+        <section class="card" id="flash">
+          <span class="sec-num" aria-hidden="true">06</span>
+          <p class="sec-label">Optimization 4 · Memory traffic</p>
+          <h2>Flash attention: a fusion the compiler cannot find</h2>
+          <p class="lede">The attention matrix is the largest temporary tensor in the step. <b>Flash attention computes
+              the same output without ever writing that T×T matrix to memory.</b></p>
+          <p>Our attention was four lines:</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>CausalSelfAttention.forward — before · python</span></div>
+            <pre>att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
+att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float(<span class="s">'-inf'</span>))
+att = F.softmax(att, dim=-1)
+y = att @ v</pre>
+          </div>
+          <p>At T = 1024, <code>att</code> holds about a million numbers for every head of every sequence in the batch.
+            Each of the four lines writes that matrix to HBM, and the next line reads it back. Flash attention does all
+            four steps in one kernel, a block at a time, so the full matrix never exists in memory.</p>
+          <p>This works because of the online softmax. A normal softmax needs the whole row before it can normalize.
+            The online version keeps a running maximum and a running sum and corrects them as each new block arrives,
+            so the row can be handled in pieces. Flash attention does more arithmetic than the four-line version and is
+            still faster (the paper reports up to 7.6×), because arithmetic was never the expensive part.</p>
+          <p><code>torch.compile</code> can't find this. It fuses the operations we wrote; it doesn't know that softmax
+            can be reorganized.</p>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>CausalSelfAttention.forward — after · python</span></div>
+            <pre><span class="c"># is_causal=True applies the autoregressive mask</span>
+y = F.scaled_dot_product_attention(q, k, v, is_causal=<span class="k">True</span>)</pre>
+          </div>
+          <div class="result">
+            <div class="v"><small>Measured</small>95 → 85 ms</div>
+            <p><b>10% faster, and the loss curve is unchanged</b> apart from floating-point noise. It is the same
+              computation done in a different order.</p>
+          </div>
+          <div class="stages">
+            <div class="stage s3 use">
+              <span class="tag">Use it when</span>
+              <ul>
+                <li>Any causal attention with sequences of a few hundred tokens or more.</li>
+                <li>On Ampere+ with bfloat16, PyTorch picks the flash kernel automatically.</li>
+              </ul>
+            </div>
+            <div class="stage s3 lim">
+              <span class="tag">Limitations</span>
+              <ul>
+                <li>The <code>bias</code> mask buffer is no longer used. Passing a custom mask instead of
+                  <code>is_causal</code> can drop us off the fast path.</li>
+                <li>The attention weights are hidden inside the kernel. To inspect them we need the slow four-line
+                  version.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Materialize</dt>
+              <dd>Write a full tensor out to memory. Flash attention never does this for the T×T matrix.</dd>
+              <dt>Online softmax</dt>
+              <dd>Computing a softmax in chunks by carrying a running maximum and running sum, so no chunk has to wait for the others.</dd>
+              <dt>FLOPs</dt>
+              <dd>Floating-point operations. Flash attention does more of them and is still faster.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 08 ─────────────────────────────────────────── -->
+        <section class="card" id="vocab">
+          <span class="sec-num" aria-hidden="true">07</span>
+          <p class="sec-label">Optimization 5 · Memory traffic</p>
+          <h2>Pad the vocabulary: nice numbers for CUDA</h2>
+          <p class="lede">GPU kernels cut matrices into <b>tiles whose sides are powers of two</b>: 16, 32, 64, 128.
+            When a dimension doesn't divide evenly, the leftover goes through a separate, slower pass. The cheapest
+            remaining speedup is to stop handing the GPU awkward numbers.</p>
+          <ul>
+            <li>50,257, GPT-2's vocabulary size, is odd, so it doesn't split into power-of-two tiles. It also sets the
+              size of the two largest matrices in the model: the token embedding and the output classifier.</li>
+            <li>50,304 is the nearest multiple of 128, so it divides by 8, 16, 32, 64 and 128.</li>
+            <li>The tokenizer never produces the 47 extra tokens, so their embedding rows are never used. The
+              classifier learns to give them near-zero probability, as it already does for the thousands of real
+              tokens that never appear in Shakespeare. Nothing breaks.</li>
+          </ul>
+          <div class="win">
+            <div class="win-bar"><i></i><i></i><i></i><span>GPTconfig · python</span></div>
+            <pre><span class="k">@dataclass</span>
+<span class="k">class</span> GPTconfig:
+    vocab_size: int = 50304   <span class="c"># was 50257; nearest multiple of 128</span>
+    block_size: int = 4096
+    n_embd: int = 768
+    n_layers: int = 12
+    n_head: int = 12</pre>
+          </div>
+          <div class="result">
+            <div class="v"><small>Measured</small>85 → 80 ms</div>
+            <p><b>The model now does slightly more work and runs 6% faster.</b> Karpathy saw about 30% on PyTorch 2.3.1
+              and earlier. Newer versions handle the leftover pass better, so the gain is smaller but still there. Like
+              flash attention, this is a speedup the compiler won't find for us.</p>
+          </div>
+          <div class="stages">
+            <div class="stage s3 use">
+              <span class="tag">Use it when</span>
+              <ul>
+                <li>A dimension feeds a matmul: vocab size, embedding width, hidden size, head count.</li>
+                <li>Check the config for any of those that doesn't divide by a power of two.</li>
+              </ul>
+            </div>
+            <div class="stage s3 lim">
+              <span class="tag">Limitations</span>
+              <ul>
+                <li>The padding rows use a little memory and compute for nothing.</li>
+                <li>Hugging Face weights have 50,257 rows, so loading them with <code>from_pretrained</code> needs a
+                  50,257 config or the copy fails.</li>
+                <li>Not every odd number is easy to fix. GPT-2 XL has 25 heads, and changing that changes the model.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="sec-gloss">
+            <div class="gloss-label">Glossary</div>
+            <dl>
+              <dt>Tile</dt>
+              <dd>The fixed-size block of a matrix a GPU kernel processes at once, usually a power of two on each side.</dd>
+              <dt>Boundary kernel</dt>
+              <dd>The slower pass that handles what's left when a dimension doesn't fill the last tile.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 09 ─────────────────────────────────────────── -->
+        <section class="card" id="results">
+          <span class="sec-num" aria-hidden="true">08</span>
+          <p class="sec-label">Results</p>
+          <h2>Where the 250 ms went</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Change</th>
+                <th>ms / step</th>
+                <th>vs previous</th>
+                <th>vs baseline</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>float32 baseline</td>
+                <td class="num">250</td>
+                <td class="num">—</td>
+                <td class="num">1.00×</td>
+              </tr>
+              <tr>
+                <td>TF32 matmuls</td>
+                <td class="num">175</td>
+                <td class="num">1.43×</td>
+                <td class="num">1.43×</td>
+              </tr>
+              <tr>
+                <td>bfloat16 autocast</td>
+                <td class="num">165</td>
+                <td class="num">1.06×</td>
+                <td class="num">1.52×</td>
+              </tr>
+              <tr class="hl">
+                <td>torch.compile</td>
+                <td>95</td>
+                <td>1.74×</td>
+                <td>2.63×</td>
+              </tr>
+              <tr>
+                <td>Flash attention</td>
+                <td class="num">85</td>
+                <td class="num">1.12×</td>
+                <td class="num">2.94×</td>
+              </tr>
+              <tr>
+                <td>vocab → 50304</td>
+                <td class="num">80</td>
+                <td class="num">1.06×</td>
+                <td class="num">3.13×</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="bars" role="img"
+            aria-label="Per-step latency: float32 250 ms, TF32 175, bfloat16 165, torch.compile 95, flash attention 85, vocab 50304 80">
+            <div class="bar-row">
+              <span class="bar-label">float32 baseline</span>
+              <div class="bar-track">
+                <div class="bar-fill grey" style="width:100%">250 ms</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">TF32 <small>−75 ms</small></span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:70%">175 ms</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">bfloat16 autocast <small>−10 ms</small></span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:66%">165 ms</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label"><b>torch.compile</b> <small>−70 ms</small></span>
+              <div class="bar-track">
+                <div class="bar-fill green" style="width:38%">95 ms</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">flash attention <small>−10 ms</small></span>
+              <div class="bar-track">
+                <div class="bar-fill green" style="width:34%">85 ms</div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">vocab 50304 <small>−5 ms</small></span>
+              <div class="bar-track">
+                <div class="bar-fill green" style="width:32%">80 ms</div>
+              </div>
+            </div>
+          </div>
+          <p class="caption">Per-step latency after each optimization, RTX 5070. <b>Green bars are the memory-traffic
+              changes.</b></p>
+
+          <p>The 170 ms saved splits evenly: 85 ms from the two precision changes and 85 ms from the three
+            memory-traffic changes. They behave differently, though. Precision gave one big jump with TF32 and then
+            stalled. The memory-traffic changes kept paying off, with <code>torch.compile</code> alone saving 70 ms.</p>
+          <p>Karpathy's A100 went from 1000 ms to 93 ms, about 11× against our 3.1×. His float32 baseline started much
+            slower, and the A100's roughly 2 TB/s of memory bandwidth leaves more room for each change to help. The
+            pattern is the same on both cards: TF32 falls well short of its datasheet number, autocast adds little on
+            top, and <code>torch.compile</code> is a big jump.</p>
+
+          <div class="takeaway dark">
+            <strong>What the sequence tells us</strong>
+            Getting 1.4× from TF32 instead of 8× is the diagnosis: <b>the loop is memory bound.</b> That one number
+            predicts the rest. Autocast gains little because it shrinks the data but not the number of trips;
+            <code>torch.compile</code> gains a lot because it cuts the trips. Making one change at a time turns each
+            speedup into a clue about what is slowing the step down.
+          </div>
+        </section>
+
+        <!-- 10 ─────────────────────────────────────────── -->
+        <section class="card" id="wrap">
+          <span class="sec-num" aria-hidden="true">09</span>
+          <p class="sec-label">Wrapping up</p>
+          <h2>Conclusions</h2>
+          <ol class="recap">
+            <li><b>Is the GPU Ampere or newer?</b> If yes, turn on TF32 and bfloat16 autocast. Together they are two
+              lines and cost no accuracy we can measure. If not, go straight to compile.</li>
+            <li><b>Is the model running in eager PyTorch?</b> If yes, <code>torch.compile</code> is the biggest single
+              gain available, and flash attention is the one fusion it won't find on its own.</li>
+          </ol>
+          <!-- <p>Then check the config for any dimension that doesn't divide by 128.</p> -->
+          <!-- <p>Make one change, measure it, then make the next. On a consumer card that gives a step 3× faster without
+            changing the model. What's left is limited by memory bandwidth this card doesn't have and GPUs we haven't
+            added yet, which is where the next article picks up.</p> -->
+
+          <h3>Related reading</h3>
+          <a class="item post-card" href="learnings-from-gpt2-paper.html">
+            <img class="post-thumb" src="../../images/Blogs/17.GPT2Paper/gpt2-card.jpg" alt="" loading="lazy">
+            <div class="post-body">
+              <div class="post-tags"><span class="p">GPT-2</span> · Paper Notes</div>
+              <span class="post-title">GPT-2: When Next-Token Prediction Becomes Multitask Learning</span>
+              <p class="post-desc">The architecture, data and tokenizer behind the model this post trains.</p>
+            </div>
+          </a>
+        </section>
+
+        <footer class="card" id="colophon">
+          <p class="credit">The optimizations and their reasoning follow Andrej Karpathy's <a
+              href="https://www.youtube.com/watch?v=l8pRSuU81PU"><b>Let's reproduce GPT-2 (124M)</b></a> and the <a
+              href="https://github.com/karpathy/build-nanogpt">build-nanogpt</a> repository. All timings are from our
+            own notebook on a single RTX 5070.</p>
+          <p class="credit" style="margin-top:14px">References:</p>
+          <ul class="credit">
+            <li>Dao et al. (2022), <a href="https://arxiv.org/abs/2205.14135">FlashAttention: Fast and Memory-Efficient
+                Exact Attention with IO-Awareness</a></li>
+            <li>Milakov &amp; Gimelshein (2018), <a href="https://arxiv.org/abs/1805.02867">Online normalizer
+                calculation for softmax</a></li>
+            <li>Brown et al. (2020), <a href="https://arxiv.org/abs/2005.14165">Language Models are Few-Shot Learners</a>
+              (GPT-3) for the optimizer settings</li>
+            <li>PyTorch, <a href="https://docs.pytorch.org/tutorials/recipes/recipes/amp_recipe.html">Automatic Mixed
+                Precision recipe</a></li>
+            <li>NVIDIA, <a
+                href="https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf">A100
+                datasheet</a></li>
+          </ul>
+        </footer>
+
+      </div>
+
+      <aside class="post-toc">
+        <div class="toc-label">Contents</div>
+        <ul class="toc-list">
+          <li><a href="#big-idea">1 · TL;DR</a></li>
+          <li><a href="#setup">2 · Setup</a></li>
+          <li><a href="#tf32">3 · TF32 matmuls</a></li>
+          <li><a href="#bf16">4 · bfloat16 autocast</a></li>
+          <li><a href="#compile">5 · torch.compile</a></li>
+          <li><a href="#flash">6 · Flash attention</a></li>
+          <li><a href="#vocab">7 · Pad the vocabulary</a></li>
+          <li><a href="#results">8 · Where the 250 ms went</a></li>
+          <li><a href="#wrap">9 · Before your next training loop</a></li>
+        </ul>
+      </aside>
+    </div>
+
+  </main>
+
+  <script>
+    // scroll progress + active TOC link
+    const prog = document.getElementById('progress');
+    const links = [...document.querySelectorAll('.toc-list a')];
+
+    function onScroll() {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+
+      let active = 0;
+      const y = h.scrollTop + 140;
+      document.querySelectorAll('section.card').forEach((s, i) => { if (s.offsetTop <= y) active = i });
+      links.forEach((a, i) => a.classList.toggle('active', i === active));
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  </script>
+
+</body>
+
+</html>

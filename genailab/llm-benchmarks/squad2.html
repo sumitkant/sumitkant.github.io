@@ -59,7 +59,6 @@
     .layout { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 32px; align-items: start; }
     .layout > div { min-width: 0; }
     .win { max-width: 100%; }
-    .win pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .sota-note, .prose p, .ex .row .v, .fact .v, .hero-full { overflow-wrap: anywhere; }
     .toc { position: sticky; top: calc(var(--nav-h) + 20px); padding: 14px 6px 14px 14px; font-size: 12.5px; }
     .toc .flabel { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
@@ -122,7 +121,7 @@
     .win-bar i { width: 10px; height: 10px; border-radius: 50%; background: #3a3a44; display: inline-block; }
     .win-bar i:nth-child(1) { background: #ff5f57; } .win-bar i:nth-child(2) { background: #febc2e; } .win-bar i:nth-child(3) { background: #28c840; }
     .win-bar span { margin-left: auto; font-family: var(--mono); font-size: 11px; color: #8a8a96; }
-    .win pre { margin: 0; padding: 16px 18px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: #e6e6ea; tab-size: 4; }
+    .win pre { margin: 0; padding: 16px 18px; overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: #e6e6ea; tab-size: 4; }
     .win pre .c { color: #7c7c8a; } .win pre .s { color: #a5d6a7; } .win pre .k { color: #c792ea; } .win pre .f { color: #82aaff; } .win pre .n { color: #f78c6c; }
     .step { font-size: 13.5px; font-weight: 700; margin: 18px 0 2px; display: flex; align-items: center; gap: 8px; }
     .step .no { width: 20px; height: 20px; border-radius: 6px; background: var(--c); color: #fff; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); }
@@ -250,7 +249,7 @@ tok = AutoTokenizer.from_pretrained(MODEL); model = AutoModelForCausalLM.from_pr
 metric = evaluate.load(<span class="s">&quot;squad_v2&quot;</span>)           <span class="c"># <span class="k">for</span> DROP use the official drop_eval.py <span class="k">from</span> allenai/allennlp-reading-comprehension</span>
 preds, refs = [], []
 <span class="k">for</span> ex <span class="k">in</span> ds:
-    p = f<span class="s">&quot;{ex[&<span class="c">#x27;context&#x27;] <span class="k">if</span> &#x27;context&#x27; <span class="k">in</span> ex <span class="k">else</span> ex[&#x27;passage&#x27;]}\nQuestion: {ex[&#x27;question&#x27;]}\nAnswer (<span class="k">or</span> &#x27;unanswerable&#x27;):&quot;</span></span>
+    p = f<span class="s">&quot;{ex[&#x27;context&#x27;] <span class="k">if</span> &#x27;context&#x27; <span class="k">in</span> ex <span class="k">else</span> ex[&#x27;passage&#x27;]}\nQuestion: {ex[&#x27;question&#x27;]}\nAnswer (<span class="k">or</span> &#x27;unanswerable&#x27;):&quot;</span>
     out = generate(p, max_new_tokens=32, stop=<span class="s">&quot;\n&quot;</span>).strip()
     preds.append({<span class="s">&quot;id&quot;</span>: ex[<span class="s">&quot;id&quot;</span>], <span class="s">&quot;prediction_text&quot;</span>: <span class="s">&quot;&quot;</span> <span class="k">if</span> out.lower().startswith(<span class="s">&quot;unanswerable&quot;</span>) <span class="k">else</span> out, <span class="s">&quot;no_answer_probability&quot;</span>: float(out.lower().startswith(<span class="s">&quot;unanswerable&quot;</span>))})
     refs.append({<span class="s">&quot;id&quot;</span>: ex[<span class="s">&quot;id&quot;</span>], <span class="s">&quot;answers&quot;</span>: ex[<span class="s">&quot;answers&quot;</span>]})
