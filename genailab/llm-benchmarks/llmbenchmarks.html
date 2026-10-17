@@ -55,7 +55,7 @@
     @media (max-width: 640px) { .page { padding: 0 1rem 4rem; } .nav-inner { padding: 0 1rem; } footer.site { padding: 1.5rem 1rem 3rem; } }
 
     body.index nav { background: transparent; border-bottom-color: transparent; transition: background .25s, border-color .25s; }
-    body.index nav.solid { background: rgba(242,239,233,.9); border-bottom-color: var(--border); }
+    body.index nav.solid { background: rgba(242,239,233,.92); border-bottom-color: var(--border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .hero-band { position: relative; z-index: 1; margin-top: calc(-1 * var(--nav-h)); padding-top: var(--nav-h); margin-bottom: 22px; width: 100%; background: var(--bg) url('llmbenchmarks-hero.jpg') no-repeat; background-size: 100% auto; background-position: center 50%; }
     .hero-band::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(242,239,233,.55) 0%, rgba(242,239,233,.35) 22%, rgba(242,239,233,0) 42%); }
     .hero-band::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 70px; background: linear-gradient(180deg, rgba(242,239,233,0), var(--bg)); }

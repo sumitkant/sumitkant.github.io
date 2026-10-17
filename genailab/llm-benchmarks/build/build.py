@@ -116,7 +116,7 @@ def footer(depth):
 # ──────────────────────────────────────────────────────────────────────────
 INDEX_CSS = """
     body.index nav { background: transparent; border-bottom-color: transparent; transition: background .25s, border-color .25s; }
-    body.index nav.solid { background: rgba(242,239,233,.9); border-bottom-color: var(--border); }
+    body.index nav.solid { background: rgba(242,239,233,.92); border-bottom-color: var(--border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .hero-band { position: relative; z-index: 1; margin-top: calc(-1 * var(--nav-h)); padding-top: var(--nav-h); margin-bottom: 22px; width: 100%; background: var(--bg) url('llmbenchmarks-hero.jpg') no-repeat; background-size: 100% auto; background-position: center 50%; }
     .hero-band::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(242,239,233,.55) 0%, rgba(242,239,233,.35) 22%, rgba(242,239,233,0) 42%); }
     .hero-band::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 70px; background: linear-gradient(180deg, rgba(242,239,233,0), var(--bg)); }
@@ -331,6 +331,10 @@ DETAIL_CSS = """
     .badge.sota { background: rgba(var(--crgb), .14); border-color: rgba(var(--crgb), .25); color: var(--text-primary); }
 
     .layout { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 32px; align-items: start; }
+    .layout > div { min-width: 0; }
+    .win { max-width: 100%; }
+    .win pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .sota-note, .prose p, .ex .row .v, .fact .v, .hero-full { overflow-wrap: anywhere; }
     .toc { position: sticky; top: calc(var(--nav-h) + 20px); padding: 14px 6px 14px 14px; font-size: 12.5px; }
     .toc .flabel { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
     .toc a { display: block; padding: 5px 8px; border-radius: 8px; color: var(--text-secondary); border-left: 2px solid transparent; }
@@ -367,7 +371,7 @@ DETAIL_CSS = """
 
     .tablewrap { overflow-x: auto; }
     table.res { width: 100%; border-collapse: collapse; font-size: 13.5px; table-layout: fixed; }
-    table.res col.c-paper { width: 70px; } table.res col.c-setting { width: 30%; } table.res col.c-score { width: 24%; }
+    table.res col.c-setting { width: 36%; } table.res col.c-score { width: 24%; }
     table.res th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); padding: 8px 10px 8px 0; border-bottom: 1px solid rgba(0,0,0,.12); }
     table.res td { padding: 11px 10px 11px 0; border-bottom: 1px dashed rgba(0,0,0,.1); vertical-align: top; line-height: 1.5; overflow-wrap: anywhere; }
     table.res td.score { font-weight: 700; font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
@@ -404,14 +408,14 @@ DETAIL_CSS = """
     ul.refs li a { color: var(--c); font-weight: 600; }
     ul.refs li small { display: block; color: var(--text-tertiary); font-family: var(--mono); font-size: 11px; word-break: break-all; }
 
-    .pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }
-    .pager a { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; font-weight: 700; transition: transform .2s; }
+    .pager { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; margin-top: 10px; margin-bottom: 1.5rem; }
+    .pager a { min-width: 0; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; font-weight: 700; border-radius: var(--radius); transition: transform .2s; }
     .pager a:hover { transform: translateY(-2px); }
     .pager a span { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); }
     .pager a.next { text-align: right; align-items: flex-end; }
-    .pager a.all { flex: 0 0 auto; align-items: center; justify-content: center; color: var(--text-secondary); font-weight: 600; }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { display: none; } .sota-grid { grid-template-columns: 1fr; } .facts { grid-template-columns: 1fr; } }
-    @media (max-width: 600px) { section.card { padding: 20px 16px; } .ex .row { grid-template-columns: 1fr; gap: 2px; } .pager { flex-direction: column; } .pager a.next { align-items: flex-start; text-align: left; } }
+    .pager a.all { align-items: center; justify-content: center; color: var(--text-secondary); font-weight: 600; }
+    @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } .toc { display: none; } .sota-grid { grid-template-columns: 1fr; } .facts { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) { section.card { padding: 20px 16px; } .hero { padding: 2.2rem 0 1.6rem; } .hero-title { font-size: 2rem; } .hero-sub { font-size: 14.5px; } .badge { font-size: 12px; padding: 6px 11px; } .sec-head h2 { font-size: 18px; } .ex .row { grid-template-columns: 1fr; gap: 2px; } .win pre { font-size: 11.5px; padding: 12px 14px; } table.res, table.res tbody, table.res tr, table.res td { display: block; width: 100%; } table.res thead, table.res colgroup { display: none; } table.res tr { padding: 10px 0; border-bottom: 1px dashed rgba(0,0,0,.1); } table.res td { border: 0; padding: 4px 0; } table.res td::before { content: attr(data-label); display: block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 2px; } .sota-box .big { font-size: 24px; } .pager { grid-template-columns: 1fr; } .pager a.next { align-items: flex-start; text-align: left; } .page { padding-bottom: 5rem; } footer.site { padding-top: 2rem; } }
 """
 
 def code(src, lang="python", title="python"):
@@ -699,7 +703,7 @@ def build_detail(i, b):
         t = f'<div class="t">{E(ex["title"])}</div>' if ex["title"] else ""
         ans = f'<div class="ans"><b>Answer</b>{E(ex["answer"])}</div>' if ex["answer"] and ex["answer"] != "—" else ""
         exs += f'<div class="ex">{t}{rows}{ans}</div>'
-    gpt_rows = "".join(f'<tr><td><span class="chip" style="background:{PAPERS[g["paper"]]}">{g["paper"]}</span></td><td>{E(g["setting"])}</td><td class="score">{"".join(f"<span>{E(x.strip())}</span>" for x in g["score"].split(" · "))}</td><td class="note">{E(g["note"])}</td></tr>' for g in b["gpt"])
+    gpt_rows = "".join(f'<tr><td data-label="Setting">{E(g["setting"])}</td><td class="score" data-label="Reported">{"".join(f"<span>{E(x.strip())}</span>" for x in g["score"].split(" · "))}</td><td class="note" data-label="Context">{E(g["note"])}</td></tr>' for g in b["gpt"])
     s = b["sota"]
     big_cls = "big sm" if len(str(s["score"])) > 14 else "big"
     sat = '<span class="sat yes">✓ saturated · at or above human level</span>' if s["saturated"] else '<span class="sat no">open · below human level</span>'
@@ -730,7 +734,7 @@ def build_detail(i, b):
 <main class="page">
   <header class="hero">
     <div>
-      <div class="hero-eyebrow"><a class="pill" href="{cat_link}">{E(cname)}</a>{chips}</div>
+      <div class="hero-eyebrow"><a class="pill" href="{cat_link}">{E(cname)}</a></div>
       <h1 class="hero-title">{E(b['name'])}</h1>
       <div class="hero-full">{E(b['full'])}</div>
       <p class="hero-sub">{E(b['desc'])}</p>
@@ -768,7 +772,7 @@ def build_detail(i, b):
       <section class="card glass" id="gpt">
         <div class="sec-head"><span class="sec-num">04</span><h2>Reported results</h2></div>
         <p class="lede">Scores reported on this benchmark, with the evaluation setting each one used.</p>
-        <div class="tablewrap"><table class="res"><colgroup><col class="c-paper"/><col class="c-setting"/><col class="c-score"/><col/></colgroup><thead><tr><th>Paper</th><th>Setting</th><th>Reported</th><th>Context</th></tr></thead><tbody>{gpt_rows}</tbody></table></div>
+        <div class="tablewrap"><table class="res"><colgroup><col class="c-setting"/><col class="c-score"/><col/></colgroup><thead><tr><th>Setting</th><th>Reported</th><th>Context</th></tr></thead><tbody>{gpt_rows}</tbody></table></div>
       </section>
 
       <section class="card glass" id="sota">
@@ -797,11 +801,11 @@ def build_detail(i, b):
         <ul class="plain refs">{refs}</ul>
       </section>
 
-      <nav class="pager">
+      <div class="pager">
         <a class="glass prev" href="{prev_b['slug']}.html"><span>← Previous</span>{E(prev_b['name'])}</a>
         <a class="glass all" href="llmbenchmarks.html">All benchmarks</a>
         <a class="glass next" href="{next_b['slug']}.html"><span>Next →</span>{E(next_b['name'])}</a>
-      </nav>
+      </div>
     </div>
     <aside class="toc glass"><span class="flabel">On this page</span>{toc}</aside>
   </div>
