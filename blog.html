@@ -253,6 +253,37 @@
       font-weight: 400;
     }
 
+    .filter-btn.extra.collapsed {
+      display: none;
+    }
+
+    .filter-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-size: 12.5px;
+      font-family: var(--font);
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    .filter-more:hover {
+      opacity: 0.85;
+    }
+
+    .filter-more .count {
+      opacity: 0.75;
+      font-size: 11px;
+      font-weight: 400;
+    }
+
     .search-wrap {
       display: flex;
       align-items: center;
@@ -2772,10 +2803,50 @@
       return btn;
     }
 
+    var tagBtns = [];
     filtersEl.appendChild(makeBtn('All', 'all', cards.length));
     allTags.forEach(function (tag) {
-      filtersEl.appendChild(makeBtn(tag, tag.toLowerCase(), tagCount[tag]));
+      var btn = makeBtn(tag, tag.toLowerCase(), tagCount[tag]);
+      btn.classList.add('extra');
+      tagBtns.push(btn);
+      filtersEl.appendChild(btn);
     });
+
+    /* ── "More" toggle: collapsed view fits one line ── */
+    var moreBtn = document.createElement('button');
+    moreBtn.className = 'filter-more';
+    moreBtn.setAttribute('aria-expanded', 'false');
+    filtersEl.appendChild(moreBtn);
+
+    function layoutFilters() {
+      var expanded = moreBtn.getAttribute('aria-expanded') === 'true';
+      tagBtns.forEach(function (b) { b.classList.remove('collapsed'); });
+      if (expanded) {
+        moreBtn.innerHTML = 'Less';
+        moreBtn.style.display = '';
+        return;
+      }
+      /* hide least-used tags (except the active one) until More fits on the first line */
+      var firstTop = filtersEl.firstChild.offsetTop;
+      var hidden = 0;
+      moreBtn.innerHTML = 'More <span class="count">+' + tagBtns.length + '</span>';
+      for (var i = tagBtns.length - 1; i >= 0 && moreBtn.offsetTop > firstTop; i--) {
+        if (tagBtns[i].classList.contains('active')) continue;
+        tagBtns[i].classList.add('collapsed');
+        hidden++;
+      }
+      moreBtn.innerHTML = 'More <span class="count">+' + hidden + '</span>';
+      moreBtn.style.display = hidden ? '' : 'none';
+    }
+
+    moreBtn.addEventListener('click', function () {
+      var expanded = moreBtn.getAttribute('aria-expanded') === 'true';
+      moreBtn.setAttribute('aria-expanded', String(!expanded));
+      layoutFilters();
+    });
+    window.addEventListener('resize', layoutFilters);
+    layoutFilters();
+    if (document.fonts) document.fonts.ready.then(layoutFilters);
 
     function applyFilters() {
       var q = searchQuery.toLowerCase();
