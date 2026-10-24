@@ -1102,9 +1102,9 @@
         <div class="banner-inner">
           <p class="banner-eyebrow">Transformers from scratch · Inference</p>
           <h1 class="banner-title">Inference 5× faster with <span class="accent">KV caching</span> dynamics</h1>
-          <p class="banner-sub">A decoder generates one token at a time, and the plain loop recomputes everything it
-            already knows at every step. These notes add a key–value cache to a nanoGPT-style GPT-2 with four small
-            changes and a single config switch, call out the pitfalls, and measure the result on GPU and CPU.</p>
+          <p class="banner-sub">A GPT generates one token at a time. What if you could save all the previous tokens and only process
+            the new one? Key and Value Caching is one such technique that helps you exactly the same.
+          </p>
         </div>
       </div>
     </div>
@@ -1124,7 +1124,7 @@
           <span class="sec-num" aria-hidden="true">01</span>
           <p class="sec-label">TL;DR</p>
           <h2>The problem and the fix</h2>
-          <p class="lede">A GPT generates one word at a time. What if you could save the previous word and only process
+          <p class="lede">A GPT generates one token at a time. What if you could save all the previous tokens and only process
             the new one?</p>
           <p>This is the simple idea behind KV caching. Let's understand with an example. </p>
           <p>Say the prompt is <i>"The
@@ -1142,7 +1142,7 @@
                 class="to">→</span><span class="tok ex">mat</span></div>
           </div>
           <p>"The", "cat" and "sat" are processed three times each, and the result is identical every time because in
-            causal attention a word's computation depends only on the words before it, never on the words after. With a
+            causal attention a word's computation depends only on the words before it. With a
             cache, the model keeps what it worked out about the old words and reads only the new one:</p>
           <div class="task">
             <div class="task-name"><span>With a cache · only the new word is read</span><em>old words are
@@ -1160,7 +1160,7 @@
             as caching) allows the model to avoid recomputing attention for the words it has already seen. To know more
             about the attention mechanism, read this blog post.</p>
 
-          <h3>Related reading</h3>
+          <!-- <h3>Related reading</h3> -->
           <a class="item post-card" href="attention-in-transformers.html">
             <img class="post-thumb" src="../../images/Blogs/21.AttentionInTransformers/attention-og.jpg" alt=""
               loading="lazy">
@@ -1187,9 +1187,9 @@
         <section class="card" id="what">
           <span class="sec-num" aria-hidden="true">02</span>
           <p class="sec-label">Mechanism</p>
-          <h2>What the cache stores, and what it does not</h2>
-          <p class="lede">Inside every attention layer, each token is projected into three vectors: a query, a key and a
-            value. The cache keeps two of them.</p>
+          <h2>What the cache stores?</h2>
+          <!-- <p class="lede">Inside every attention layer, each token is projected into three vectors: a query, a key and a
+            value. The cache keeps two of them.</p> -->
           <p>When the new token arrives, attention needs three things: the new token's <b>query</b>, and the <b>keys</b>
             and <b>values</b> of every token before it. The new token's query is compared against all keys to get
             attention weights, and those weights mix all the values. The earlier tokens' queries are never needed again

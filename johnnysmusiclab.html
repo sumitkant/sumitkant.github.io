@@ -331,6 +331,83 @@
       height: 14px;
     }
 
+    /* ── Section labels ─────────────────────────────── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 14px;
+    }
+
+    /* ── Visualizer cards ───────────────────────────── */
+    .viz-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 2.5rem;
+    }
+
+    .viz-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      background: var(--stats-bg);
+      color: var(--notes-text);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .viz-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .viz-icon {
+      flex: none;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .viz-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .viz-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .viz-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .viz-meta {
+      font-size: 12px;
+      color: var(--stats-label);
+    }
+
+    .viz-cta {
+      flex: none;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--stats-label);
+    }
+
+    .viz-card:hover .viz-cta {
+      color: var(--notes-text);
+    }
+
     /* ── Stats strip ────────────────────────────────── */
     .stats {
       display: grid;
@@ -865,12 +942,28 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
     </div>
  -->
+    <!-- Originals -->
+    <p class="section-label">Originals</p>
+    <div class="viz-list">
+      <a class="viz-card" href="Blogs/Music/Just_One_More_Model_Visualizer.html">
+        <div class="viz-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4" />
+          </svg>
+        </div>
+        <div class="viz-text">
+          <div class="viz-title">Just One More Model</div>
+          <div class="viz-meta">Original Song</div>
+        </div>
+        <span class="viz-cta">Open ↗</span>
+      </a>
+    </div>
+
     <!-- Grid: 10 card shells with exact structure loadVideo() expects -->
+    <p class="section-label">Shorts</p>
     <div class="grid" id="grid">
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="0" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="badge-new">NEW</div>
@@ -883,8 +976,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="1" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -896,8 +987,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="2" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -909,8 +998,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="3" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -922,8 +1009,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="4" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -935,8 +1020,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="5" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -948,8 +1031,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="6" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -961,8 +1042,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="7" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -974,8 +1053,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="8" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -987,8 +1064,6 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
       </div>
 
       <div class="video-card">
-        <iframe class="latestVideoEmbed" vnum="9" cid="UCVhJVJStOItucQ5JFmFjYQQ" style="display:none"
-          frameborder="0"></iframe>
         <a id="video-link" class="cover-wrap" href="" target="_blank" rel="noopener"><img id="video-thumb"
             class="cover-img" src="" alt="">
           <div class="play-dot"><svg viewBox="0 0 10 12">
@@ -999,7 +1074,7 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
         <p id="video-title" class="video-title">Loading…</p>
       </div>
 
-
+    </div>
 
   </main>
 
@@ -1015,36 +1090,21 @@ C376.2,253.2,371.1,258.4,371.1,264.7z" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
   <script>
-    /* musiclab.js — unmodified except img.onload reveal added */
-    var reqURL = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent("https://www.youtube.com/feeds/videos.xml?channel_id=");
-
-    function loadVideo(iframe) {
-      $.getJSON(reqURL + iframe.getAttribute('cid'),
-        function (data) {
-          var videoNumber = (iframe.getAttribute('vnum') ? Number(iframe.getAttribute('vnum')) : 0);
-          console.log(videoNumber);
-          var link = data.items[videoNumber].link;
-          var title = data.items[videoNumber].title;
-          var thumbImg = data.items[videoNumber].thumbnail;
-          id = link.substr(link.indexOf("=") + 1);
-          console.log(data);
-          iframe.setAttribute("src", "https://youtube.com/embed/" + id + "?controls=0&autoplay=1");
-          iframe.parentElement.querySelector("#video-title").innerText = title;
-          iframe.parentElement.querySelector("#video-link").firstChild.setAttribute("src", thumbImg);
-          iframe.parentElement.querySelector("#video-link").setAttribute("href", link);
-
-          /* reveal thumbnail once it loads */
-          iframe.parentElement.querySelector("#video-thumb").onload = function () {
-            this.classList.add("loaded");
-          };
-        }
-      );
-    }
-
-    var iframes = document.getElementsByClassName('latestVideoEmbed');
-    for (var i = 0, len = iframes.length; i < len; i++) {
-      loadVideo(iframes[i]);
-    }
+    /* Videos come from data/youtube.json, refreshed daily by .github/workflows/youtube-feed.yml */
+    $.getJSON("data/youtube.json", function (data) {
+      $(".video-card").each(function (i) {
+        var video = data.items[i];
+        if (!video) { $(this).remove(); return; }
+        var thumb = this.querySelector("#video-thumb");
+        thumb.onload = function () { this.classList.add("loaded"); };
+        thumb.src = video.thumbnail;
+        thumb.alt = video.title;
+        this.querySelector("#video-link").href = video.link;
+        this.querySelector("#video-title").innerText = video.title;
+      });
+    }).fail(function () {
+      $(".video-title").text("Couldn't load videos");
+    });
 
     /* ── Mobile menu toggle ─────────────────────── */
     var hamburger = document.getElementById('hamburger');
